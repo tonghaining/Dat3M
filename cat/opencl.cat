@@ -1,0 +1,116 @@
+OpenCL
+// Modified from: https://github.com/herd/herdtools7/blob/master/herd-www/cat_includes/opencl_base.cat
+
+// Base relations:
+// swi: same work-item
+// swg: same work-group
+// sdev: same device
+// sall: same all-svm-devices
+
+// Tas:
+// WI: work-item
+// WG: work-group
+// DEV: device
+// ALL: all-svm-devices
+// G: global
+// L: local
+
+(* Inclusive scopes *)
+let incl =
+    (sall & (ALL * ALL)) |
+    (sdev & ((ALL | DEV) * (ALL | DEV))) |
+    (swg & ((ALL | DEV | WG) * (ALL | DEV | WG))) |
+    (swi & ((ALL | DEV | WG | WI) * (ALL | DEV | WG | WI)))
+
+(*******************)
+(* Synchronisation *)
+(*******************)
+
+let acq_op = (ACQ | SC | ACQ_REL) & (R | F | rmw)
+let rel_op = (REL | SC | ACQ_REL) & (W | F | rmw)
+
+(* Release sequence *)
+let rs = (_ * rmw) | wi
+let max_co = co? & rs & ~((co & ~rs) ; co)
+
+(* Including release-acquire fences *)
+let relf = [rel_op]; ([F]; po)?; [A & W]
+let acqf = [A & R]; (po; [F])?; [acq_op]
+
+(* Release-acquire synchronisation *)
+let ra_sw_g = incl & ~wi & ([G]; relf; max_co; [G]; rf; acqf; [G])
+let ra_sw_l = incl & ~wi & ([L]; relf; max_co; [L]; rf; acqf; [L])
+
+(* Barrier synchronisation *)
+let bar_sw_g = (entry_fence * exit_fence) & same_B & ~wi & wg & G^2
+let bar_sw_l = (entry_fence * exit_fence) & same_B & ~wi & wg & L^2
+
+(* Synchronisation on a region *)
+let region_sw_g = ra_sw_g | bar_sw_g
+let region_sw_l = ra_sw_l | bar_sw_l
+
+(* Allowed to synchronise on the other region *)
+let scf = SC^2 | (G & L & F)^2
+
+(* Global and local synchronises-with *)
+let gsw = region_sw_g | (scf & region_sw_l)
+let lsw = region_sw_l | (scf & region_sw_g)
+
+(******************)
+(* Happens-before *)
+(******************)
+
+(* Global and local happens-before *)
+let ghb = (((G^2) & (po | (I * !I))) | gsw)+
+let lhb = (((L^2) & (po | (I * !I))) | lsw)+
+
+acyclic ghb as global_hb_acyclic
+acyclic lhb as local_hb_acyclic
+
+(* Per-location happens-before *)
+let ghbl = ghb & loc
+let lhbl = lhb & loc
+
+(*************)
+(* Coherence *)
+(*************)
+
+let coh_hb_g = (rf^-1)?; co; rf?; ghbl
+let coh_hb_l = (rf^-1)?; co; rf?; lhbl
+irreflexive coh_hb_g as global_coherence
+irreflexive coh_hb_l as local_coherence
+
+(************************)
+(* Consistency of reads *)
+(************************)
+
+(* Visible side effects *)
+let vse(hbl) = (W * R) & hbl & ~(hbl; [W]; hbl)
+let vse_hbl_g = (W * R) & ghbl & ~(ghbl; [W]; ghbl)
+let vse_hbl_l = (W * R) & lhbl & ~(lhbl; [W]; lhbl)
+let gvse = [G]; vse_hbl_g
+let lvse = [L]; vse_hbl_l
+
+(* A non-atomic load can only read from a store that is visible. *)
+irreflexive rf; [nonatomicloc & G]; ~(gvse^-1) as global_nonatomic_rf_consistent
+irreflexive rf; [nonatomicloc & L]; ~(lvse^-1) as local_nonatomic_rf_consistent
+
+(* An atomic load can only read from a store that already happened. *)
+irreflexive (ghb | lhb); rf; [A] as atomic_rf_consistent
+
+(* Consistency of RMWs *)
+irreflexive rf | (fr;co) | (co;rf) as rmw_consistent
+
+(**************************)
+(* Sequential consistency *)
+(**************************)
+
+let sc1 = rf^-1; [SC]; co
+let sc2 = [F]; po; co; po; [F]
+let sc3 = [F]; po; fr; po; [F]
+let sc4 =          fr; po; [F]
+let sc5 = [F]; po; fr
+
+let scp = (SC^2) & (ghb | lhb | co | sc1 | sc2 | sc3 | sc4 | sc5)
+
+let sc6 = rf^-1; (ghb | lhb); [W]
