@@ -11,8 +11,8 @@ OpenCL
 // WG: work-group
 // DEV: device
 // ALL: all-svm-devices
-// G: global
-// L: local
+// GLOBAL: global
+// LOCAL: local
 
 (* Inclusive scopes *)
 let incl =
@@ -29,7 +29,7 @@ let acq_op = (ACQ | SC | ACQ_REL) & (R | F | rmw)
 let rel_op = (REL | SC | ACQ_REL) & (W | F | rmw)
 
 (* Release sequence *)
-let rs = (_ * rmw) | wi
+let rs = (_ * rmw) | swi
 let max_co = co? & rs & ~((co & ~rs) ; co)
 
 (* Including release-acquire fences *)
@@ -37,19 +37,19 @@ let relf = [rel_op]; ([F]; po)?; [A & W]
 let acqf = [A & R]; (po; [F])?; [acq_op]
 
 (* Release-acquire synchronisation *)
-let ra_sw_g = incl & ~wi & ([G]; relf; max_co; [G]; rf; acqf; [G])
-let ra_sw_l = incl & ~wi & ([L]; relf; max_co; [L]; rf; acqf; [L])
+let ra_sw_g = incl & ~swi & ([GLOBAL]; relf; max_co; [GLOBAL]; rf; acqf; [GLOBAL])
+let ra_sw_l = incl & ~swi & ([LOCAL]; relf; max_co; [LOCAL]; rf; acqf; [LOCAL])
 
 (* Barrier synchronisation *)
-let bar_sw_g = (entry_fence * exit_fence) & same_B & ~wi & wg & G^2
-let bar_sw_l = (entry_fence * exit_fence) & same_B & ~wi & wg & L^2
+let bar_sw_g = (entry_fence * exit_fence) & same_B & ~swi & wg & GLOBAL^2
+let bar_sw_l = (entry_fence * exit_fence) & same_B & ~swi & wg & LOCAL^2
 
 (* Synchronisation on a region *)
 let region_sw_g = ra_sw_g | bar_sw_g
 let region_sw_l = ra_sw_l | bar_sw_l
 
 (* Allowed to synchronise on the other region *)
-let scf = SC^2 | (G & L & F)^2
+let scf = SC^2 | (GLOBAL & LOCAL & F)^2
 
 (* Global and local synchronises-with *)
 let gsw = region_sw_g | (scf & region_sw_l)
@@ -60,8 +60,8 @@ let lsw = region_sw_l | (scf & region_sw_g)
 (******************)
 
 (* Global and local happens-before *)
-let ghb = (((G^2) & (po | (I * !I))) | gsw)+
-let lhb = (((L^2) & (po | (I * !I))) | lsw)+
+let ghb = (((GLOBAL^2) & (po | (I * !I))) | gsw)+
+let lhb = (((LOCAL^2) & (po | (I * !I))) | lsw)+
 
 acyclic ghb as global_hb_acyclic
 acyclic lhb as local_hb_acyclic
@@ -87,12 +87,12 @@ irreflexive coh_hb_l as local_coherence
 let vse(hbl) = (W * R) & hbl & ~(hbl; [W]; hbl)
 let vse_hbl_g = (W * R) & ghbl & ~(ghbl; [W]; ghbl)
 let vse_hbl_l = (W * R) & lhbl & ~(lhbl; [W]; lhbl)
-let gvse = [G]; vse_hbl_g
-let lvse = [L]; vse_hbl_l
+let gvse = [GLOBAL]; vse_hbl_g
+let lvse = [LOCAL]; vse_hbl_l
 
 (* A non-atomic load can only read from a store that is visible. *)
-irreflexive rf; [nonatomicloc & G]; ~(gvse^-1) as global_nonatomic_rf_consistent
-irreflexive rf; [nonatomicloc & L]; ~(lvse^-1) as local_nonatomic_rf_consistent
+irreflexive rf; [nonatomicloc & GLOBAL]; ~(gvse^-1) as global_nonatomic_rf_consistent
+irreflexive rf; [nonatomicloc & LOCAL]; ~(lvse^-1) as local_nonatomic_rf_consistent
 
 (* An atomic load can only read from a store that already happened. *)
 irreflexive (ghb | lhb); rf; [A] as atomic_rf_consistent
