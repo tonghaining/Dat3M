@@ -5,7 +5,6 @@ OpenCL
 // swi: same work-item
 // swg: same work-group
 // sdev: same device
-// sall: same all-svm-devices
 
 // Tas:
 // WI: work-item
@@ -17,10 +16,10 @@ OpenCL
 
 (* Inclusive scopes *)
 let incl =
-    (sall & (ALL * ALL)) |
-    (sdev & ((ALL | DEV) * (ALL | DEV))) |
-    (swg & ((ALL | DEV | WG) * (ALL | DEV | WG))) |
-    (swi & ((ALL | DEV | WG | WI) * (ALL | DEV | WG | WI)))
+    (swi & (WI * WI)) |
+    (swg & (WG * WG)) |
+    (sdev & (DEV * DEV)) |
+    (ALL * ALL)
 
 (*******************)
 (* Synchronisation *)
