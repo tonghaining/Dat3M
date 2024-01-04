@@ -6,7 +6,7 @@ OpenCL
 // swg: same work-group
 // sdev: same device
 
-// Tas:
+// Tags:
 // WI: work-item
 // WG: work-group
 // DEV: device
@@ -41,15 +41,15 @@ let ra_sw_g = incl & ~swi & ([GLOBAL]; relf; max_co; [GLOBAL]; rf; acqf; [GLOBAL
 let ra_sw_l = incl & ~swi & ([LOCAL]; relf; max_co; [LOCAL]; rf; acqf; [LOCAL])
 
 (* Barrier synchronisation *)
-let bar_sw_g = (entry_fence * exit_fence) & same_B & ~swi & wg & GLOBAL^2
-let bar_sw_l = (entry_fence * exit_fence) & same_B & ~swi & wg & LOCAL^2
+let bar_sw_g = (entry_fence * exit_fence) & same_B & ~swi & wg & (GLOBAL * GLOBAL
+let bar_sw_l = (entry_fence * exit_fence) & same_B & ~swi & wg & (LOCAL * LOCAL)
 
 (* Synchronisation on a region *)
 let region_sw_g = ra_sw_g | bar_sw_g
 let region_sw_l = ra_sw_l | bar_sw_l
 
 (* Allowed to synchronise on the other region *)
-let scf = SC^2 | (GLOBAL & LOCAL & F)^2
+let scf = (SC * SC) | ((GLOBAL & LOCAL & F) * (GLOBAL & LOCAL & F))
 
 (* Global and local synchronises-with *)
 let gsw = region_sw_g | (scf & region_sw_l)
@@ -60,8 +60,8 @@ let lsw = region_sw_l | (scf & region_sw_g)
 (******************)
 
 (* Global and local happens-before *)
-let ghb = (((GLOBAL^2) & (po | (I * !I))) | gsw)+
-let lhb = (((LOCAL^2) & (po | (I * !I))) | lsw)+
+let ghb = (((GLOBAL * GLOBAL) & (po | (I * !I))) | gsw)+
+let lhb = (((LOCAL * LOCAL) & (po | (I * !I))) | lsw)+
 
 acyclic ghb as global_hb_acyclic
 acyclic lhb as local_hb_acyclic
@@ -110,6 +110,6 @@ let sc3 = [F]; po; fr; po; [F]
 let sc4 =          fr; po; [F]
 let sc5 = [F]; po; fr
 
-let scp = (SC^2) & (ghb | lhb | co | sc1 | sc2 | sc3 | sc4 | sc5)
+let scp = (SC * SC) & (ghb | lhb | co | sc1 | sc2 | sc3 | sc4 | sc5)
 
 let sc6 = rf^-1; (ghb | lhb); [W]
