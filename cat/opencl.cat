@@ -6,7 +6,7 @@ OpenCL
 swi = po | po^-1
 // swg: same work-group, included in sr
 // sdev: same device, included in sr
-// same_B: same barrier
+// syncbar: same barrier id, reuse from spirv because the ptx's sync_barrier requires scta.
 
 // Tags:
 // WI: work-item
@@ -44,8 +44,8 @@ let ra_sw_g = incl & ~swi & ([GLOBAL]; relf; max_co; [GLOBAL]; rf; acqf; [GLOBAL
 let ra_sw_l = incl & ~swi & ([LOCAL]; relf; max_co; [LOCAL]; rf; acqf; [LOCAL])
 
 (* Barrier synchronisation *)
-let bar_sw_g = (entry_fence * exit_fence) & same_B & ~swi & wg & (GLOBAL * GLOBAL // entry_fence?
-let bar_sw_l = (entry_fence * exit_fence) & same_B & ~swi & wg & (LOCAL * LOCAL)
+let bar_sw_g = (entry_fence * exit_fence) & syncbar & ~swi & wg & (GLOBAL * GLOBAL // entry_fence?
+let bar_sw_l = (entry_fence * exit_fence) & syncbar & ~swi & wg & (LOCAL * LOCAL)
 
 (* Synchronisation on a region *)
 let region_sw_g = ra_sw_g | bar_sw_g
