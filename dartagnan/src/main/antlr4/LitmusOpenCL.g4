@@ -177,8 +177,7 @@ assertionValue
     ;
 
 scope returns [String content]
-    :   Period WI {$content = "WI";}
-    |   Period WG {$content = "WG";}
+    :   Period WG {$content = "WG";}
     |   Period DEV {$content = "DEV";}
     |   Period ALL {$content = "ALL";}
     ;
