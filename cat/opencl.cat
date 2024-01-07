@@ -2,7 +2,8 @@ OpenCL
 // Modified from: https://github.com/herd/herdtools7/blob/master/herd-www/cat_includes/opencl_base.cat
 
 // Base relations:
-// swi: same work-item
+// swi: same work-item = po | po^-1
+swi = po | po^-1
 // swg: same work-group
 // sdev: same device
 // same_B: same barrier

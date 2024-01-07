@@ -359,6 +359,28 @@ public final class Tag {
         }
     }
 
+    // =============================================================================================
+    // ========================================= OpenCL ============================================
+    // =============================================================================================
+    public static final class OpenCL {
+        // Scopes
+        public static final String WORK_ITEM = "WI";
+        public static final String WORK_GROUP = "WG";
+        public static final String DEVICE = "DEV";
+        public static final String ALL_SVM_DEVICES = "ALL";
+        // Context
+        public static final String GLOBAL = "GLOBAL";
+        public static final String LOCAL = "LOCAL";
+        // Memory orders
+        public static final String ACQUIRE = "ACQ";
+        public static final String RELEASE = "REL";
+        public static final String ACQ_REL = "ACQ_REL";
+
+        public static List<String> getScopeTags() {
+            return List.of(WORK_GROUP, DEVICE);
+        }
+    }
+
     public static String getScopeTag(Event e, Arch arch) {
         return switch (arch) {
             case PTX -> PTX.getScopeTags().stream().filter(e::hasTag).findFirst().orElse("");
