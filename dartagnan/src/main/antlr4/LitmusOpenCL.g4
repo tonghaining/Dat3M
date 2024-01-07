@@ -96,7 +96,7 @@ loadInstruction
     ;
 
 localValue
-    :   Load mo context scope register Comma value
+    :   Load mo scope register Comma value
     ;
 
 localAdd
@@ -116,7 +116,7 @@ localDiv
     ;
 
 loadLocation
-    :   Load mo scope register Comma location
+    :   Load mo context scope register Comma location
     ;
 
 rmwInstruction
@@ -125,11 +125,11 @@ rmwInstruction
     ;
 
 rmwValue
-    :   RMW mo scope register Comma location Comma value
+    :   RMW mo context scope register Comma location Comma value
     ;
 
 rmwOp
-    :   RMW mo scope operation register Comma location Comma value
+    :   RMW mo context scope operation register Comma location Comma value
     ;
 
 fenceInstruction

@@ -20,6 +20,8 @@ import com.dat3m.dartagnan.program.event.core.FenceWithId;
 import com.dat3m.dartagnan.program.event.arch.ptx.PTXRedOp;
 import com.dat3m.dartagnan.program.event.arch.tso.TSOXchg;
 import com.dat3m.dartagnan.program.event.arch.vulkan.VulkanRMW;
+import com.dat3m.dartagnan.program.event.arch.opencl.OpenCLRMW;
+import com.dat3m.dartagnan.program.event.arch.opencl.OpenCLRMWOp;
 import com.dat3m.dartagnan.program.event.core.*;
 import com.dat3m.dartagnan.program.event.core.annotations.FunCallMarker;
 import com.dat3m.dartagnan.program.event.core.annotations.FunReturnMarker;
@@ -748,6 +750,23 @@ public class EventFactory {
         public static VulkanRMWOp newRMWOp(Expression address, Register register, Expression value,
                                        IOpBin op, String mo, String scope) {
             return new VulkanRMWOp(register, address, op, value, mo, scope);
+        }
+    }
+
+    // =============================================================================================
+    // =========================================== OpenCL ==========================================
+    // =============================================================================================
+    public static class OpenCL {
+        private OpenCL() {}
+
+        public static OpenCLRMW newRMW(Expression address, Register register, Expression value,
+                                       String mo, String scope, String context) {
+            return new OpenCLRMW(register, address, value, mo, scope, context);
+        }
+
+        public static OpenCLRMWOp newRMWOp(Expression address, Register register, Expression value,
+                                           IOpBin op, String mo, String scope, String context) {
+            return new OpenCLRMWOp(register, address, op, value, mo, scope, context);
         }
     }
 
