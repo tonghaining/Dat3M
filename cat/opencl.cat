@@ -4,8 +4,8 @@ OpenCL
 // Base relations:
 // swi: same work-item = po | po^-1
 swi = po | po^-1
-// swg: same work-group
-// sdev: same device
+// swg: same work-group, included in sr
+// sdev: same device, included in sr
 // same_B: same barrier
 
 // Tags:
@@ -17,11 +17,12 @@ swi = po | po^-1
 // LOCAL: local
 
 (* Inclusive scopes *)
-let incl =
-    (swi & (WI * WI)) |
-    (swg & (WG * WG)) |
-    (sdev & (DEV * DEV)) |
-    (ALL * ALL)
+let incl = swi | sr // our sr is HRF-indirect, so it includes swg and sdev
+//let incl =
+//    (swi & (WI * WI)) |
+//    (swg & (WG * WG)) |
+//    (sdev & (DEV * DEV)) |
+//    (ALL * ALL)
 
 (*******************)
 (* Synchronisation *)
