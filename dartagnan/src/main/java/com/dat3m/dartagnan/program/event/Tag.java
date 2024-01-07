@@ -377,7 +377,7 @@ public final class Tag {
         public static final String ACQ_REL = "ACQ_REL";
 
         public static List<String> getScopeTags() {
-            return List.of(WORK_GROUP, DEVICE);
+            return List.of(WORK_GROUP, DEVICE, ALL_SVM_DEVICES);
         }
     }
 
@@ -385,6 +385,7 @@ public final class Tag {
         return switch (arch) {
             case PTX -> PTX.getScopeTags().stream().filter(e::hasTag).findFirst().orElse("");
             case VULKAN -> Vulkan.getScopeTags().stream().filter(e::hasTag).findFirst().orElse("");
+            case OPENCL -> OpenCL.getScopeTags().stream().filter(e::hasTag).findFirst().orElse("");
             default -> throw new UnsupportedOperationException("Scope tags not implemented for architecture " + arch);
         };
 

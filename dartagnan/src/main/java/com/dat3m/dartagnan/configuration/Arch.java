@@ -3,7 +3,7 @@ package com.dat3m.dartagnan.configuration;
 import java.util.Arrays;
 
 public enum Arch implements OptionInterface {
-	C11, ARM8, POWER, PTX, TSO, IMM, LKMM, RISCV, VULKAN;
+    C11, ARM8, IMM, LKMM, OPENCL, POWER, PTX, RISCV, TSO, VULKAN;
 
 	// Used to display in UI
     @Override
@@ -13,16 +13,18 @@ public enum Arch implements OptionInterface {
                 return "C11";
             case ARM8:
                 return "ARM8";
+            case IMM:
+                return "IMM";
+            case LKMM:
+                return "LKMM";
+            case OPENCL:
+                return "OpenCL";
             case POWER:
                 return "Power";
             case PTX:
                 return "PTX";
             case TSO:
                 return "TSO";
-            case IMM:
-                return "IMM";
-            case LKMM:
-                return "LKMM";
             case RISCV:
                 return "RISCV";
             case VULKAN:
@@ -37,7 +39,7 @@ public enum Arch implements OptionInterface {
 	
 	// Used to decide the order shown by the selector in the UI
 	public static Arch[] orderedValues() {
-		Arch[] order = { C11, ARM8, IMM, LKMM, POWER, PTX, RISCV, TSO, VULKAN };
+		Arch[] order = { C11, ARM8, IMM, LKMM, OPENCL, POWER, PTX, RISCV, TSO, VULKAN };
 		// Be sure no element is missing
 		assert(Arrays.asList(order).containsAll(Arrays.asList(values())));
 		return order;
