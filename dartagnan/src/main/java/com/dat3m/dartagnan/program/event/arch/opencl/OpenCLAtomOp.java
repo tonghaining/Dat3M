@@ -7,14 +7,14 @@ import com.dat3m.dartagnan.program.event.Tag;
 import com.dat3m.dartagnan.program.event.common.RMWOpResultBase;
 import com.dat3m.dartagnan.program.event.visitors.EventVisitor;
 
-public class OpenCLRMWOp extends RMWOpResultBase {
+public class OpenCLAtomOp extends RMWOpResultBase {
 
-    public OpenCLRMWOp(Register register, Expression address, IOpBin op, Expression operand, String mo, String scope, String context) {
+    public OpenCLAtomOp(Register register, Expression address, IOpBin op, Expression operand, String mo, String scope, String context) {
         super(register, address, op, operand, mo);
         this.addTags(Tag.OpenCL.ATOM, scope, context);
     }
 
-    private OpenCLRMWOp(OpenCLRMWOp other) {
+    private OpenCLAtomOp(OpenCLAtomOp other) {
         super(other);
     }
 
@@ -24,8 +24,8 @@ public class OpenCLRMWOp extends RMWOpResultBase {
     }
 
     @Override
-    public OpenCLRMWOp getCopy() {
-        return new OpenCLRMWOp(this);
+    public OpenCLAtomOp getCopy() {
+        return new OpenCLAtomOp(this);
     }
 
     @Override

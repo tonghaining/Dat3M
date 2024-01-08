@@ -75,7 +75,7 @@ instruction
     :
     |   storeInstruction
     |   loadInstruction
-    |   rmwInstruction
+    |   atomInstruction
     |   fenceInstruction
     |   label
     |   branchCond
@@ -119,17 +119,17 @@ loadLocation
     :   Load mo context scope register Comma location
     ;
 
-rmwInstruction
-    :   rmwValue
-    |   rmwOp
+atomInstruction
+    :   atomCompareExchange
+    |   atomOp
     ;
 
-rmwValue
-    :   RMW mo context scope register Comma location Comma value
+atomCompareExchange
+    :   Atom CompareExchange register Comma location Comma location Comma value Comma mo Comma mo (Comma scope)?
     ;
 
-rmwOp
-    :   RMW mo context scope operation register Comma location Comma value
+atomOp
+    :   Atom mo context scope operation register Comma location Comma value
     ;
 
 fenceInstruction
@@ -160,6 +160,7 @@ jump
 value
     :   constant
     |   register
+    |   location
     ;
 
 location
@@ -234,9 +235,13 @@ Label
     :   'LC' DigitSequence
     ;
 
+CompareExchange
+    :   'cmpxchg'
+    ;
+
 Load            :   'ld';
 Store           :   'st';
-RMW             :   'rmw';
+Atom            :   'atom';
 Fence           :   'fence';
 Barrier         :   'bar';
 

@@ -16,16 +16,14 @@ import com.dat3m.dartagnan.program.Program;
 import com.dat3m.dartagnan.program.Register;
 import com.dat3m.dartagnan.program.event.EventFactory;
 import com.dat3m.dartagnan.program.event.Tag;
-import com.dat3m.dartagnan.program.event.arch.opencl.OpenCLRMW;
-import com.dat3m.dartagnan.program.event.arch.opencl.OpenCLRMWOp;
+import com.dat3m.dartagnan.program.event.arch.opencl.OpenCLAtomCAX;
+import com.dat3m.dartagnan.program.event.arch.opencl.OpenCLAtomOp;
 import com.dat3m.dartagnan.program.event.core.Event;
 import com.dat3m.dartagnan.program.event.core.Label;
 import com.dat3m.dartagnan.program.event.core.Load;
 import com.dat3m.dartagnan.program.event.core.Store;
 import com.dat3m.dartagnan.program.memory.MemoryObject;
 import org.antlr.v4.runtime.misc.Interval;
-
-import java.util.List;
 
 public class VisitorLitmusOpenCL extends LitmusOpenCLBaseVisitor<Object> {
     private final ProgramBuilder programBuilder = ProgramBuilder.forArch(Program.SourceLanguage.LITMUS, Arch.OPENCL);
@@ -208,19 +206,20 @@ public class VisitorLitmusOpenCL extends LitmusOpenCLBaseVisitor<Object> {
     }
 
     @Override
-    public Object visitRmwValue(LitmusOpenCLParser.RmwValueContext ctx) {
+    public Object visitAtomCompareExchange(LitmusOpenCLParser.AtomCompareExchangeContext ctx) {
         Register register = (Register) ctx.register().accept(this);
-        MemoryObject location = programBuilder.getOrNewMemoryObject(ctx.location().getText());
-        Expression value = (Expression) ctx.value().accept(this);
-        String mo = ctx.mo().content;
+        MemoryObject object = programBuilder.getOrNewMemoryObject(ctx.location().get(0).getText());
+        MemoryObject expected = programBuilder.getOrNewMemoryObject(ctx.location().get(1).getText());
+        Expression desired = (Expression) ctx.value().accept(this);
+        String successMo = ctx.mo().get(0).content;
+        String failureMo = ctx.mo().get(1).content;
         String scope = ctx.scope().content;
-        String context = ctx.context().content;
-        OpenCLRMW rmw = EventFactory.OpenCL.newRMW(location, register, value, mo, scope, context); // TODO: do we need new RMW?
-        return programBuilder.addChild(mainThread, rmw);
+        OpenCLAtomCAX atom = EventFactory.OpenCL.newAtom(register, object, expected, desired, successMo, failureMo, scope);
+        return programBuilder.addChild(mainThread, atom);
     }
 
     @Override
-    public Object visitRmwOp(LitmusOpenCLParser.RmwOpContext ctx) {
+    public Object visitAtomOp(LitmusOpenCLParser.AtomOpContext ctx) {
         Register register = (Register) ctx.register().accept(this);
         MemoryObject location = programBuilder.getOrNewMemoryObject(ctx.location().getText());
         Expression value = (Expression) ctx.value().accept(this);
@@ -228,7 +227,7 @@ public class VisitorLitmusOpenCL extends LitmusOpenCLBaseVisitor<Object> {
         String scope = ctx.scope().content;
         IOpBin op = ctx.operation().op;
         String context = ctx.context().content;
-        OpenCLRMWOp rmw = EventFactory.OpenCL.newRMWOp(location, register, value, op, mo, scope, context);
+        OpenCLAtomOp rmw = EventFactory.OpenCL.newAtomOp(location, register, value, op, mo, scope, context);
         return programBuilder.addChild(mainThread, rmw);
     }
 
