@@ -236,11 +236,12 @@ public class VisitorLitmusOpenCL extends LitmusOpenCLBaseVisitor<Object> {
     public Object visitBarrier(LitmusOpenCLParser.BarrierContext ctx) {
         String mo = ctx.mo().content;
         String scope = ctx.scope().content;
+        String context = ctx.context().content;
         if (!mo.equals(Tag.OpenCL.ACQ) && !mo.equals(Tag.OpenCL.REL) && !mo.equals(Tag.OpenCL.ACQ_REL)) {
             throw new ParsingException("Fences must be acquire, release or acq_rel");
         }
         Event fence = EventFactory.newFence(ctx.getText().toLowerCase());
-        fence.addTags(mo, scope);
+        fence.addTags(mo, scope, context);
         return programBuilder.addChild(mainThread, fence);
     }
 
@@ -248,11 +249,12 @@ public class VisitorLitmusOpenCL extends LitmusOpenCLBaseVisitor<Object> {
     public Object visitFence(LitmusOpenCLParser.FenceContext ctx) {
         String mo = ctx.mo().content;
         String scope = ctx.scope().content;
+        String context = ctx.context().content;
         if (!(mo.equals(Tag.OpenCL.ACQ_REL) || mo.equals(Tag.OpenCL.SC))) {
             throw new ParsingException("Fence instruction doesn't support mo: " + mo);
         }
         Event fence = EventFactory.newFence(ctx.getText().toLowerCase());
-        fence.addTags(mo, scope);
+        fence.addTags(mo, scope, context);
         return programBuilder.addChild(mainThread, fence);
     }
 

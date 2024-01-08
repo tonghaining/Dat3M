@@ -138,11 +138,11 @@ fenceInstruction
     ;
 
 fence
-    :   Fence mo scope
+    :   Fence mo context scope
     ;
 
 barrier
-    :   Barrier mo scope value
+    :   Barrier mo context scope value
     ;
 
 label
