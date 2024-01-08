@@ -1,0 +1,16 @@
+OpenCL RWC
+"RWC_xaG_yaG_sc-_rel[wg]-LFsc-rel_rel-GFrel[dev]-acq[wg]_0||1|2"
+"https://github.com/herd/legacy/blob/master/herdtools/herd/testsuite/OpenCLTests/RWC/RWC_xaG_yaG_sc-_rel%5Bwg%5D-LFsc-rel_rel-GFrel%5Bdev%5D-acq%5Bwg%5D_0%7C%7C1%7C2.litmus"
+{
+x=0;
+y=0;
+P1:r0=0;
+P1:r1=0;
+P2:r2=0;
+}
+ P0@wg 0,dev 0                    | P1@wg 1,dev 0                     | P2@wg 1,dev 0                     ;
+ st.relaxed.global x, 1           | ld.release.global.wg r0, x        | st.release.global.wg y, 1         ; \\ TODO: load with release?
+                                  | fence.sc.wg                       | fence.release.dev                 ;
+                                  | ld.release.global.wg r1, y        | ld.acquire.global.wg r2, x        ;
+exists
+(P1:r0 == 1 /\ P1:r1 == 0 /\ P2:r2 == 0)

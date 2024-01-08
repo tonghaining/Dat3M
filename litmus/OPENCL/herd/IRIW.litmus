@@ -1,0 +1,16 @@
+OpenCL IRIW
+"IRIW_sc_sc_sc-sc_sc-sc_xaG_yaG_P0_P1_P2_P3"
+"https://github.com/herd/legacy/blob/master/herdtools/herd/testsuite/OpenCLTests/IRIW/IRIW_sc_sc_sc-sc_sc-sc_xaG_yaG_P0_P1_P2_P3.litmus"
+{
+x=0;
+y=0;
+P2:r0=0;
+P2:r1=0;
+P3:r2=0;
+P3:r3=0;
+}
+ P0@wg 0,dev 0              | P1@wg 0,dev 0           | P2@wg 0,dev 0               | P3@wg 0,dev 0               ;
+ st.relaxed.global x, 1     | st.relaxed.global y, 1  | ld.relaxed.global r0, x     | ld.relaxed.global r2, y     ;
+                            |                         | ld.relaxed.global r1, y     | ld.relaxed.global r3, x     ;
+exists
+(P2:r0 == 1 /\ P2:r1 == 0 /\ P3:r2 == 1 /\ P3:r3 == 0)

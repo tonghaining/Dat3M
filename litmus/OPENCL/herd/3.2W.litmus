@@ -1,0 +1,14 @@
+OpenCL 3.2W
+"3.2W_xaG_yaG_zaG_sc--sc_rel[wg]-LFsc-rel_rel-GFrel[dev]-acq[wg]_0||1|2"
+"https://github.com/herd/legacy/blob/master/herdtools/herd/testsuite/OpenCLTests/3.2W/3.2W_xaG_yaG_zaG_sc--sc_rel%5Bwg%5D-LFsc-rel_rel-GFrel%5Bdev%5D-acq%5Bwg%5D_0%7C%7C1%7C2.litmus"
+{
+x=0;
+y=0;
+z=0;
+}
+ P0@wg 0,dev 0                    | P1@wg 1,dev 0                     | P2@wg 1,dev 0                     ;
+ st.relaxed.global x, 2           | st.release.global.wg y, 2         | st.release.global z, 2            ;
+ st.relaxed.global y, 1           | fence.sc.local.wg                 | fence.release.global.dev          ;
+                                  | st.release.global z, 1            | st.acquire.global.wg x, 1         ;
+exists
+(x == 2 /\ y == 2 /\ z == 2)

@@ -1,0 +1,15 @@
+OpenCL MP
+"MP_rlx_1FG-sc-all_rlx_xaG_yaG_P0_P1"
+"https://github.com/herd/legacy/blob/master/herdtools/herd/testsuite/OpenCLTests/MP/MP_rlx_1FG-sc-all_rlx_xaG_yaG_P0_P1.litmus"
+{
+x=0;
+y=0;
+P1:r0=0;
+P1:r1=0;
+}
+ P0@wg 0,dev 0                    | P1@wg 1,dev 0                     ;
+ st.weak x, 1                     | ld.relaxed.global r0, y           ;
+ fence.sc.all                     | ld.weak r1, x                     ;
+ st.relaxed.global y, 1           |                                   ;
+exists
+(P1:r0 == 1 /\ P1:r1 == 0)

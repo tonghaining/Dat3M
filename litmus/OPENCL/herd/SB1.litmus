@@ -1,0 +1,15 @@
+OpenCL SB1
+"SB_xaG_yaG_rel[wg]-LFsc-rel_rel-GFrel[dev]-acq[wg]_0||1"
+"https://github.com/herd/legacy/blob/master/herdtools/herd/testsuite/OpenCLTests/SB/SB_xaG_yaG_rel%5Bwg%5D-LFsc-rel_rel-GFrel%5Bdev%5D-acq%5Bwg%5D_0%7C%7C1.litmus"
+{
+x=0;
+y=0;
+P0:r0=0;
+P1:r1=0;
+}
+ P0@wg 0,dev 0                    | P1@wg 1,dev 0                     ;
+ st.release.global.wg x, 1        | st.release.global y, 1            ;
+ fence.sc.wg                      | fence.release.dev                 ;
+ ld.release.global.wg r0, y       | ld.acquire.global.wg r1, x        ; \\ TODO: load with release mo
+exists
+(P0:r0 == 0 /\ P1:r1 == 0)

@@ -1,0 +1,22 @@
+OpenCL CT_wsq2
+"https://github.com/herd/legacy/blob/master/herdtools/herd/testsuite/OpenCLTests/CT_wsq/CT_wsq2.litmus"
+{
+tail_p=0;
+head_p=0;
+d=0;
+oldhead_p=0;
+P0:tmp_tail=0;
+P0:tmp=0;
+P1:localTail=0;
+P1:oldHead=0;
+P1:tmp1=0;
+}
+ P0@wg 0,dev 0                                                         | P1@wg 0,dev 0                                                         ;
+ ld.weak newHead, 1                                                    | ld.acquire.global.dev localTail, tail_p                               ; // TODO: check Local's mo and contxt
+ atom.cmpxchg tmp, head_p, oldHead_P, newHead, release, release, dev   | beq localTail, oldHead_p LC10                                         ; // TODO: check why exch has two mo in the original litmus
+ bne tmp, 0, LC00                                                      | ld.weak.global val, d                                                 ;
+ st.release.global.dev head_p, newHead                                 | atom.cmpxchg tmp1, head_p, oldHead_P, newHead, release, release, dev  ;
+ LC00:                                                                 | LC10:                                                                 ;
+ ld.acquire.global.dev tmp_tail, tail_p                                |                                                                       ;
+exists
+(P0:localTail == 1 /\ val == 0)

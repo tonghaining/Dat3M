@@ -1,0 +1,19 @@
+OpenCL CT_wsq1
+"https://github.com/herd/legacy/blob/master/herdtools/herd/testsuite/OpenCLTests/CT_wsq/CT_wsq1.litmus"
+{
+tail_p=0;
+head_p=0;
+d=0;
+val=0;
+P0:tmp_tail=0;
+P1:localTail=0;
+P1:oldHead=0;
+}
+ P0@wg 0,dev 0                               | P1@wg 0,dev 0                               ;
+ ld.acquire.global.dev tmp_tail, tail_p      | ld.acquire.global.dev oldHead, head_p       ;
+ st.weak.global d, 1                         | ld.acquire.global.dev localTail, tail_p     ;
+ st.weak.global tmp_tail, 1                  | bne localTail, 1, LC10                      ;
+ st.release.global.dev tail_p, tmp_tail      | st.weak.global val, d                       ;
+                                             | LC10:                                       ;
+exists
+(P1:localTail == 1 /\ val == 0)
