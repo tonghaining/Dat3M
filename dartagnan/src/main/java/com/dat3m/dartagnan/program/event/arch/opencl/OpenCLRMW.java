@@ -19,7 +19,7 @@ public class OpenCLRMW extends RMWXchgBase {
 
     @Override
     public String defaultString() {
-        return String.format("%s := rmw[%s](%s, %s)", resultRegister, mo, storeValue, address);
+        return String.format("%s := atomic_explicit[%s](%s, %s)", resultRegister, mo, storeValue, address);
     }
 
     @Override
