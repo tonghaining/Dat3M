@@ -1,284 +1,265 @@
 grammar LitmusOpenCL;
 
-import LitmusAssertions;
+import C11Lexer, LitmusAssertions;
 
 @header{
 import com.dat3m.dartagnan.expression.op.*;
+import static com.dat3m.dartagnan.program.event.Tag.*;
 }
 
 main
-    :    LitmusLanguage ~(LBrace)* variableDeclaratorList program variableList? assertionFilter? assertionList? EOF
+    :    LitmusLanguage ~(LBrace)* variableDeclaratorList program variableList? assertionFilter? assertionList? comment? EOF
     ;
 
 variableDeclaratorList
-    :   LBrace variableDeclarator? (Semi variableDeclarator)* Semi? RBrace Semi?
+    :   LBrace (globalDeclarator Semi comment?)* RBrace (Semi)?
     ;
 
-variableDeclarator
-    :   variableDeclaratorLocation
-    |   variableDeclaratorRegister
-    |   variableDeclaratorRegisterLocation
-    |   variableDeclaratorLocationLocation
-    ;
-
-variableDeclaratorLocation
-    :   location Equals constant
-    ;
-
-variableDeclaratorRegister
-    :   threadId Colon register Equals constant
-    ;
-
-variableDeclaratorRegisterLocation
-    :   threadId Colon register Equals Amp? location
-    ;
-
-variableDeclaratorLocationLocation
-    :   location Equals Amp? location
-    ;
-
-variableList
-    :   Locations LBracket variable (Semi variable)* Semi? RBracket
-    ;
-
-variable
-    :   location
-    |   threadId Colon register
+globalDeclarator
+    :   typeSpecifier? LBracket? varName RBracket? (Equals initConstantValue)?                                          # globalDeclaratorLocation
+    |   typeSpecifier? t = threadId Colon n = varName (Equals initConstantValue)?                                       # globalDeclaratorRegister
+    |   typeSpecifier? varName (Equals Ast? (Amp? varName | LPar Amp? varName RPar))?                                   # globalDeclaratorLocationLocation
+    |   typeSpecifier? t = threadId Colon n = varName (Equals Ast? (Amp? varName | LPar Amp? varName RPar))?            # globalDeclaratorRegisterLocation
+    |   typeSpecifier? varName LBracket DigitSequence? RBracket (Equals initArray)?                                     # globalDeclaratorArray
     ;
 
 program
-    :   threadDeclaratorList instructionList
+    :   thread+
     ;
 
-threadDeclaratorList
-    :   threadScope (Bar threadScope)* Semi
+thread
+    :   threadId LPar threadArguments? RPar LBrace expression* RBrace
     ;
 
-threadScope
-    :   threadId At scopeID
+threadArguments
+    :   pointerTypeSpecifier varName (Comma pointerTypeSpecifier varName)*
     ;
 
-scopeID
-    :   WG wgID Comma DEV dvID
+expression
+    :   nre Semi
+    |   ifExpression
+    |   whileExpression
     ;
 
-
-instructionList
-    :   (instructionRow) +
+ifExpression
+    :   If LPar re RPar expression elseExpression?
+    |   If LPar re RPar LBrace expression* RBrace elseExpression?
     ;
 
-instructionRow
-    :   instruction (Bar instruction)* Semi
+elseExpression
+    :   Else expression
+    |   Else LBrace expression* RBrace
     ;
 
-instruction
-    :
-    |   storeInstruction
-    |   loadInstruction
-    |   atomInstruction
-    |   fenceInstruction
-    |   label
-    |   branchCond
-    |   jump
+whileExpression
+    :   While LPar re RPar expression
+    |   While LPar re RPar LBrace expression* RBrace
     ;
 
-storeInstruction
-    :   Store mo context scope location Comma value
+re locals [IOpBin op, String mo]
+    :   ( C11AtomicAdd LPar address = re Comma value = re Comma openCLMo RPar {$op = IOpBin.ADD;}
+        | C11AtomicSub LPar address = re Comma value = re Comma openCLMo RPar {$op = IOpBin.SUB;}
+        | C11AtomicOr LPar address = re Comma value = re Comma openCLMo RPar {$op = IOpBin.OR;}
+        | C11AtomicXor LPar address = re Comma value = re Comma openCLMo RPar {$op = IOpBin.XOR;}
+        | C11AtomicAnd LPar address = re Comma value = re Comma openCLMo RPar {$op = IOpBin.AND;})                      # OpenCLAtomicOp
+
+    |   C11AtomicSCAS LPar address = re Comma expectedAdd = re Comma value = re Comma openCLMo Comma openCLMo RPar      # reOpenCLSCmpXchg
+    |   C11AtomicWCAS LPar address = re Comma expectedAdd = re Comma value = re Comma openCLMo Comma openCLMo RPar      # reOpenCLWCmpXchg
+
+    |   C11AtomicLoad    LPar address = re Comma openCLMo RPar                                                          # reOpenCLLoad
+
+    |   boolConst                                                                                                       # reBoolConst
+    |   Excl re                                                                                                         # reOpBoolNot
+    |   re opBool re                                                                                                    # reOpBool
+    |   re opCompare re                                                                                                 # reOpCompare
+    |   re opArith re                                                                                                   # reOpArith
+
+    |   LPar re RPar                                                                                                    # reParenthesis
+    |   cast re                                                                                                         # reCast
+    |   varName                                                                                                         # reVarName
+    |   constant                                                                                                        # reConst
     ;
 
-loadInstruction
-    :   localValue
-    |   localAdd
-    |   localSub
-    |   localMul
-    |   localDiv
-    |   loadLocation
+nre locals [IOpBin op, String mo, String name]
+    :   C11AtomicStore    LPar address = re  Comma value = re Comma openCLMo RPar                                       # nreC11Store
+
+    |   Ast? varName Equals re                                                                                          # nreAssignment
+    |   typeSpecifier varName (Equals re)?                                                                              # nreRegDeclaration
+
+    |   C11AtomicFence LPar openCLMo RPar                                                                               # nreC11Fence
     ;
 
-localValue
-    :   Load mo scope register Comma value
+variableList
+    :   Locations LBracket (threadVariable | varName) (Semi (threadVariable | varName))* Semi? RBracket
     ;
 
-localAdd
-    :   Add register Comma value Comma value
+boolConst returns [Boolean value]
+    :   True    {$value = true;}
+    |   False   {$value = false;}
     ;
 
-localSub
-    :   Sub register Comma value Comma value
+opBool returns [BOpBin op]
+    :   AmpAmp  {$op = BOpBin.AND;}
+    |   BarBar  {$op = BOpBin.OR;}
     ;
 
-localMul
-    :   Mul register Comma value Comma value
+opCompare returns [COpBin op]
+    :   EqualsEquals    {$op = COpBin.EQ;}
+    |   NotEquals       {$op = COpBin.NEQ;}
+    |   LessEquals      {$op = COpBin.LTE;}
+    |   GreaterEquals   {$op = COpBin.GTE;}
+    |   Less            {$op = COpBin.LT;}
+    |   Greater         {$op = COpBin.GT;}
     ;
 
-localDiv
-    :   Div register Comma value Comma value
+opArith returns [IOpBin op]
+    :   Plus    {$op = IOpBin.ADD;}
+    |   Minus   {$op = IOpBin.SUB;}
+    |   Amp     {$op = IOpBin.AND;}
+    |   Bar     {$op = IOpBin.OR;}
+    |   Circ    {$op = IOpBin.XOR;}
     ;
 
-loadLocation
-    :   Load mo context scope register Comma location
+openCLMo returns [String mo]
+    :   MoRelaxed   {$mo = C11.MO_RELAXED;}
+    |   MoAcquire   {$mo = C11.MO_ACQUIRE;}
+    |   MoRelease   {$mo = C11.MO_RELEASE;}
+    |   MoAcqRel    {$mo = C11.MO_ACQUIRE_RELEASE;}
+    |   MoSeqCst    {$mo = C11.MO_SC;}
     ;
 
-atomInstruction
-    :   atomCompareExchange
-    |   atomOp
+threadVariable returns [int tid, String name]
+    :   t = threadId Colon n = varName  {$tid = $t.id; $name = $n.text;}
     ;
 
-atomCompareExchange
-    :   Atom CompareExchange register Comma location Comma location Comma value Comma mo Comma mo (Comma scope)?
-    ;
-
-atomOp
-    :   Atom mo context scope operation register Comma location Comma value
-    ;
-
-fenceInstruction
-    :   fence
-    |   barrier
-    ;
-
-fence
-    :   Fence mo context scope
-    ;
-
-barrier
-    :   Barrier mo context scope value
-    ;
-
-label
-    :   Label Colon
-    ;
-
-branchCond
-    :   cond value Comma value Comma Label
-    ;
-
-jump
-    :   Goto Label
-    ;
-
-value
+initConstantValue
     :   constant
-    |   register
-    |   location
     ;
 
-location
-    :   Identifier
+initArray
+    :   LBrace arrayElement* (Comma arrayElement)* RBrace
     ;
 
-register
-    :   Register
+arrayElement
+    :   constant
+    |   Ast? (Amp? varName | LPar Amp? varName RPar)
     ;
 
-assertionValue
-    :   location
-    |   threadId Colon register
-    |   constant
+cast
+    :   LPar typeSpecifier Ast* RPar
     ;
 
-scope returns [String content]
-    :   Period WG {$content = "WG";}
-    |   Period DEV {$content = "DEV";}
-    |   Period ALL {$content = "ALL";}
+pointerTypeSpecifier
+    :   (Volatile)? basicTypeSpecifier Ast
     ;
 
-context returns [String content]
-    :   Period GLOBAL {$content = "GLOBAL";}
-    |   Period LOCAL {$content = "LOCAL";}
+typeSpecifier
+    :   (Volatile)? basicTypeSpecifier Ast*
     ;
 
-wgID returns [int id]
-    :   t = DigitSequence {$id = Integer.parseInt($t.text);}
+basicTypeSpecifier
+    :   Int
+    |   AtomicInt
+    |   IntPtr
+    |   Char
     ;
 
-dvID returns [int id]
-    :   t = DigitSequence {$id = Integer.parseInt($t.text);}
+varName
+    :   Underscore* Identifier (Underscore (Identifier | DigitSequence)*)*
     ;
 
-mo returns [String content]
-    :   Period Weak {$content = "WEAK";}
-    |   Period Relaxed {$content = "RELAXED";}
-    |   Period Release {$content = "REL";}
-    |   Period Acquire {$content = "ACQ";}
-    |   Period SC {$content = "SC";}
+// Allowed outside of thread body (otherwise might conflict with pointer cast)
+comment
+    :   LPar Ast .*? Ast RPar
     ;
 
-operation locals [IOpBin op]
-    :   Period Add {$op = IOpBin.ADD;}
-    |   Period Sub {$op = IOpBin.SUB;}
-    |   Period Mul {$op = IOpBin.MUL;}
-    |   Period Div {$op = IOpBin.DIV;}
-    |   Period And {$op = IOpBin.AND;}
-    |   Period Or {$op = IOpBin.OR;}
-    |   Period Xor {$op = IOpBin.XOR;}
+MoRelaxed
+    :   'memory_order_relaxed'
     ;
 
-cond returns [COpBin op]
-    :   Beq {$op = COpBin.EQ;}
-    |   Bne {$op = COpBin.NEQ;}
-    |   Bge {$op = COpBin.GTE;}
-    |   Ble {$op = COpBin.LTE;}
-    |   Bgt {$op = COpBin.GT;}
-    |   Blt {$op = COpBin.LT;}
+MoAcquire
+    :   'memory_order_acquire'
+    ;
+
+MoRelease
+    :   'memory_order_release'
+    ;
+
+MoAcqRel
+    :   'memory_order_acq_rel'
+    ;
+
+MoSeqCst
+    :   'memory_order_seq_cst'
     ;
 
 Locations
     :   'locations'
     ;
 
-Register
-    :   'r' DigitSequence
+If
+    :   'if'
     ;
 
-Label
-    :   'LC' DigitSequence
+Else
+    :   'else'
     ;
 
-CompareExchange
-    :   'cmpxchg'
+While
+    :   'while'
     ;
 
-Load            :   'ld';
-Store           :   'st';
-Atom            :   'atom';
-Fence           :   'fence';
-Barrier         :   'bar';
+True
+    :   'true'
+    ;
 
-MemoryBarrier   :   'membar';
-ControlBarrier  :   'cbar';
+False
+    :   'false'
+    ;
 
-WI              :   'wi';
-WG              :   'wg';
-DEV             :   'dev';
-ALL             :   'all';
+Volatile
+    :   'volatile'
+    ;
 
-GLOBAL          :   'global';
-LOCAL           :   'local';
+AtomicInt
+    :   'atomic_int'
+    ;
 
-Weak            :   'weak';
-Relaxed         :   'relaxed';
-Acquire         :   'acq';
-Release         :   'rel';
-SC              :   'sc';
+Int
+    :   'int'
+    ;
 
-Beq             :   'beq';
-Bne             :   'bne';
-Blt             :   'blt';
-Bgt             :   'bgt';
-Ble             :   'ble';
-Bge             :   'bge';
+IntPtr
+    :   'intptr_t'
+    ;
 
-Add             :   'add';
-Sub             :   'sub';
-Mul             :   'mul';
-Div             :   'div';
-And             :   'and';
-Or              :   'or';
-Xor             :   'xor';
+Char
+    :   'char'
+    ;
 
-Goto            :   'goto';
+AmpAmp
+    :   '&&'
+    ;
+
+BarBar
+    :   '||'
+    ;
 
 LitmusLanguage
     :   'OpenCL'
+    ;
+
+AssertionNot
+    :   Tilde
+    |   'not'
+    ;
+
+BlockComment
+    :   '/*' .*? '*/'
+        -> channel(HIDDEN)
+    ;
+
+LineComment
+    :   '//' .*? Newline
+        -> channel(HIDDEN)
     ;
