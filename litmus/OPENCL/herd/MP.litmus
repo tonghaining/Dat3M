@@ -1,15 +1,25 @@
-OpenCL MP
-"MP_rlx_1FG-sc-all_rlx_xaG_yaG_P0_P1"
-"https://github.com/herd/legacy/blob/master/herdtools/herd/testsuite/OpenCLTests/MP/MP_rlx_1FG-sc-all_rlx_xaG_yaG_P0_P1.litmus"
+OpenCL MP_rlx_1FG-sc-all_rlx_xaG_yaG_P0_P1
+
+(*
+ * https://github.com/herd/legacy/blob/master/herdtools/herd/testsuite/OpenCLTests/MP/MP_rlx_1FG-sc-all_rlx_xaG_yaG_P0_P1.litmus
+ *)
+
 {
-x=0;
-y=0;
-P1:r0=0;
-P1:r1=0;
+  [x]=0;
+  [y]=0;
 }
- P0@wg 0,dev 0                    | P1@wg 1,dev 0                     ;
- st.weak x, 1                     | ld.relaxed.global r0, y           ;
- fence.sc.all                     | ld.weak r1, x                     ;
- st.relaxed.global y, 1           |                                   ;
-exists
-(P1:r0 == 1 /\ P1:r1 == 0)
+
+P0 (global atomic_int* x, global atomic_int* y) {
+  *x = 1;
+  atomic_work_item_fence(CLK_GLOBAL_MEM_FENCE,memory_order_seq_cst,memory_scope_all_svm_devices);
+  atomic_store_explicit(y,1,memory_order_relaxed);
+}
+
+P1 (global atomic_int* x, global atomic_int* y) {
+  int r0 = atomic_load_explicit(y,memory_order_relaxed);
+  int r1 = *x;
+}
+
+scopeTree
+(device (work_group P0 P1))
+exists (1:r0=1 /\ 1:r1=0)

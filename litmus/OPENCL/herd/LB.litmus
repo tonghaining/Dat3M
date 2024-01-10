@@ -1,14 +1,26 @@
 OpenCL LB
-"PodWW Rfe PodRR Fre"
-"https://github.com/herd/legacy/blob/master/herdtools/herd/testsuite/OpenCLTests/LB/LB.litmus"
+
+(*
+ * PodWW Rfe PodRR Fre
+ * https://github.com/herd/legacy/blob/master/herdtools/herd/testsuite/OpenCLTests/LB/LB.litmus
+ *)
+
 {
-x=0;
-y=0;
-P0:r0=0;
-P1:r1=0;
+[x] = 0;
+[y] = 0;
 }
- P0@wg 0,dev 0                    | P1@wg 1,dev 0                     ;
- ld.weak r0, x                    | ld.weak r1, y                     ;
- st.weak y, 1                     | st.weak x, 1                      ;
-exists
-(P0:r0 == 1 /\ P1:r1 == 1)
+
+P0 (volatile int* y, volatile int* x) {
+ int r0 = *x;
+ *y = 1;
+}
+
+P1 (volatile int* y, volatile int* x) {
+ int r1 = *y;
+ *x = 1;
+}
+
+scopeTree
+(device (work_group P0) (work_group P1))
+
+exists (0:r0=1 /\ 1:r1=1)

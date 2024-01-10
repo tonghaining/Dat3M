@@ -1,16 +1,32 @@
 OpenCL ISA2
-"PodWW Rfe PodRR Fre"
-"https://github.com/herd/legacy/blob/master/herdtools/herd/testsuite/OpenCLTests/ISA2/ISA2.litmus"
+
+(*
+ * PodWW Rfe PodRR Fre
+ * https://github.com/herd/legacy/blob/master/herdtools/herd/testsuite/OpenCLTests/ISA2/ISA2.litmus
+ *)
+
 {
-x=0;
-y=0;
-z=0;
-P1:r0=0;
-P2:r1=0;
-P2:r2=0;
+[x] = 0;
+[y] = 0;
+[z] = 0;
 }
- P0@wg 0,dev 0              | P1@wg 1,dev 0           | P2@wg 2,dev 0               ;
- st.weak x, 1               | ld.weak r0, y           | ld.weak r1, z               ;
- st.weak y, 1               | st.weak z, 1            | ld.weak r2, x               ;
-exists
-(P1:r0 == 1 /\ P2:r1 == 1 /\ P2:r2 == 0)
+
+P0 (volatile int* y, volatile int* x) {
+ *x = 1;
+ *y = 1;
+}
+
+P1 (volatile int* y, volatile int* z) {
+ int r0 = *y;
+ *z = 1;
+}
+
+P2 (volatile int* z, volatile int* x) {
+ int r1 = *z;
+ int r2 = *x;
+}
+
+scopeTree
+(device (work_group P0) (work_group P1) (work_group P2))
+
+exists (1:r0=1 /\ 2:r1=1 /\ 2:r2=0)
