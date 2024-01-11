@@ -170,7 +170,9 @@ public class VisitorLitmusC extends LitmusCBaseVisitor<Object> {
         scope = currentThread = ctx.threadId().id;
         // Declarations in the preamble may have created the thread already
         programBuilder.getOrNewThread(currentThread);
-        ctx.threadScope().accept(this);
+        if (ctx.threadScope() != null) {
+            ctx.threadScope().accept(this);
+        }
         visitThreadArguments(ctx.threadArguments());
 
         for(LitmusCParser.ExpressionContext expressionContext : ctx.expression())
