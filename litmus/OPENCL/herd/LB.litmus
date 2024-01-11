@@ -10,17 +10,14 @@ OpenCL LB
 [y] = 0;
 }
 
-P0 (volatile int* y, volatile int* x) {
+P0@wg0, dev0 (volatile int* y, volatile int* x) {
  int r0 = *x;
  *y = 1;
 }
 
-P1 (volatile int* y, volatile int* x) {
+P1@wg1, dev0 (volatile int* y, volatile int* x) {
  int r1 = *y;
  *x = 1;
 }
-
-scopeTree
-(device (work_group P0) (work_group P1))
 
 exists (0:r0=1 /\ 1:r1=1)

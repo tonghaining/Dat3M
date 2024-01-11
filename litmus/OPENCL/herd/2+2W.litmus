@@ -9,16 +9,14 @@ OpenCL 2+2W_xaG_yaG_sc--sc_sc--sc_0||1
   [y]=0;
 }
 
-P0 (global atomic_int* x, global atomic_int* y) {
+P0@wg0, dev0 (global atomic_int* x, global atomic_int* y) {
   atomic_store(x,2);
   atomic_store(y,1);
 }
 
-P1 (global atomic_int* x, global atomic_int* y) {
+P1@wg1, dev0 (global atomic_int* x, global atomic_int* y) {
   atomic_store(y,2);
   atomic_store(x,1);
 }
 
-scopeTree
-(device (work_group P0) (work_group P1))
 exists ([x]=1 /\ [y]=0)
