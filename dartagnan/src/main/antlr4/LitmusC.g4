@@ -16,11 +16,11 @@ variableDeclaratorList
     ;
 
 globalDeclarator
-    :   typeSpecifier? LBracket? varName RBracket? (Equals initConstantValue)?                                                          # globalDeclaratorLocation
-    |   typeSpecifier? t = threadId Colon n = varName (Equals initConstantValue)?                                                       # globalDeclaratorRegister
-    |   typeSpecifier? varName (Equals Ast? (Amp? varName | LPar Amp? varName RPar))?                                                   # globalDeclaratorLocationLocation
-    |   typeSpecifier? t = threadId Colon n = varName (Equals Ast? (Amp? varName | LPar Amp? varName RPar))?                            # globalDeclaratorRegisterLocation
-    |   typeSpecifier? varName LBracket DigitSequence? RBracket (Equals initArray)?                                                     # globalDeclaratorArray
+    :   typeSpecifier? LBracket? varName RBracket? (Equals initConstantValue)?                                                              # globalDeclaratorLocation
+    |   typeSpecifier? t = threadId Colon n = varName (Equals initConstantValue)?                                                           # globalDeclaratorRegister
+    |   typeSpecifier? varName (Equals Ast? (Amp? varName | LPar Amp? varName RPar))?                                                       # globalDeclaratorLocationLocation
+    |   typeSpecifier? t = threadId Colon n = varName (Equals Ast? (Amp? varName | LPar Amp? varName RPar))?                                # globalDeclaratorRegisterLocation
+    |   typeSpecifier? varName LBracket DigitSequence? RBracket (Equals initArray)?                                                         # globalDeclaratorArray
     ;
 
 program
@@ -32,7 +32,7 @@ thread
     ;
 
 threadScope
-    :   OpenCLWG scopeID Comma OpenCLDEV scopeID                                                                                        # OpenCLThreadScope
+    :   OpenCLWG scopeID Comma OpenCLDEV scopeID                                                                                            # OpenCLThreadScope
     ;
 
 threadArguments
@@ -76,18 +76,18 @@ re locals [IOpBin op, String mo]
         | AtomicDecReturn        LPar address = re RPar {$op = IOpBin.SUB; $mo = Linux.MO_MB;}
         | AtomicDecReturnRelaxed LPar address = re RPar {$op = IOpBin.SUB; $mo = Linux.MO_RELAXED;}
         | AtomicDecReturnAcquire LPar address = re RPar {$op = IOpBin.SUB; $mo = Linux.MO_ACQUIRE;}
-        | AtomicDecReturnRelease LPar address = re RPar {$op = IOpBin.SUB; $mo = Linux.MO_RELEASE;})                                    # reAtomicOpReturn
+        | AtomicDecReturnRelease LPar address = re RPar {$op = IOpBin.SUB; $mo = Linux.MO_RELEASE;})                                        # reAtomicOpReturn
 
-    |   ( C11AtomicAddExplicit LPar address = re Comma value = re Comma c11Mo RPar {$op = IOpBin.ADD;}
-        | C11AtomicAdd         LPar address = re Comma value = re             RPar {$op = IOpBin.ADD;}
-        | C11AtomicSubExplicit LPar address = re Comma value = re Comma c11Mo RPar {$op = IOpBin.SUB;}
-        | C11AtomicSub         LPar address = re Comma value = re             RPar {$op = IOpBin.SUB;}
-        | C11AtomicOrExplicit  LPar address = re Comma value = re Comma c11Mo RPar {$op = IOpBin.OR;}
-        | C11AtomicOr          LPar address = re Comma value = re             RPar {$op = IOpBin.OR;}
-        | C11AtomicXorExplicit LPar address = re Comma value = re Comma c11Mo RPar {$op = IOpBin.XOR;}
-        | C11AtomicXor         LPar address = re Comma value = re             RPar {$op = IOpBin.XOR;}
-        | C11AtomicAndExplicit LPar address = re Comma value = re Comma c11Mo RPar {$op = IOpBin.AND;}
-        | C11AtomicAnd         LPar address = re Comma value = re             RPar {$op = IOpBin.AND;})                                 # C11AtomicOp
+    |   ( C11AtomicAddExplicit LPar address = re Comma value = re Comma c11Mo (Comma openCLScope)? RPar {$op = IOpBin.ADD;}
+        | C11AtomicAdd         LPar address = re Comma value = re                                  RPar {$op = IOpBin.ADD;}
+        | C11AtomicSubExplicit LPar address = re Comma value = re Comma c11Mo (Comma openCLScope)? RPar {$op = IOpBin.SUB;}
+        | C11AtomicSub         LPar address = re Comma value = re                                  RPar {$op = IOpBin.SUB;}
+        | C11AtomicOrExplicit  LPar address = re Comma value = re Comma c11Mo (Comma openCLScope)? RPar {$op = IOpBin.OR;}
+        | C11AtomicOr          LPar address = re Comma value = re                                  RPar {$op = IOpBin.OR;}
+        | C11AtomicXorExplicit LPar address = re Comma value = re Comma c11Mo (Comma openCLScope)? RPar {$op = IOpBin.XOR;}
+        | C11AtomicXor         LPar address = re Comma value = re                                  RPar {$op = IOpBin.XOR;}
+        | C11AtomicAndExplicit LPar address = re Comma value = re Comma c11Mo (Comma openCLScope)? RPar {$op = IOpBin.AND;}
+        | C11AtomicAnd         LPar address = re Comma value = re                                  RPar {$op = IOpBin.AND;})                # C11AtomicOp
 
     |   ( AtomicFetchAdd        LPar value = re Comma address = re RPar {$op = IOpBin.ADD; $mo = Linux.MO_MB;}
         | AtomicFetchAddRelaxed LPar value = re Comma address = re RPar {$op = IOpBin.ADD; $mo = Linux.MO_RELAXED;}
@@ -104,72 +104,72 @@ re locals [IOpBin op, String mo]
         | AtomicFetchDec        LPar address = re RPar {$op = IOpBin.SUB; $mo = Linux.MO_MB;}
         | AtomicFetchDecRelaxed LPar address = re RPar {$op = IOpBin.SUB; $mo = Linux.MO_RELAXED;}
         | AtomicFetchDecAcquire LPar address = re RPar {$op = IOpBin.SUB; $mo = Linux.MO_ACQUIRE;}
-        | AtomicFetchDecRelease LPar address = re RPar {$op = IOpBin.SUB; $mo = Linux.MO_RELEASE;})                                     # reAtomicFetchOp
+        | AtomicFetchDecRelease LPar address = re RPar {$op = IOpBin.SUB; $mo = Linux.MO_RELEASE;})                                         # reAtomicFetchOp
 
     |   ( AtomicXchg        LPar address = re Comma value = re RPar {$mo = Linux.MO_MB;}
         | AtomicXchgRelaxed LPar address = re Comma value = re RPar {$mo = Linux.MO_RELAXED;}
         | AtomicXchgAcquire LPar address = re Comma value = re RPar {$mo = Linux.MO_ACQUIRE;}
-        | AtomicXchgRelease LPar address = re Comma value = re RPar {$mo = Linux.MO_RELEASE;})                                          # reXchg
+        | AtomicXchgRelease LPar address = re Comma value = re RPar {$mo = Linux.MO_RELEASE;})                                              # reXchg
 
     |   ( Xchg        LPar address = re Comma value = re RPar {$mo = Linux.MO_MB;}
         | XchgRelaxed LPar address = re Comma value = re RPar {$mo = Linux.MO_RELAXED;}
         | XchgAcquire LPar address = re Comma value = re RPar {$mo = Linux.MO_ACQUIRE;}
-        | XchgRelease LPar address = re Comma value = re RPar {$mo = Linux.MO_RELEASE;})                                                # reXchg
+        | XchgRelease LPar address = re Comma value = re RPar {$mo = Linux.MO_RELEASE;})                                                    # reXchg
 
     |   ( AtomicCmpXchg        LPar address = re Comma cmp = re Comma value = re RPar {$mo = Linux.MO_MB;}
         | AtomicCmpXchgRelaxed LPar address = re Comma cmp = re Comma value = re RPar {$mo = Linux.MO_RELAXED;}
         | AtomicCmpXchgAcquire LPar address = re Comma cmp = re Comma value = re RPar {$mo = Linux.MO_ACQUIRE;}
-        | AtomicCmpXchgRelease LPar address = re Comma cmp = re Comma value = re RPar {$mo = Linux.MO_RELEASE;})                        # reCmpXchg
+        | AtomicCmpXchgRelease LPar address = re Comma cmp = re Comma value = re RPar {$mo = Linux.MO_RELEASE;})                            # reCmpXchg
 
-    |   C11AtomicSCASExplicit LPar address = re Comma expectedAdd = re Comma value = re Comma c11Mo Comma c11Mo openCLScope? RPar       # reC11SCmpXchgExplicit
-    |   C11AtomicSCAS         LPar address = re Comma expectedAdd = re Comma value = re RPar                                            # reC11SCmpXchg
-    |   C11AtomicWCASExplicit LPar address = re Comma expectedAdd = re Comma value = re Comma c11Mo Comma c11Mo openCLScope? RPar       # reC11WCmpXchgExplicit
-    |   C11AtomicWCAS         LPar address = re Comma expectedAdd = re Comma value = re RPar                                            # reC11WCmpXchg
+    |   C11AtomicSCASExplicit LPar address = re Comma expectedAdd = re Comma value = re Comma c11Mo Comma c11Mo (Comma openCLScope)? RPar   # reC11SCmpXchgExplicit
+    |   C11AtomicSCAS         LPar address = re Comma expectedAdd = re Comma value = re RPar                                                # reC11SCmpXchg
+    |   C11AtomicWCASExplicit LPar address = re Comma expectedAdd = re Comma value = re Comma c11Mo Comma c11Mo (Comma openCLScope)? RPar   # reC11WCmpXchgExplicit
+    |   C11AtomicWCAS         LPar address = re Comma expectedAdd = re Comma value = re RPar                                                # reC11WCmpXchg
 
     |   ( CmpXchg        LPar address = re Comma cmp = re Comma value = re RPar {$mo = Linux.MO_MB;}
         | CmpXchgRelaxed LPar address = re Comma cmp = re Comma value = re RPar {$mo = Linux.MO_RELAXED;}
         | CmpXchgAcquire LPar address = re Comma cmp = re Comma value = re RPar {$mo = Linux.MO_ACQUIRE;}
-        | CmpXchgRelease LPar address = re Comma cmp = re Comma value = re RPar {$mo = Linux.MO_RELEASE;})                              # reCmpXchg
+        | CmpXchgRelease LPar address = re Comma cmp = re Comma value = re RPar {$mo = Linux.MO_RELEASE;})                                  # reCmpXchg
 
     |   ( AtomicSubAndTest LPar value = re Comma address = re RPar {$op = IOpBin.SUB; $mo = Linux.MO_MB;}
         | AtomicIncAndTest LPar address = re RPar {$op = IOpBin.ADD; $mo = Linux.MO_MB;}
-        | AtomicDecAndTest LPar address = re RPar {$op = IOpBin.SUB; $mo = Linux.MO_MB;})                                               # reAtomicOpAndTest
+        | AtomicDecAndTest LPar address = re RPar {$op = IOpBin.SUB; $mo = Linux.MO_MB;})                                                   # reAtomicOpAndTest
 
-    |   AtomicAddUnless LPar address = re Comma value = re Comma cmp = re RPar                                                          # reAtomicAddUnless
+    |   AtomicAddUnless LPar address = re Comma value = re Comma cmp = re RPar                                                              # reAtomicAddUnless
 
-    |   C11AtomicLoadExplicit    LPar address = re Comma c11Mo RPar                                                                     # reC11LoadExplicit
-    |   C11AtomicLoad            LPar address = re RPar                                                                                 # reC11Load
+    |   C11AtomicLoadExplicit    LPar address = re Comma c11Mo (Comma openCLScope)? RPar                                                    # reC11LoadExplicit
+    |   C11AtomicLoad            LPar address = re RPar                                                                                     # reC11Load
 
     |   ( AtomicReadAcquire LPar address = re RPar {$mo = Linux.MO_ACQUIRE;}
         | AtomicRead        LPar address = re RPar {$mo = Linux.MO_ONCE;}
         | RcuDereference    LPar Ast? address = re RPar {$mo = Linux.MO_ONCE;}
         | SrcuReadLock      LPar address = re RPar {$mo = Linux.SRCU_LOCK;}
         | SrcuDownRead      LPar address = re RPar {$mo = Linux.SRCU_LOCK;}
-        | SmpLoadAcquire    LPar address = re RPar {$mo = Linux.MO_ACQUIRE;})                                                           # reLoad
+        | SmpLoadAcquire    LPar address = re RPar {$mo = Linux.MO_ACQUIRE;})                                                               # reLoad
 
-    |   ReadOnce LPar Ast address = re RPar {$mo = Linux.MO_ONCE;}                                                                      # reReadOnce
-    |   Ast address = re {$mo = "NA";}                                                                                                  # reReadNa
+    |   ReadOnce LPar Ast address = re RPar {$mo = Linux.MO_ONCE;}                                                                          # reReadOnce
+    |   Ast address = re {$mo = "NA";}                                                                                                      # reReadNa
 
-//    |   SpinTrylock LPar address = re RPar                                                                                            # reSpinTryLock
-//    |   SpiIsLocked LPar address = re RPar                                                                                            # reSpinIsLocked
+//    |   SpinTrylock LPar address = re RPar                                                                                                # reSpinTryLock
+//    |   SpiIsLocked LPar address = re RPar                                                                                                # reSpinIsLocked
 
-    |   boolConst                                                                                                                       # reBoolConst
-    |   Excl re                                                                                                                         # reOpBoolNot
-    |   re opBool re                                                                                                                    # reOpBool
-    |   re opCompare re                                                                                                                 # reOpCompare
-    |   re opArith re                                                                                                                   # reOpArith
+    |   boolConst                                                                                                                           # reBoolConst
+    |   Excl re                                                                                                                             # reOpBoolNot
+    |   re opBool re                                                                                                                        # reOpBool
+    |   re opCompare re                                                                                                                     # reOpCompare
+    |   re opArith re                                                                                                                       # reOpArith
 
-    |   LPar re RPar                                                                                                                    # reParenthesis
-    |   cast re                                                                                                                         # reCast
-    |   varName                                                                                                                         # reVarName
-    |   constant                                                                                                                        # reConst
+    |   LPar re RPar                                                                                                                        # reParenthesis
+    |   cast re                                                                                                                             # reCast
+    |   varName                                                                                                                             # reVarName
+    |   constant                                                                                                                            # reConst
     ;
 
 nre locals [IOpBin op, String mo, String name]
     :   ( AtomicAdd LPar value = re Comma address = re RPar {$op = IOpBin.ADD;}
         | AtomicSub LPar value = re Comma address = re RPar {$op = IOpBin.SUB;}
         | AtomicInc LPar address = re RPar {$op = IOpBin.ADD;}
-        | AtomicDec LPar address = re RPar {$op = IOpBin.SUB;})                                                                         # nreAtomicOp
+        | AtomicDec LPar address = re RPar {$op = IOpBin.SUB;})                                                                             # nreAtomicOp
 
     |   ( AtomicSet         LPar address = re Comma value = re RPar {$mo = Linux.MO_ONCE;}
         | AtomicSetRelease  LPar address = re Comma value = re RPar {$mo = Linux.MO_RELEASE;}
@@ -177,21 +177,21 @@ nre locals [IOpBin op, String mo, String name]
         | SmpStoreMb        LPar address = re Comma value = re RPar {$mo = Linux.MO_MB;}
         | SrcuReadUnlock    LPar address = re Comma value = re RPar {$mo = Linux.SRCU_UNLOCK;}
         | SrcuUpRead        LPar address = re Comma value = re RPar {$mo = Linux.SRCU_UNLOCK;}
-        | RcuAssignPointer  LPar Ast? address = re Comma value = re RPar {$mo = Linux.MO_RELEASE;})                                     # nreStore
+        | RcuAssignPointer  LPar Ast? address = re Comma value = re RPar {$mo = Linux.MO_RELEASE;})                                         # nreStore
 
-    |   WriteOnce LPar Ast address = re Comma value = re RPar {$mo = Linux.MO_ONCE;}                                                    # nreWriteOnce
+    |   WriteOnce LPar Ast address = re Comma value = re RPar {$mo = Linux.MO_ONCE;}                                                        # nreWriteOnce
 
-    |   C11AtomicStoreExplicit    LPar address = re  Comma value = re Comma c11Mo RPar                                                  # nreC11StoreExplicit
-    |   C11AtomicStore            LPar address = re  Comma value = re  RPar                                                             # nreC11Store
+    |   C11AtomicStoreExplicit    LPar address = re  Comma value = re Comma c11Mo (Comma openCLScope)? RPar                                 # nreC11StoreExplicit
+    |   C11AtomicStore            LPar address = re  Comma value = re  RPar                                                                 # nreC11Store
 
-    |   Ast? varName Equals re                                                                                                          # nreAssignment
-    |   typeSpecifier varName (Equals re)?                                                                                              # nreRegDeclaration
+    |   Ast? varName Equals re                                                                                                              # nreAssignment
+    |   typeSpecifier varName (Equals re)?                                                                                                  # nreRegDeclaration
 
-    |   SpinLock LPar address = re RPar                                                                                                 # nreSpinLock
-    |   SpinUnlock LPar address = re RPar                                                                                               # nreSpinUnlock
-//    |   SpinUnlockWait LPar address = re RPar                                                                                         # nreSpinUnlockWait
+    |   SpinLock LPar address = re RPar                                                                                                     # nreSpinLock
+    |   SpinUnlock LPar address = re RPar                                                                                                   # nreSpinUnlock
+//    |   SpinUnlockWait LPar address = re RPar                                                                                             # nreSpinUnlockWait
 
-    |   SrcuSync LPar address = re RPar                                                                                                 # nreSrcuSync
+    |   SrcuSync LPar address = re RPar                                                                                                     # nreSrcuSync
 
     |   ( FenceSmpMb LPar RPar {$name = Linux.MO_MB;}
         | FenceSmpWMb LPar RPar {$name = Linux.MO_WMB;}
@@ -203,11 +203,11 @@ nre locals [IOpBin op, String mo, String name]
         | FenceSmpMbAfterSrcuReadUnlock LPar RPar {$name = Linux.AFTER_SRCU_READ_UNLOCK;}
         | RcuReadLock LPar RPar {$name = Linux.RCU_LOCK;}
         | RcuReadUnlock LPar RPar {$name = Linux.RCU_UNLOCK;}
-        | (RcuSync | RcuSyncExpedited) LPar RPar {$name = Linux.RCU_SYNC;})                                                             # nreFence
+        | (RcuSync | RcuSyncExpedited) LPar RPar {$name = Linux.RCU_SYNC;})                                                                 # nreFence
 
-    |   C11AtomicFence LPar c11Mo RPar                                                                                                  # nreC11Fence
+    |   C11AtomicFence LPar c11Mo RPar                                                                                                      # nreC11Fence
 
-    |   OpenCLAtomicFenceWI LPar openCLFenceFlag Comma c11Mo Comma openCLScope RPar                                                     # nreOpenCLFence
+    |   OpenCLAtomicFenceWI LPar openCLFenceFlag Comma c11Mo Comma openCLScope RPar                                                         # nreOpenCLFence
 
     ;
 
