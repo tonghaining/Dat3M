@@ -267,7 +267,10 @@ public class ProgramBuilder {
     }
 
     // ----------------------------------------------------------------------------------------------------------------
-    // PTX
+    // GPU
+    public void setThreadScopeHierarchy(int tid, ScopeHierarchy scopeHierarchy) {
+        getOrNewThread(tid).setScopeHierarchy(scopeHierarchy);
+    }
 
     public void newScopedThread(Arch arch, String name, int id, int ...scopeIds) {
         if(id2FunctionsMap.containsKey(id)) {
