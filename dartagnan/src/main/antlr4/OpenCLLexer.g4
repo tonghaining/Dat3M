@@ -1,7 +1,7 @@
 lexer grammar OpenCLLexer;
 
-OpenCLWG                      :   'WG';
-OpenCLDEV                     :   'DEV';
+OpenCLWG                      :   'wg';
+OpenCLDEV                     :   'dev';
 
 OpenCLAtomicFenceWI           :   'atomic_work_item_fence';
 

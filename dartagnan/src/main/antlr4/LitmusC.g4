@@ -79,10 +79,15 @@ re locals [IOpBin op, String mo]
         | AtomicDecReturnRelease LPar address = re RPar {$op = IOpBin.SUB; $mo = Linux.MO_RELEASE;})                                    # reAtomicOpReturn
 
     |   ( C11AtomicAddExplicit LPar address = re Comma value = re Comma c11Mo RPar {$op = IOpBin.ADD;}
+        | C11AtomicAdd         LPar address = re Comma value = re             RPar {$op = IOpBin.ADD;}
         | C11AtomicSubExplicit LPar address = re Comma value = re Comma c11Mo RPar {$op = IOpBin.SUB;}
-        | C11AtomicOrExplicit LPar address = re Comma value = re Comma c11Mo RPar {$op = IOpBin.OR;}
+        | C11AtomicSub         LPar address = re Comma value = re             RPar {$op = IOpBin.SUB;}
+        | C11AtomicOrExplicit  LPar address = re Comma value = re Comma c11Mo RPar {$op = IOpBin.OR;}
+        | C11AtomicOr          LPar address = re Comma value = re             RPar {$op = IOpBin.OR;}
         | C11AtomicXorExplicit LPar address = re Comma value = re Comma c11Mo RPar {$op = IOpBin.XOR;}
-        | C11AtomicAndExplicit LPar address = re Comma value = re Comma c11Mo RPar {$op = IOpBin.AND;})                                 # C11AtomicOp
+        | C11AtomicXor         LPar address = re Comma value = re             RPar {$op = IOpBin.XOR;}
+        | C11AtomicAndExplicit LPar address = re Comma value = re Comma c11Mo RPar {$op = IOpBin.AND;}
+        | C11AtomicAnd         LPar address = re Comma value = re             RPar {$op = IOpBin.AND;})                                 # C11AtomicOp
 
     |   ( AtomicFetchAdd        LPar value = re Comma address = re RPar {$op = IOpBin.ADD; $mo = Linux.MO_MB;}
         | AtomicFetchAddRelaxed LPar value = re Comma address = re RPar {$op = IOpBin.ADD; $mo = Linux.MO_RELAXED;}
