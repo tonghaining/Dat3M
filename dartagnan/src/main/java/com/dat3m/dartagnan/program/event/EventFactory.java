@@ -20,8 +20,6 @@ import com.dat3m.dartagnan.program.event.core.FenceWithId;
 import com.dat3m.dartagnan.program.event.arch.ptx.PTXRedOp;
 import com.dat3m.dartagnan.program.event.arch.tso.TSOXchg;
 import com.dat3m.dartagnan.program.event.arch.vulkan.VulkanRMW;
-import com.dat3m.dartagnan.program.event.arch.opencl.OpenCLAtomCAX;
-import com.dat3m.dartagnan.program.event.arch.opencl.OpenCLAtomOp;
 import com.dat3m.dartagnan.program.event.core.*;
 import com.dat3m.dartagnan.program.event.core.annotations.FunCallMarker;
 import com.dat3m.dartagnan.program.event.core.annotations.FunReturnMarker;
@@ -759,15 +757,7 @@ public class EventFactory {
     public static class OpenCL {
         private OpenCL() {}
 
-        public static OpenCLAtomCAX newAtom(Register register, Expression object, Expression expected, Expression desired,
-                                            String successMo, String failureMo, String scope) {
-            return new OpenCLAtomCAX(register, object, expected, desired, successMo, failureMo, scope);
-        }
-
-        public static OpenCLAtomOp newAtomOp(Expression address, Register register, Expression value,
-                                             IOpBin op, String mo, String scope, String context) {
-            return new OpenCLAtomOp(register, address, op, value, mo, scope, context);
-        }
+        // TODO: Check if new events needed
     }
 
 }

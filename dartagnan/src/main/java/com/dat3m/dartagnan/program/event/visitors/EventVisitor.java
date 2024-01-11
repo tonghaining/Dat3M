@@ -2,8 +2,6 @@ package com.dat3m.dartagnan.program.event.visitors;
 
 import com.dat3m.dartagnan.program.event.arch.StoreExclusive;
 import com.dat3m.dartagnan.program.event.arch.lisa.LISARMW;
-import com.dat3m.dartagnan.program.event.arch.opencl.OpenCLAtomCAX;
-import com.dat3m.dartagnan.program.event.arch.opencl.OpenCLAtomOp;
 import com.dat3m.dartagnan.program.event.arch.ptx.*;
 import com.dat3m.dartagnan.program.event.arch.vulkan.*;
 import com.dat3m.dartagnan.program.event.arch.tso.TSOXchg;
@@ -107,6 +105,4 @@ public interface EventVisitor<T> {
     default T visitPtxAtomExch(PTXAtomExch e) { return visitMemEvent(e); }
     default T visitVulkanRMW(VulkanRMW e) { return visitMemEvent(e); }
     default T visitVulkanRMWOp(VulkanRMWOp e) { return visitMemEvent(e); }
-    default T visitOpenCLRMW(OpenCLAtomCAX e) { return visitMemEvent(e); }
-    default T visitOpenCLRMWOp(OpenCLAtomOp e) { return visitMemEvent(e); }
 }

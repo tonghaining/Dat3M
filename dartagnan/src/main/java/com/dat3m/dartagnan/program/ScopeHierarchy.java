@@ -33,9 +33,9 @@ public class ScopeHierarchy{
 
     public static ScopeHierarchy ScopeHierarchyForOpenCL(int dev, int wg) {
         ScopeHierarchy scopeHierarchy = new ScopeHierarchy();
-        scopeHierarchy.scopeIds.put(Tag.OpenCL.ALL_SVM_DEVICES, 0);
-        scopeHierarchy.scopeIds.put(Tag.OpenCL.DEVICE, dev);
-        scopeHierarchy.scopeIds.put(Tag.OpenCL.WORK_GROUP, wg);
+        scopeHierarchy.scopeIds.put(Tag.OpenCL.MEMORY_SCOPE_ALL, 0);
+        scopeHierarchy.scopeIds.put(Tag.OpenCL.MEMORY_SCOPE_DEV, dev);
+        scopeHierarchy.scopeIds.put(Tag.OpenCL.MEMORY_SCOPE_WG, wg);
         return scopeHierarchy;
     }
 

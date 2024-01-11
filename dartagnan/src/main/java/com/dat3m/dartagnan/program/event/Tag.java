@@ -361,26 +361,18 @@ public final class Tag {
     // ========================================= OpenCL ============================================
     // =============================================================================================
     public static final class OpenCL {
-        // RMW
-        public static final String ATOM = "ATOM";
         // Scopes
-        public static final String WORK_ITEM = "WI";
-        public static final String WORK_GROUP = "WG";
-        public static final String DEVICE = "DEV";
-        public static final String ALL_SVM_DEVICES = "ALL";
-        // Context
-        public static final String GLOBAL = "GLOBAL";
-        public static final String LOCAL = "LOCAL";
-        // Memory orders
-        public static final String WEAK = "WEAK";
-        public static final String RLX = "RELAXED";
-        public static final String ACQ = "ACQ";
-        public static final String REL = "REL";
-        public static final String ACQ_REL = "ACQ_REL";
-        public static final String SC = "SC";
+        public static final String MEMORY_SCOPE_WI = "WI";
+        public static final String MEMORY_SCOPE_WG = "WG";
+        public static final String MEMORY_SCOPE_DEV = "DEV";
+        public static final String MEMORY_SCOPE_ALL = "ALL";
+        // Fence Flags
+        public static final String FENCE_FLAG_GLOBAL = "GLOBAL";
+        public static final String FENCE_FLAG_LOCAL = "LOCAL";
+        public static final String FENCE_FLAG_IMAGE = "IMAGE";
 
         public static List<String> getScopeTags() {
-            return List.of(WORK_GROUP, DEVICE, ALL_SVM_DEVICES);
+            return List.of(MEMORY_SCOPE_WG, MEMORY_SCOPE_DEV, MEMORY_SCOPE_ALL);
         }
     }
 
