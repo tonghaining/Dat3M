@@ -57,16 +57,17 @@ whileExpression
     ;
 
 re locals [IOpBin op, String mo]
-    :   ( C11AtomicAdd LPar address = re Comma value = re Comma openCLMo RPar {$op = IOpBin.ADD;}
-        | C11AtomicSub LPar address = re Comma value = re Comma openCLMo RPar {$op = IOpBin.SUB;}
-        | C11AtomicOr LPar address = re Comma value = re Comma openCLMo RPar {$op = IOpBin.OR;}
-        | C11AtomicXor LPar address = re Comma value = re Comma openCLMo RPar {$op = IOpBin.XOR;}
-        | C11AtomicAnd LPar address = re Comma value = re Comma openCLMo RPar {$op = IOpBin.AND;})                      # OpenCLAtomicOp
+    :   ( C11AtomicAddExplicit LPar address = re Comma value = re Comma openCLMo RPar {$op = IOpBin.ADD;}
+        | C11AtomicSubExplicit LPar address = re Comma value = re Comma openCLMo RPar {$op = IOpBin.SUB;}
+        | C11AtomicOrExplicit LPar address = re Comma value = re Comma openCLMo RPar {$op = IOpBin.OR;}
+        | C11AtomicXorExplicit LPar address = re Comma value = re Comma openCLMo RPar {$op = IOpBin.XOR;}
+        | C11AtomicAndExplicit LPar address = re Comma value = re Comma openCLMo RPar {$op = IOpBin.AND;})                      # OpenCLAtomicOp
 
-    |   C11AtomicSCAS LPar address = re Comma expectedAdd = re Comma value = re Comma openCLMo Comma openCLMo RPar      # reOpenCLSCmpXchg
-    |   C11AtomicWCAS LPar address = re Comma expectedAdd = re Comma value = re Comma openCLMo Comma openCLMo RPar      # reOpenCLWCmpXchg
+    |   C11AtomicSCASExplicit LPar address = re Comma expectedAdd = re Comma value = re Comma openCLMo Comma openCLMo RPar      # reOpenCLSCmpXchg
+    |   C11AtomicWCASExplicit LPar address = re Comma expectedAdd = re Comma value = re Comma openCLMo Comma openCLMo RPar      # reOpenCLWCmpXchg
 
-    |   C11AtomicLoad    LPar address = re Comma openCLMo RPar                                                          # reOpenCLLoad
+    |   C11AtomicLoadExplicit    LPar address = re Comma openCLMo RPar                                                  # reOpenCLLoadExplicit
+    |   C11AtomicLoad            LPar address = re                RPar                                                  # reOpenCLLoad
 
     |   boolConst                                                                                                       # reBoolConst
     |   Excl re                                                                                                         # reOpBoolNot
@@ -81,7 +82,8 @@ re locals [IOpBin op, String mo]
     ;
 
 nre locals [IOpBin op, String mo, String name]
-    :   C11AtomicStore    LPar address = re  Comma value = re Comma openCLMo RPar                                       # nreC11Store
+    :   C11AtomicStoreExplicit    LPar address = re  Comma value = re Comma openCLMo RPar                               # nreC11StoreExplicit
+    |   C11AtomicStore            LPar address = re  Comma value = re                RPar                               # nreC11Store
 
     |   Ast? varName Equals re                                                                                          # nreAssignment
     |   typeSpecifier varName (Equals re)?                                                                              # nreRegDeclaration
