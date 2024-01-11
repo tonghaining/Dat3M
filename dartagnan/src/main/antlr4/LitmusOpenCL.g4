@@ -28,7 +28,11 @@ program
     ;
 
 thread
-    :   threadId LPar threadArguments? RPar LBrace expression* RBrace
+    :   threadId At threadScope LPar threadArguments? RPar LBrace expression* RBrace
+    ;
+
+threadScope
+    :   WG scopeID Comma DEV scopeID
     ;
 
 threadArguments
@@ -170,6 +174,18 @@ varName
     :   Underscore* Identifier (Underscore (Identifier | DigitSequence)*)*
     ;
 
+scopeID returns [int id]
+    :   t = DigitSequence {$id = Integer.parseInt($t.text);}
+    ;
+
+WG
+    :   'WG'
+    ;
+
+DEV
+    :   'DEV'
+    ;
+
 // Allowed outside of thread body (otherwise might conflict with pointer cast)
 comment
     :   LPar Ast .*? Ast RPar
@@ -193,6 +209,10 @@ MoAcqRel
 
 MoSeqCst
     :   'memory_order_seq_cst'
+    ;
+
+ScopeWG
+    :   'memory_scope_work_group'
     ;
 
 Locations
