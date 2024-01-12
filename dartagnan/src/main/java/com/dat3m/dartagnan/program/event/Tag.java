@@ -374,6 +374,25 @@ public final class Tag {
         public static List<String> getScopeTags() {
             return List.of(MEMORY_SCOPE_WG, MEMORY_SCOPE_DEV, MEMORY_SCOPE_ALL);
         }
+
+        public static String MemoryScope(String scope) {
+            return switch (scope) {
+                case "memory_scope_work_item" -> MEMORY_SCOPE_WI;
+                case "memory_scope_work_group" -> MEMORY_SCOPE_WG;
+                case "memory_scope_device" -> MEMORY_SCOPE_DEV;
+                case "memory_scope_all_svm_devices" -> MEMORY_SCOPE_ALL;
+                default -> "";
+            };
+        }
+
+        public static String FenceFlag(String flag) {
+            return switch (flag) {
+                case "CLK_GLOBAL_MEM_FENCE" -> FENCE_FLAG_GLOBAL;
+                case "CLK_LOCAL_MEM_FENCE" -> FENCE_FLAG_LOCAL;
+                case "CLK_IMAGE_MEM_FENCE" -> FENCE_FLAG_IMAGE;
+                default -> "";
+            };
+        }
     }
 
     public static String getScopeTag(Event e, Arch arch) {
