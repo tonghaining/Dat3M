@@ -14,3 +14,7 @@ litmus/OPENCL/herd/S.litmus,1
 litmus/OPENCL/herd/SB.litmus,1
 litmus/OPENCL/herd/SB1.litmus,1
 litmus/OPENCL/herd/WRC.litmus,1
+litmus/OPENCL/herd/barrier_example.litmus,1
+litmus/OPENCL/herd/global_barrier.litmus,1
+litmus/OPENCL/herd/global_barrier_mo.litmus,1
+litmus/OPENCL/herd/thinair.litmus,1
