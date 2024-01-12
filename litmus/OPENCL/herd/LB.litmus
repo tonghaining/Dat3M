@@ -1,4 +1,4 @@
-OpenCL LB
+C LB
 
 (*
  * PodWW Rfe PodRR Fre
@@ -10,12 +10,12 @@ OpenCL LB
 [y] = 0;
 }
 
-P0@wg0, dev0 (volatile int* y, volatile int* x) {
+P0@wg 0, dev 0 (volatile int* y, volatile int* x) {
  int r0 = *x;
  *y = 1;
 }
 
-P1@wg1, dev0 (volatile int* y, volatile int* x) {
+P1@wg 1, dev 0 (volatile int* y, volatile int* x) {
  int r1 = *y;
  *x = 1;
 }

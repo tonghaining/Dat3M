@@ -1,4 +1,4 @@
-OpenCL CT_wsq2
+C CT_wsq2
 
 (*
  * https://github.com/herd/legacy/blob/master/herdtools/herd/testsuite/OpenCLTests/CT_wsq/CT_wsq2.litmus
@@ -11,7 +11,7 @@ OpenCL CT_wsq2
   [d]=0;
 }
 
-P0@wg0, dev0 (global atomic_int* head_p, global atomic_int* tail_p, int* oldhead_p, global int* d) {
+P0@wg 0, dev 0 (global atomic_int* head_p, global atomic_int* tail_p, int* oldhead_p, global int* d) {
 
   // POP:
   int newHead = 1;
@@ -27,7 +27,7 @@ P0@wg0, dev0 (global atomic_int* head_p, global atomic_int* tail_p, int* oldhead
   int tmp_tail = atomic_load_explicit(tail_p, memory_order_acquire, memory_scope_device);
 }
 
-P1@wg0, dev0 (global atomic_int* head_p, global atomic_int* tail_p, int* oldhead_p, global int* d) {
+P1@wg 0, dev 0 (global atomic_int* head_p, global atomic_int* tail_p, int* oldhead_p, global int* d) {
 
   // STEAL:
   int localTail;

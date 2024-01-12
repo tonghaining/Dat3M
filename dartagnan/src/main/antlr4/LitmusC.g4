@@ -36,7 +36,11 @@ threadScope
     ;
 
 threadArguments
-    :   pointerTypeSpecifier varName (Comma pointerTypeSpecifier varName)*
+    :   threadArgument (Comma threadArgument)*
+    ;
+
+threadArgument
+    :   openCLRegion? pointerTypeSpecifier varName
     ;
 
 expression
@@ -249,6 +253,11 @@ c11Mo returns [String mo]
     |   MoRelease   {$mo = C11.MO_RELEASE;}
     |   MoAcqRel    {$mo = C11.MO_ACQUIRE_RELEASE;}
     |   MoSeqCst    {$mo = C11.MO_SC;}
+    ;
+
+openCLRegion returns [String region]
+    :   OpenCLGlobalRegion  {$region = OpenCL.GLOBAL_REGION;}
+    |   OpenCLLocalRegion   {$region = OpenCL.LOCAL_REGION;}
     ;
 
 openCLScope returns [String scope]

@@ -1,4 +1,4 @@
-OpenCL ISA2
+C ISA2
 
 (*
  * PodWW Rfe PodRR Fre
@@ -11,17 +11,17 @@ OpenCL ISA2
 [z] = 0;
 }
 
-P0@wg0, dev0 (volatile int* y, volatile int* x) {
+P0@wg 0, dev 0 (volatile int* y, volatile int* x) {
  *x = 1;
  *y = 1;
 }
 
-P1@wg1, dev0 (volatile int* y, volatile int* z) {
+P1@wg 1, dev 0 (volatile int* y, volatile int* z) {
  int r0 = *y;
  *z = 1;
 }
 
-P2@wg2, dev0 (volatile int* z, volatile int* x) {
+P2@wg 2, dev 0 (volatile int* z, volatile int* x) {
  int r1 = *z;
  int r2 = *x;
 }

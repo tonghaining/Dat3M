@@ -194,24 +194,36 @@ public class VisitorLitmusC extends LitmusCBaseVisitor<Object> {
     @Override
     public Object visitThreadArguments(LitmusCParser.ThreadArgumentsContext ctx){
         if(ctx != null){
-            int id = 0;
-            for(LitmusCParser.VarNameContext varName : ctx.varName()){
-                String name = varName.getText();
-                MemoryObject object = programBuilder.getOrNewMemoryObject(name);
-                PointerTypeSpecifierContext pType = ctx.pointerTypeSpecifier(id);
-                if(pType != null) {
-                    BasicTypeSpecifierContext bType = pType.basicTypeSpecifier();
-                    if(bType != null) {
-                        if(bType.AtomicInt() != null) {
-                            object.markAsAtomic();
-                        }
-                    }
-                }
-                Register register = programBuilder.getOrNewRegister(scope, name, archType);
-                programBuilder.addChild(currentThread, EventFactory.newLocal(register, object));
-                id++;
+            for(LitmusCParser.ThreadArgumentContext threadArgumentContext : ctx.threadArgument()){
+                threadArgumentContext.accept(this);
             }
         }
+        return null;
+    }
+
+    @Override
+    public Object visitThreadArgument(LitmusCParser.ThreadArgumentContext ctx) {
+        String name = ctx.varName().getText();
+        MemoryObject object = programBuilder.getOrNewMemoryObject(name);
+        PointerTypeSpecifierContext pType = ctx.pointerTypeSpecifier();
+        if(pType != null) {
+            BasicTypeSpecifierContext bType = pType.basicTypeSpecifier();
+            if(bType != null) {
+                if(bType.AtomicInt() != null) {
+                    object.markAsAtomic();
+                }
+            }
+        }
+        if (ctx.openCLRegion() != null) {
+            switch (ctx.openCLRegion().region) {
+                case Tag.OpenCL.GLOBAL_REGION -> object.setIsThreadLocal(false);
+                case Tag.OpenCL.LOCAL_REGION -> object.setIsThreadLocal(true);
+                default ->
+                        throw new ParsingException("Invalid OpenCL memory region: " + ctx.openCLRegion().region);
+            }
+        }
+        Register register = programBuilder.getOrNewRegister(scope, name, archType);
+        programBuilder.addChild(currentThread, EventFactory.newLocal(register, object));
         return null;
     }
 

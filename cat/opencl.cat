@@ -43,7 +43,7 @@ let ra_sw_g = incl & ~int & ([GLOBAL]; relf; max_co; [GLOBAL]; rf; acqf; [GLOBAL
 let ra_sw_l = incl & ~int & ([LOCAL]; relf; max_co; [LOCAL]; rf; acqf; [LOCAL])
 
 (* Barrier synchronisation *)
-let bar_sw_g = (entry_fence * exit_fence) & syncbar & ~int & wg & (GLOBAL * GLOBAL // entry_fence?
+let bar_sw_g = (entry_fence * exit_fence) & syncbar & ~int & wg & (GLOBAL * GLOBAL) // entry_fence?
 let bar_sw_l = (entry_fence * exit_fence) & syncbar & ~int & wg & (LOCAL * LOCAL)
 
 (* Synchronisation on a region *)
@@ -62,8 +62,8 @@ let lsw = region_sw_l | (scf & region_sw_g)
 (******************)
 
 (* Global and local happens-before *)
-let ghb = (((GLOBAL * GLOBAL) & (po | (I * !I))) | gsw)+
-let lhb = (((LOCAL * LOCAL) & (po | (I * !I))) | lsw)+
+let ghb = (((GLOBAL * GLOBAL) & (po | (I * (_ \ I)))) | gsw)+ // !I
+let lhb = (((LOCAL * LOCAL) & (po | (I * (_ \ I)))) | lsw)+ // !I
 
 acyclic ghb as global_hb_acyclic
 acyclic lhb as local_hb_acyclic
@@ -86,7 +86,6 @@ irreflexive coh_hb_l as local_coherence
 (************************)
 
 (* Visible side effects *)
-let vse(hbl) = (W * R) & hbl & ~(hbl; [W]; hbl)
 let vse_hbl_g = (W * R) & ghbl & ~(ghbl; [W]; ghbl)
 let vse_hbl_l = (W * R) & lhbl & ~(lhbl; [W]; lhbl)
 let gvse = [GLOBAL]; vse_hbl_g

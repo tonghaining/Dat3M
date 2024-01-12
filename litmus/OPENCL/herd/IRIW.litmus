@@ -1,4 +1,4 @@
-OpenCL IRIW_sc_sc_sc-sc_sc-sc_xaG_yaG_P0_P1_P2_P3
+C IRIW_sc_sc_sc-sc_sc-sc_xaG_yaG_P0_P1_P2_P3
 
 (*
  * https://github.com/herd/legacy/blob/master/herdtools/herd/testsuite/OpenCLTests/IRIW/IRIW_sc_sc_sc-sc_sc-sc_xaG_yaG_P0_P1_P2_P3.litmus
@@ -9,20 +9,20 @@ OpenCL IRIW_sc_sc_sc-sc_sc-sc_xaG_yaG_P0_P1_P2_P3
   [y]=0;
 }
 
-P0@wg0, dev0 (global atomic_int* x, global atomic_int* y) {
+P0@wg 0, dev 0 (global atomic_int* x, global atomic_int* y) {
   atomic_store(x,1);
 }
 
-P1@wg0, dev0 (global atomic_int* x, global atomic_int* y) {
+P1@wg 0, dev 0 (global atomic_int* x, global atomic_int* y) {
   atomic_store(y,1);
 }
 
-P2@wg0, dev0 (global atomic_int* x, global atomic_int* y) {
+P2@wg 0, dev 0 (global atomic_int* x, global atomic_int* y) {
   int r0 = atomic_load(x);
   int r1 = atomic_load(y);
 }
 
-P3@wg0, dev0 (global atomic_int* x, global atomic_int* y) {
+P3@wg 0, dev 0 (global atomic_int* x, global atomic_int* y) {
   int r2 = atomic_load(y);
   int r3 = atomic_load(x);
 }
