@@ -566,6 +566,12 @@ public class VisitorLitmusC extends LitmusCBaseVisitor<Object> {
     }
 
     @Override
+    public Object visitNreOpenCLFence(LitmusCParser.NreOpenCLFenceContext ctx){
+        return programBuilder.addChild(currentThread, EventFactory.OpenCL.newOpenCLFence(
+                ctx.openCLFenceFlag().flag, ctx.c11Mo().mo, ctx.openCLScope().scope));
+    }
+
+    @Override
     public Object visitNreSpinLock(LitmusCParser.NreSpinLockContext ctx) {
         return programBuilder.addChild(currentThread, EventFactory.Linux.newLock(getAddress(ctx.address)));
     }

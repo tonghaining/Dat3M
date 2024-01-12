@@ -12,6 +12,7 @@ import com.dat3m.dartagnan.program.event.lang.Alloc;
 import com.dat3m.dartagnan.program.event.lang.catomic.*;
 import com.dat3m.dartagnan.program.event.lang.linux.*;
 import com.dat3m.dartagnan.program.event.lang.llvm.*;
+import com.dat3m.dartagnan.program.event.lang.opencl.OpenCLFence;
 import com.dat3m.dartagnan.program.event.lang.pthread.*;
 import com.dat3m.dartagnan.program.event.lang.svcomp.*;
 
@@ -105,4 +106,5 @@ public interface EventVisitor<T> {
     default T visitPtxAtomExch(PTXAtomExch e) { return visitMemEvent(e); }
     default T visitVulkanRMW(VulkanRMW e) { return visitMemEvent(e); }
     default T visitVulkanRMWOp(VulkanRMWOp e) { return visitMemEvent(e); }
+    default T visitOpenCLFence(OpenCLFence e) { return visitEvent(e); }
 }
