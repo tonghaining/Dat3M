@@ -27,4 +27,4 @@ P2@wg 1, dev 0 (global atomic_int* x, global atomic_int* y, global atomic_int* z
   atomic_store_explicit(x,1,memory_order_acquire,memory_scope_work_group);
 }
 
-exists ([x]=2 /\ [y]=2 /\ [z]=2)
+exists (x=2 /\ y=2 /\ z=2)

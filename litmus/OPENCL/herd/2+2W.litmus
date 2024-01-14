@@ -19,4 +19,4 @@ P1@wg 1, dev 0 (global atomic_int* x, global atomic_int* y) {
   atomic_store(x,1);
 }
 
-exists ([x]=1 /\ [y]=0)
+exists (x=1 /\ y=0)
