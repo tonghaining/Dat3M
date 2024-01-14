@@ -9,13 +9,13 @@ C barrier_example
   [y]=0;
 }
 
-P0@wg 0, dev 0 (__global int* x, __global int* y) {
+P0@wg 0, dev 0 (global int* x, global int* y) {
   atomic_store_explicit(x, 1, memory_order_release);
   B1: barrier(CLK_GLOBAL_MEM_FENCE);
   atomic_load_explicit(y, memory_order_acquire);
 }
 
-P1@wg 0, dev 0 (__global int* x, __global int* y) {
+P1@wg 0, dev 0 (global int* x, global int* y) {
   atomic_store_explicit(y, 1, memory_order_release);
   B1: barrier(CLK_GLOBAL_MEM_FENCE);
   atomic_load_explicit(x, memory_order_acquire);

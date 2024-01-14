@@ -11,48 +11,48 @@ C global_barrier
   [g1] = 0;
 }
 
-P0@wg 0, dev 0 (__global int* f0, __global int* f1) { // slave wg0, wi0
+P0@wg 0, dev 0 (global int* f0, global int* f1) { // slave wg0, wi0
   B1: barrier(CLK_GLOBAL_MEM_FENCE);
 
   atomic_store_explicit(f0, 1, memory_order_release);
 
-  fence(CLK_LOCAL_MEM_FENCE, memory_order_relaxed, memory_scope_work_group);
+  atomic_work_item_fence(CLK_LOCAL_MEM_FENCE, memory_order_relaxed, memory_scope_work_group);
 
-  fence(CLK_LOCAL_MEM_FENCE, memory_order_relaxed, memory_scope_work_group);
+  atomic_work_item_fence(CLK_LOCAL_MEM_FENCE, memory_order_relaxed, memory_scope_work_group);
 
-  fence(CLK_LOCAL_MEM_FENCE, memory_order_relaxed, memory_scope_work_group);
+  atomic_work_item_fence(CLK_LOCAL_MEM_FENCE, memory_order_relaxed, memory_scope_work_group);
 
-  fence(CLK_LOCAL_MEM_FENCE, memory_order_relaxed, memory_scope_work_group);
+  atomic_work_item_fence(CLK_LOCAL_MEM_FENCE, memory_order_relaxed, memory_scope_work_group);
 
   int r2 = atomic_load_explicit(g0, memory_order_acquire);
 
   B3: barrier(CLK_GLOBAL_MEM_FENCE);
 }
 
-P1@wg 0, dev 0 (__global int* f0, __global int* f1) { // slave wg0, wi1
+P1@wg 0, dev 0 (global int* f0, global int* f1) { // slave wg0, wi1
   B1: barrier(CLK_GLOBAL_MEM_FENCE);
 
-  fence(CLK_LOCAL_MEM_FENCE, memory_order_relaxed, memory_scope_work_group);
+  atomic_work_item_fence(CLK_LOCAL_MEM_FENCE, memory_order_relaxed, memory_scope_work_group);
 
-  fence(CLK_LOCAL_MEM_FENCE, memory_order_relaxed, memory_scope_work_group);
+  atomic_work_item_fence(CLK_LOCAL_MEM_FENCE, memory_order_relaxed, memory_scope_work_group);
 
-  fence(CLK_LOCAL_MEM_FENCE, memory_order_relaxed, memory_scope_work_group);
+  atomic_work_item_fence(CLK_LOCAL_MEM_FENCE, memory_order_relaxed, memory_scope_work_group);
 
-  fence(CLK_LOCAL_MEM_FENCE, memory_order_relaxed, memory_scope_work_group);
+  atomic_work_item_fence(CLK_LOCAL_MEM_FENCE, memory_order_relaxed, memory_scope_work_group);
 
-  fence(CLK_LOCAL_MEM_FENCE, memory_order_relaxed, memory_scope_work_group);
+  atomic_work_item_fence(CLK_LOCAL_MEM_FENCE, memory_order_relaxed, memory_scope_work_group);
 
-  fence(CLK_LOCAL_MEM_FENCE, memory_order_relaxed, memory_scope_work_group);
+  atomic_work_item_fence(CLK_LOCAL_MEM_FENCE, memory_order_relaxed, memory_scope_work_group);
 
   B3: barrier(CLK_GLOBAL_MEM_FENCE);
 
 }
 
-P2@wg 1, dev 0 (__global int* f0, __global int* f1) { // master wg, wi0
+P2@wg 1, dev 0 (global int* f0, global int* f1) { // master wg, wi0
 
-  fence(CLK_LOCAL_MEM_FENCE, memory_order_relaxed, memory_scope_work_group);
+  atomic_work_item_fence(CLK_LOCAL_MEM_FENCE, memory_order_relaxed, memory_scope_work_group);
 
-  fence(CLK_LOCAL_MEM_FENCE, memory_order_relaxed, memory_scope_work_group);
+  atomic_work_item_fence(CLK_LOCAL_MEM_FENCE, memory_order_relaxed, memory_scope_work_group);
 
   int r0 = atomic_load_explicit(f0, memory_order_acquire);
 
@@ -61,11 +61,11 @@ P2@wg 1, dev 0 (__global int* f0, __global int* f1) { // master wg, wi0
   atomic_store_explicit(g0, 1, memory_order_release);
 }
 
-P3@wg 1, dev 0 (__global int* f0, __global int* f1) { // master wg, wi1
+P3@wg 1, dev 0 (global int* f0, global int* f1) { // master wg, wi1
 
-  fence(CLK_LOCAL_MEM_FENCE, memory_order_relaxed, memory_scope_work_group);
+  atomic_work_item_fence(CLK_LOCAL_MEM_FENCE, memory_order_relaxed, memory_scope_work_group);
 
-  fence(CLK_LOCAL_MEM_FENCE, memory_order_relaxed, memory_scope_work_group);
+  atomic_work_item_fence(CLK_LOCAL_MEM_FENCE, memory_order_relaxed, memory_scope_work_group);
 
   int r1 = atomic_load_explicit(f1, memory_order_acquire);
 
@@ -76,38 +76,38 @@ P3@wg 1, dev 0 (__global int* f0, __global int* f1) { // master wg, wi1
 
 
 
-P4@wg 2, dev 0 (__global int* f0, __global int* f1) { // slave wg1, wi0
+P4@wg 2, dev 0 (global int* f0, global int* f1) { // slave wg1, wi0
   B11: barrier(CLK_GLOBAL_MEM_FENCE);
 
   atomic_store_explicit(f1, 1, memory_order_release);
 
-  fence(CLK_LOCAL_MEM_FENCE, memory_order_relaxed, memory_scope_work_group);
+  atomic_work_item_fence(CLK_LOCAL_MEM_FENCE, memory_order_relaxed, memory_scope_work_group);
 
-  fence(CLK_LOCAL_MEM_FENCE, memory_order_relaxed, memory_scope_work_group);
+  atomic_work_item_fence(CLK_LOCAL_MEM_FENCE, memory_order_relaxed, memory_scope_work_group);
 
-  fence(CLK_LOCAL_MEM_FENCE, memory_order_relaxed, memory_scope_work_group);
+  atomic_work_item_fence(CLK_LOCAL_MEM_FENCE, memory_order_relaxed, memory_scope_work_group);
 
-  fence(CLK_LOCAL_MEM_FENCE, memory_order_relaxed, memory_scope_work_group);
+  atomic_work_item_fence(CLK_LOCAL_MEM_FENCE, memory_order_relaxed, memory_scope_work_group);
 
   int r4 = atomic_load_explicit(g1, memory_order_acquire);
 
   B31: barrier(CLK_GLOBAL_MEM_FENCE);
 }
 
-P5@wg 2, dev 0 (__global int* f0, __global int* f1) { // slave wg1, wi1
+P5@wg 2, dev 0 (global int* f0, global int* f1) { // slave wg1, wi1
   B11: barrier(CLK_GLOBAL_MEM_FENCE);
 
-  fence(CLK_LOCAL_MEM_FENCE, memory_order_relaxed, memory_scope_work_group);
+  atomic_work_item_fence(CLK_LOCAL_MEM_FENCE, memory_order_relaxed, memory_scope_work_group);
 
-  fence(CLK_LOCAL_MEM_FENCE, memory_order_relaxed, memory_scope_work_group);
+  atomic_work_item_fence(CLK_LOCAL_MEM_FENCE, memory_order_relaxed, memory_scope_work_group);
 
-  fence(CLK_LOCAL_MEM_FENCE, memory_order_relaxed, memory_scope_work_group);
+  atomic_work_item_fence(CLK_LOCAL_MEM_FENCE, memory_order_relaxed, memory_scope_work_group);
 
-  fence(CLK_LOCAL_MEM_FENCE, memory_order_relaxed, memory_scope_work_group);
+  atomic_work_item_fence(CLK_LOCAL_MEM_FENCE, memory_order_relaxed, memory_scope_work_group);
 
-  fence(CLK_LOCAL_MEM_FENCE, memory_order_relaxed, memory_scope_work_group);
+  atomic_work_item_fence(CLK_LOCAL_MEM_FENCE, memory_order_relaxed, memory_scope_work_group);
 
-  fence(CLK_LOCAL_MEM_FENCE, memory_order_relaxed, memory_scope_work_group);
+  atomic_work_item_fence(CLK_LOCAL_MEM_FENCE, memory_order_relaxed, memory_scope_work_group);
 
   B31: barrier(CLK_GLOBAL_MEM_FENCE);
 

@@ -1,12 +1,14 @@
 lexer grammar OpenCLLexer;
 
 OpenCLGlobalRegion            :   'global';
-OpenCLLocalRegion             :   'volatile'; // TODO: check this
+OpenCLLocalRegion             :   'local';
+OpenCLVolatileRegion          :   'volatile'; // TODO: check this
 
 OpenCLWG                      :   'wg';
 OpenCLDEV                     :   'dev';
 
 OpenCLAtomicFenceWI           :   'atomic_work_item_fence';
+OpenCLBarrier                 :   'barrier';
 
 OpenCLMemoryScopeWI           :   'memory_scope_work_item';
 OpenCLMemoryScopeWG           :   'memory_scope_work_group';
