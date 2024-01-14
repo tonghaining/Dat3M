@@ -27,11 +27,11 @@ let incl = int | sr // our sr is HRF-indirect, so it includes swg and sdev
 (* Synchronisation *)
 (*******************)
 
-let acq_op = (ACQ | SC | ACQ_REL) & (R | F | rmw)
-let rel_op = (REL | SC | ACQ_REL) & (W | F | rmw)
+let acq_op = (ACQ | SC | ACQ_REL) & (R | F | RMW)
+let rel_op = (REL | SC | ACQ_REL) & (W | F | RMW)
 
 (* Release sequence *)
-let rs = (_ * rmw) | int
+let rs = (_ * RMW) | int
 let max_co = co? & rs & ~((co & ~rs) ; co)
 
 (* Including release-acquire fences *)
