@@ -24,7 +24,7 @@ P1@wg 1, dev 0 (global atomic_int* x, global atomic_int* y, global atomic_int* z
 P2@wg 1, dev 0 (global atomic_int* x, global atomic_int* y, global atomic_int* z) {
   atomic_store_explicit(z,2,memory_order_release);
   atomic_work_item_fence(CLK_GLOBAL_MEM_FENCE,memory_order_release,memory_scope_device);
-  atomic_store_explicit(x,1,memory_order_acquire,memory_scope_work_group);
+  atomic_store_explicit(x,1,memory_order_release,memory_scope_work_group); // original mo: acq
 }
 
 exists (x=2 /\ y=2 /\ z=2)

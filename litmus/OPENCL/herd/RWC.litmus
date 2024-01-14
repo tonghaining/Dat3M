@@ -15,9 +15,9 @@ P0@wg 0, dev 0 (global atomic_int* x, global atomic_int* y) {
 }
 
 P1@wg 1, dev 0 (global atomic_int* x, global atomic_int* y) {
-  int r0 = atomic_load_explicit(x,memory_order_release,memory_scope_work_group);
+  int r0 = atomic_load_explicit(x,memory_order_acquire,memory_scope_work_group); // original: acquire
   atomic_work_item_fence(CLK_LOCAL_MEM_FENCE,memory_order_seq_cst,memory_scope_work_group);
-  int r1 = atomic_load_explicit(y,memory_order_release);
+  int r1 = atomic_load_explicit(y,memory_order_acquire); // original: release
 }
 
 P2@wg 1, dev 0 (global atomic_int* x, global atomic_int* y) {

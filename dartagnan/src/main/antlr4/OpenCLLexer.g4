@@ -2,7 +2,6 @@ lexer grammar OpenCLLexer;
 
 OpenCLGlobalRegion            :   'global';
 OpenCLLocalRegion             :   'local';
-OpenCLVolatileRegion          :   'volatile'; // TODO: check this
 
 OpenCLWG                      :   'wg';
 OpenCLDEV                     :   'dev';

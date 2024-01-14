@@ -14,6 +14,8 @@ OpenCL
 // ALL: all-svm-devices
 // GLOBAL: global
 // LOCAL: local
+// EF: entry fence ???
+// XF: exit fence
 
 (* Inclusive scopes *)
 let incl = int | sr // our sr is HRF-indirect, so it includes swg and sdev
@@ -43,8 +45,8 @@ let ra_sw_g = incl & ~int & ([GLOBAL]; relf; max_co; [GLOBAL]; rf; acqf; [GLOBAL
 let ra_sw_l = incl & ~int & ([LOCAL]; relf; max_co; [LOCAL]; rf; acqf; [LOCAL])
 
 (* Barrier synchronisation *)
-let bar_sw_g = (entry_fence * exit_fence) & syncbar & ~int & wg & (GLOBAL * GLOBAL) // entry_fence?
-let bar_sw_l = (entry_fence * exit_fence) & syncbar & ~int & wg & (LOCAL * LOCAL)
+let bar_sw_g = (entry_fence * exit_fence) & syncbar & ~int & (WG * WG) & (GLOBAL * GLOBAL) // entry_fence? wg?
+let bar_sw_l = (entry_fence * exit_fence) & syncbar & ~int & (WG * WG) & (LOCAL * LOCAL)
 
 (* Synchronisation on a region *)
 let region_sw_g = ra_sw_g | bar_sw_g

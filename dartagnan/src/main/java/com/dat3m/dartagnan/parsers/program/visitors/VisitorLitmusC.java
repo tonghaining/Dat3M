@@ -606,7 +606,7 @@ public class VisitorLitmusC extends LitmusCBaseVisitor<Object> {
 
     @Override
     public Object visitNreOpenCLBarrier(LitmusCParser.NreOpenCLBarrierContext ctx){
-        Expression fenceId = (Expression)ctx.BarrierLabel().accept(this);
+        Expression fenceId = (Expression) ctx.barrierLabel().accept(this);
         Event fence = EventFactory.newFenceWithId(ctx.getText().toLowerCase(), fenceId);
         fence.addTags(ctx.openCLFenceFlag().flag);
         return programBuilder.addChild(currentThread, fence);

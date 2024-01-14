@@ -375,6 +375,8 @@ public final class Tag {
         public static final String LOCAL_REGION = "LOCAL";
         public static final String VOLATILE_REGION = "VOLATILE";
 
+        public static final String BARRIER = "B";
+
         public static List<String> getScopeTags() {
             return List.of(MEMORY_SCOPE_WG, MEMORY_SCOPE_DEV, MEMORY_SCOPE_ALL);
         }

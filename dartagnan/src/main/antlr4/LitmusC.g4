@@ -213,7 +213,7 @@ nre locals [IOpBin op, String mo, String name]
 
     |   OpenCLAtomicFenceWI LPar openCLFenceFlag Comma c11Mo Comma openCLScope RPar                                                         # nreOpenCLFence
 
-    |   BarrierLabel Colon OpenCLBarrier LPar openCLFenceFlag RPar                                                                          # nreOpenCLBarrier
+    |   barrierLabel Colon OpenCLBarrier LPar openCLFenceFlag RPar                                                            # nreOpenCLBarrier
 
     ;
 
@@ -260,7 +260,6 @@ c11Mo returns [String mo]
 openCLRegion returns [String region]
     :   OpenCLGlobalRegion  {$region = OpenCL.GLOBAL_REGION;}
     |   OpenCLLocalRegion   {$region = OpenCL.LOCAL_REGION;}
-    |   OpenCLVolatileRegion   {$region = OpenCL.VOLATILE_REGION;}
     ;
 
 openCLScope returns [String scope]
@@ -338,8 +337,8 @@ comment
     :   LPar Ast .*? Ast RPar
     ;
 
-BarrierLabel
-    :   'B' DigitSequence
+barrierLabel returns [int label]
+    :   'B' DigitSequence {$label = Integer.parseInt($DigitSequence.text);}
     ;
 
 MoRelaxed
