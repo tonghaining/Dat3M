@@ -213,7 +213,7 @@ nre locals [IOpBin op, String mo, String name]
 
     |   OpenCLAtomicFenceWI LPar openCLFenceFlag Comma c11Mo Comma openCLScope RPar                                                         # nreOpenCLFence
 
-    |   barrierLabel Colon OpenCLBarrier LPar openCLFenceFlag RPar                                                            # nreOpenCLBarrier
+    |   barrierId Colon OpenCLBarrier LPar openCLFenceFlag RPar                                                            # nreOpenCLBarrier
 
     ;
 
@@ -337,8 +337,12 @@ comment
     :   LPar Ast .*? Ast RPar
     ;
 
-barrierLabel returns [int label]
-    :   'B' DigitSequence {$label = Integer.parseInt($DigitSequence.text);}
+barrierId returns [int id]
+    :   t = BarrierIdentifier {$id = Integer.parseInt($t.text.replace("B", ""));}
+    ;
+
+BarrierIdentifier
+    :   'B' DigitSequence
     ;
 
 MoRelaxed

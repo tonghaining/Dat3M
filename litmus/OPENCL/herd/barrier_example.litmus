@@ -12,13 +12,13 @@ C barrier_example
 P0@wg 0, dev 0 (global int* x, global int* y) {
   atomic_store_explicit(x, 1, memory_order_release);
   B1: barrier(CLK_GLOBAL_MEM_FENCE);
-  atomic_load_explicit(y, memory_order_acquire);
+  int x1 = atomic_load_explicit(y, memory_order_acquire); // original: without x1
 }
 
 P1@wg 0, dev 0 (global int* x, global int* y) {
   atomic_store_explicit(y, 1, memory_order_release);
   B1: barrier(CLK_GLOBAL_MEM_FENCE);
-  atomic_load_explicit(x, memory_order_acquire);
+  int y1 = atomic_load_explicit(x, memory_order_acquire); // original: without y1
 }
 
-exists (x=0 /\ y=0)
+exists (0:x1=0 /\ 1:y1=0)

@@ -34,7 +34,7 @@ P1@wg 0, dev 0 (global atomic_int* head_p, global atomic_int* tail_p, int* oldhe
   localTail = atomic_load_explicit(tail_p, memory_order_acquire, memory_scope_device);
   if (localTail != *oldHead_p) {
     int val = *d;
-    atomic_compare_exchange_strong_explicit(head_p, oldHead_p, 1, memory_order_release, memory_order_release, memory_scope_device);
+    int tmp1 = atomic_compare_exchange_strong_explicit(head_p, oldHead_p, 1, memory_order_release, memory_order_release, memory_scope_device); // original: without tmp1
   }
 }
 
