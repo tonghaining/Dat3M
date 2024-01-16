@@ -3,7 +3,7 @@ OpenCL
 
 // Base relations:
 // swi: same work-item = same thread
-// swg: same work-group, included in sr
+// swg: same work-group, included in sr, reuse from vulkan
 // sdev: same device, included in sr
 // syncbar: same barrier id, reuse from spirv because the ptx's sync_barrier requires scta.
 
@@ -45,8 +45,8 @@ let ra_sw_g = incl & ~int & ([GLOBAL]; relf; max_co; [GLOBAL]; rf; acqf; [GLOBAL
 let ra_sw_l = incl & ~int & ([LOCAL]; relf; max_co; [LOCAL]; rf; acqf; [LOCAL])
 
 (* Barrier synchronisation *)
-let bar_sw_g = (entry_fence * exit_fence) & syncbar & ~int & (WG * WG) & (GLOBAL * GLOBAL) // entry_fence? wg?
-let bar_sw_l = (entry_fence * exit_fence) & syncbar & ~int & (WG * WG) & (LOCAL * LOCAL)
+let bar_sw_g = (entry_fence * exit_fence) & syncbar & ~int & swg & (GLOBAL * GLOBAL) // entry_fence? wg?
+let bar_sw_l = (entry_fence * exit_fence) & syncbar & ~int & swg & (LOCAL * LOCAL)
 
 (* Synchronisation on a region *)
 let region_sw_g = ra_sw_g | bar_sw_g
