@@ -270,9 +270,8 @@ openCLScope returns [String scope]
     ;
 
 openCLFenceFlag returns [String flag]
-    :   OpenCLFenceFlagGL    {$flag = OpenCL.FENCE_FLAG_GLOBAL;}
-    |   OpenCLFenceFlagLC    {$flag = OpenCL.FENCE_FLAG_LOCAL;}
-    |   OpenCLFenceFlagIMG    {$flag = OpenCL.FENCE_FLAG_IMAGE;}
+    :   OpenCLFenceFlagGL    {$flag = OpenCL.GLOBAL_REGION;}
+    |   OpenCLFenceFlagLC    {$flag = OpenCL.LOCAL_REGION;}
     ;
 
 threadVariable returns [int tid, String name]

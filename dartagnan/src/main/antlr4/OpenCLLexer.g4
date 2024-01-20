@@ -16,4 +16,3 @@ OpenCLMemoryScopeALL          :   'memory_scope_all_svm_devices';
 
 OpenCLFenceFlagGL             :   'CLK_GLOBAL_MEM_FENCE';
 OpenCLFenceFlagLC             :   'CLK_LOCAL_MEM_FENCE';
-OpenCLFenceFlagIMG            :   'CLK_IMAGE_MEM_FENCE';

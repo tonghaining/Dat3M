@@ -366,10 +366,6 @@ public final class Tag {
         public static final String MEMORY_SCOPE_WG = "WG";
         public static final String MEMORY_SCOPE_DEV = "DEV";
         public static final String MEMORY_SCOPE_ALL = "ALL";
-        // Fence Flags
-        public static final String FENCE_FLAG_GLOBAL = "GLOBAL";
-        public static final String FENCE_FLAG_LOCAL = "LOCAL";
-        public static final String FENCE_FLAG_IMAGE = "IMAGE";
         // Regions
         public static final String GLOBAL_REGION = "GLOBAL";
         public static final String LOCAL_REGION = "LOCAL";
@@ -390,9 +386,8 @@ public final class Tag {
 
         public static String FenceFlag(String flag) {
             return switch (flag) {
-                case "CLK_GLOBAL_MEM_FENCE" -> FENCE_FLAG_GLOBAL;
-                case "CLK_LOCAL_MEM_FENCE" -> FENCE_FLAG_LOCAL;
-                case "CLK_IMAGE_MEM_FENCE" -> FENCE_FLAG_IMAGE;
+                case "CLK_GLOBAL_MEM_FENCE" -> GLOBAL_REGION;
+                case "CLK_LOCAL_MEM_FENCE" -> LOCAL_REGION;
                 default -> "";
             };
         }
