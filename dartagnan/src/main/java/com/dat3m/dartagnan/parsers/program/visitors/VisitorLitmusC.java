@@ -368,6 +368,13 @@ public class VisitorLitmusC extends LitmusCBaseVisitor<Object> {
         if (ctx.openCLScope() != null) {
             event.addTags(ctx.openCLScope().scope);
         }
+        if (value instanceof MemoryObject) {
+            if (((MemoryObject) value).isThreadLocal()) {
+                event.addTags(Tag.OpenCL.LOCAL_REGION);
+            } else {
+                event.addTags(Tag.OpenCL.GLOBAL_REGION);
+            }
+        }
         programBuilder.addChild(currentThread, event);
         return register;
     }
@@ -542,6 +549,13 @@ public class VisitorLitmusC extends LitmusCBaseVisitor<Object> {
         Event event = EventFactory.Atomic.newStore(getAddress(ctx.address), value, ctx.c11Mo().mo);
         if (ctx.openCLScope() != null) {
             event.addTags(ctx.openCLScope().scope);
+        }
+        if (value instanceof MemoryObject) {
+            if (((MemoryObject) value).isThreadLocal()) {
+                event.addTags(Tag.OpenCL.LOCAL_REGION);
+            } else {
+                event.addTags(Tag.OpenCL.GLOBAL_REGION);
+            }
         }
         return programBuilder.addChild(currentThread, event);
     }
