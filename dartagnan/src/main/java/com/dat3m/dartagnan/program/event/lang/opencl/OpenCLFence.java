@@ -2,7 +2,7 @@ package com.dat3m.dartagnan.program.event.lang.opencl;
 
 import com.dat3m.dartagnan.program.event.Tag;
 import com.dat3m.dartagnan.program.event.common.FenceBase;
-import com.dat3m.dartagnan.program.event.visitors.EventVisitor;
+import com.dat3m.dartagnan.program.event.EventVisitor;
 
 public class OpenCLFence extends FenceBase {
 

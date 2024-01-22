@@ -1,8 +1,4 @@
-package com.dat3m.dartagnan.program.event.core;
-
-import com.dat3m.dartagnan.program.event.MemoryAccess;
-import com.dat3m.dartagnan.program.event.core.utils.RegReader;
-import com.dat3m.dartagnan.program.event.visitors.EventVisitor;
+package com.dat3m.dartagnan.program.event;
 
 import java.util.HashSet;
 import java.util.List;
@@ -10,7 +6,7 @@ import java.util.Set;
 
 import static com.dat3m.dartagnan.program.Register.*;
 
-public interface MemoryEvent extends Event, RegReader {
+public interface MemoryEvent extends RegReader {
 
     List<MemoryAccess> getMemoryAccesses();
 
