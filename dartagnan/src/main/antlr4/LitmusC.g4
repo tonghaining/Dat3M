@@ -40,7 +40,7 @@ threadArguments
     ;
 
 threadArgument
-    :   openCLRegion? pointerTypeSpecifier varName
+    :   openCLSpace? pointerTypeSpecifier varName
     ;
 
 expression
@@ -257,9 +257,9 @@ c11Mo returns [String mo]
     |   MoSeqCst    {$mo = C11.MO_SC;}
     ;
 
-openCLRegion returns [String region]
-    :   OpenCLGlobalRegion  {$region = OpenCL.GLOBAL_REGION;}
-    |   OpenCLLocalRegion   {$region = OpenCL.LOCAL_REGION;}
+openCLSpace returns [String space]
+    :   OpenCLGlobalSpace  {$space = OpenCL.GLOBAL_SPACE;}
+    |   OpenCLLocalSpace   {$space = OpenCL.LOCAL_SPACE;}
     ;
 
 openCLScope returns [String scope]
@@ -270,8 +270,8 @@ openCLScope returns [String scope]
     ;
 
 openCLFenceFlag returns [String flag]
-    :   OpenCLFenceFlagGL    {$flag = OpenCL.GLOBAL_REGION;}
-    |   OpenCLFenceFlagLC    {$flag = OpenCL.LOCAL_REGION;}
+    :   OpenCLFenceFlagGL    {$flag = OpenCL.GLOBAL_SPACE;}
+    |   OpenCLFenceFlagLC    {$flag = OpenCL.LOCAL_SPACE;}
     ;
 
 threadVariable returns [int tid, String name]

@@ -214,12 +214,12 @@ public class VisitorLitmusC extends LitmusCBaseVisitor<Object> {
                 }
             }
         }
-        if (ctx.openCLRegion() != null) {
-            switch (ctx.openCLRegion().region) {
-                case Tag.OpenCL.GLOBAL_REGION -> object.setIsThreadLocal(false);
-                case Tag.OpenCL.LOCAL_REGION -> object.setIsThreadLocal(true);
+        if (ctx.openCLSpace() != null) {
+            switch (ctx.openCLSpace().space) {
+                case Tag.OpenCL.GLOBAL_SPACE -> object.setIsThreadLocal(false);
+                case Tag.OpenCL.LOCAL_SPACE -> object.setIsThreadLocal(true);
                 default ->
-                        throw new ParsingException("Invalid OpenCL memory region: " + ctx.openCLRegion().region);
+                        throw new ParsingException("Invalid OpenCL memory region: " + ctx.openCLSpace().space);
             }
         }
         Register register = programBuilder.getOrNewRegister(scope, name, archType);
@@ -370,9 +370,9 @@ public class VisitorLitmusC extends LitmusCBaseVisitor<Object> {
         }
         if (value instanceof MemoryObject) {
             if (((MemoryObject) value).isThreadLocal()) {
-                event.addTags(Tag.OpenCL.LOCAL_REGION);
+                event.addTags(Tag.OpenCL.LOCAL_SPACE);
             } else {
-                event.addTags(Tag.OpenCL.GLOBAL_REGION);
+                event.addTags(Tag.OpenCL.GLOBAL_SPACE);
             }
         }
         programBuilder.addChild(currentThread, event);
@@ -552,9 +552,9 @@ public class VisitorLitmusC extends LitmusCBaseVisitor<Object> {
         }
         if (value instanceof MemoryObject) {
             if (((MemoryObject) value).isThreadLocal()) {
-                event.addTags(Tag.OpenCL.LOCAL_REGION);
+                event.addTags(Tag.OpenCL.LOCAL_SPACE);
             } else {
-                event.addTags(Tag.OpenCL.GLOBAL_REGION);
+                event.addTags(Tag.OpenCL.GLOBAL_SPACE);
             }
         }
         return programBuilder.addChild(currentThread, event);

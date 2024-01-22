@@ -1,7 +1,7 @@
 lexer grammar OpenCLLexer;
 
-OpenCLGlobalRegion            :   'global';
-OpenCLLocalRegion             :   'local';
+OpenCLGlobalSpace             :   'global';
+OpenCLLocalSpace              :   'local';
 
 OpenCLWG                      :   'wg';
 OpenCLDEV                     :   'dev';

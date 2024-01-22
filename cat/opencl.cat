@@ -13,7 +13,7 @@ OpenCL
 // DEV: device
 // ALL: all-svm-devices
 // GLOBAL: global
-// LOCAL: local
+// LOCAL: local, "For local memory, all visibility is constrained to within a given work-group and scopes wider than memory_scope_work_group carry no additional meaning."
 // EF: entry fence ???
 // XF: exit fence
 
@@ -117,3 +117,9 @@ let sc5 = [F]; po; fr
 let scp = (SC * SC) & (ghb | lhb | co | sc1 | sc2 | sc3 | sc4 | sc5)
 
 let sc6 = rf^-1; (ghb | lhb); [W]
+
+(***************)
+(* Data Races *)
+(***************)
+let dr = ((_ * NA) | (NA * _) | ~sr) & (((GLOBAL * GLOBAL) \ ghb) | ((LOCAL * LOCAL) \ lhb)) // + &loc ?
+flag ~empty dr as racy

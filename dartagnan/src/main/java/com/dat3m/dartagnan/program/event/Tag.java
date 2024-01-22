@@ -366,8 +366,8 @@ public final class Tag {
         public static final String MEMORY_SCOPE_DEV = "DEV";
         public static final String MEMORY_SCOPE_ALL = "ALL";
         // Regions
-        public static final String GLOBAL_REGION = "GLOBAL";
-        public static final String LOCAL_REGION = "LOCAL";
+        public static final String GLOBAL_SPACE = "GLOBAL";
+        public static final String LOCAL_SPACE = "LOCAL";
 
         public static List<String> getScopeTags() {
             return List.of(MEMORY_SCOPE_WG, MEMORY_SCOPE_DEV, MEMORY_SCOPE_ALL);
@@ -385,8 +385,8 @@ public final class Tag {
 
         public static String FenceFlag(String flag) {
             return switch (flag) {
-                case "CLK_GLOBAL_MEM_FENCE" -> GLOBAL_REGION;
-                case "CLK_LOCAL_MEM_FENCE" -> LOCAL_REGION;
+                case "CLK_GLOBAL_MEM_FENCE" -> GLOBAL_SPACE;
+                case "CLK_LOCAL_MEM_FENCE" -> LOCAL_SPACE;
                 default -> "";
             };
         }
