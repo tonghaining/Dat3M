@@ -120,6 +120,13 @@ let scp = (SC * SC) & (ghb | lhb | co | sc1 | sc2 | sc3 | sc4 | sc5)
 
 let sc6 = rf^-1; (ghb | lhb); [W]
 
+(* BEGIN PARTIAL SC STUFF *)
+// https://github.com/herd/herdtools7/blob/master/herd-www/cat_includes/opencl.cat
+let p_sc = scp & sc6
+let x_exists = [_] ; [SC & (_ \ ALL)]; [_]
+acyclic p_sc & x_exists as S_exists
+(* END PARTIAL SC STUFF *)
+
 (***************)
 (* Data Races *)
 (***************)
