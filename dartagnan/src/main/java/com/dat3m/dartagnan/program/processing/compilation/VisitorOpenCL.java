@@ -12,6 +12,7 @@ import com.dat3m.dartagnan.program.event.MemoryEvent;
 import com.dat3m.dartagnan.program.event.core.*;
 import com.dat3m.dartagnan.program.event.core.RMWStore;
 import com.dat3m.dartagnan.program.event.lang.catomic.*;
+import com.dat3m.dartagnan.program.event.lang.opencl.OpenCLBarrier;
 import com.dat3m.dartagnan.program.event.lang.opencl.OpenCLFence;
 import com.dat3m.dartagnan.program.event.metadata.MemoryOrder;
 
@@ -26,6 +27,20 @@ public class VisitorOpenCL extends VisitorBase {
         return eventSequence(
                 newFence(e.getName())
         );
+    }
+
+    @Override
+    public List<Event> visitOpenCLBarrier(OpenCLBarrier e) {
+        FenceWithId entryFence = new FenceWithId(e.getName() + "_entry", e.getFenceID());
+        FenceWithId exitFence = new FenceWithId(e.getName() + "_exit", e.getFenceID());
+        String scope = Tag.getScopeTag(e, Arch.OPENCL);
+        String fenceFlag = Tag.OpenCL.getFenceFlagTag(e);
+        entryFence.addTags(fenceFlag);
+        exitFence.addTags(fenceFlag);
+        return tagList(scope, eventSequence(
+                entryFence,
+                exitFence
+        ));
     }
 
     @Override

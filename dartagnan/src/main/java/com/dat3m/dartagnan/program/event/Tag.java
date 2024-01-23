@@ -373,6 +373,10 @@ public final class Tag {
             return List.of(MEMORY_SCOPE_WG, MEMORY_SCOPE_DEV, MEMORY_SCOPE_ALL);
         }
 
+        public static List<String> getFenceFlags() {
+            return List.of(GLOBAL_SPACE, LOCAL_SPACE);
+        }
+
         public static String MemoryScope(String scope) {
             return switch (scope) {
                 case "memory_scope_work_item" -> MEMORY_SCOPE_WI;
@@ -389,6 +393,10 @@ public final class Tag {
                 case "CLK_LOCAL_MEM_FENCE" -> LOCAL_SPACE;
                 default -> "";
             };
+        }
+
+        public static String getFenceFlagTag(Event e) {
+            return getFenceFlags().stream().filter(e::hasTag).findFirst().orElse("");
         }
     }
 

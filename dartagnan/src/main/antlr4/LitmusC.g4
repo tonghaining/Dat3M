@@ -213,7 +213,7 @@ nre locals [IOpBin op, String mo, String name]
 
     |   OpenCLAtomicFenceWI LPar openCLFenceFlag Comma c11Mo Comma openCLScope RPar                                                         # nreOpenCLFence
 
-    |   barrierId Colon OpenCLBarrier LPar openCLFenceFlag RPar                                                            # nreOpenCLBarrier
+    |   barrierId Colon OpenCLBarrier LPar openCLFenceFlag (Comma openCLScope)? RPar                                                        # nreOpenCLBarrier
 
     ;
 

@@ -3,7 +3,6 @@ package com.dat3m.dartagnan.program.event;
 import com.dat3m.dartagnan.expression.BConst;
 import com.dat3m.dartagnan.expression.Expression;
 import com.dat3m.dartagnan.expression.ExpressionFactory;
-import com.dat3m.dartagnan.expression.IValue;
 import com.dat3m.dartagnan.expression.op.IOpBin;
 import com.dat3m.dartagnan.expression.type.FunctionType;
 import com.dat3m.dartagnan.expression.type.IntegerType;
@@ -35,6 +34,7 @@ import com.dat3m.dartagnan.program.event.lang.Alloc;
 import com.dat3m.dartagnan.program.event.lang.catomic.*;
 import com.dat3m.dartagnan.program.event.lang.linux.*;
 import com.dat3m.dartagnan.program.event.lang.llvm.*;
+import com.dat3m.dartagnan.program.event.lang.opencl.OpenCLBarrier;
 import com.dat3m.dartagnan.program.event.lang.opencl.OpenCLFence;
 import com.dat3m.dartagnan.program.event.lang.pthread.InitLock;
 import com.dat3m.dartagnan.program.event.lang.pthread.Lock;
@@ -759,7 +759,11 @@ public class EventFactory {
         public static OpenCLFence newOpenCLFence(String fenceFlag, String mo, String scope) {
             return new OpenCLFence(fenceFlag, mo, scope);
         }
-        // TODO: Check if new events needed
+
+        public static OpenCLBarrier newOpenCLBarrier(Expression fenceId, String fenceFlag) {
+            return new OpenCLBarrier(fenceId, fenceFlag);
+        }
+
     }
 
 }
