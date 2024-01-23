@@ -7,11 +7,11 @@ C CT_wsq2
 {
   [tail_p]=0;
   [head_p]=0;
-  [oldhead_p]=0;
+  [oldHead_p]=0;
   [d]=0;
 }
 
-P0@wg 0, dev 0 (global atomic_int* head_p, global atomic_int* tail_p, int* oldhead_p, global int* d) {
+P0@wg 0, dev 0 (global atomic_int* head_p, global atomic_int* tail_p, int* oldHead_p, global int* d) {
 
   // POP:
   int newHead = 1;
@@ -24,10 +24,12 @@ P0@wg 0, dev 0 (global atomic_int* head_p, global atomic_int* tail_p, int* oldhe
   }
 
   // PUSH:
-  int tmp_tail = atomic_load_explicit(tail_p, memory_order_acquire, memory_scope_device);
+  // original: int tmp_tail = atomic_load_explicit(tail_p, memory_order_acquire, memory_scope_device);
+  // TODO: check if this makes sense
+  atomic_store_explicit(tail_p, tmp, memory_order_release, memory_scope_device);
 }
 
-P1@wg 0, dev 0 (global atomic_int* head_p, global atomic_int* tail_p, int* oldhead_p, global int* d) {
+P1@wg 0, dev 0 (global atomic_int* head_p, global atomic_int* tail_p, int* oldHead_p, global int* d) {
 
   // STEAL:
   int localTail;
