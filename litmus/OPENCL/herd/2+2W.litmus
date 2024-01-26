@@ -19,5 +19,4 @@ P1@wg 1, dev 0 (global atomic_int* x, global atomic_int* y) {
   atomic_store(x,1);
 }
 
-// change expectation according to https://gpuharbor.ucsc.edu/webgpu-mem-testing/tests/2-plus-2-write/
-exists (x=2 /\ y=2)
+exists (x=1 /\ y=0)

@@ -24,9 +24,7 @@ P0@wg 0, dev 0 (global atomic_int* head_p, global atomic_int* tail_p, int* oldHe
   }
 
   // PUSH:
-  // original: int tmp_tail = atomic_load_explicit(tail_p, memory_order_acquire, memory_scope_device);
-  // TODO: check if this makes sense
-  atomic_store_explicit(tail_p, tmp, memory_order_release, memory_scope_device);
+  int tmp_tail = atomic_load_explicit(tail_p, memory_order_acquire, memory_scope_device);
 }
 
 P1@wg 0, dev 0 (global atomic_int* head_p, global atomic_int* tail_p, int* oldHead_p, global int* d) {
