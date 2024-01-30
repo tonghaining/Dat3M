@@ -21,4 +21,4 @@ P1@wg 0, dev 0 (global int* x, global int* y) {
   int y1 = atomic_load_explicit(x, memory_order_acquire); // original: without y1
 }
 
-exists (0:x1=0 /\ 1:y1=0)
+exists (0:x=0 /\ 1:y=0)
