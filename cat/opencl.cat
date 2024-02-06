@@ -41,14 +41,14 @@ let relf = [rel_op]; ([F]; po)?; [A & W]
 let acqf = [A & R]; (po; [F])?; [acq_op]
 
 (* Release-acquire synchronisation *)
-let ra_sw_g = incl & ~int & ([GLOBAL]; relf; max_co; [GLOBAL]; rf; acqf; [GLOBAL])
-let ra_sw_l = incl & ~int & ([LOCAL]; relf; max_co; [LOCAL]; rf; acqf; [LOCAL])
+let ra_sw_g = incl & ext & ([GLOBAL]; relf; max_co; [GLOBAL]; rf; acqf; [GLOBAL])
+let ra_sw_l = incl & ext & ([LOCAL]; relf; max_co; [LOCAL]; rf; acqf; [LOCAL])
 
 (* Barrier synchronisation *)
 // in OpenCL a barrier results in two fence operations: entry and exit fences:
 // https://registry.khronos.org/OpenCL/specs/3.0-unified/html/OpenCL_API.html#_work_group_functions
-let bar_sw_g = ((F & REL) * (F & ACQ)) & syncbar & ~int & swg & (GLOBAL * GLOBAL)
-let bar_sw_l = ((F & REL) * (F & ACQ)) & syncbar & ~int & swg & (LOCAL * LOCAL)
+let bar_sw_g = ((F & REL) * (F & ACQ)) & syncbar & ext & swg & (GLOBAL * GLOBAL)
+let bar_sw_l = ((F & REL) * (F & ACQ)) & syncbar & ext & swg & (LOCAL * LOCAL)
 
 (* Synchronisation on a region *)
 let region_sw_g = ra_sw_g | bar_sw_g
@@ -80,8 +80,8 @@ let lhbl = lhb & loc
 (* Coherence *)
 (*************)
 
-let coh_hb_g = (rf^-1)?; co; rf?; ghbl
-let coh_hb_l = (rf^-1)?; co; rf?; lhbl
+let coh_hb_g = (rf^-1)?; co; rf?; ghb
+let coh_hb_l = (rf^-1)?; co; rf?; lhb
 irreflexive coh_hb_g as global_coherence
 irreflexive coh_hb_l as local_coherence
 

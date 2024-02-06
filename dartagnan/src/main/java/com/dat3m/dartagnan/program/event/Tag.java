@@ -365,7 +365,7 @@ public final class Tag {
         public static final String MEMORY_SCOPE_WG = "WG";
         public static final String MEMORY_SCOPE_DEV = "DEV";
         public static final String MEMORY_SCOPE_ALL = "ALL";
-        // Regions
+        // Space
         public static final String GLOBAL_SPACE = "GLOBAL";
         public static final String LOCAL_SPACE = "LOCAL";
 
