@@ -44,5 +44,5 @@ def main():
 
 
 if __name__ == "__main__":
-    # sys.argv = ['run_ptx.py', '/home/mixedproxy/', 'ptx.log']
+    # sys.argv = ['run_ptx.py', '/home/mixedproxy/', '/home/Dat3M/performance/ptx.log']
     main()
