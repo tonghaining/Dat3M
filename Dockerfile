@@ -25,8 +25,8 @@ RUN cd home && \
     mvn clean install -DskipTests && \
     mvn test > /home/Dat3M/performance/dat3m.log && \
     cd performance && \
-    python3 run_vmm.py /home/Vulkan-MemoryModel/alloy/ > vmm.log && \
-    python3 run_ptx.py /home/mixedproxy/ > ptx.log && \
+    python3 run_vmm.py /home/Vulkan-MemoryModel/alloy/ ./vmm.log && \
+    python3 run_ptx.py /home/mixedproxy/ ./ptx.log && \
     python3 profiler.py dat3m.log vmm.log ptx.log
 
 # symlink for clang
