@@ -18,13 +18,16 @@ RUN apt-get update && \
 
 # Install Dat3M
 RUN cd home && \
-    git clone --branch asplos24artifact https://github.com/tonghaining/Dat3M.git && \
-    git clone --branch manual https://github.com/tonghaining/Vulkan-MemoryModel.git && \
-    git clone --branch manual https://github.com/tonghaining/mixedproxy.git && \
+    git clone --depth=1 --branch asplos24artifact https://github.com/tonghaining/Dat3M.git && \
+    git clone --depth=1 --branch manual https://github.com/tonghaining/Vulkan-MemoryModel.git && \
+    git clone --depth=1 --branch manual https://github.com/tonghaining/mixedproxy.git && \
     cd Dat3M && \
     mvn clean install -DskipTests && \
     mvn test > /home/Dat3M/performance/dat3m.log && \
-    cd performance && \
+    cp performance/org.alloytools.alloy.dist.jar /home/mixedproxy/alloy/ && \
+    cd /home/mixedproxy && \
+    make && \
+    cd /home/Dat3M/performance && \
     python3 run_vmm.py /home/Vulkan-MemoryModel/alloy/ ./vmm.log && \
     python3 run_ptx.py /home/mixedproxy/ ./ptx.log && \
     python3 profiler.py dat3m.log vmm.log ptx.log

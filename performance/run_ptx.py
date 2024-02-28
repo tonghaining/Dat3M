@@ -1,22 +1,17 @@
 import sys
 import os
 import time
+import subprocess
 
 
 def get_files_under_dir(dir_path):
     test_extension = ".test"
     files = []
-    for root, dirs, files in os.walk(dir_path):
-        for file in files:
-            print(file)
+    for root, _, filenames in os.walk(dir_path):
+        for file in filenames:
             if file.endswith(test_extension):
                 files.append(os.path.join(root, file))
     return files
-
-
-def run_test(script, test_file):
-    print("Running test:", test_file)
-    os.system("python3 " + script + " " + test_file)
 
 
 def main():
@@ -31,18 +26,21 @@ def main():
 
     tests = get_files_under_dir(tests_path)
 
-    start_time = time.time()
+    start = time.time()
+    output = ""
     for test in tests:
-        run_test(script, test)
-    end_time = time.time()
-
-    total_time = end_time - start_time
-    avg_time = total_time / len(tests)
+        result = subprocess.run(
+            ["python3", script, test], stdout=subprocess.PIPE, stderr=subprocess.PIPE
+        )
+        output += result.stdout.decode("utf-8")
+        output += "\n"
+    end = time.time()
+    test_size = output.count("Launching Alloy...")
 
     with open(log, "w") as f:
-        f.write("Total time: " + str(total_time) + " seconds\n")
-        f.write("Number of tests: " + str(len(tests)) + "\n")
-        f.write("Average time: " + str(avg_time) + " seconds\n")
+        f.write("Time: " + str(end - start) + "s\n")
+        f.write("Tests: " + str(test_size) + "\n")
+        f.write("Average: " + str((end - start) / test_size) + "s\n")
 
 
 if __name__ == "__main__":
