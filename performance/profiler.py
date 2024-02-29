@@ -33,12 +33,13 @@ def get_alloy_performance(alloy_log):
         content = f.read()
         lines = content.split("\n")
         for line in lines:
+            line = line.strip()
             if "Time" in line:
-                time = line.split(" ")[-2]
+                time = line.split(" ")[-1]
             if "Tests" in line:
-                test_size = line.split(" ")[-2]
+                test_size = line.split(" ")[-1]
             if "Average" in line:
-                average = line.split(" ")[-2]
+                average = line.split(" ")[-1]
     return test_size, time, average
 
 

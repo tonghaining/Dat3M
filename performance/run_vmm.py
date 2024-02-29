@@ -36,9 +36,9 @@ def main():
     test_size = get_test_number(os.path.join(vulkan_repo_path, "tests"))
 
     with open(log, "w") as f:
-        f.write("Time: " + str(end - start) + "s\n")
+        f.write("Time:(s) " + str(end - start) + "\n")
         f.write("Tests: " + str(test_size) + "\n")
-        f.write("Average: " + str((end - start) / test_size) + "s\n")
+        f.write("Average:(s) " + str((end - start) / test_size) + "\n")
 
 
 if __name__ == "__main__":
