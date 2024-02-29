@@ -48,7 +48,8 @@ RUN cd /home && \
 
 # Profiler
 RUN cd /home/Dat3M && \
-    mvn test > /home/Dat3M/performance/dat3m.log && \
+    python3 -m pip install tabulate && \
+    mvn test | tee /home/Dat3M/performance/dat3m.log && \
     cd /home/Dat3M/performance && \
     python3 run_ptx.py /home/mixedproxy/ /home/Dat3M/performance/ptx.log && \
     python3 run_vmm.py /home/Vulkan-MemoryModel/alloy/ /home/Dat3M/performance/vmm.log && \
