@@ -43,7 +43,7 @@ import java.io.File;
 import java.math.BigInteger;
 import java.util.*;
 
-import static com.dat3m.dartagnan.GlobalSettings.LogGlobalSettings;
+import static com.dat3m.dartagnan.GlobalSettings.logGlobalSettings;
 import static com.dat3m.dartagnan.GlobalSettings.getOrCreateOutputDirectory;
 import static com.dat3m.dartagnan.configuration.OptionInfo.collectOptions;
 import static com.dat3m.dartagnan.configuration.OptionNames.PHANTOM_REFERENCES;
@@ -85,7 +85,7 @@ public class Dartagnan extends BaseOptions {
         Dartagnan o = new Dartagnan(config);
 
         GlobalSettings.configure(config);
-        LogGlobalSettings();
+        logGlobalSettings();
 
         File fileProgram = new File(Arrays.stream(args).filter(a -> supportedFormats.stream().anyMatch(a::endsWith))
                 .findFirst()
@@ -215,7 +215,7 @@ public class Dartagnan extends BaseOptions {
         // ------------------ Generate Witness, if possible ------------------
         final EnumSet<Property> properties = task.getProperty();
         if (task.getProgram().getFormat().equals(SourceLanguage.LLVM) && modelChecker.hasModel()
-                && properties.contains(PROGRAM_SPEC)) {
+                && properties.contains(PROGRAM_SPEC) && properties.size() == 1) {
             try {
                 WitnessBuilder w = WitnessBuilder.of(modelChecker.getEncodingContext(), prover,
                         modelChecker.getResult(), summary);
