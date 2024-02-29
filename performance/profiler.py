@@ -1,10 +1,31 @@
 import sys
+from tabulate import tabulate
 
-RELEVANT_TESTS = ["LitmusPTXv6_0Test", "LitmusPTXv7_5Test",
-                  "LitmusPTXv6_0LivenessTest", "LitmusPTXv7_5LivenessTest",
-                  "LitmusVulkanTest", "LitmusVulkanNochainsTest"
-                  "LitmusVulkanRacesTest", "LitmusVulkanRacesNochainsTest",
-                  "LitmusVulkanLivenessTest",]
+RELEVANT_TESTS = [
+    "LitmusPTXv6_0Test",
+    "LitmusPTXv7_5Test",
+    "LitmusPTXv6_0LivenessTest",
+    "LitmusPTXv7_5LivenessTest",
+    "LitmusVulkanTest",
+    "LitmusVulkanNochainsTest" "LitmusVulkanRacesTest",
+    "LitmusVulkanRacesNochainsTest",
+    "LitmusVulkanLivenessTest",
+]
+
+PTX_TESTS = [
+    "LitmusPTXv6_0Test",
+    "LitmusPTXv7_5Test",
+    "LitmusPTXv6_0LivenessTest",
+    "LitmusPTXv7_5LivenessTest",
+]
+
+VMM_TESTS = [
+    "LitmusVulkanTest",
+    "LitmusVulkanNochainsTest",
+    "LitmusVulkanRacesTest",
+    "LitmusVulkanRacesNochainsTest",
+    "LitmusVulkanLivenessTest",
+]
 
 
 def get_alloy_performance(alloy_log):
@@ -21,14 +42,14 @@ def get_alloy_performance(alloy_log):
     return test_size, time, average
 
 
-def get_dat3m_performance(dat3m_log):
+def get_dat3m_performance(dat3m_log, tests=RELEVANT_TESTS):
     result = []
     with open(dat3m_log, "r") as f:
         content = f.read()
         lines = content.split("\n")
         for line in lines:
             # check if line contains any of the relevant tests
-            if any(test in line for test in RELEVANT_TESTS) and ("Running" not in line):
+            if any(test in line for test in tests) and ("Running" not in line):
                 result.append(line)
 
     # print("\n".join(result))
@@ -40,8 +61,9 @@ def get_dat3m_performance(dat3m_log):
         colored_current_size = cols[0].split(" ")[-1]
         current_time = cols[-1].split(" ")[3]
         # remove color codes
-        current_size = colored_current_size.replace(
-            "\x1b[0;1;32m", "").replace("\x1b[m", "")
+        current_size = colored_current_size.replace("\x1b[0;1;32m", "").replace(
+            "\x1b[m", ""
+        )
         # print(colored_current_size)
         # print(current_size)
         # print(current_time)
@@ -62,15 +84,23 @@ def main():
     ptx_log = sys.argv[2]
     vmm_log = sys.argv[3]
 
-    dat3m_size, dat3m_time, dat3m_average = get_dat3m_performance(dat3m_log)
+    dat3m_ptx_size, dat3m_ptx_time, dat3m_ptx_average = get_dat3m_performance(
+        dat3m_log, tests=PTX_TESTS
+    )
+    dat3m_vmm_size, dat3m_vmm_time, dat3m_vmm_average = get_dat3m_performance(
+        dat3m_log, tests=VMM_TESTS
+    )
     ptx_size, ptx_time, ptx_average = get_alloy_performance(ptx_log)
     vmm_size, vmm_time, vmm_average = get_alloy_performance(vmm_log)
 
-    # Print result table to console
-    print("Dat3m\t\t| {}\t| {}\t| {}".format(
-        dat3m_size, dat3m_time, dat3m_average))
-    print("PTX\t\t| {}\t| {}\t| {}".format(ptx_size, ptx_time, ptx_average))
-    print("VMM\t\t| {}\t| {}\t| {}".format(vmm_size, vmm_time, vmm_average))
+    table = [
+        ["DAT3M", "PTX", dat3m_ptx_size, dat3m_ptx_time, dat3m_ptx_average],
+        ["ALLOY", "PTX", ptx_size, ptx_time, ptx_average],
+        ["DAT3M", "VMM", dat3m_vmm_size, dat3m_vmm_time, dat3m_vmm_average],
+        ["ALLOY", "VMM", vmm_size, vmm_time, vmm_average],
+    ]
+
+    print(tabulate(table, headers=["Tool", "Test", "Size", "Time", "Average"]))
 
 
 if __name__ == "__main__":
