@@ -21,7 +21,7 @@ RUN apt-get update && \
 
 # Set up Dat3M
 RUN cd home && \
-    git clone --depth=1 --branch asplos24artifact https://github.com/tonghaining/Dat3M.git && \
+    git clone --depth=1 --branch artifact https://github.com/tonghaining/Dat3M.git && \
     cd Dat3M && \
     mvn clean install -DskipTests
 
