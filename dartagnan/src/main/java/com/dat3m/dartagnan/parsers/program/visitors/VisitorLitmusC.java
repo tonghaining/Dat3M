@@ -17,9 +17,14 @@ import com.dat3m.dartagnan.program.ScopeHierarchy;
 import com.dat3m.dartagnan.program.event.Event;
 import com.dat3m.dartagnan.program.event.EventFactory;
 import com.dat3m.dartagnan.program.event.Tag;
+import com.dat3m.dartagnan.program.event.common.SingleAccessMemoryEvent;
 import com.dat3m.dartagnan.program.event.core.CondJump;
 import com.dat3m.dartagnan.program.event.core.IfAsJump;
 import com.dat3m.dartagnan.program.event.core.Label;
+import com.dat3m.dartagnan.program.event.lang.catomic.AtomicCmpXchg;
+import com.dat3m.dartagnan.program.event.lang.catomic.AtomicFetchOp;
+import com.dat3m.dartagnan.program.event.lang.catomic.AtomicLoad;
+import com.dat3m.dartagnan.program.event.lang.catomic.AtomicStore;
 import com.dat3m.dartagnan.program.memory.MemoryObject;
 import org.antlr.v4.runtime.misc.Interval;
 
@@ -214,15 +219,10 @@ public class VisitorLitmusC extends LitmusCBaseVisitor<Object> {
                 }
             }
         }
-        if (ctx.openCLSpace() != null) {
-            switch (ctx.openCLSpace().space) {
-                case Tag.OpenCL.GLOBAL_SPACE -> object.setIsThreadLocal(false);
-                case Tag.OpenCL.LOCAL_SPACE -> object.setIsThreadLocal(true);
-                default ->
-                        throw new ParsingException("Invalid OpenCL memory region: " + ctx.openCLSpace().space);
-            }
-        }
         Register register = programBuilder.getOrNewRegister(scope, name, archType);
+        if (ctx.openCLSpace() != null) {
+            register.setFromLocalObject(ctx.openCLSpace().space.equals(Tag.OpenCL.LOCAL_SPACE));
+        }
         programBuilder.addChild(currentThread, EventFactory.newLocal(register, object));
         return null;
     }
@@ -299,12 +299,9 @@ public class VisitorLitmusC extends LitmusCBaseVisitor<Object> {
     public Expression visitC11AtomicOp(LitmusCParser.C11AtomicOpContext ctx) {
         Register register = getReturnRegister(true);
         Expression value = returnExpressionOrOne(ctx.value);
-        Event event = EventFactory.Atomic.newFetchOp(register, getAddress(ctx.address), value, ctx.op, ctx.c11Mo().mo);
-        if (ctx.openCLScope() != null) {
-            event.addTags(ctx.openCLScope().scope);
-        } else {
-            event.addTags(Tag.OpenCL.MEMORY_SCOPE_DEV); // default memory_scope for OpenCL, TODO: check if this affects C11
-        }
+        AtomicFetchOp event = EventFactory.Atomic.newFetchOp(register, getAddress(ctx.address), value, ctx.op, ctx.c11Mo().mo);
+        assignOpenCLMemoryScope(event, ctx.openCLScope());
+        assignOpenCLMemorySpace(event);
         programBuilder.addChild(currentThread, event);
         return register;
     }
@@ -339,42 +336,12 @@ public class VisitorLitmusC extends LitmusCBaseVisitor<Object> {
     }
 
     @Override
-    public Expression visitReC11SCmpXchgExplicit(LitmusCParser.ReC11SCmpXchgExplicitContext ctx) {
-        Register register = getReturnRegister(true);
-        Expression value = (Expression)ctx.value.accept(this);
-        Event event = EventFactory.Atomic.newCompareExchange(register, getAddress(ctx.address), getAddress(ctx.expectedAdd), value, ctx.c11Mo(0).mo, true);
-        if (ctx.openCLScope() != null) {
-            event.addTags(ctx.openCLScope().scope);
-        }
-        programBuilder.addChild(currentThread, event);
-        return register;
-    }
-
-    @Override
     public Expression visitReC11SCmpXchg(LitmusCParser.ReC11SCmpXchgContext ctx) {
         Register register = getReturnRegister(true);
         Expression value = (Expression)ctx.value.accept(this);
-        Event event = EventFactory.Atomic.newCompareExchange(register, getAddress(ctx.address), getAddress(ctx.expectedAdd), value, C11.MO_SC, true);
-        event.addTags(Tag.OpenCL.MEMORY_SCOPE_DEV); // default memory_scope for OpenCL, TODO: check if this affects C11
-        programBuilder.addChild(currentThread, event);
-        return register;
-    }
-
-    @Override
-    public Expression visitReC11WCmpXchgExplicit(LitmusCParser.ReC11WCmpXchgExplicitContext ctx) {
-        Register register = getReturnRegister(true);
-        Expression value = (Expression)ctx.value.accept(this);
-        Event event = EventFactory.Atomic.newCompareExchange(register, getAddress(ctx.address), getAddress(ctx.expectedAdd), value, ctx.c11Mo(0).mo, false);
-        if (ctx.openCLScope() != null) {
-            event.addTags(ctx.openCLScope().scope);
-        }
-        if (value instanceof MemoryObject) {
-            if (((MemoryObject) value).isThreadLocal()) {
-                event.addTags(Tag.OpenCL.LOCAL_SPACE);
-            } else {
-                event.addTags(Tag.OpenCL.GLOBAL_SPACE);
-            }
-        }
+        AtomicCmpXchg event = EventFactory.Atomic.newCompareExchange(register, getAddress(ctx.address), getAddress(ctx.expectedAdd), value, C11.MO_SC, true);
+        event.addTags(Tag.OpenCL.MEMORY_SCOPE_DEV); // default memory_scope for OpenCL
+        assignOpenCLMemorySpace(event);
         programBuilder.addChild(currentThread, event);
         return register;
     }
@@ -383,8 +350,31 @@ public class VisitorLitmusC extends LitmusCBaseVisitor<Object> {
     public Expression visitReC11WCmpXchg(LitmusCParser.ReC11WCmpXchgContext ctx) {
         Register register = getReturnRegister(true);
         Expression value = (Expression)ctx.value.accept(this);
-        Event event = EventFactory.Atomic.newCompareExchange(register, getAddress(ctx.address), getAddress(ctx.expectedAdd), value, C11.MO_SC, false);
-        event.addTags(Tag.OpenCL.MEMORY_SCOPE_DEV); // default memory_scope for OpenCL, TODO: check if this affects C11
+        AtomicCmpXchg event = EventFactory.Atomic.newCompareExchange(register, getAddress(ctx.address), getAddress(ctx.expectedAdd), value, C11.MO_SC, false);
+        event.addTags(Tag.OpenCL.MEMORY_SCOPE_DEV); // default memory_scope for OpenCL
+        assignOpenCLMemorySpace(event);
+        programBuilder.addChild(currentThread, event);
+        return register;
+    }
+
+    @Override
+    public Expression visitReC11SCmpXchgExplicit(LitmusCParser.ReC11SCmpXchgExplicitContext ctx) {
+        Register register = getReturnRegister(true);
+        Expression value = (Expression)ctx.value.accept(this);
+        AtomicCmpXchg event = EventFactory.Atomic.newCompareExchange(register, getAddress(ctx.address), getAddress(ctx.expectedAdd), value, ctx.c11Mo(0).mo, true);
+        assignOpenCLMemoryScope(event, ctx.openCLScope());
+        assignOpenCLMemorySpace(event);
+        programBuilder.addChild(currentThread, event);
+        return register;
+    }
+
+    @Override
+    public Expression visitReC11WCmpXchgExplicit(LitmusCParser.ReC11WCmpXchgExplicitContext ctx) {
+        Register register = getReturnRegister(true);
+        Expression value = (Expression)ctx.value.accept(this);
+        AtomicCmpXchg event = EventFactory.Atomic.newCompareExchange(register, getAddress(ctx.address), getAddress(ctx.expectedAdd), value, ctx.c11Mo(0).mo, false);
+        assignOpenCLMemoryScope(event, ctx.openCLScope());
+        assignOpenCLMemorySpace(event);
         programBuilder.addChild(currentThread, event);
         return register;
     }
@@ -401,18 +391,18 @@ public class VisitorLitmusC extends LitmusCBaseVisitor<Object> {
 
     @Override public Expression visitReC11LoadExplicit(LitmusCParser.ReC11LoadExplicitContext ctx) {
         Register register = getReturnRegister(true);
-        Event event = EventFactory.Atomic.newLoad(register, getAddress(ctx.address), ctx.c11Mo().mo);
-        if (ctx.openCLScope() != null) {
-            event.addTags(ctx.openCLScope().scope);
-        }
+        AtomicLoad event = EventFactory.Atomic.newLoad(register, getAddress(ctx.address), ctx.c11Mo().mo);
+        assignOpenCLMemoryScope(event, ctx.openCLScope());
+        assignOpenCLMemorySpace(event);
         programBuilder.addChild(currentThread, event);
         return register;
     }
 
     @Override public Expression visitReC11Load(LitmusCParser.ReC11LoadContext ctx) {
         Register register = getReturnRegister(true);
-        Event event = EventFactory.Atomic.newLoad(register, getAddress(ctx.address), C11.MO_SC);
-        event.addTags(Tag.OpenCL.MEMORY_SCOPE_DEV); // default memory_scope for OpenCL, TODO: check if this affects C11
+        AtomicLoad event = EventFactory.Atomic.newLoad(register, getAddress(ctx.address), C11.MO_SC);
+        event.addTags(Tag.OpenCL.MEMORY_SCOPE_DEV); // default memory_scope for OpenCL
+        assignOpenCLMemorySpace(event);
         programBuilder.addChild(currentThread, event);
         return register;
     }
@@ -549,25 +539,18 @@ public class VisitorLitmusC extends LitmusCBaseVisitor<Object> {
     @Override
     public Object visitNreC11StoreExplicit(LitmusCParser.NreC11StoreExplicitContext ctx) {
         Expression value = (Expression)ctx.value.accept(this);
-        Event event = EventFactory.Atomic.newStore(getAddress(ctx.address), value, ctx.c11Mo().mo);
-        if (ctx.openCLScope() != null) {
-            event.addTags(ctx.openCLScope().scope);
-        }
-        if (value instanceof MemoryObject) {
-            if (((MemoryObject) value).isThreadLocal()) {
-                event.addTags(Tag.OpenCL.LOCAL_SPACE);
-            } else {
-                event.addTags(Tag.OpenCL.GLOBAL_SPACE);
-            }
-        }
+        AtomicStore event = EventFactory.Atomic.newStore(getAddress(ctx.address), value, ctx.c11Mo().mo);
+        assignOpenCLMemoryScope(event, ctx.openCLScope());
+        assignOpenCLMemorySpace(event);
         return programBuilder.addChild(currentThread, event);
     }
 
     @Override
     public Object visitNreC11Store(LitmusCParser.NreC11StoreContext ctx) {
         Expression value = (Expression)ctx.value.accept(this);
-        Event event = EventFactory.Atomic.newStore(getAddress(ctx.address), value, Tag.C11.MO_SC);
-        event.addTags(Tag.OpenCL.MEMORY_SCOPE_DEV); // default memory_scope for OpenCL, TODO: check if this affects C11
+        AtomicStore event = EventFactory.Atomic.newStore(getAddress(ctx.address), value, C11.MO_SC);
+        event.addTags(Tag.OpenCL.MEMORY_SCOPE_DEV); // default memory_scope for OpenCL
+        assignOpenCLMemorySpace(event);
         return programBuilder.addChild(currentThread, event);
     }
 
@@ -697,5 +680,24 @@ public class VisitorLitmusC extends LitmusCBaseVisitor<Object> {
             programBuilder.addChild(currentThread, EventFactory.newLocal(register, cast));
         }
         return value;
+    }
+
+    private void assignOpenCLMemoryScope(Event event, LitmusCParser.OpenCLScopeContext ctx) {
+        if (ctx != null) {
+            event.addTags(Tag.OpenCL.MemoryScope(ctx.scope));
+        } else {
+            event.addTags(Tag.OpenCL.MEMORY_SCOPE_DEV); // default memory_scope for OpenCL
+        }
+    }
+
+    private void assignOpenCLMemorySpace(SingleAccessMemoryEvent event) {
+        if (!(event.getAddress() instanceof Register)) {
+            return;
+        }
+        if (((Register) event.getAddress()).isFromLocalObject()) {
+            event.addTags(Tag.OpenCL.LOCAL_SPACE);
+        } else {
+            event.addTags(Tag.OpenCL.GLOBAL_SPACE);
+        }
     }
 }
