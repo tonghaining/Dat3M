@@ -14,8 +14,9 @@ import com.dat3m.dartagnan.program.event.Event;
 import com.dat3m.dartagnan.program.event.EventFactory;
 import com.dat3m.dartagnan.program.event.core.Local;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
-import java.util.function.Function;
 
 public class VisitorOpsBits extends SpirvBaseVisitor<Event> {
 
@@ -42,6 +43,21 @@ public class VisitorOpsBits extends SpirvBaseVisitor<Event> {
         return visitShiftBinExpression(ctx.idResult(), ctx.idResultType(), ctx.base(), ctx.shift(), IntBinaryOp.ARSHIFT);
     }
 
+    @Override
+    public Event visitOpBitwiseAnd(SpirvParser.OpBitwiseAndContext ctx) {
+        return visitBitwiseExpression(ctx.idResult(), ctx.idResultType(), ctx.operand1(), ctx.operand2(), IntBinaryOp.AND);
+    }
+
+    @Override
+    public Event visitOpBitwiseOr(SpirvParser.OpBitwiseOrContext ctx) {
+        return visitBitwiseExpression(ctx.idResult(), ctx.idResultType(), ctx.operand1(), ctx.operand2(), IntBinaryOp.OR);
+    }
+
+    @Override
+    public Event visitOpBitwiseXor(SpirvParser.OpBitwiseXorContext ctx) {
+        return visitBitwiseExpression(ctx.idResult(), ctx.idResultType(), ctx.operand1(), ctx.operand2(), IntBinaryOp.XOR);
+    }
+
     private Event visitShiftBinExpression(
             SpirvParser.IdResultContext idCtx,
             SpirvParser.IdResultTypeContext typeCtx,
@@ -49,43 +65,74 @@ public class VisitorOpsBits extends SpirvBaseVisitor<Event> {
             SpirvParser.ShiftContext op2Ctx,
             IntBinaryOp op) {
         String id = idCtx.getText();
-        return forType(id, typeCtx.getText(), bType -> {
-            Expression op1 = getOperandInteger(id, op1Ctx.getText());
-            Expression op2 = getOperandInteger(id, op2Ctx.getText());
-            return EXPR_FACTORY.makeBinary(op1, op, op2);
-        });
-    }
-
-    private Event forType(String id, String typeId, Function<IntegerType, Expression> f) {
-        Type type = builder.getType(typeId);
-        if (type instanceof IntegerType bType) {
-            Register register = builder.addRegister(id, typeId);
-            Local event = EventFactory.newLocal(register, f.apply(bType));
-            return builder.addEvent(event);
-        }
-        if (type instanceof ArrayType) {
-            throw new ParsingException("Unsupported result type for '%s', " +
-                    "vector types are not supported", id);
+        Type type = builder.getType(typeCtx.getText());
+        Expression op1 = builder.getExpression(op1Ctx.getText());
+        Expression op2 = builder.getExpression(op2Ctx.getText());
+        if (type instanceof IntegerType) {
+            return createEventForIntegerType(id, typeCtx.getText(), op1, op2, op);
         }
         throw new ParsingException("Illegal result type for '%s'", id);
     }
 
-    private Expression getOperandInteger(String id, String opId) {
-        Expression op = builder.getExpression(opId);
-        if (op.getType() instanceof IntegerType) {
-            return op;
+    private Event visitBitwiseExpression(
+            SpirvParser.IdResultContext idCtx,
+            SpirvParser.IdResultTypeContext typeCtx,
+            SpirvParser.Operand1Context op1Ctx,
+            SpirvParser.Operand2Context op2Ctx,
+            IntBinaryOp op) {
+        String id = idCtx.getText();
+        Type type = builder.getType(typeCtx.getText());
+        Expression op1 = builder.getExpression(op1Ctx.getText());
+        Expression op2 = builder.getExpression(op2Ctx.getText());
+        if (type instanceof IntegerType) {
+            return createEventForIntegerType(id, typeCtx.getText(), op1, op2, op);
+        } else if (type instanceof ArrayType) {
+            return createEventsForArrayType(id, typeCtx.getText(), op1, op2, op);
         }
-        throw new ParsingException("Illegal definition for '%s', " +
-                "operand '%s' must be an integer", id, opId);
+        throw new ParsingException("Illegal result type for '%s'", id);
+    }
+
+    private Event createEventsForArrayType(String id, String type, Expression op1, Expression op2, IntBinaryOp op) {
+        ArrayType arrayType = (ArrayType) builder.getType(type);
+        checkTypeAlignment(id, arrayType, op1);
+        checkTypeAlignment(id, arrayType, op2);
+        List<Expression> results = new ArrayList<>();
+        for (int i = 0; i < arrayType.getNumElements(); i++) {
+            Expression op1Element = op1.getOperands().get(i);
+            Expression op2Element = op2.getOperands().get(i);
+            Expression resultElement = EXPR_FACTORY.makeBinary(op1Element, op, op2Element);
+            results.add(resultElement);
+        }
+        Register register = builder.addRegister(id, type);
+        Local event = EventFactory.newLocal(register, EXPR_FACTORY.makeArray(arrayType.getElementType(), results, true));
+        return builder.addEvent(event);
+    }
+
+    private Event createEventForIntegerType(String id, String typeId, Expression op1, Expression op2, IntBinaryOp op) {
+        Type idType = builder.getType(typeId);
+        checkTypeAlignment(id, idType, op1);
+        checkTypeAlignment(id, idType, op2);
+        Register register = builder.addRegister(id, typeId);
+        Local event = EventFactory.newLocal(register, EXPR_FACTORY.makeBinary(op1, op, op2));
+        return builder.addEvent(event);
+    }
+
+    private void checkTypeAlignment(String id, Type idType, Expression op) {
+        Type opType = op.getType();
+        if (idType != opType) {
+            throw new ParsingException("Illegal definition for '%s', " +
+                    "operand '%s' must be of type '%s'", id, op, idType);
+        }
     }
 
     public Set<String> getSupportedOps() {
         return Set.of(
                 "OpShiftLeftLogical",
                 "OpShiftRightLogical",
-                "opShiftRightArithmetic"
+                "opShiftRightArithmetic",
+                "OpBitwiseAnd",
+                "OpBitwiseOr",
+                "OpBitwiseXor"
         );
     }
-
-    // TODO: Testing
 }
