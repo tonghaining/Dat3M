@@ -36,8 +36,12 @@ public class Memory {
     }
 
     public VirtualMemoryObject allocateVirtual(int size, boolean generic, VirtualMemoryObject alias) {
+        return this.allocateVirtualWithType(size, ptrType, generic, alias);
+    }
+
+    public VirtualMemoryObject allocateVirtualWithType(int size, Type type, boolean generic, VirtualMemoryObject alias) {
         Preconditions.checkArgument(size > 0, "Illegal allocation. Size must be positive");
-        final VirtualMemoryObject address = new VirtualMemoryObject(nextIndex++, size, generic, alias, ptrType);
+        final VirtualMemoryObject address = new VirtualMemoryObject(nextIndex++, size, generic, alias, type);
         objects.add(address);
         return address;
     }

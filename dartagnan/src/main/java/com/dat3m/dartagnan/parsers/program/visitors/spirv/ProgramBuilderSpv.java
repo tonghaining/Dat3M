@@ -4,8 +4,7 @@ import com.dat3m.dartagnan.exception.ParsingException;
 import com.dat3m.dartagnan.expression.Expression;
 import com.dat3m.dartagnan.expression.Type;
 import com.dat3m.dartagnan.expression.processing.ExprTransformer;
-import com.dat3m.dartagnan.expression.type.FunctionType;
-import com.dat3m.dartagnan.expression.type.TypeFactory;
+import com.dat3m.dartagnan.expression.type.*;
 import com.dat3m.dartagnan.parsers.program.visitors.spirv.decorations.BuiltIn;
 import com.dat3m.dartagnan.parsers.program.visitors.spirv.decorations.Decoration;
 import com.dat3m.dartagnan.parsers.program.visitors.spirv.decorations.DecorationType;
@@ -227,8 +226,9 @@ public class ProgramBuilderSpv {
         return program.getMemory().allocate(bytes);
     }
 
-    public MemoryObject allocateMemoryVirtual(int bytes) {
-        return program.getMemory().allocateVirtual(bytes, true, null);
+    public MemoryObject allocateMemoryVirtual(int bytes, Type type) {
+        Type integerType = this.getBaseType(type);
+        return program.getMemory().allocateVirtualWithType(bytes, integerType, true, null);
     }
 
     public Expression newUndefinedValue(Type type) {
@@ -261,15 +261,27 @@ public class ProgramBuilderSpv {
         if (pointedTypes.containsKey(name)) {
             throw new ParsingException("Duplicated pointer type definition '%s'", name);
         }
-        getType(innerTypeId);
+        Type type = getType(innerTypeId);
         pointedTypes.put(name, innerTypeId);
         if (pointerClasses.containsKey(name)) {
             throw new ParsingException("Duplicated variable storage class definition '%s'", name);
         }
         pointerClasses.put(name, getStorageClass(cls));
-        Type type = TypeFactory.getInstance().getPointerType();
-        types.put(name, type);
-        return type;
+        Type baseType = getBaseType(type);
+        types.put(name, baseType);
+        return baseType;
+    }
+
+    private Type getBaseType(Type type) {
+        if (type instanceof IntegerType) {
+            return type;
+        } else if (type instanceof ArrayType arrayType) {
+            return getBaseType(arrayType.getElementType());
+        } else if (type instanceof AggregateType aggregateType) {
+            return getBaseType(aggregateType.getDirectFields().get(0));
+        } else {
+            return TypeFactory.getInstance().getPointerType();
+        }
     }
 
     public Type getPointedType(String name) {

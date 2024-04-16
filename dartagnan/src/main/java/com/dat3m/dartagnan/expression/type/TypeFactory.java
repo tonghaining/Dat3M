@@ -86,6 +86,10 @@ public final class TypeFactory {
         return pointerDifferenceType;
     }
 
+    public IntegerType getArchTypeFromType(Type type) {
+        return getIntegerType(getMemorySizeInBytes(type) * 8);
+    }
+
     public IntegerType getByteType() {
         return getIntegerType(8);
     }

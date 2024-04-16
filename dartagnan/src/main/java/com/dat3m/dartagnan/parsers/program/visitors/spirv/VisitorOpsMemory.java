@@ -81,7 +81,7 @@ public class VisitorOpsMemory extends SpirvBaseVisitor<Event> {
             value = builder.newUndefinedValue(type);
         }
         int size = TYPE_FACTORY.getMemorySizeInBytes(type);
-        MemoryObject memObj = builder.allocateMemoryVirtual(size);
+        MemoryObject memObj = builder.allocateMemoryVirtual(size, type);
         memObj.setName(id);
         setInitialValue(memObj, 0, value);
         builder.addExpression(id, memObj);
@@ -310,7 +310,7 @@ public class VisitorOpsMemory extends SpirvBaseVisitor<Event> {
         // TODO: Simplify if all indexes are constants
         Type elementType = type.getElementType();
         int size = TYPE_FACTORY.getMemorySizeInBytes(elementType);
-        IntLiteral sizeExpr = EXPR_FACTORY.makeValue(size, TYPE_FACTORY.getArchType());
+        IntLiteral sizeExpr = EXPR_FACTORY.makeValue(size, TYPE_FACTORY.getArchTypeFromType(elementType));
         Expression indexExpr = EXPR_FACTORY.makeIntegerCast(indexes.get(0), sizeExpr.getType(), false);
         Expression offsetExpr = EXPR_FACTORY.makeBinary(sizeExpr, MUL, indexExpr);
         if (indexes.size() > 1) {
@@ -333,7 +333,7 @@ public class VisitorOpsMemory extends SpirvBaseVisitor<Event> {
             for (int i = 0; i < value; i++) {
                 offset += TYPE_FACTORY.getMemorySizeInBytes(type.getDirectFields().get(i));
             }
-            IntLiteral offsetExpr = EXPR_FACTORY.makeValue(offset, TYPE_FACTORY.getArchType());
+            IntLiteral offsetExpr = EXPR_FACTORY.makeValue(offset, TYPE_FACTORY.getArchTypeFromType(iValue.getType()));
             if (indexes.size() > 1) {
                 Expression remainingOffsetExpr = getMemberPtr(id, resultType, type.getDirectFields().get(value), indexes.subList(1, indexes.size()));
                 return EXPR_FACTORY.makeBinary(offsetExpr, ADD, remainingOffsetExpr);

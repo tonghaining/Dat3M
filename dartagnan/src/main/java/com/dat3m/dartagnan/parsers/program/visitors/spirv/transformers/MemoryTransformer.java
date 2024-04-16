@@ -87,7 +87,7 @@ public class MemoryTransformer extends ExprTransformer {
             MemoryObject copy;
             if (memObj instanceof VirtualMemoryObject) {
                 // TODO: alias
-                copy = program.getMemory().allocateVirtual(memObj.size(), true, null);
+                copy = program.getMemory().allocateVirtualWithType(memObj.size(), memObj.getType(), true, null);
             } else {
                 copy = program.getMemory().allocate(memObj.size());
             }
