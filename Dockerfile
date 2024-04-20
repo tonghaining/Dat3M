@@ -20,8 +20,8 @@ RUN apt-get update && \
     apt-get install -y graphviz
 
 # Set up Dat3M
-RUN cd home && \
-    git clone --depth=1 --branch artifact https://github.com/tonghaining/Dat3M.git && \
+WORKDIR /home
+RUN git clone --depth=1 --branch artifact https://github.com/tonghaining/Dat3M.git && \
     cd Dat3M && \
     mvn clean install -DskipTests
 
@@ -34,23 +34,25 @@ ENV CFLAGS="-I$DAT3M_HOME/include"
 ENV OPTFLAGS="-mem2reg -sroa -early-cse -indvars -loop-unroll -fix-irreducible -loop-simplify -simplifycfg -gvn"
 
 # Set up mixedproxy
-RUN cd /home && \
-    git clone --depth=1 --branch manual https://github.com/tonghaining/mixedproxy.git && \
+WORKDIR /home
+RUN git clone --depth=1 --branch manual https://github.com/tonghaining/mixedproxy.git && \
     cd /home/mixedproxy && \
     python3 -m pip install --upgrade pip lark-parser && \
     make
 
 # Set up Vulkan-MemoryModel
-RUN cd /home && \
-    git clone --depth=1 --branch manual https://github.com/tonghaining/Vulkan-MemoryModel.git && \
+WORKDIR /home
+RUN git clone --depth=1 --branch manual https://github.com/tonghaining/Vulkan-MemoryModel.git && \
     cd /home/Vulkan-MemoryModel/alloy && \
     wget https://oss.sonatype.org/content/repositories/snapshots/org/alloytools/org.alloytools.alloy.dist/5.0.0-SNAPSHOT/org.alloytools.alloy.dist-5.0.0-20190619.101010-34.jar
 
+# Run Dat3M
+WORKDIR /home/Dat3M
+RUN mvn test | tee /home/Dat3M/performance/dat3m.log
+
 # Profiler
-RUN cd /home/Dat3M && \
-    python3 -m pip install tabulate && \
-    mvn test | tee /home/Dat3M/performance/dat3m.log && \
-    cd /home/Dat3M/performance && \
+WORKDIR /home/Dat3M/performance
+RUN python3 -m pip install tabulate && \
     python3 run_ptx.py /home/mixedproxy/ /home/Dat3M/performance/ptx.log && \
     python3 run_vmm.py /home/Vulkan-MemoryModel/alloy/ /home/Dat3M/performance/vmm.log && \
-    python3 profiler.py dat3m.log ptx.log vmm.log
+    python3 profiler.py dat3m.log ptx.log vmm.log result.csv
