@@ -38,9 +38,10 @@ def main():
     test_size = output.count("Launching Alloy...")
 
     with open(log, "w") as f:
-        f.write("Time:(s) " + str(end - start) + "s\n")
-        f.write("Tests: " + str(test_size) + "\n")
-        f.write("Average:(s) " + str((end - start) / test_size) + "\n")
+        f.write(f"Time:(s) {end - start}\n")
+        f.write(f"Safety Check: {test_size}\n")
+        f.write("DR Check: 0\n")
+        f.write(f"Average:(s) {(end - start) / test_size}\n")
 
 
 if __name__ == "__main__":

@@ -1,504 +1,500 @@
-[[1;34mINFO[m] Scanning for projects...
-[[1;34mINFO[m] [1m------------------------------------------------------------------------[m
-[[1;34mINFO[m] [1mReactor Build Order:[m
-[[1;34mINFO[m] 
-[[1;34mINFO[m] dat3m                                                              [pom]
-[[1;34mINFO[m] dartagnan                                                          [jar]
-[[1;34mINFO[m] ui                                                                 [jar]
-[[1;34mINFO[m] svcomp                                                             [jar]
-[[1;34mINFO[m] 
-[[1;34mINFO[m] [1m--------------------------< [0;36mcom.dat3m:dat3m[0;1m >---------------------------[m
-[[1;34mINFO[m] [1mBuilding dat3m 4.0.0                                               [1/4][m
-[[1;34mINFO[m] [1m--------------------------------[ pom ]---------------------------------[m
-[[1;34mINFO[m] 
-[[1;34mINFO[m] [1m------------------------< [0;36mcom.dat3m:dartagnan[0;1m >-------------------------[m
-[[1;34mINFO[m] [1mBuilding dartagnan 4.0.0                                           [2/4][m
-[[1;34mINFO[m] [1m--------------------------------[ jar ]---------------------------------[m
-[[1;33mWARNING[m] The POM for org.sosy-lab:javasmt-solver-boolector:so:libboolector:3.2.2-g1a89c229 is invalid, transitive dependencies (if any) will not be available, enable debug logging for more details
-[[1;33mWARNING[m] The POM for org.sosy-lab:javasmt-solver-boolector:so:libminisat:3.2.2-g1a89c229 is invalid, transitive dependencies (if any) will not be available, enable debug logging for more details
-[[1;33mWARNING[m] The POM for org.sosy-lab:javasmt-solver-boolector:so:libpicosat:3.2.2-g1a89c229 is invalid, transitive dependencies (if any) will not be available, enable debug logging for more details
-[[1;33mWARNING[m] The POM for org.sosy-lab:javasmt-solver-yices2:so:libyices2j:2.6.2-396-g194350c1 is invalid, transitive dependencies (if any) will not be available, enable debug logging for more details
-[[1;34mINFO[m] 
-[[1;34mINFO[m] [1m--- [0;32mmaven-dependency-plugin:3.6.0:copy-dependencies[m [1m(copy-dependencies)[m @ [36mdartagnan[0;1m ---[m
-[[1;34mINFO[m] org.antlr:antlr4-runtime:jar:4.13.0 already exists in destination.
-[[1;34mINFO[m] commons-cli:commons-cli:jar:1.5.0 already exists in destination.
-[[1;34mINFO[m] com.google.guava:guava:jar:32.1.2-jre already exists in destination.
-[[1;34mINFO[m] com.google.guava:failureaccess:jar:1.0.1 already exists in destination.
-[[1;34mINFO[m] com.google.guava:listenablefuture:jar:9999.0-empty-to-avoid-conflict-with-guava already exists in destination.
-[[1;34mINFO[m] com.google.code.findbugs:jsr305:jar:3.0.2 already exists in destination.
-[[1;34mINFO[m] org.checkerframework:checker-qual:jar:3.33.0 already exists in destination.
-[[1;34mINFO[m] com.google.errorprone:error_prone_annotations:jar:2.18.0 already exists in destination.
-[[1;34mINFO[m] com.google.j2objc:j2objc-annotations:jar:2.8 already exists in destination.
-[[1;34mINFO[m] org.sosy-lab:java-smt:jar:4.1.0 already exists in destination.
-[[1;34mINFO[m] org.sosy-lab:common:jar:0.3000-569-g89796f98 already exists in destination.
-[[1;34mINFO[m] com.github.spotbugs:spotbugs-annotations:jar:4.7.3 already exists in destination.
-[[1;34mINFO[m] de.uni-freiburg.informatik.ultimate:smtinterpol:jar:2.5-1242-g5c50fb6d already exists in destination.
-[[1;34mINFO[m] io.github.uuverifiers:princess_2.13:jar:2023-06-19 already exists in destination.
-[[1;34mINFO[m] org.scala-lang:scala-library:jar:2.13.10 already exists in destination.
-[[1;34mINFO[m] io.github.uuverifiers:princess-parser_2.13:jar:2023-06-19 already exists in destination.
-[[1;34mINFO[m] io.github.uuverifiers:princess-smt-parser_2.13:jar:2023-06-19 already exists in destination.
-[[1;34mINFO[m] org.scala-lang.modules:scala-parser-combinators_2.13:jar:1.1.2 already exists in destination.
-[[1;34mINFO[m] net.sf.squirrel-sql.thirdparty-non-maven:java-cup:jar:0.11a already exists in destination.
-[[1;34mINFO[m] org.codehaus.mojo:animal-sniffer-annotations:jar:1.18 already exists in destination.
-[[1;34mINFO[m] org.apache.logging.log4j:log4j-api:jar:2.20.0 already exists in destination.
-[[1;34mINFO[m] org.apache.logging.log4j:log4j-core:jar:2.20.0 already exists in destination.
-[[1;34mINFO[m] org.sosy-lab:javasmt-solver-z3:jar:com.microsoft.z3:4.12.2 already exists in destination.
-[[1;34mINFO[m] org.sosy-lab:javasmt-solver-cvc4:jar:CVC4:1.8-prerelease-2020-06-24-g7825d8f28 already exists in destination.
-[[1;34mINFO[m] org.sosy-lab:javasmt-solver-cvc5:jar:cvc5:1.0.5-g4cb2ab9eb already exists in destination.
-[[1;34mINFO[m] org.sosy-lab:javasmt-solver-opensmt:jar:opensmt:2.5.2-g7f502169 already exists in destination.
-[[1;34mINFO[m] org.sosy-lab:javasmt-yices2:jar:4.1.0-1-gc58fe5b4 already exists in destination.
-[[1;34mINFO[m] 
-[[1;34mINFO[m] [1m--- [0;32mmaven-dependency-plugin:3.6.0:copy[m [1m(copy)[m @ [36mdartagnan[0;1m ---[m
-[[1;34mINFO[m] Configured Artifact: org.sosy-lab:javasmt-solver-z3:libz3java:?:so
-[[1;34mINFO[m] Configured Artifact: org.sosy-lab:javasmt-solver-z3:libz3:?:so
-[[1;34mINFO[m] Configured Artifact: org.sosy-lab:javasmt-solver-mathsat5:libmathsat5j:?:so
-[[1;34mINFO[m] Configured Artifact: org.sosy-lab:javasmt-solver-boolector:libboolector:?:so
-[[1;33mWARNING[m] The POM for org.sosy-lab:javasmt-solver-boolector:so:libboolector:3.2.2-g1a89c229 is invalid, transitive dependencies (if any) will not be available, enable debug logging for more details
-[[1;34mINFO[m] Configured Artifact: org.sosy-lab:javasmt-solver-boolector:libminisat:?:so
-[[1;33mWARNING[m] The POM for org.sosy-lab:javasmt-solver-boolector:so:libminisat:3.2.2-g1a89c229 is invalid, transitive dependencies (if any) will not be available, enable debug logging for more details
-[[1;34mINFO[m] Configured Artifact: org.sosy-lab:javasmt-solver-boolector:libpicosat:?:so
-[[1;33mWARNING[m] The POM for org.sosy-lab:javasmt-solver-boolector:so:libpicosat:3.2.2-g1a89c229 is invalid, transitive dependencies (if any) will not be available, enable debug logging for more details
-[[1;34mINFO[m] Configured Artifact: org.sosy-lab:javasmt-solver-cvc4:libcvc4:?:so
-[[1;34mINFO[m] Configured Artifact: org.sosy-lab:javasmt-solver-cvc4:libcvc4jni:?:so
-[[1;34mINFO[m] Configured Artifact: org.sosy-lab:javasmt-solver-cvc4:libcvc4parser:?:so
-[[1;34mINFO[m] Configured Artifact: org.sosy-lab:javasmt-solver-cvc5:libcvc5:?:so
-[[1;34mINFO[m] Configured Artifact: org.sosy-lab:javasmt-solver-cvc5:libcvc5jni:?:so
-[[1;34mINFO[m] Configured Artifact: org.sosy-lab:javasmt-solver-cvc5:libcvc5parser:?:so
-[[1;34mINFO[m] Configured Artifact: org.sosy-lab:javasmt-solver-cvc5:libpoly:?:so
-[[1;34mINFO[m] Configured Artifact: org.sosy-lab:javasmt-solver-cvc5:libpolyxx:?:so
-[[1;34mINFO[m] Configured Artifact: org.sosy-lab:javasmt-solver-opensmt:libopensmtjava:?:so
-[[1;34mINFO[m] Configured Artifact: org.sosy-lab:javasmt-solver-opensmt:libopensmt:?:so
-[[1;34mINFO[m] Configured Artifact: org.sosy-lab:javasmt-solver-yices2:libyices2j:?:so
-[[1;33mWARNING[m] The POM for org.sosy-lab:javasmt-solver-yices2:so:libyices2j:2.6.2-396-g194350c1 is invalid, transitive dependencies (if any) will not be available, enable debug logging for more details
-[[1;34mINFO[m] org.sosy-lab:javasmt-solver-z3:libz3java:4.12.2:so already exists in /home/local/haintong/Documents/workspace/Dat3M/dartagnan/target/libs
-[[1;34mINFO[m] org.sosy-lab:javasmt-solver-z3:libz3:4.12.2:so already exists in /home/local/haintong/Documents/workspace/Dat3M/dartagnan/target/libs
-[[1;34mINFO[m] org.sosy-lab:javasmt-solver-mathsat5:libmathsat5j:5.6.10:so already exists in /home/local/haintong/Documents/workspace/Dat3M/dartagnan/target/libs
-[[1;34mINFO[m] org.sosy-lab:javasmt-solver-boolector:libboolector:3.2.2-g1a89c229:so already exists in /home/local/haintong/Documents/workspace/Dat3M/dartagnan/target/libs
-[[1;34mINFO[m] org.sosy-lab:javasmt-solver-boolector:libminisat:3.2.2-g1a89c229:so already exists in /home/local/haintong/Documents/workspace/Dat3M/dartagnan/target/libs
-[[1;34mINFO[m] org.sosy-lab:javasmt-solver-boolector:libpicosat:3.2.2-g1a89c229:so already exists in /home/local/haintong/Documents/workspace/Dat3M/dartagnan/target/libs
-[[1;34mINFO[m] org.sosy-lab:javasmt-solver-cvc4:libcvc4:1.8-prerelease-2020-06-24-g7825d8f28:so already exists in /home/local/haintong/Documents/workspace/Dat3M/dartagnan/target/libs
-[[1;34mINFO[m] org.sosy-lab:javasmt-solver-cvc4:libcvc4jni:1.8-prerelease-2020-06-24-g7825d8f28:so already exists in /home/local/haintong/Documents/workspace/Dat3M/dartagnan/target/libs
-[[1;34mINFO[m] org.sosy-lab:javasmt-solver-cvc4:libcvc4parser:1.8-prerelease-2020-06-24-g7825d8f28:so already exists in /home/local/haintong/Documents/workspace/Dat3M/dartagnan/target/libs
-[[1;34mINFO[m] org.sosy-lab:javasmt-solver-cvc5:libcvc5:1.0.5-g4cb2ab9eb:so already exists in /home/local/haintong/Documents/workspace/Dat3M/dartagnan/target/libs
-[[1;34mINFO[m] org.sosy-lab:javasmt-solver-cvc5:libcvc5jni:1.0.5-g4cb2ab9eb:so already exists in /home/local/haintong/Documents/workspace/Dat3M/dartagnan/target/libs
-[[1;34mINFO[m] org.sosy-lab:javasmt-solver-cvc5:libcvc5parser:1.0.5-g4cb2ab9eb:so already exists in /home/local/haintong/Documents/workspace/Dat3M/dartagnan/target/libs
-[[1;34mINFO[m] org.sosy-lab:javasmt-solver-cvc5:libpoly:1.0.5-g4cb2ab9eb:so already exists in /home/local/haintong/Documents/workspace/Dat3M/dartagnan/target/libs
-[[1;34mINFO[m] org.sosy-lab:javasmt-solver-cvc5:libpolyxx:1.0.5-g4cb2ab9eb:so already exists in /home/local/haintong/Documents/workspace/Dat3M/dartagnan/target/libs
-[[1;34mINFO[m] org.sosy-lab:javasmt-solver-opensmt:libopensmtjava:2.5.2-g7f502169:so already exists in /home/local/haintong/Documents/workspace/Dat3M/dartagnan/target/libs
-[[1;34mINFO[m] org.sosy-lab:javasmt-solver-opensmt:libopensmt:2.5.2-g7f502169:so already exists in /home/local/haintong/Documents/workspace/Dat3M/dartagnan/target/libs
-[[1;34mINFO[m] org.sosy-lab:javasmt-solver-yices2:libyices2j:2.6.2-396-g194350c1:so already exists in /home/local/haintong/Documents/workspace/Dat3M/dartagnan/target/libs
-[[1;34mINFO[m] 
-[[1;34mINFO[m] [1m--- [0;32mgit-commit-id-plugin:4.9.10:revision[m [1m(populate-git-commit-information)[m @ [36mdartagnan[0;1m ---[m
-[[1;34mINFO[m] 
-[[1;34mINFO[m] [1m--- [0;32mjacoco-maven-plugin:0.8.10:prepare-agent[m [1m(default)[m @ [36mdartagnan[0;1m ---[m
-[[1;34mINFO[m] argLine set to -javaagent:/home/haintong/.m2/repository/org/jacoco/org.jacoco.agent/0.8.10/org.jacoco.agent-0.8.10-runtime.jar=destfile=/home/local/haintong/Documents/workspace/Dat3M/dartagnan/target/jacoco.exec,excludes=**/parsers/*Parser.class:**/parsers/*Lexer.class:**/parsers/*Visitor.class:**/parsers/*Context.class:**/parsers/*Listener.class
-[[1;34mINFO[m] 
-[[1;34mINFO[m] [1m--- [0;32mantlr4-maven-plugin:4.13.0:antlr4[m [1m(antlr-generate)[m @ [36mdartagnan[0;1m ---[m
-[[1;34mINFO[m] No grammars to process
-[[1;34mINFO[m] ANTLR 4: Processing source directory /home/local/haintong/Documents/workspace/Dat3M/dartagnan/src/main/antlr4
-[[1;34mINFO[m] 
-[[1;34mINFO[m] [1m--- [0;32mbuild-helper-maven-plugin:3.4.0:add-source[m [1m(add-source)[m @ [36mdartagnan[0;1m ---[m
-[[1;34mINFO[m] Source directory: /home/local/haintong/Documents/workspace/Dat3M/dartagnan/target/generated-sources/antlr4 added.
-[[1;34mINFO[m] 
-[[1;34mINFO[m] [1m--- [0;32mmaven-resources-plugin:3.3.1:resources[m [1m(default-resources)[m @ [36mdartagnan[0;1m ---[m
-[[1;34mINFO[m] Copying 1 resource from src/main/resources to target/classes
-[[1;34mINFO[m] 
-[[1;34mINFO[m] [1m--- [0;32mmaven-compiler-plugin:3.11.0:compile[m [1m(default-compile)[m @ [36mdartagnan[0;1m ---[m
-[[1;34mINFO[m] Changes detected - recompiling the module! :source
-[[1;34mINFO[m] Compiling 539 source files with javac [debug target 17] to target/classes
-[[1;33mWARNING[m] system modules path not set in conjunction with -source 17
-[[1;34mINFO[m] Annotation processing is enabled because one or more processors were found
-  on the class path. A future release of javac may disable annotation processing
-  unless at least one processor is specified by name (-processor), or a search
-  path is specified (--processor-path, --processor-module-path), or annotation
-  processing is enabled explicitly (-proc:only, -proc:full).
-  Use -Xlint:-options to suppress this message.
-  Use -proc:none to disable annotation processing.
-[[1;33mWARNING[m] /home/local/haintong/Documents/workspace/Dat3M/dartagnan/src/main/java/com/dat3m/dartagnan/GlobalSettings.java:[14,1] @Options annotation on class without @Option fields or methods is useless.
-[[1;34mINFO[m] /home/local/haintong/Documents/workspace/Dat3M/dartagnan/src/main/java/com/dat3m/dartagnan/Dartagnan.java: /home/local/haintong/Documents/workspace/Dat3M/dartagnan/src/main/java/com/dat3m/dartagnan/Dartagnan.java uses or overrides a deprecated API.
-[[1;34mINFO[m] /home/local/haintong/Documents/workspace/Dat3M/dartagnan/src/main/java/com/dat3m/dartagnan/Dartagnan.java: Recompile with -Xlint:deprecation for details.
-[[1;34mINFO[m] /home/local/haintong/Documents/workspace/Dat3M/dartagnan/src/main/java/com/dat3m/dartagnan/utils/logic/Conjunction.java: Some input files use unchecked or unsafe operations.
-[[1;34mINFO[m] /home/local/haintong/Documents/workspace/Dat3M/dartagnan/src/main/java/com/dat3m/dartagnan/utils/logic/Conjunction.java: Recompile with -Xlint:unchecked for details.
-[[1;34mINFO[m] 
-[[1;34mINFO[m] [1m--- [0;32mmaven-resources-plugin:3.3.1:testResources[m [1m(default-testResources)[m @ [36mdartagnan[0;1m ---[m
-[[1;34mINFO[m] Copying 267 resources from src/test/resources to target/test-classes
-[[1;34mINFO[m] 
-[[1;34mINFO[m] [1m--- [0;32mmaven-compiler-plugin:3.11.0:testCompile[m [1m(default-testCompile)[m @ [36mdartagnan[0;1m ---[m
-[[1;34mINFO[m] Changes detected - recompiling the module! :dependency
-[[1;34mINFO[m] Compiling 74 source files with javac [debug target 17] to target/test-classes
-[[1;33mWARNING[m] system modules path not set in conjunction with -source 17
-[[1;34mINFO[m] Annotation processing is enabled because one or more processors were found
-  on the class path. A future release of javac may disable annotation processing
-  unless at least one processor is specified by name (-processor), or a search
-  path is specified (--processor-path, --processor-module-path), or annotation
-  processing is enabled explicitly (-proc:only, -proc:full).
-  Use -Xlint:-options to suppress this message.
-  Use -proc:none to disable annotation processing.
-[[1;34mINFO[m] 
-[[1;34mINFO[m] [1m--- [0;32mmaven-surefire-plugin:3.1.2:test[m [1m(default-test)[m @ [36mdartagnan[0;1m ---[m
-[[1;34mINFO[m] Using auto detected provider org.apache.maven.surefire.junit4.JUnit4Provider
-[[1;34mINFO[m] 
-[[1;34mINFO[m] -------------------------------------------------------
-[[1;34mINFO[m]  T E S T S
-[[1;34mINFO[m] -------------------------------------------------------
-[[1;34mINFO[m] Running com.dat3m.dartagnan.litmus.[1mLitmusVulkanRacesNochainsTest[m
-[[1;34mINFO[m] [1;32mTests run: [0;1;32m6[m, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 2.162 s -- in com.dat3m.dartagnan.litmus.[1mLitmusVulkanRacesNochainsTest[m
-[[1;34mINFO[m] Running com.dat3m.dartagnan.litmus.[1mLitmusPTXv6_0LivenessTest[m
-[[1;34mINFO[m] [1;32mTests run: [0;1;32m73[m, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 4.481 s -- in com.dat3m.dartagnan.litmus.[1mLitmusPTXv6_0LivenessTest[m
-[[1;34mINFO[m] Running com.dat3m.dartagnan.litmus.[1mLitmusLinuxRacesTest[m
-[[1;34mINFO[m] [1;32mTests run: [0;1;32m5006[m, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 255.0 s -- in com.dat3m.dartagnan.litmus.[1mLitmusLinuxRacesTest[m
-[[1;34mINFO[m] Running com.dat3m.dartagnan.litmus.[1mLitmusRISCVTest[m
-[[1;34mINFO[m] [1;32mTests run: [0;1;32m6661[m, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 192.5 s -- in com.dat3m.dartagnan.litmus.[1mLitmusRISCVTest[m
-[[1;34mINFO[m] Running com.dat3m.dartagnan.litmus.[1mLitmusPPCTest[m
-[[1;34mINFO[m] [1;32mTests run: [0;1;32m2362[m, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 69.40 s -- in com.dat3m.dartagnan.litmus.[1mLitmusPPCTest[m
-[[1;34mINFO[m] Running com.dat3m.dartagnan.litmus.[1mLitmusX86Test[m
-[[1;34mINFO[m] [1;32mTests run: [0;1;32m487[m, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 16.13 s -- in com.dat3m.dartagnan.litmus.[1mLitmusX86Test[m
-[[1;34mINFO[m] Running com.dat3m.dartagnan.litmus.[1mLitmusVulkanCheckerTest[m
-[[1;34mINFO[m] [1;32mTests run: [0;1;32m239[m, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 12.25 s -- in com.dat3m.dartagnan.litmus.[1mLitmusVulkanCheckerTest[m
-[[1;34mINFO[m] Running com.dat3m.dartagnan.litmus.[1mLitmusPTXv7_5LivenessTest[m
-[[1;34mINFO[m] [1;32mTests run: [0;1;32m73[m, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 4.713 s -- in com.dat3m.dartagnan.litmus.[1mLitmusPTXv7_5LivenessTest[m
-[[1;34mINFO[m] Running com.dat3m.dartagnan.litmus.[1mLitmusPTXv7_5Test[m
-[[1;34mINFO[m] [1;32mTests run: [0;1;32m235[m, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 9.964 s -- in com.dat3m.dartagnan.litmus.[1mLitmusPTXv7_5Test[m
-[[1;34mINFO[m] Running com.dat3m.dartagnan.litmus.[1mLitmusVulkanLivenessTest[m
-[[1;34mINFO[m] [1;32mTests run: [0;1;32m73[m, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 5.276 s -- in com.dat3m.dartagnan.litmus.[1mLitmusVulkanLivenessTest[m
-[[1;34mINFO[m] Running com.dat3m.dartagnan.litmus.[1mLitmusVulkanNochainsTest[m
-[[1;34mINFO[m] [1;32mTests run: [0;1;32m6[m, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 2.072 s -- in com.dat3m.dartagnan.litmus.[1mLitmusVulkanNochainsTest[m
-[[1;34mINFO[m] Running com.dat3m.dartagnan.litmus.[1mLitmusVulkanTest[m
-[[1;34mINFO[m] [1;32mTests run: [0;1;32m97[m, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 6.167 s -- in com.dat3m.dartagnan.litmus.[1mLitmusVulkanTest[m
-[[1;34mINFO[m] Running com.dat3m.dartagnan.litmus.[1mLitmusRC11Test[m
-[[1;34mINFO[m] [1;32mTests run: [0;1;32m135[m, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 6.408 s -- in com.dat3m.dartagnan.litmus.[1mLitmusRC11Test[m
-[[1;34mINFO[m] Running com.dat3m.dartagnan.litmus.[1mLitmusC11Test[m
-[[1;34mINFO[m] [1;32mTests run: [0;1;32m135[m, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 6.077 s -- in com.dat3m.dartagnan.litmus.[1mLitmusC11Test[m
-[[1;34mINFO[m] Running com.dat3m.dartagnan.litmus.[1mLISA_X86_Test[m
-[[1;34mINFO[m] [1;32mTests run: [0;1;32m1[m, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 1.426 s -- in com.dat3m.dartagnan.litmus.[1mLISA_X86_Test[m
-[[1;34mINFO[m] Running com.dat3m.dartagnan.litmus.[1mLitmusVulkanRacesTest[m
-[[1;34mINFO[m] [1;32mTests run: [0;1;32m94[m, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 6.690 s -- in com.dat3m.dartagnan.litmus.[1mLitmusVulkanRacesTest[m
-[[1;34mINFO[m] Running com.dat3m.dartagnan.litmus.[1mLitmusPTXv6_0Test[m
-[[1;34mINFO[m] [1;32mTests run: [0;1;32m106[m, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 5.354 s -- in com.dat3m.dartagnan.litmus.[1mLitmusPTXv6_0Test[m
-[[1;34mINFO[m] Running com.dat3m.dartagnan.litmus.[1mLISA_LKMM_Test[m
-[[1;34mINFO[m] [1;32mTests run: [0;1;32m4[m, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 1.916 s -- in com.dat3m.dartagnan.litmus.[1mLISA_LKMM_Test[m
-[[1;34mINFO[m] Running com.dat3m.dartagnan.litmus.[1mLitmusLinuxTest[m
-[[1;34mINFO[m] [1;32mTests run: [0;1;32m5099[m, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 258.8 s -- in com.dat3m.dartagnan.litmus.[1mLitmusLinuxTest[m
-[[1;34mINFO[m] Running com.dat3m.dartagnan.litmus.[1mLISA_AARCH64_Test[m
-[[1;34mINFO[m] [1;32mTests run: [0;1;32m5[m, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 1.678 s -- in com.dat3m.dartagnan.litmus.[1mLISA_AARCH64_Test[m
-[[1;34mINFO[m] Running com.dat3m.dartagnan.litmus.[1mLitmusAARCH64Test[m
-[[1;34mINFO[m] [1;32mTests run: [0;1;32m5141[m, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 144.8 s -- in com.dat3m.dartagnan.litmus.[1mLitmusAARCH64Test[m
-[[1;34mINFO[m] Running com.dat3m.dartagnan.c.[1mC11LFDSTest[m
-[[1;34mINFO[m] [1;32mTests run: [0;1;32m7[m, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 7.029 s -- in com.dat3m.dartagnan.c.[1mC11LFDSTest[m
-[[1;34mINFO[m] Running com.dat3m.dartagnan.c.[1mCLKMMTest[m
-[[1;34mINFO[m] [1;32mTests run: [0;1;32m38[m, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 22.47 s -- in com.dat3m.dartagnan.c.[1mCLKMMTest[m
-[[1;34mINFO[m] Running com.dat3m.dartagnan.c.[1mLivenessTest[m
-[[1;34mINFO[m] [1;32mTests run: [0;1;32m96[m, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 33.65 s -- in com.dat3m.dartagnan.c.[1mLivenessTest[m
-[[1;34mINFO[m] Running com.dat3m.dartagnan.c.[1mC11LocksTest[m
-[[1;34mINFO[m] [1;32mTests run: [0;1;32m25[m, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 58.80 s -- in com.dat3m.dartagnan.c.[1mC11LocksTest[m
-[[1;34mINFO[m] Running com.dat3m.dartagnan.c.[1mCLocksTest[m
-[[1;34mINFO[m] [1;32mTests run: [0;1;32m112[m, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 27.79 s -- in com.dat3m.dartagnan.c.[1mCLocksTest[m
-[[1;34mINFO[m] Running com.dat3m.dartagnan.c.[1mRC11Test[m
-[[1;34mINFO[m] [1;32mTests run: [0;1;32m20[m, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 3.268 s -- in com.dat3m.dartagnan.c.[1mRC11Test[m
-[[1;34mINFO[m] Running com.dat3m.dartagnan.c.[1mRC11LFDSTest[m
-[[1;34mINFO[m] [1;32mTests run: [0;1;32m10[m, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 23.24 s -- in com.dat3m.dartagnan.c.[1mRC11LFDSTest[m
-[[1;34mINFO[m] Running com.dat3m.dartagnan.c.[1mIMMTest[m
-[[1;34mINFO[m] [1;32mTests run: [0;1;32m26[m, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 3.710 s -- in com.dat3m.dartagnan.c.[1mIMMTest[m
-[[1;34mINFO[m] Running com.dat3m.dartagnan.c.[1mIMMLocksTest[m
-[[1;34mINFO[m] [1;32mTests run: [0;1;32m27[m, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 9.391 s -- in com.dat3m.dartagnan.c.[1mIMMLocksTest[m
-[[1;34mINFO[m] Running com.dat3m.dartagnan.c.[1mRC11LocksTest[m
-[[1;34mINFO[m] [1;32mTests run: [0;1;32m27[m, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 9.617 s -- in com.dat3m.dartagnan.c.[1mRC11LocksTest[m
-[[1;34mINFO[m] Running com.dat3m.dartagnan.c.[1mLFDSTest[m
-[[1;34mINFO[m] [1;32mTests run: [0;1;32m42[m, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 413.5 s -- in com.dat3m.dartagnan.c.[1mLFDSTest[m
-[[1;34mINFO[m] Running com.dat3m.dartagnan.c.[1mMiscellaneousTest[m
-[[1;34mINFO[m] [1;32mTests run: [0;1;32m36[m, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 8.339 s -- in com.dat3m.dartagnan.c.[1mMiscellaneousTest[m
-[[1;34mINFO[m] Running com.dat3m.dartagnan.c.[1mIMMLFDSTest[m
-[[1;34mINFO[m] [1;32mTests run: [0;1;32m10[m, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 19.77 s -- in com.dat3m.dartagnan.c.[1mIMMLFDSTest[m
-[[1;34mINFO[m] Running com.dat3m.dartagnan.parsers.program.[1mParserSpirvTest[m
-[[1;34mINFO[m] [1;32mTests run: [0;1;32m38[m, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 2.257 s -- in com.dat3m.dartagnan.parsers.program.[1mParserSpirvTest[m
-[[1;34mINFO[m] Running com.dat3m.dartagnan.parsers.program.utils.[1mProgramBuilderTest[m
-[[1;34mINFO[m] [1;32mTests run: [0;1;32m1[m, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.335 s -- in com.dat3m.dartagnan.parsers.program.utils.[1mProgramBuilderTest[m
-[[1;34mINFO[m] Running com.dat3m.dartagnan.exceptions.[1mArrayIllegalTest[m
-[[1;34mINFO[m] [1;32mTests run: [0;1;32m6[m, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.387 s -- in com.dat3m.dartagnan.exceptions.[1mArrayIllegalTest[m
-[[1;34mINFO[m] Running com.dat3m.dartagnan.exceptions.[1mExceptionsTest[m
-[[1;34mINFO[m] [1;32mTests run: [0;1;32m9[m, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.693 s -- in com.dat3m.dartagnan.exceptions.[1mExceptionsTest[m
-[[1;34mINFO[m] Running com.dat3m.dartagnan.exceptions.[1mWrongTargetTest[m
-[[1;34mINFO[m] [1;32mTests run: [0;1;32m6[m, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 1.027 s -- in com.dat3m.dartagnan.exceptions.[1mWrongTargetTest[m
-[[1;34mINFO[m] Running com.dat3m.dartagnan.wmm.utils.[1mEventGraphTest[m
-[[1;34mINFO[m] [1;32mTests run: [0;1;32m77[m, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.135 s -- in com.dat3m.dartagnan.wmm.utils.[1mEventGraphTest[m
-[[1;34mINFO[m] Running com.dat3m.dartagnan.wmm.utils.[1mEmptyEventGraphTest[m
-[[1;34mINFO[m] [1;32mTests run: [0;1;32m30[m, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.094 s -- in com.dat3m.dartagnan.wmm.utils.[1mEmptyEventGraphTest[m
-[[1;34mINFO[m] Running com.dat3m.dartagnan.miscellaneous.[1mLoopTest[m
-[[1;34mINFO[m] [1;32mTests run: [0;1;32m1[m, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.935 s -- in com.dat3m.dartagnan.miscellaneous.[1mLoopTest[m
-[[1;34mINFO[m] Running com.dat3m.dartagnan.miscellaneous.[1mApplicationTest[m
+[INFO] Scanning for projects...
+[INFO] ------------------------------------------------------------------------
+[INFO] Reactor Build Order:
+[INFO]
+[INFO] dat3m                                                              [pom]
+[INFO] dartagnan                                                          [jar]
+[INFO] ui                                                                 [jar]
+[INFO] svcomp                                                             [jar]
+[INFO]
+[INFO] --------------------------< com.dat3m:dat3m >---------------------------
+[INFO] Building dat3m 4.0.0                                               [1/4]
+[INFO] --------------------------------[ pom ]---------------------------------
+[INFO]
+[INFO] ------------------------< com.dat3m:dartagnan >-------------------------
+[INFO] Building dartagnan 4.0.0                                           [2/4]
+[INFO] --------------------------------[ jar ]---------------------------------
+[WARNING] The POM for org.sosy-lab:javasmt-solver-boolector:so:libboolector:3.2.2-g1a89c229 is invalid, transitive dependencies (if any) will not be available, enable debug logging for more details
+[WARNING] The POM for org.sosy-lab:javasmt-solver-boolector:so:libminisat:3.2.2-g1a89c229 is invalid, transitive dependencies (if any) will not be available, enable debug logging for more details
+[WARNING] The POM for org.sosy-lab:javasmt-solver-boolector:so:libpicosat:3.2.2-g1a89c229 is invalid, transitive dependencies (if any) will not be available, enable debug logging for more details
+[WARNING] The POM for org.sosy-lab:javasmt-solver-yices2:so:libyices2j:2.6.2-396-g194350c1 is invalid, transitive dependencies (if any) will not be available, enable debug logging for more details
+[INFO]
+[INFO] --- maven-dependency-plugin:3.6.0:copy-dependencies (copy-dependencies) @ dartagnan ---
+[INFO] org.antlr:antlr4-runtime:jar:4.13.0 already exists in destination.
+[INFO] commons-cli:commons-cli:jar:1.5.0 already exists in destination.
+[INFO] com.google.guava:guava:jar:32.1.2-jre already exists in destination.
+[INFO] com.google.guava:failureaccess:jar:1.0.1 already exists in destination.
+[INFO] com.google.guava:listenablefuture:jar:9999.0-empty-to-avoid-conflict-with-guava already exists in destination.
+[INFO] com.google.code.findbugs:jsr305:jar:3.0.2 already exists in destination.
+[INFO] org.checkerframework:checker-qual:jar:3.33.0 already exists in destination.
+[INFO] com.google.errorprone:error_prone_annotations:jar:2.18.0 already exists in destination.
+[INFO] com.google.j2objc:j2objc-annotations:jar:2.8 already exists in destination.
+[INFO] org.sosy-lab:java-smt:jar:4.1.0 already exists in destination.
+[INFO] org.sosy-lab:common:jar:0.3000-569-g89796f98 already exists in destination.
+[INFO] com.github.spotbugs:spotbugs-annotations:jar:4.7.3 already exists in destination.
+[INFO] de.uni-freiburg.informatik.ultimate:smtinterpol:jar:2.5-1242-g5c50fb6d already exists in destination.
+[INFO] io.github.uuverifiers:princess_2.13:jar:2023-06-19 already exists in destination.
+[INFO] org.scala-lang:scala-library:jar:2.13.10 already exists in destination.
+[INFO] io.github.uuverifiers:princess-parser_2.13:jar:2023-06-19 already exists in destination.
+[INFO] io.github.uuverifiers:princess-smt-parser_2.13:jar:2023-06-19 already exists in destination.
+[INFO] org.scala-lang.modules:scala-parser-combinators_2.13:jar:1.1.2 already exists in destination.
+[INFO] net.sf.squirrel-sql.thirdparty-non-maven:java-cup:jar:0.11a already exists in destination.
+[INFO] org.codehaus.mojo:animal-sniffer-annotations:jar:1.18 already exists in destination.
+[INFO] org.apache.logging.log4j:log4j-api:jar:2.23.0 already exists in destination.
+[INFO] org.apache.logging.log4j:log4j-core:jar:2.23.0 already exists in destination.
+[INFO] org.sosy-lab:javasmt-solver-z3:jar:com.microsoft.z3:4.12.2 already exists in destination.
+[INFO] org.sosy-lab:javasmt-solver-cvc4:jar:CVC4:1.8-prerelease-2020-06-24-g7825d8f28 already exists in destination.
+[INFO] org.sosy-lab:javasmt-solver-cvc5:jar:cvc5:1.0.5-g4cb2ab9eb already exists in destination.
+[INFO] org.sosy-lab:javasmt-solver-opensmt:jar:opensmt:2.5.2-g7f502169 already exists in destination.
+[INFO] org.sosy-lab:javasmt-yices2:jar:4.1.0-1-gc58fe5b4 already exists in destination.
+[INFO]
+[INFO] --- maven-dependency-plugin:3.6.0:copy (copy) @ dartagnan ---
+[INFO] Configured Artifact: org.sosy-lab:javasmt-solver-z3:libz3java:?:so
+[INFO] Configured Artifact: org.sosy-lab:javasmt-solver-z3:libz3:?:so
+[INFO] Configured Artifact: org.sosy-lab:javasmt-solver-mathsat5:libmathsat5j:?:so
+[INFO] Configured Artifact: org.sosy-lab:javasmt-solver-boolector:libboolector:?:so
+[WARNING] The POM for org.sosy-lab:javasmt-solver-boolector:so:libboolector:3.2.2-g1a89c229 is invalid, transitive dependencies (if any) will not be available, enable debug logging for more details
+[INFO] Configured Artifact: org.sosy-lab:javasmt-solver-boolector:libminisat:?:so
+[WARNING] The POM for org.sosy-lab:javasmt-solver-boolector:so:libminisat:3.2.2-g1a89c229 is invalid, transitive dependencies (if any) will not be available, enable debug logging for more details
+[INFO] Configured Artifact: org.sosy-lab:javasmt-solver-boolector:libpicosat:?:so
+[WARNING] The POM for org.sosy-lab:javasmt-solver-boolector:so:libpicosat:3.2.2-g1a89c229 is invalid, transitive dependencies (if any) will not be available, enable debug logging for more details
+[INFO] Configured Artifact: org.sosy-lab:javasmt-solver-cvc4:libcvc4:?:so
+[INFO] Configured Artifact: org.sosy-lab:javasmt-solver-cvc4:libcvc4jni:?:so
+[INFO] Configured Artifact: org.sosy-lab:javasmt-solver-cvc4:libcvc4parser:?:so
+[INFO] Configured Artifact: org.sosy-lab:javasmt-solver-cvc5:libcvc5:?:so
+[INFO] Configured Artifact: org.sosy-lab:javasmt-solver-cvc5:libcvc5jni:?:so
+[INFO] Configured Artifact: org.sosy-lab:javasmt-solver-cvc5:libcvc5parser:?:so
+[INFO] Configured Artifact: org.sosy-lab:javasmt-solver-cvc5:libpoly:?:so
+[INFO] Configured Artifact: org.sosy-lab:javasmt-solver-cvc5:libpolyxx:?:so
+[INFO] Configured Artifact: org.sosy-lab:javasmt-solver-opensmt:libopensmtjava:?:so
+[INFO] Configured Artifact: org.sosy-lab:javasmt-solver-opensmt:libopensmt:?:so
+[INFO] Configured Artifact: org.sosy-lab:javasmt-solver-yices2:libyices2j:?:so
+[WARNING] The POM for org.sosy-lab:javasmt-solver-yices2:so:libyices2j:2.6.2-396-g194350c1 is invalid, transitive dependencies (if any) will not be available, enable debug logging for more details
+[INFO] org.sosy-lab:javasmt-solver-z3:libz3java:4.12.2:so already exists in /home/Dat3M/dartagnan/target/libs
+[INFO] org.sosy-lab:javasmt-solver-z3:libz3:4.12.2:so already exists in /home/Dat3M/dartagnan/target/libs
+[INFO] org.sosy-lab:javasmt-solver-mathsat5:libmathsat5j:5.6.10:so already exists in /home/Dat3M/dartagnan/target/libs
+[INFO] org.sosy-lab:javasmt-solver-boolector:libboolector:3.2.2-g1a89c229:so already exists in /home/Dat3M/dartagnan/target/libs
+[INFO] org.sosy-lab:javasmt-solver-boolector:libminisat:3.2.2-g1a89c229:so already exists in /home/Dat3M/dartagnan/target/libs
+[INFO] org.sosy-lab:javasmt-solver-boolector:libpicosat:3.2.2-g1a89c229:so already exists in /home/Dat3M/dartagnan/target/libs
+[INFO] org.sosy-lab:javasmt-solver-cvc4:libcvc4:1.8-prerelease-2020-06-24-g7825d8f28:so already exists in /home/Dat3M/dartagnan/target/libs
+[INFO] org.sosy-lab:javasmt-solver-cvc4:libcvc4jni:1.8-prerelease-2020-06-24-g7825d8f28:so already exists in /home/Dat3M/dartagnan/target/libs
+[INFO] org.sosy-lab:javasmt-solver-cvc4:libcvc4parser:1.8-prerelease-2020-06-24-g7825d8f28:so already exists in /home/Dat3M/dartagnan/target/libs
+[INFO] org.sosy-lab:javasmt-solver-cvc5:libcvc5:1.0.5-g4cb2ab9eb:so already exists in /home/Dat3M/dartagnan/target/libs
+[INFO] org.sosy-lab:javasmt-solver-cvc5:libcvc5jni:1.0.5-g4cb2ab9eb:so already exists in /home/Dat3M/dartagnan/target/libs
+[INFO] org.sosy-lab:javasmt-solver-cvc5:libcvc5parser:1.0.5-g4cb2ab9eb:so already exists in /home/Dat3M/dartagnan/target/libs
+[INFO] org.sosy-lab:javasmt-solver-cvc5:libpoly:1.0.5-g4cb2ab9eb:so already exists in /home/Dat3M/dartagnan/target/libs
+[INFO] org.sosy-lab:javasmt-solver-cvc5:libpolyxx:1.0.5-g4cb2ab9eb:so already exists in /home/Dat3M/dartagnan/target/libs
+[INFO] org.sosy-lab:javasmt-solver-opensmt:libopensmtjava:2.5.2-g7f502169:so already exists in /home/Dat3M/dartagnan/target/libs
+[INFO] org.sosy-lab:javasmt-solver-opensmt:libopensmt:2.5.2-g7f502169:so already exists in /home/Dat3M/dartagnan/target/libs
+[INFO] org.sosy-lab:javasmt-solver-yices2:libyices2j:2.6.2-396-g194350c1:so already exists in /home/Dat3M/dartagnan/target/libs
+[INFO]
+[INFO] --- git-commit-id-plugin:4.9.10:revision (populate-git-commit-information) @ dartagnan ---
+[INFO]
+[INFO] --- jacoco-maven-plugin:0.8.10:prepare-agent (default) @ dartagnan ---
+[INFO] argLine set to -javaagent:/root/.m2/repository/org/jacoco/org.jacoco.agent/0.8.10/org.jacoco.agent-0.8.10-runtime.jar=destfile=/home/Dat3M/dartagnan/target/jacoco.exec,excludes=**/parsers/*Parser.class:**/parsers/*Lexer.class:**/parsers/*Visitor.class:**/parsers/*Context.class:**/parsers/*Listener.class
+[INFO]
+[INFO] --- antlr4-maven-plugin:4.13.0:antlr4 (antlr-generate) @ dartagnan ---
+[INFO] No grammars to process
+[INFO] ANTLR 4: Processing source directory /home/Dat3M/dartagnan/src/main/antlr4
+[INFO]
+[INFO] --- build-helper-maven-plugin:3.4.0:add-source (add-source) @ dartagnan ---
+[INFO] Source directory: /home/Dat3M/dartagnan/target/generated-sources/antlr4 added.
+[INFO]
+[INFO] --- maven-resources-plugin:3.3.1:resources (default-resources) @ dartagnan ---
+[INFO] Copying 1 resource from src/main/resources to target/classes
+[INFO]
+[INFO] --- maven-compiler-plugin:3.11.0:compile (default-compile) @ dartagnan ---
+[INFO] Changes detected - recompiling the module! :source
+[INFO] Compiling 545 source files with javac [debug target 17] to target/classes
+[WARNING] /home/Dat3M/dartagnan/src/main/java/com/dat3m/dartagnan/GlobalSettings.java:[14,1] @Options annotation on class without @Option fields or methods is useless.
+[WARNING] /home/Dat3M/dartagnan/src/main/java/com/dat3m/dartagnan/wmm/processing/WmmProcessingManager.java:[13,1] @Options annotation on class without @Option fields or methods is useless.
+[INFO] /home/Dat3M/dartagnan/src/main/java/com/dat3m/dartagnan/Dartagnan.java: /home/Dat3M/dartagnan/src/main/java/com/dat3m/dartagnan/Dartagnan.java uses or overrides a deprecated API.
+[INFO] /home/Dat3M/dartagnan/src/main/java/com/dat3m/dartagnan/Dartagnan.java: Recompile with -Xlint:deprecation for details.
+[INFO] /home/Dat3M/dartagnan/src/main/java/com/dat3m/dartagnan/utils/logic/Conjunction.java: Some input files use unchecked or unsafe operations.
+[INFO] /home/Dat3M/dartagnan/src/main/java/com/dat3m/dartagnan/utils/logic/Conjunction.java: Recompile with -Xlint:unchecked for details.
+[INFO]
+[INFO] --- maven-resources-plugin:3.3.1:testResources (default-testResources) @ dartagnan ---
+[INFO] Copying 285 resources from src/test/resources to target/test-classes
+[INFO]
+[INFO] --- maven-compiler-plugin:3.11.0:testCompile (default-testCompile) @ dartagnan ---
+[INFO] Changes detected - recompiling the module! :dependency
+[INFO] Compiling 78 source files with javac [debug target 17] to target/test-classes
+[INFO]
+[INFO] --- maven-surefire-plugin:3.1.2:test (default-test) @ dartagnan ---
+[INFO] Using auto detected provider org.apache.maven.surefire.junit4.JUnit4Provider
+Downloading from central: https://repo.maven.apache.org/maven2/org/apache/maven/surefire/surefire-junit4/3.1.2/surefire-junit4-3.1.2.pom
+Downloaded from central: https://repo.maven.apache.org/maven2/org/apache/maven/surefire/surefire-junit4/3.1.2/surefire-junit4-3.1.2.pom (3.0 kB at 30 kB/s)
+Downloading from central: https://repo.maven.apache.org/maven2/org/apache/maven/surefire/surefire-providers/3.1.2/surefire-providers-3.1.2.pom
+Downloaded from central: https://repo.maven.apache.org/maven2/org/apache/maven/surefire/surefire-providers/3.1.2/surefire-providers-3.1.2.pom (2.6 kB at 201 kB/s)
+Downloading from central: https://repo.maven.apache.org/maven2/org/apache/maven/surefire/common-junit4/3.1.2/common-junit4-3.1.2.pom
+Downloaded from central: https://repo.maven.apache.org/maven2/org/apache/maven/surefire/common-junit4/3.1.2/common-junit4-3.1.2.pom (3.1 kB at 241 kB/s)
+Downloading from central: https://repo.maven.apache.org/maven2/org/apache/maven/surefire/common-junit3/3.1.2/common-junit3-3.1.2.pom
+Downloaded from central: https://repo.maven.apache.org/maven2/org/apache/maven/surefire/common-junit3/3.1.2/common-junit3-3.1.2.pom (2.8 kB at 231 kB/s)
+Downloading from central: https://repo.maven.apache.org/maven2/org/apache/maven/surefire/common-java5/3.1.2/common-java5-3.1.2.pom
+Downloaded from central: https://repo.maven.apache.org/maven2/org/apache/maven/surefire/common-java5/3.1.2/common-java5-3.1.2.pom (2.8 kB at 176 kB/s)
+Downloading from central: https://repo.maven.apache.org/maven2/org/apache/maven/surefire/surefire-junit4/3.1.2/surefire-junit4-3.1.2.jar
+Downloading from central: https://repo.maven.apache.org/maven2/org/apache/maven/surefire/common-junit4/3.1.2/common-junit4-3.1.2.jar
+Downloading from central: https://repo.maven.apache.org/maven2/org/apache/maven/surefire/common-java5/3.1.2/common-java5-3.1.2.jar
+Downloading from central: https://repo.maven.apache.org/maven2/org/apache/maven/surefire/common-junit3/3.1.2/common-junit3-3.1.2.jar
+Downloaded from central: https://repo.maven.apache.org/maven2/org/apache/maven/surefire/common-junit4/3.1.2/common-junit4-3.1.2.jar (26 kB at 562 kB/s)
+Downloaded from central: https://repo.maven.apache.org/maven2/org/apache/maven/surefire/surefire-junit4/3.1.2/surefire-junit4-3.1.2.jar (18 kB at 357 kB/s)
+Downloaded from central: https://repo.maven.apache.org/maven2/org/apache/maven/surefire/common-java5/3.1.2/common-java5-3.1.2.jar (18 kB at 288 kB/s)
+Downloaded from central: https://repo.maven.apache.org/maven2/org/apache/maven/surefire/common-junit3/3.1.2/common-junit3-3.1.2.jar (12 kB at 192 kB/s)
+[INFO]
+[INFO] -------------------------------------------------------
+[INFO]  T E S T S
+[INFO] -------------------------------------------------------
+[INFO] Running com.dat3m.dartagnan.GlobalSettingsTest
+[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.636 s -- in com.dat3m.dartagnan.GlobalSettingsTest
+[INFO] Running com.dat3m.dartagnan.c.RC11Test
+[INFO] Tests run: 20, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 3.347 s -- in com.dat3m.dartagnan.c.RC11Test
+[INFO] Running com.dat3m.dartagnan.c.IMMLocksTest
+[INFO] Tests run: 27, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 11.14 s -- in com.dat3m.dartagnan.c.IMMLocksTest
+[INFO] Running com.dat3m.dartagnan.c.CLocksTest
+[INFO] Tests run: 112, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 34.71 s -- in com.dat3m.dartagnan.c.CLocksTest
+[INFO] Running com.dat3m.dartagnan.c.LivenessTest
+[INFO] Tests run: 96, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 33.65 s -- in com.dat3m.dartagnan.c.LivenessTest
+[INFO] Running com.dat3m.dartagnan.c.IMMTest
+[INFO] Tests run: 26, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 3.565 s -- in com.dat3m.dartagnan.c.IMMTest
+[INFO] Running com.dat3m.dartagnan.c.CLKMMTest
+[INFO] Tests run: 38, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 27.65 s -- in com.dat3m.dartagnan.c.CLKMMTest
+[INFO] Running com.dat3m.dartagnan.c.C11OrigLocksTest
+[INFO] Tests run: 50, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 148.7 s -- in com.dat3m.dartagnan.c.C11OrigLocksTest
+[INFO] Running com.dat3m.dartagnan.c.LFDSTest
+[INFO] Tests run: 42, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 650.9 s -- in com.dat3m.dartagnan.c.LFDSTest
+[INFO] Running com.dat3m.dartagnan.c.RC11LocksTest
+[INFO] Tests run: 27, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 9.926 s -- in com.dat3m.dartagnan.c.RC11LocksTest
+[INFO] Running com.dat3m.dartagnan.c.EBRTest
+[INFO] Tests run: 4, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 132.7 s -- in com.dat3m.dartagnan.c.EBRTest
+[INFO] Running com.dat3m.dartagnan.c.C11OrigLFDSTest
+[INFO] Tests run: 14, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 18.19 s -- in com.dat3m.dartagnan.c.C11OrigLFDSTest
+[INFO] Running com.dat3m.dartagnan.c.MiscellaneousTest
+[INFO] Tests run: 40, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 7.378 s -- in com.dat3m.dartagnan.c.MiscellaneousTest
+[INFO] Running com.dat3m.dartagnan.c.IMMLFDSTest
+[INFO] Tests run: 10, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 22.85 s -- in com.dat3m.dartagnan.c.IMMLFDSTest
+[INFO] Running com.dat3m.dartagnan.c.C11LFDSTest
+[INFO] Tests run: 14, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 13.56 s -- in com.dat3m.dartagnan.c.C11LFDSTest
+[INFO] Running com.dat3m.dartagnan.c.LibvsyncTest
+[INFO] Tests run: 14, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 16.21 s -- in com.dat3m.dartagnan.c.LibvsyncTest
+[INFO] Running com.dat3m.dartagnan.c.RC11LFDSTest
+[INFO] Tests run: 10, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 21.03 s -- in com.dat3m.dartagnan.c.RC11LFDSTest
+[INFO] Running com.dat3m.dartagnan.c.C11LocksTest
+[INFO] Tests run: 50, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 150.2 s -- in com.dat3m.dartagnan.c.C11LocksTest
+[INFO] Running com.dat3m.dartagnan.parsers.program.ParserSpirvTest
+[INFO] Tests run: 38, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 1.193 s -- in com.dat3m.dartagnan.parsers.program.ParserSpirvTest
+[INFO] Running com.dat3m.dartagnan.parsers.program.utils.ProgramBuilderTest
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.298 s -- in com.dat3m.dartagnan.parsers.program.utils.ProgramBuilderTest
+[INFO] Running com.dat3m.dartagnan.witness.ParseWitnessTest
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.726 s -- in com.dat3m.dartagnan.witness.ParseWitnessTest
+[INFO] Running com.dat3m.dartagnan.witness.BuildWitnessTest
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 1.779 s -- in com.dat3m.dartagnan.witness.BuildWitnessTest
+[INFO] Running com.dat3m.dartagnan.litmus.LitmusVulkanTest
+[INFO] Tests run: 97, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 6.174 s -- in com.dat3m.dartagnan.litmus.LitmusVulkanTest
+[INFO] Running com.dat3m.dartagnan.litmus.LitmusX86Test
+[INFO] Tests run: 487, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 17.16 s -- in com.dat3m.dartagnan.litmus.LitmusX86Test
+[INFO] Running com.dat3m.dartagnan.litmus.LitmusVulkanRacesTest
+[INFO] Tests run: 94, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 6.499 s -- in com.dat3m.dartagnan.litmus.LitmusVulkanRacesTest
+[INFO] Running com.dat3m.dartagnan.litmus.LitmusPTXv7_5Test
+[INFO] Tests run: 235, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 9.613 s -- in com.dat3m.dartagnan.litmus.LitmusPTXv7_5Test
+[INFO] Running com.dat3m.dartagnan.litmus.LitmusC11Test
+[INFO] Tests run: 135, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 6.468 s -- in com.dat3m.dartagnan.litmus.LitmusC11Test
+[INFO] Running com.dat3m.dartagnan.litmus.LitmusRISCVTest
+[INFO] Tests run: 6661, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 196.9 s -- in com.dat3m.dartagnan.litmus.LitmusRISCVTest
+[INFO] Running com.dat3m.dartagnan.litmus.LitmusPTXv6_0LivenessTest
+[INFO] Tests run: 73, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 4.599 s -- in com.dat3m.dartagnan.litmus.LitmusPTXv6_0LivenessTest
+[INFO] Running com.dat3m.dartagnan.litmus.LISA_X86_Test
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 1.455 s -- in com.dat3m.dartagnan.litmus.LISA_X86_Test
+[INFO] Running com.dat3m.dartagnan.litmus.LitmusPTXv7_5LivenessTest
+[INFO] Tests run: 73, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 4.721 s -- in com.dat3m.dartagnan.litmus.LitmusPTXv7_5LivenessTest
+[INFO] Running com.dat3m.dartagnan.litmus.LitmusLinuxTest
+[INFO] Tests run: 5099, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 277.8 s -- in com.dat3m.dartagnan.litmus.LitmusLinuxTest
+[INFO] Running com.dat3m.dartagnan.litmus.LitmusRC11Test
+[INFO] Tests run: 135, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 6.239 s -- in com.dat3m.dartagnan.litmus.LitmusRC11Test
+[INFO] Running com.dat3m.dartagnan.litmus.LitmusVulkanNochainsTest
+[INFO] Tests run: 6, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 2.023 s -- in com.dat3m.dartagnan.litmus.LitmusVulkanNochainsTest
+[INFO] Running com.dat3m.dartagnan.litmus.LitmusLinuxRacesTest
+[INFO] Tests run: 5006, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 270.3 s -- in com.dat3m.dartagnan.litmus.LitmusLinuxRacesTest
+[INFO] Running com.dat3m.dartagnan.litmus.LitmusPPCTest
+[INFO] Tests run: 2362, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 69.61 s -- in com.dat3m.dartagnan.litmus.LitmusPPCTest
+[INFO] Running com.dat3m.dartagnan.litmus.LitmusVulkanRacesNochainsTest
+[INFO] Tests run: 6, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 1.984 s -- in com.dat3m.dartagnan.litmus.LitmusVulkanRacesNochainsTest
+[INFO] Running com.dat3m.dartagnan.litmus.LitmusPTXv6_0Test
+[INFO] Tests run: 106, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 5.427 s -- in com.dat3m.dartagnan.litmus.LitmusPTXv6_0Test
+[INFO] Running com.dat3m.dartagnan.litmus.LitmusAARCH64Test
+[INFO] Tests run: 5141, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 145.1 s -- in com.dat3m.dartagnan.litmus.LitmusAARCH64Test
+[INFO] Running com.dat3m.dartagnan.litmus.LISA_LKMM_Test
+[INFO] Tests run: 4, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 1.662 s -- in com.dat3m.dartagnan.litmus.LISA_LKMM_Test
+[INFO] Running com.dat3m.dartagnan.litmus.LISA_AARCH64_Test
+[INFO] Tests run: 5, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 1.823 s -- in com.dat3m.dartagnan.litmus.LISA_AARCH64_Test
+[INFO] Running com.dat3m.dartagnan.litmus.LitmusVulkanLivenessTest
+[INFO] Tests run: 73, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 5.346 s -- in com.dat3m.dartagnan.litmus.LitmusVulkanLivenessTest
+[INFO] Running com.dat3m.dartagnan.litmus.LitmusVulkanCheckerTest
+[INFO] Tests run: 239, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 12.56 s -- in com.dat3m.dartagnan.litmus.LitmusVulkanCheckerTest
+[INFO] Running com.dat3m.dartagnan.wmm.utils.EventGraphTest
+[INFO] Tests run: 77, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.096 s -- in com.dat3m.dartagnan.wmm.utils.EventGraphTest
+[INFO] Running com.dat3m.dartagnan.wmm.utils.EmptyEventGraphTest
+[INFO] Tests run: 29, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.078 s -- in com.dat3m.dartagnan.wmm.utils.EmptyEventGraphTest
+[INFO] Running com.dat3m.dartagnan.exceptions.ArrayIllegalTest
+line 4:15 extraneous input '-' expecting {DigitSequence, ']'}
+[INFO] Tests run: 6, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.302 s -- in com.dat3m.dartagnan.exceptions.ArrayIllegalTest
+[INFO] Running com.dat3m.dartagnan.exceptions.ExceptionsTest
+[INFO] Tests run: 9, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.423 s -- in com.dat3m.dartagnan.exceptions.ExceptionsTest
+[INFO] Running com.dat3m.dartagnan.exceptions.WrongTargetTest
+[INFO] Tests run: 6, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.900 s -- in com.dat3m.dartagnan.exceptions.WrongTargetTest
+[INFO] Running com.dat3m.dartagnan.miscellaneous.BranchTest
+[INFO] Tests run: 21, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 2.818 s -- in com.dat3m.dartagnan.miscellaneous.BranchTest
+[INFO] Running com.dat3m.dartagnan.miscellaneous.AnalysisTest
+[INFO] Tests run: 13, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.902 s -- in com.dat3m.dartagnan.miscellaneous.AnalysisTest
+[INFO] Running com.dat3m.dartagnan.miscellaneous.LoopTest
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.974 s -- in com.dat3m.dartagnan.miscellaneous.LoopTest
+[INFO] Running com.dat3m.dartagnan.miscellaneous.PrinterTest
+[INFO] Tests run: 11, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 1.657 s -- in com.dat3m.dartagnan.miscellaneous.PrinterTest
+[INFO] Running com.dat3m.dartagnan.miscellaneous.ApplicationTest
 Condition forall ((x==bv64(1) && (y==bv64(2) || y==bv64(1)) || x==bv64(2) && y==bv64(1)))
 Ok
-Total verification time(ms): 537
+Total verification time: 0.521 secs
 UNKNOWN
-Total verification time(ms): 277
+Total verification time: 0.324 secs
 UNKNOWN
-Total verification time(ms): 218
+Total verification time: 0.284 secs
 UNKNOWN
-Total verification time(ms): 276
+Total verification time: 0.315 secs
 UNKNOWN
-Total verification time(ms): 169
+Total verification time: 0.197 secs
 ===== Program specification violation found =====
-	E144:	reach_error @lazy01.i#722 -> @lazy01.i#20: user assertion
+        E144:   reach_error @lazy01.i#722 -> @lazy01.i#20: user assertion
 =================================================
 FAIL
-Total verification time(ms): 110
+Total verification time: 0.127 secs
 UNKNOWN
-Total verification time(ms): 193
-[[1;34mINFO[m] [1;32mTests run: [0;1;32m12[m, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 3.454 s -- in com.dat3m.dartagnan.miscellaneous.[1mApplicationTest[m
-[[1;34mINFO[m] Running com.dat3m.dartagnan.miscellaneous.[1mPrinterTest[m
-[[1;34mINFO[m] [1;32mTests run: [0;1;32m11[m, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 1.881 s -- in com.dat3m.dartagnan.miscellaneous.[1mPrinterTest[m
-[[1;34mINFO[m] Running com.dat3m.dartagnan.miscellaneous.[1mArrayValidTest[m
-[[1;34mINFO[m] [1;32mTests run: [0;1;32m19[m, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 3.073 s -- in com.dat3m.dartagnan.miscellaneous.[1mArrayValidTest[m
-[[1;34mINFO[m] Running com.dat3m.dartagnan.miscellaneous.[1mAnalysisTest[m
-[[1;34mINFO[m] [1;32mTests run: [0;1;32m13[m, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.929 s -- in com.dat3m.dartagnan.miscellaneous.[1mAnalysisTest[m
-[[1;34mINFO[m] Running com.dat3m.dartagnan.miscellaneous.[1mBranchTest[m
-[[1;34mINFO[m] [1;32mTests run: [0;1;32m21[m, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 3.200 s -- in com.dat3m.dartagnan.miscellaneous.[1mBranchTest[m
-[[1;34mINFO[m] Running com.dat3m.dartagnan.[1mGlobalSettingsTest[m
-[[1;34mINFO[m] [1;32mTests run: [0;1;32m2[m, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.691 s -- in com.dat3m.dartagnan.[1mGlobalSettingsTest[m
-[[1;34mINFO[m] Running com.dat3m.dartagnan.witness.[1mBuildWitnessTest[m
-[[1;34mINFO[m] [1;32mTests run: [0;1;32m1[m, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 1.861 s -- in com.dat3m.dartagnan.witness.[1mBuildWitnessTest[m
-[[1;34mINFO[m] Running com.dat3m.dartagnan.witness.[1mParseWitnessTest[m
-[[1;34mINFO[m] [1;32mTests run: [0;1;32m1[m, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.941 s -- in com.dat3m.dartagnan.witness.[1mParseWitnessTest[m
-[[1;34mINFO[m] Running com.dat3m.dartagnan.compilation.[1mC11ToAarch64Test[m
-[[1;34mINFO[m] [1;32mTests run: [0;1;32m136[m, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 7.189 s -- in com.dat3m.dartagnan.compilation.[1mC11ToAarch64Test[m
-[[1;34mINFO[m] Running com.dat3m.dartagnan.compilation.[1mRC11ToAarch64Test[m
-[[1;34mINFO[m] [1;32mTests run: [0;1;32m136[m, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 7.142 s -- in com.dat3m.dartagnan.compilation.[1mRC11ToAarch64Test[m
-[[1;34mINFO[m] Running com.dat3m.dartagnan.compilation.[1mLKMMToAarch64Test[m
-[[1;34mINFO[m] [1;32mTests run: [0;1;32m5292[m, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 220.4 s -- in com.dat3m.dartagnan.compilation.[1mLKMMToAarch64Test[m
-[[1;34mINFO[m] Running com.dat3m.dartagnan.compilation.[1mRC11ToPPCTest[m
-[[1;34mINFO[m] [1;32mTests run: [0;1;32m136[m, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 7.116 s -- in com.dat3m.dartagnan.compilation.[1mRC11ToPPCTest[m
-[[1;34mINFO[m] Running com.dat3m.dartagnan.compilation.[1mC11ToPPCTest[m
-[[1;34mINFO[m] [1;32mTests run: [0;1;32m136[m, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 7.162 s -- in com.dat3m.dartagnan.compilation.[1mC11ToPPCTest[m
-[[1;34mINFO[m] Running com.dat3m.dartagnan.compilation.[1mC11ToTSOTest[m
-[[1;34mINFO[m] [1;32mTests run: [0;1;32m136[m, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 7.920 s -- in com.dat3m.dartagnan.compilation.[1mC11ToTSOTest[m
-[[1;34mINFO[m] Running com.dat3m.dartagnan.compilation.[1mC11ToRISCVTest[m
-[[1;34mINFO[m] [1;32mTests run: [0;1;32m136[m, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 7.189 s -- in com.dat3m.dartagnan.compilation.[1mC11ToRISCVTest[m
-[[1;34mINFO[m] Running com.dat3m.dartagnan.compilation.[1mRC11ToRISCVTest[m
-[[1;34mINFO[m] [1;32mTests run: [0;1;32m136[m, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 9.123 s -- in com.dat3m.dartagnan.compilation.[1mRC11ToRISCVTest[m
-[[1;34mINFO[m] Running com.dat3m.dartagnan.compilation.[1mLKMMToPPCTest[m
-[[1;34mINFO[m] [1;32mTests run: [0;1;32m5292[m, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 251.8 s -- in com.dat3m.dartagnan.compilation.[1mLKMMToPPCTest[m
-[[1;34mINFO[m] Running com.dat3m.dartagnan.compilation.[1mRC11ToTSOTest[m
-[[1;34mINFO[m] [1;32mTests run: [0;1;32m136[m, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 7.268 s -- in com.dat3m.dartagnan.compilation.[1mRC11ToTSOTest[m
-[[1;34mINFO[m] Running com.dat3m.dartagnan.compilation.[1mLKMMToRISCVTest[m
-[[1;34mINFO[m] [1;32mTests run: [0;1;32m5292[m, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 222.9 s -- in com.dat3m.dartagnan.compilation.[1mLKMMToRISCVTest[m
-[[1;34mINFO[m] 
-[[1;34mINFO[m] Results:
-[[1;34mINFO[m] 
-[[1;34mINFO[m] [1;32mTests run: 43726, Failures: 0, Errors: 0, Skipped: 0[m
-[[1;34mINFO[m] 
-[[1;34mINFO[m] 
-[[1;34mINFO[m] [1m--- [0;32mjacoco-maven-plugin:0.8.10:report[m [1m(generate-code-coverage-report)[m @ [36mdartagnan[0;1m ---[m
-[[1;34mINFO[m] Loading execution data file /home/local/haintong/Documents/workspace/Dat3M/dartagnan/target/jacoco.exec
-[[1;34mINFO[m] Analyzed bundle 'dartagnan' with 572 classes
-[[1;34mINFO[m] 
-[[1;34mINFO[m] [1m----------------------------< [0;36mcom.dat3m:ui[0;1m >----------------------------[m
-[[1;34mINFO[m] [1mBuilding ui 4.0.0                                                  [3/4][m
-[[1;34mINFO[m] [1m--------------------------------[ jar ]---------------------------------[m
-[[1;34mINFO[m] 
-[[1;34mINFO[m] [1m--- [0;32mmaven-dependency-plugin:3.6.0:copy-dependencies[m [1m(copy-dependencies)[m @ [36mui[0;1m ---[m
-[[1;34mINFO[m] org.antlr:antlr4-runtime:jar:4.13.0 already exists in destination.
-[[1;34mINFO[m] commons-cli:commons-cli:jar:1.5.0 already exists in destination.
-[[1;34mINFO[m] com.google.guava:guava:jar:32.1.2-jre already exists in destination.
-[[1;34mINFO[m] com.google.guava:failureaccess:jar:1.0.1 already exists in destination.
-[[1;34mINFO[m] com.google.guava:listenablefuture:jar:9999.0-empty-to-avoid-conflict-with-guava already exists in destination.
-[[1;34mINFO[m] com.google.code.findbugs:jsr305:jar:3.0.2 already exists in destination.
-[[1;34mINFO[m] org.checkerframework:checker-qual:jar:3.33.0 already exists in destination.
-[[1;34mINFO[m] com.google.errorprone:error_prone_annotations:jar:2.18.0 already exists in destination.
-[[1;34mINFO[m] com.google.j2objc:j2objc-annotations:jar:2.8 already exists in destination.
-[[1;34mINFO[m] org.sosy-lab:java-smt:jar:4.1.0 already exists in destination.
-[[1;34mINFO[m] org.sosy-lab:common:jar:0.3000-569-g89796f98 already exists in destination.
-[[1;34mINFO[m] com.github.spotbugs:spotbugs-annotations:jar:4.7.3 already exists in destination.
-[[1;34mINFO[m] de.uni-freiburg.informatik.ultimate:smtinterpol:jar:2.5-1242-g5c50fb6d already exists in destination.
-[[1;34mINFO[m] io.github.uuverifiers:princess_2.13:jar:2023-06-19 already exists in destination.
-[[1;34mINFO[m] org.scala-lang:scala-library:jar:2.13.10 already exists in destination.
-[[1;34mINFO[m] io.github.uuverifiers:princess-parser_2.13:jar:2023-06-19 already exists in destination.
-[[1;34mINFO[m] io.github.uuverifiers:princess-smt-parser_2.13:jar:2023-06-19 already exists in destination.
-[[1;34mINFO[m] org.scala-lang.modules:scala-parser-combinators_2.13:jar:1.1.2 already exists in destination.
-[[1;34mINFO[m] net.sf.squirrel-sql.thirdparty-non-maven:java-cup:jar:0.11a already exists in destination.
-[[1;34mINFO[m] org.codehaus.mojo:animal-sniffer-annotations:jar:1.18 already exists in destination.
-[[1;34mINFO[m] org.apache.logging.log4j:log4j-api:jar:2.20.0 already exists in destination.
-[[1;34mINFO[m] org.apache.logging.log4j:log4j-core:jar:2.20.0 already exists in destination.
-[[1;34mINFO[m] org.sosy-lab:javasmt-solver-z3:jar:com.microsoft.z3:4.12.2 already exists in destination.
-[[1;34mINFO[m] com.fifesoft:rsyntaxtextarea:jar:3.3.4 already exists in destination.
-[[1;34mINFO[m] org.sosy-lab:javasmt-solver-cvc4:jar:CVC4:1.8-prerelease-2020-06-24-g7825d8f28 already exists in destination.
-[[1;34mINFO[m] org.sosy-lab:javasmt-solver-cvc5:jar:cvc5:1.0.5-g4cb2ab9eb already exists in destination.
-[[1;34mINFO[m] org.sosy-lab:javasmt-solver-opensmt:jar:opensmt:2.5.2-g7f502169 already exists in destination.
-[[1;34mINFO[m] org.sosy-lab:javasmt-yices2:jar:4.1.0-1-gc58fe5b4 already exists in destination.
-[[1;34mINFO[m] 
-[[1;34mINFO[m] [1m--- [0;32mmaven-dependency-plugin:3.6.0:copy[m [1m(copy)[m @ [36mui[0;1m ---[m
-[[1;34mINFO[m] Configured Artifact: org.sosy-lab:javasmt-solver-z3:libz3java:?:so
-[[1;34mINFO[m] Configured Artifact: org.sosy-lab:javasmt-solver-z3:libz3:?:so
-[[1;34mINFO[m] Configured Artifact: org.sosy-lab:javasmt-solver-mathsat5:libmathsat5j:?:so
-[[1;34mINFO[m] Configured Artifact: org.sosy-lab:javasmt-solver-boolector:libboolector:?:so
-[[1;33mWARNING[m] The POM for org.sosy-lab:javasmt-solver-boolector:so:libboolector:3.2.2-g1a89c229 is invalid, transitive dependencies (if any) will not be available, enable debug logging for more details
-[[1;34mINFO[m] Configured Artifact: org.sosy-lab:javasmt-solver-boolector:libminisat:?:so
-[[1;33mWARNING[m] The POM for org.sosy-lab:javasmt-solver-boolector:so:libminisat:3.2.2-g1a89c229 is invalid, transitive dependencies (if any) will not be available, enable debug logging for more details
-[[1;34mINFO[m] Configured Artifact: org.sosy-lab:javasmt-solver-boolector:libpicosat:?:so
-[[1;33mWARNING[m] The POM for org.sosy-lab:javasmt-solver-boolector:so:libpicosat:3.2.2-g1a89c229 is invalid, transitive dependencies (if any) will not be available, enable debug logging for more details
-[[1;34mINFO[m] Configured Artifact: org.sosy-lab:javasmt-solver-cvc4:libcvc4:?:so
-[[1;34mINFO[m] Configured Artifact: org.sosy-lab:javasmt-solver-cvc4:libcvc4jni:?:so
-[[1;34mINFO[m] Configured Artifact: org.sosy-lab:javasmt-solver-cvc4:libcvc4parser:?:so
-[[1;34mINFO[m] Configured Artifact: org.sosy-lab:javasmt-solver-cvc5:libcvc5:?:so
-[[1;34mINFO[m] Configured Artifact: org.sosy-lab:javasmt-solver-cvc5:libcvc5jni:?:so
-[[1;34mINFO[m] Configured Artifact: org.sosy-lab:javasmt-solver-cvc5:libcvc5parser:?:so
-[[1;34mINFO[m] Configured Artifact: org.sosy-lab:javasmt-solver-cvc5:libpoly:?:so
-[[1;34mINFO[m] Configured Artifact: org.sosy-lab:javasmt-solver-cvc5:libpolyxx:?:so
-[[1;34mINFO[m] Configured Artifact: org.sosy-lab:javasmt-solver-opensmt:libopensmtjava:?:so
-[[1;34mINFO[m] Configured Artifact: org.sosy-lab:javasmt-solver-opensmt:libopensmt:?:so
-[[1;34mINFO[m] Configured Artifact: org.sosy-lab:javasmt-solver-yices2:libyices2j:?:so
-[[1;33mWARNING[m] The POM for org.sosy-lab:javasmt-solver-yices2:so:libyices2j:2.6.2-396-g194350c1 is invalid, transitive dependencies (if any) will not be available, enable debug logging for more details
-[[1;34mINFO[m] org.sosy-lab:javasmt-solver-z3:libz3java:4.12.2:so already exists in /home/local/haintong/Documents/workspace/Dat3M/ui/target/libs
-[[1;34mINFO[m] org.sosy-lab:javasmt-solver-z3:libz3:4.12.2:so already exists in /home/local/haintong/Documents/workspace/Dat3M/ui/target/libs
-[[1;34mINFO[m] org.sosy-lab:javasmt-solver-mathsat5:libmathsat5j:5.6.10:so already exists in /home/local/haintong/Documents/workspace/Dat3M/ui/target/libs
-[[1;34mINFO[m] org.sosy-lab:javasmt-solver-boolector:libboolector:3.2.2-g1a89c229:so already exists in /home/local/haintong/Documents/workspace/Dat3M/ui/target/libs
-[[1;34mINFO[m] org.sosy-lab:javasmt-solver-boolector:libminisat:3.2.2-g1a89c229:so already exists in /home/local/haintong/Documents/workspace/Dat3M/ui/target/libs
-[[1;34mINFO[m] org.sosy-lab:javasmt-solver-boolector:libpicosat:3.2.2-g1a89c229:so already exists in /home/local/haintong/Documents/workspace/Dat3M/ui/target/libs
-[[1;34mINFO[m] org.sosy-lab:javasmt-solver-cvc4:libcvc4:1.8-prerelease-2020-06-24-g7825d8f28:so already exists in /home/local/haintong/Documents/workspace/Dat3M/ui/target/libs
-[[1;34mINFO[m] org.sosy-lab:javasmt-solver-cvc4:libcvc4jni:1.8-prerelease-2020-06-24-g7825d8f28:so already exists in /home/local/haintong/Documents/workspace/Dat3M/ui/target/libs
-[[1;34mINFO[m] org.sosy-lab:javasmt-solver-cvc4:libcvc4parser:1.8-prerelease-2020-06-24-g7825d8f28:so already exists in /home/local/haintong/Documents/workspace/Dat3M/ui/target/libs
-[[1;34mINFO[m] org.sosy-lab:javasmt-solver-cvc5:libcvc5:1.0.5-g4cb2ab9eb:so already exists in /home/local/haintong/Documents/workspace/Dat3M/ui/target/libs
-[[1;34mINFO[m] org.sosy-lab:javasmt-solver-cvc5:libcvc5jni:1.0.5-g4cb2ab9eb:so already exists in /home/local/haintong/Documents/workspace/Dat3M/ui/target/libs
-[[1;34mINFO[m] org.sosy-lab:javasmt-solver-cvc5:libcvc5parser:1.0.5-g4cb2ab9eb:so already exists in /home/local/haintong/Documents/workspace/Dat3M/ui/target/libs
-[[1;34mINFO[m] org.sosy-lab:javasmt-solver-cvc5:libpoly:1.0.5-g4cb2ab9eb:so already exists in /home/local/haintong/Documents/workspace/Dat3M/ui/target/libs
-[[1;34mINFO[m] org.sosy-lab:javasmt-solver-cvc5:libpolyxx:1.0.5-g4cb2ab9eb:so already exists in /home/local/haintong/Documents/workspace/Dat3M/ui/target/libs
-[[1;34mINFO[m] org.sosy-lab:javasmt-solver-opensmt:libopensmtjava:2.5.2-g7f502169:so already exists in /home/local/haintong/Documents/workspace/Dat3M/ui/target/libs
-[[1;34mINFO[m] org.sosy-lab:javasmt-solver-opensmt:libopensmt:2.5.2-g7f502169:so already exists in /home/local/haintong/Documents/workspace/Dat3M/ui/target/libs
-[[1;34mINFO[m] org.sosy-lab:javasmt-solver-yices2:libyices2j:2.6.2-396-g194350c1:so already exists in /home/local/haintong/Documents/workspace/Dat3M/ui/target/libs
-[[1;34mINFO[m] 
-[[1;34mINFO[m] [1m--- [0;32mmaven-resources-plugin:3.3.1:resources[m [1m(default-resources)[m @ [36mui[0;1m ---[m
-[[1;34mINFO[m] Copying 1 resource from src/main/resources to target/classes
-[[1;34mINFO[m] 
-[[1;34mINFO[m] [1m--- [0;32mmaven-compiler-plugin:3.11.0:compile[m [1m(default-compile)[m @ [36mui[0;1m ---[m
-[[1;34mINFO[m] Changes detected - recompiling the module! :dependency
-[[1;34mINFO[m] Compiling 23 source files with javac [debug target 17] to target/classes
-[[1;33mWARNING[m] system modules path not set in conjunction with -source 17
-[[1;34mINFO[m] Annotation processing is enabled because one or more processors were found
-  on the class path. A future release of javac may disable annotation processing
-  unless at least one processor is specified by name (-processor), or a search
-  path is specified (--processor-path, --processor-module-path), or annotation
-  processing is enabled explicitly (-proc:only, -proc:full).
-  Use -Xlint:-options to suppress this message.
-  Use -proc:none to disable annotation processing.
-[[1;34mINFO[m] /home/local/haintong/Documents/workspace/Dat3M/ui/src/main/java/com/dat3m/ui/editor/LineNumbersView.java: /home/local/haintong/Documents/workspace/Dat3M/ui/src/main/java/com/dat3m/ui/editor/LineNumbersView.java uses or overrides a deprecated API.
-[[1;34mINFO[m] /home/local/haintong/Documents/workspace/Dat3M/ui/src/main/java/com/dat3m/ui/editor/LineNumbersView.java: Recompile with -Xlint:deprecation for details.
-[[1;34mINFO[m] 
-[[1;34mINFO[m] [1m--- [0;32mmaven-resources-plugin:3.3.1:testResources[m [1m(default-testResources)[m @ [36mui[0;1m ---[m
-[[1;34mINFO[m] skip non existing resourceDirectory /home/local/haintong/Documents/workspace/Dat3M/ui/src/test/resources
-[[1;34mINFO[m] 
-[[1;34mINFO[m] [1m--- [0;32mmaven-compiler-plugin:3.11.0:testCompile[m [1m(default-testCompile)[m @ [36mui[0;1m ---[m
-[[1;34mINFO[m] No sources to compile
-[[1;34mINFO[m] 
-[[1;34mINFO[m] [1m--- [0;32mmaven-surefire-plugin:3.1.2:test[m [1m(default-test)[m @ [36mui[0;1m ---[m
-[[1;34mINFO[m] No tests to run.
-[[1;34mINFO[m] 
-[[1;34mINFO[m] [1m--------------------------< [0;36mcom.dat3m:svcomp[0;1m >--------------------------[m
-[[1;34mINFO[m] [1mBuilding svcomp 4.0.0                                              [4/4][m
-[[1;34mINFO[m] [1m--------------------------------[ jar ]---------------------------------[m
-[[1;34mINFO[m] 
-[[1;34mINFO[m] [1m--- [0;32mmaven-dependency-plugin:3.6.0:copy-dependencies[m [1m(copy-dependencies)[m @ [36msvcomp[0;1m ---[m
-[[1;34mINFO[m] org.antlr:antlr4-runtime:jar:4.13.0 already exists in destination.
-[[1;34mINFO[m] com.google.guava:guava:jar:32.1.2-jre already exists in destination.
-[[1;34mINFO[m] com.google.guava:failureaccess:jar:1.0.1 already exists in destination.
-[[1;34mINFO[m] com.google.guava:listenablefuture:jar:9999.0-empty-to-avoid-conflict-with-guava already exists in destination.
-[[1;34mINFO[m] com.google.code.findbugs:jsr305:jar:3.0.2 already exists in destination.
-[[1;34mINFO[m] org.checkerframework:checker-qual:jar:3.33.0 already exists in destination.
-[[1;34mINFO[m] com.google.errorprone:error_prone_annotations:jar:2.18.0 already exists in destination.
-[[1;34mINFO[m] com.google.j2objc:j2objc-annotations:jar:2.8 already exists in destination.
-[[1;34mINFO[m] org.sosy-lab:java-smt:jar:4.1.0 already exists in destination.
-[[1;34mINFO[m] org.sosy-lab:common:jar:0.3000-569-g89796f98 already exists in destination.
-[[1;34mINFO[m] com.github.spotbugs:spotbugs-annotations:jar:4.7.3 already exists in destination.
-[[1;34mINFO[m] de.uni-freiburg.informatik.ultimate:smtinterpol:jar:2.5-1242-g5c50fb6d already exists in destination.
-[[1;34mINFO[m] io.github.uuverifiers:princess_2.13:jar:2023-06-19 already exists in destination.
-[[1;34mINFO[m] org.scala-lang:scala-library:jar:2.13.10 already exists in destination.
-[[1;34mINFO[m] io.github.uuverifiers:princess-parser_2.13:jar:2023-06-19 already exists in destination.
-[[1;34mINFO[m] io.github.uuverifiers:princess-smt-parser_2.13:jar:2023-06-19 already exists in destination.
-[[1;34mINFO[m] org.scala-lang.modules:scala-parser-combinators_2.13:jar:1.1.2 already exists in destination.
-[[1;34mINFO[m] net.sf.squirrel-sql.thirdparty-non-maven:java-cup:jar:0.11a already exists in destination.
-[[1;34mINFO[m] org.codehaus.mojo:animal-sniffer-annotations:jar:1.18 already exists in destination.
-[[1;34mINFO[m] org.apache.logging.log4j:log4j-api:jar:2.20.0 already exists in destination.
-[[1;34mINFO[m] org.apache.logging.log4j:log4j-core:jar:2.20.0 already exists in destination.
-[[1;34mINFO[m] org.sosy-lab:javasmt-solver-z3:jar:com.microsoft.z3:4.12.2 already exists in destination.
-[[1;34mINFO[m] commons-cli:commons-cli:jar:1.5.0 already exists in destination.
-[[1;34mINFO[m] org.sosy-lab:javasmt-solver-cvc4:jar:CVC4:1.8-prerelease-2020-06-24-g7825d8f28 already exists in destination.
-[[1;34mINFO[m] org.sosy-lab:javasmt-solver-cvc5:jar:cvc5:1.0.5-g4cb2ab9eb already exists in destination.
-[[1;34mINFO[m] org.sosy-lab:javasmt-solver-opensmt:jar:opensmt:2.5.2-g7f502169 already exists in destination.
-[[1;34mINFO[m] org.sosy-lab:javasmt-yices2:jar:4.1.0-1-gc58fe5b4 already exists in destination.
-[[1;34mINFO[m] 
-[[1;34mINFO[m] [1m--- [0;32mmaven-dependency-plugin:3.6.0:copy[m [1m(copy)[m @ [36msvcomp[0;1m ---[m
-[[1;34mINFO[m] Configured Artifact: org.sosy-lab:javasmt-solver-z3:libz3java:?:so
-[[1;34mINFO[m] Configured Artifact: org.sosy-lab:javasmt-solver-z3:libz3:?:so
-[[1;34mINFO[m] Configured Artifact: org.sosy-lab:javasmt-solver-mathsat5:libmathsat5j:?:so
-[[1;34mINFO[m] Configured Artifact: org.sosy-lab:javasmt-solver-boolector:libboolector:?:so
-[[1;33mWARNING[m] The POM for org.sosy-lab:javasmt-solver-boolector:so:libboolector:3.2.2-g1a89c229 is invalid, transitive dependencies (if any) will not be available, enable debug logging for more details
-[[1;34mINFO[m] Configured Artifact: org.sosy-lab:javasmt-solver-boolector:libminisat:?:so
-[[1;33mWARNING[m] The POM for org.sosy-lab:javasmt-solver-boolector:so:libminisat:3.2.2-g1a89c229 is invalid, transitive dependencies (if any) will not be available, enable debug logging for more details
-[[1;34mINFO[m] Configured Artifact: org.sosy-lab:javasmt-solver-boolector:libpicosat:?:so
-[[1;33mWARNING[m] The POM for org.sosy-lab:javasmt-solver-boolector:so:libpicosat:3.2.2-g1a89c229 is invalid, transitive dependencies (if any) will not be available, enable debug logging for more details
-[[1;34mINFO[m] Configured Artifact: org.sosy-lab:javasmt-solver-cvc4:libcvc4:?:so
-[[1;34mINFO[m] Configured Artifact: org.sosy-lab:javasmt-solver-cvc4:libcvc4jni:?:so
-[[1;34mINFO[m] Configured Artifact: org.sosy-lab:javasmt-solver-cvc4:libcvc4parser:?:so
-[[1;34mINFO[m] Configured Artifact: org.sosy-lab:javasmt-solver-cvc5:libcvc5:?:so
-[[1;34mINFO[m] Configured Artifact: org.sosy-lab:javasmt-solver-cvc5:libcvc5jni:?:so
-[[1;34mINFO[m] Configured Artifact: org.sosy-lab:javasmt-solver-cvc5:libcvc5parser:?:so
-[[1;34mINFO[m] Configured Artifact: org.sosy-lab:javasmt-solver-cvc5:libpoly:?:so
-[[1;34mINFO[m] Configured Artifact: org.sosy-lab:javasmt-solver-cvc5:libpolyxx:?:so
-[[1;34mINFO[m] Configured Artifact: org.sosy-lab:javasmt-solver-opensmt:libopensmtjava:?:so
-[[1;34mINFO[m] Configured Artifact: org.sosy-lab:javasmt-solver-opensmt:libopensmt:?:so
-[[1;34mINFO[m] Configured Artifact: org.sosy-lab:javasmt-solver-yices2:libyices2j:?:so
-[[1;33mWARNING[m] The POM for org.sosy-lab:javasmt-solver-yices2:so:libyices2j:2.6.2-396-g194350c1 is invalid, transitive dependencies (if any) will not be available, enable debug logging for more details
-[[1;34mINFO[m] org.sosy-lab:javasmt-solver-z3:libz3java:4.12.2:so already exists in /home/local/haintong/Documents/workspace/Dat3M/svcomp/target/libs
-[[1;34mINFO[m] org.sosy-lab:javasmt-solver-z3:libz3:4.12.2:so already exists in /home/local/haintong/Documents/workspace/Dat3M/svcomp/target/libs
-[[1;34mINFO[m] org.sosy-lab:javasmt-solver-mathsat5:libmathsat5j:5.6.10:so already exists in /home/local/haintong/Documents/workspace/Dat3M/svcomp/target/libs
-[[1;34mINFO[m] org.sosy-lab:javasmt-solver-boolector:libboolector:3.2.2-g1a89c229:so already exists in /home/local/haintong/Documents/workspace/Dat3M/svcomp/target/libs
-[[1;34mINFO[m] org.sosy-lab:javasmt-solver-boolector:libminisat:3.2.2-g1a89c229:so already exists in /home/local/haintong/Documents/workspace/Dat3M/svcomp/target/libs
-[[1;34mINFO[m] org.sosy-lab:javasmt-solver-boolector:libpicosat:3.2.2-g1a89c229:so already exists in /home/local/haintong/Documents/workspace/Dat3M/svcomp/target/libs
-[[1;34mINFO[m] org.sosy-lab:javasmt-solver-cvc4:libcvc4:1.8-prerelease-2020-06-24-g7825d8f28:so already exists in /home/local/haintong/Documents/workspace/Dat3M/svcomp/target/libs
-[[1;34mINFO[m] org.sosy-lab:javasmt-solver-cvc4:libcvc4jni:1.8-prerelease-2020-06-24-g7825d8f28:so already exists in /home/local/haintong/Documents/workspace/Dat3M/svcomp/target/libs
-[[1;34mINFO[m] org.sosy-lab:javasmt-solver-cvc4:libcvc4parser:1.8-prerelease-2020-06-24-g7825d8f28:so already exists in /home/local/haintong/Documents/workspace/Dat3M/svcomp/target/libs
-[[1;34mINFO[m] org.sosy-lab:javasmt-solver-cvc5:libcvc5:1.0.5-g4cb2ab9eb:so already exists in /home/local/haintong/Documents/workspace/Dat3M/svcomp/target/libs
-[[1;34mINFO[m] org.sosy-lab:javasmt-solver-cvc5:libcvc5jni:1.0.5-g4cb2ab9eb:so already exists in /home/local/haintong/Documents/workspace/Dat3M/svcomp/target/libs
-[[1;34mINFO[m] org.sosy-lab:javasmt-solver-cvc5:libcvc5parser:1.0.5-g4cb2ab9eb:so already exists in /home/local/haintong/Documents/workspace/Dat3M/svcomp/target/libs
-[[1;34mINFO[m] org.sosy-lab:javasmt-solver-cvc5:libpoly:1.0.5-g4cb2ab9eb:so already exists in /home/local/haintong/Documents/workspace/Dat3M/svcomp/target/libs
-[[1;34mINFO[m] org.sosy-lab:javasmt-solver-cvc5:libpolyxx:1.0.5-g4cb2ab9eb:so already exists in /home/local/haintong/Documents/workspace/Dat3M/svcomp/target/libs
-[[1;34mINFO[m] org.sosy-lab:javasmt-solver-opensmt:libopensmtjava:2.5.2-g7f502169:so already exists in /home/local/haintong/Documents/workspace/Dat3M/svcomp/target/libs
-[[1;34mINFO[m] org.sosy-lab:javasmt-solver-opensmt:libopensmt:2.5.2-g7f502169:so already exists in /home/local/haintong/Documents/workspace/Dat3M/svcomp/target/libs
-[[1;34mINFO[m] org.sosy-lab:javasmt-solver-yices2:libyices2j:2.6.2-396-g194350c1:so already exists in /home/local/haintong/Documents/workspace/Dat3M/svcomp/target/libs
-[[1;34mINFO[m] 
-[[1;34mINFO[m] [1m--- [0;32mgit-commit-id-plugin:4.9.10:revision[m [1m(populate-git-commit-information)[m @ [36msvcomp[0;1m ---[m
-[[1;34mINFO[m] 
-[[1;34mINFO[m] [1m--- [0;32mmaven-resources-plugin:3.3.1:resources[m [1m(default-resources)[m @ [36msvcomp[0;1m ---[m
-[[1;34mINFO[m] Copying 1 resource from src/main/resources to target/classes
-[[1;34mINFO[m] 
-[[1;34mINFO[m] [1m--- [0;32mmaven-compiler-plugin:3.11.0:compile[m [1m(default-compile)[m @ [36msvcomp[0;1m ---[m
-[[1;34mINFO[m] Changes detected - recompiling the module! :dependency
-[[1;34mINFO[m] Compiling 1 source file with javac [debug target 17] to target/classes
-[[1;33mWARNING[m] system modules path not set in conjunction with -source 17
-[[1;34mINFO[m] Annotation processing is enabled because one or more processors were found
-  on the class path. A future release of javac may disable annotation processing
-  unless at least one processor is specified by name (-processor), or a search
-  path is specified (--processor-path, --processor-module-path), or annotation
-  processing is enabled explicitly (-proc:only, -proc:full).
-  Use -Xlint:-options to suppress this message.
-  Use -proc:none to disable annotation processing.
-[[1;34mINFO[m] 
-[[1;34mINFO[m] [1m--- [0;32mmaven-resources-plugin:3.3.1:testResources[m [1m(default-testResources)[m @ [36msvcomp[0;1m ---[m
-[[1;34mINFO[m] skip non existing resourceDirectory /home/local/haintong/Documents/workspace/Dat3M/svcomp/src/test/resources
-[[1;34mINFO[m] 
-[[1;34mINFO[m] [1m--- [0;32mmaven-compiler-plugin:3.11.0:testCompile[m [1m(default-testCompile)[m @ [36msvcomp[0;1m ---[m
-[[1;34mINFO[m] No sources to compile
-[[1;34mINFO[m] 
-[[1;34mINFO[m] [1m--- [0;32mmaven-surefire-plugin:3.1.2:test[m [1m(default-test)[m @ [36msvcomp[0;1m ---[m
-[[1;34mINFO[m] No tests to run.
-[[1;34mINFO[m] [1m------------------------------------------------------------------------[m
-[[1;34mINFO[m] [1mReactor Summary for dat3m 4.0.0:[m
-[[1;34mINFO[m] 
-[[1;34mINFO[m] dat3m .............................................. [1;32mSUCCESS[m [  0.003 s]
-[[1;34mINFO[m] dartagnan .......................................... [1;32mSUCCESS[m [42:06 min]
-[[1;34mINFO[m] ui ................................................. [1;32mSUCCESS[m [  0.359 s]
-[[1;34mINFO[m] svcomp ............................................. [1;32mSUCCESS[m [  4.481 s]
-[[1;34mINFO[m] [1m------------------------------------------------------------------------[m
-[[1;34mINFO[m] [1;32mBUILD SUCCESS[m
-[[1;34mINFO[m] [1m------------------------------------------------------------------------[m
-[[1;34mINFO[m] Total time:  42:11 min
-[[1;34mINFO[m] Finished at: 2024-02-15T11:15:07+02:00
-[[1;34mINFO[m] [1m------------------------------------------------------------------------[m
+Total verification time: 0.181 secs
+[INFO] Tests run: 12, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 3.722 s -- in com.dat3m.dartagnan.miscellaneous.ApplicationTest
+[INFO] Running com.dat3m.dartagnan.miscellaneous.ArrayValidTest
+[INFO] Tests run: 19, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 3.123 s -- in com.dat3m.dartagnan.miscellaneous.ArrayValidTest
+[INFO] Running com.dat3m.dartagnan.compilation.LKMMToAarch64Test
+[INFO] Tests run: 5292, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 224.8 s -- in com.dat3m.dartagnan.compilation.LKMMToAarch64Test
+[INFO] Running com.dat3m.dartagnan.compilation.C11ToPPCTest
+[INFO] Tests run: 136, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 6.832 s -- in com.dat3m.dartagnan.compilation.C11ToPPCTest
+[INFO] Running com.dat3m.dartagnan.compilation.C11ToRISCVTest
+[INFO] Tests run: 136, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 6.614 s -- in com.dat3m.dartagnan.compilation.C11ToRISCVTest
+[INFO] Running com.dat3m.dartagnan.compilation.LKMMToRISCVTest
+[INFO] Tests run: 5292, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 227.7 s -- in com.dat3m.dartagnan.compilation.LKMMToRISCVTest
+[INFO] Running com.dat3m.dartagnan.compilation.RC11ToAarch64Test
+[INFO] Tests run: 136, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 7.084 s -- in com.dat3m.dartagnan.compilation.RC11ToAarch64Test
+[INFO] Running com.dat3m.dartagnan.compilation.RC11ToRISCVTest
+[INFO] Tests run: 136, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 6.861 s -- in com.dat3m.dartagnan.compilation.RC11ToRISCVTest
+[INFO] Running com.dat3m.dartagnan.compilation.RC11ToPPCTest
+[INFO] Tests run: 136, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 6.957 s -- in com.dat3m.dartagnan.compilation.RC11ToPPCTest
+[INFO] Running com.dat3m.dartagnan.compilation.LKMMToPPCTest
+[INFO] Tests run: 5292, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 252.5 s -- in com.dat3m.dartagnan.compilation.LKMMToPPCTest
+[INFO] Running com.dat3m.dartagnan.compilation.C11ToAarch64Test
+[INFO] Tests run: 136, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 6.451 s -- in com.dat3m.dartagnan.compilation.C11ToAarch64Test
+[INFO] Running com.dat3m.dartagnan.compilation.C11ToTSOTest
+[INFO] Tests run: 136, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 6.472 s -- in com.dat3m.dartagnan.compilation.C11ToTSOTest
+[INFO] Running com.dat3m.dartagnan.compilation.RC11ToTSOTest
+[INFO] Tests run: 136, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 6.627 s -- in com.dat3m.dartagnan.compilation.RC11ToTSOTest
+[INFO]
+[INFO] Results:
+[INFO]
+[INFO] Tests run: 43843, Failures: 0, Errors: 0, Skipped: 0
+[INFO]
+[INFO]
+[INFO] --- jacoco-maven-plugin:0.8.10:report (generate-code-coverage-report) @ dartagnan ---
+[INFO] Loading execution data file /home/Dat3M/dartagnan/target/jacoco.exec
+[INFO] Analyzed bundle 'dartagnan' with 578 classes
+[INFO]
+[INFO] ----------------------------< com.dat3m:ui >----------------------------
+[INFO] Building ui 4.0.0                                                  [3/4]
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO]
+[INFO] --- maven-dependency-plugin:3.6.0:copy-dependencies (copy-dependencies) @ ui ---
+[INFO] org.antlr:antlr4-runtime:jar:4.13.0 already exists in destination.
+[INFO] commons-cli:commons-cli:jar:1.5.0 already exists in destination.
+[INFO] com.google.guava:guava:jar:32.1.2-jre already exists in destination.
+[INFO] com.google.guava:failureaccess:jar:1.0.1 already exists in destination.
+[INFO] com.google.guava:listenablefuture:jar:9999.0-empty-to-avoid-conflict-with-guava already exists in destination.
+[INFO] com.google.code.findbugs:jsr305:jar:3.0.2 already exists in destination.
+[INFO] org.checkerframework:checker-qual:jar:3.33.0 already exists in destination.
+[INFO] com.google.errorprone:error_prone_annotations:jar:2.18.0 already exists in destination.
+[INFO] com.google.j2objc:j2objc-annotations:jar:2.8 already exists in destination.
+[INFO] org.sosy-lab:java-smt:jar:4.1.0 already exists in destination.
+[INFO] org.sosy-lab:common:jar:0.3000-569-g89796f98 already exists in destination.
+[INFO] com.github.spotbugs:spotbugs-annotations:jar:4.7.3 already exists in destination.
+[INFO] de.uni-freiburg.informatik.ultimate:smtinterpol:jar:2.5-1242-g5c50fb6d already exists in destination.
+[INFO] io.github.uuverifiers:princess_2.13:jar:2023-06-19 already exists in destination.
+[INFO] org.scala-lang:scala-library:jar:2.13.10 already exists in destination.
+[INFO] io.github.uuverifiers:princess-parser_2.13:jar:2023-06-19 already exists in destination.
+[INFO] io.github.uuverifiers:princess-smt-parser_2.13:jar:2023-06-19 already exists in destination.
+[INFO] org.scala-lang.modules:scala-parser-combinators_2.13:jar:1.1.2 already exists in destination.
+[INFO] net.sf.squirrel-sql.thirdparty-non-maven:java-cup:jar:0.11a already exists in destination.
+[INFO] org.codehaus.mojo:animal-sniffer-annotations:jar:1.18 already exists in destination.
+[INFO] org.apache.logging.log4j:log4j-api:jar:2.23.0 already exists in destination.
+[INFO] org.apache.logging.log4j:log4j-core:jar:2.23.0 already exists in destination.
+[INFO] org.sosy-lab:javasmt-solver-z3:jar:com.microsoft.z3:4.12.2 already exists in destination.
+[INFO] com.fifesoft:rsyntaxtextarea:jar:3.3.4 already exists in destination.
+[INFO] org.sosy-lab:javasmt-solver-cvc4:jar:CVC4:1.8-prerelease-2020-06-24-g7825d8f28 already exists in destination.
+[INFO] org.sosy-lab:javasmt-solver-cvc5:jar:cvc5:1.0.5-g4cb2ab9eb already exists in destination.
+[INFO] org.sosy-lab:javasmt-solver-opensmt:jar:opensmt:2.5.2-g7f502169 already exists in destination.
+[INFO] org.sosy-lab:javasmt-yices2:jar:4.1.0-1-gc58fe5b4 already exists in destination.
+[INFO]
+[INFO] --- maven-dependency-plugin:3.6.0:copy (copy) @ ui ---
+[INFO] Configured Artifact: org.sosy-lab:javasmt-solver-z3:libz3java:?:so
+[INFO] Configured Artifact: org.sosy-lab:javasmt-solver-z3:libz3:?:so
+[INFO] Configured Artifact: org.sosy-lab:javasmt-solver-mathsat5:libmathsat5j:?:so
+[INFO] Configured Artifact: org.sosy-lab:javasmt-solver-boolector:libboolector:?:so
+[WARNING] The POM for org.sosy-lab:javasmt-solver-boolector:so:libboolector:3.2.2-g1a89c229 is invalid, transitive dependencies (if any) will not be available, enable debug logging for more details
+[INFO] Configured Artifact: org.sosy-lab:javasmt-solver-boolector:libminisat:?:so
+[WARNING] The POM for org.sosy-lab:javasmt-solver-boolector:so:libminisat:3.2.2-g1a89c229 is invalid, transitive dependencies (if any) will not be available, enable debug logging for more details
+[INFO] Configured Artifact: org.sosy-lab:javasmt-solver-boolector:libpicosat:?:so
+[WARNING] The POM for org.sosy-lab:javasmt-solver-boolector:so:libpicosat:3.2.2-g1a89c229 is invalid, transitive dependencies (if any) will not be available, enable debug logging for more details
+[INFO] Configured Artifact: org.sosy-lab:javasmt-solver-cvc4:libcvc4:?:so
+[INFO] Configured Artifact: org.sosy-lab:javasmt-solver-cvc4:libcvc4jni:?:so
+[INFO] Configured Artifact: org.sosy-lab:javasmt-solver-cvc4:libcvc4parser:?:so
+[INFO] Configured Artifact: org.sosy-lab:javasmt-solver-cvc5:libcvc5:?:so
+[INFO] Configured Artifact: org.sosy-lab:javasmt-solver-cvc5:libcvc5jni:?:so
+[INFO] Configured Artifact: org.sosy-lab:javasmt-solver-cvc5:libcvc5parser:?:so
+[INFO] Configured Artifact: org.sosy-lab:javasmt-solver-cvc5:libpoly:?:so
+[INFO] Configured Artifact: org.sosy-lab:javasmt-solver-cvc5:libpolyxx:?:so
+[INFO] Configured Artifact: org.sosy-lab:javasmt-solver-opensmt:libopensmtjava:?:so
+[INFO] Configured Artifact: org.sosy-lab:javasmt-solver-opensmt:libopensmt:?:so
+[INFO] Configured Artifact: org.sosy-lab:javasmt-solver-yices2:libyices2j:?:so
+[WARNING] The POM for org.sosy-lab:javasmt-solver-yices2:so:libyices2j:2.6.2-396-g194350c1 is invalid, transitive dependencies (if any) will not be available, enable debug logging for more details
+[INFO] org.sosy-lab:javasmt-solver-z3:libz3java:4.12.2:so already exists in /home/Dat3M/ui/target/libs
+[INFO] org.sosy-lab:javasmt-solver-z3:libz3:4.12.2:so already exists in /home/Dat3M/ui/target/libs
+[INFO] org.sosy-lab:javasmt-solver-mathsat5:libmathsat5j:5.6.10:so already exists in /home/Dat3M/ui/target/libs
+[INFO] org.sosy-lab:javasmt-solver-boolector:libboolector:3.2.2-g1a89c229:so already exists in /home/Dat3M/ui/target/libs
+[INFO] org.sosy-lab:javasmt-solver-boolector:libminisat:3.2.2-g1a89c229:so already exists in /home/Dat3M/ui/target/libs
+[INFO] org.sosy-lab:javasmt-solver-boolector:libpicosat:3.2.2-g1a89c229:so already exists in /home/Dat3M/ui/target/libs
+[INFO] org.sosy-lab:javasmt-solver-cvc4:libcvc4:1.8-prerelease-2020-06-24-g7825d8f28:so already exists in /home/Dat3M/ui/target/libs
+[INFO] org.sosy-lab:javasmt-solver-cvc4:libcvc4jni:1.8-prerelease-2020-06-24-g7825d8f28:so already exists in /home/Dat3M/ui/target/libs
+[INFO] org.sosy-lab:javasmt-solver-cvc4:libcvc4parser:1.8-prerelease-2020-06-24-g7825d8f28:so already exists in /home/Dat3M/ui/target/libs
+[INFO] org.sosy-lab:javasmt-solver-cvc5:libcvc5:1.0.5-g4cb2ab9eb:so already exists in /home/Dat3M/ui/target/libs
+[INFO] org.sosy-lab:javasmt-solver-cvc5:libcvc5jni:1.0.5-g4cb2ab9eb:so already exists in /home/Dat3M/ui/target/libs
+[INFO] org.sosy-lab:javasmt-solver-cvc5:libcvc5parser:1.0.5-g4cb2ab9eb:so already exists in /home/Dat3M/ui/target/libs
+[INFO] org.sosy-lab:javasmt-solver-cvc5:libpoly:1.0.5-g4cb2ab9eb:so already exists in /home/Dat3M/ui/target/libs
+[INFO] org.sosy-lab:javasmt-solver-cvc5:libpolyxx:1.0.5-g4cb2ab9eb:so already exists in /home/Dat3M/ui/target/libs
+[INFO] org.sosy-lab:javasmt-solver-opensmt:libopensmtjava:2.5.2-g7f502169:so already exists in /home/Dat3M/ui/target/libs
+[INFO] org.sosy-lab:javasmt-solver-opensmt:libopensmt:2.5.2-g7f502169:so already exists in /home/Dat3M/ui/target/libs
+[INFO] org.sosy-lab:javasmt-solver-yices2:libyices2j:2.6.2-396-g194350c1:so already exists in /home/Dat3M/ui/target/libs
+[INFO]
+[INFO] --- maven-resources-plugin:3.3.1:resources (default-resources) @ ui ---
+[INFO] Copying 1 resource from src/main/resources to target/classes
+[INFO]
+[INFO] --- maven-compiler-plugin:3.11.0:compile (default-compile) @ ui ---
+[INFO] Changes detected - recompiling the module! :dependency
+[INFO] Compiling 23 source files with javac [debug target 17] to target/classes
+[INFO] /home/Dat3M/ui/src/main/java/com/dat3m/ui/editor/LineNumbersView.java: /home/Dat3M/ui/src/main/java/com/dat3m/ui/editor/LineNumbersView.java uses or overrides a deprecated API.
+[INFO] /home/Dat3M/ui/src/main/java/com/dat3m/ui/editor/LineNumbersView.java: Recompile with -Xlint:deprecation for details.
+[INFO]
+[INFO] --- maven-resources-plugin:3.3.1:testResources (default-testResources) @ ui ---
+[INFO] skip non existing resourceDirectory /home/Dat3M/ui/src/test/resources
+[INFO]
+[INFO] --- maven-compiler-plugin:3.11.0:testCompile (default-testCompile) @ ui ---
+[INFO] No sources to compile
+[INFO]
+[INFO] --- maven-surefire-plugin:3.1.2:test (default-test) @ ui ---
+[INFO] No tests to run.
+[INFO]
+[INFO] --------------------------< com.dat3m:svcomp >--------------------------
+[INFO] Building svcomp 4.0.0                                              [4/4]
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO]
+[INFO] --- maven-dependency-plugin:3.6.0:copy-dependencies (copy-dependencies) @ svcomp ---
+[INFO] org.antlr:antlr4-runtime:jar:4.13.0 already exists in destination.
+[INFO] com.google.guava:guava:jar:32.1.2-jre already exists in destination.
+[INFO] com.google.guava:failureaccess:jar:1.0.1 already exists in destination.
+[INFO] com.google.guava:listenablefuture:jar:9999.0-empty-to-avoid-conflict-with-guava already exists in destination.
+[INFO] com.google.code.findbugs:jsr305:jar:3.0.2 already exists in destination.
+[INFO] org.checkerframework:checker-qual:jar:3.33.0 already exists in destination.
+[INFO] com.google.errorprone:error_prone_annotations:jar:2.18.0 already exists in destination.
+[INFO] com.google.j2objc:j2objc-annotations:jar:2.8 already exists in destination.
+[INFO] org.sosy-lab:java-smt:jar:4.1.0 already exists in destination.
+[INFO] org.sosy-lab:common:jar:0.3000-569-g89796f98 already exists in destination.
+[INFO] com.github.spotbugs:spotbugs-annotations:jar:4.7.3 already exists in destination.
+[INFO] de.uni-freiburg.informatik.ultimate:smtinterpol:jar:2.5-1242-g5c50fb6d already exists in destination.
+[INFO] io.github.uuverifiers:princess_2.13:jar:2023-06-19 already exists in destination.
+[INFO] org.scala-lang:scala-library:jar:2.13.10 already exists in destination.
+[INFO] io.github.uuverifiers:princess-parser_2.13:jar:2023-06-19 already exists in destination.
+[INFO] io.github.uuverifiers:princess-smt-parser_2.13:jar:2023-06-19 already exists in destination.
+[INFO] org.scala-lang.modules:scala-parser-combinators_2.13:jar:1.1.2 already exists in destination.
+[INFO] net.sf.squirrel-sql.thirdparty-non-maven:java-cup:jar:0.11a already exists in destination.
+[INFO] org.codehaus.mojo:animal-sniffer-annotations:jar:1.18 already exists in destination.
+[INFO] org.apache.logging.log4j:log4j-api:jar:2.23.0 already exists in destination.
+[INFO] org.apache.logging.log4j:log4j-core:jar:2.23.0 already exists in destination.
+[INFO] org.sosy-lab:javasmt-solver-z3:jar:com.microsoft.z3:4.12.2 already exists in destination.
+[INFO] commons-cli:commons-cli:jar:1.5.0 already exists in destination.
+[INFO] org.sosy-lab:javasmt-solver-cvc4:jar:CVC4:1.8-prerelease-2020-06-24-g7825d8f28 already exists in destination.
+[INFO] org.sosy-lab:javasmt-solver-cvc5:jar:cvc5:1.0.5-g4cb2ab9eb already exists in destination.
+[INFO] org.sosy-lab:javasmt-solver-opensmt:jar:opensmt:2.5.2-g7f502169 already exists in destination.
+[INFO] org.sosy-lab:javasmt-yices2:jar:4.1.0-1-gc58fe5b4 already exists in destination.
+[INFO]
+[INFO] --- maven-dependency-plugin:3.6.0:copy (copy) @ svcomp ---
+[INFO] Configured Artifact: org.sosy-lab:javasmt-solver-z3:libz3java:?:so
+[INFO] Configured Artifact: org.sosy-lab:javasmt-solver-z3:libz3:?:so
+[INFO] Configured Artifact: org.sosy-lab:javasmt-solver-mathsat5:libmathsat5j:?:so
+[INFO] Configured Artifact: org.sosy-lab:javasmt-solver-boolector:libboolector:?:so
+[WARNING] The POM for org.sosy-lab:javasmt-solver-boolector:so:libboolector:3.2.2-g1a89c229 is invalid, transitive dependencies (if any) will not be available, enable debug logging for more details
+[INFO] Configured Artifact: org.sosy-lab:javasmt-solver-boolector:libminisat:?:so
+[WARNING] The POM for org.sosy-lab:javasmt-solver-boolector:so:libminisat:3.2.2-g1a89c229 is invalid, transitive dependencies (if any) will not be available, enable debug logging for more details
+[INFO] Configured Artifact: org.sosy-lab:javasmt-solver-boolector:libpicosat:?:so
+[WARNING] The POM for org.sosy-lab:javasmt-solver-boolector:so:libpicosat:3.2.2-g1a89c229 is invalid, transitive dependencies (if any) will not be available, enable debug logging for more details
+[INFO] Configured Artifact: org.sosy-lab:javasmt-solver-cvc4:libcvc4:?:so
+[INFO] Configured Artifact: org.sosy-lab:javasmt-solver-cvc4:libcvc4jni:?:so
+[INFO] Configured Artifact: org.sosy-lab:javasmt-solver-cvc4:libcvc4parser:?:so
+[INFO] Configured Artifact: org.sosy-lab:javasmt-solver-cvc5:libcvc5:?:so
+[INFO] Configured Artifact: org.sosy-lab:javasmt-solver-cvc5:libcvc5jni:?:so
+[INFO] Configured Artifact: org.sosy-lab:javasmt-solver-cvc5:libcvc5parser:?:so
+[INFO] Configured Artifact: org.sosy-lab:javasmt-solver-cvc5:libpoly:?:so
+[INFO] Configured Artifact: org.sosy-lab:javasmt-solver-cvc5:libpolyxx:?:so
+[INFO] Configured Artifact: org.sosy-lab:javasmt-solver-opensmt:libopensmtjava:?:so
+[INFO] Configured Artifact: org.sosy-lab:javasmt-solver-opensmt:libopensmt:?:so
+[INFO] Configured Artifact: org.sosy-lab:javasmt-solver-yices2:libyices2j:?:so
+[WARNING] The POM for org.sosy-lab:javasmt-solver-yices2:so:libyices2j:2.6.2-396-g194350c1 is invalid, transitive dependencies (if any) will not be available, enable debug logging for more details
+[INFO] org.sosy-lab:javasmt-solver-z3:libz3java:4.12.2:so already exists in /home/Dat3M/svcomp/target/libs
+[INFO] org.sosy-lab:javasmt-solver-z3:libz3:4.12.2:so already exists in /home/Dat3M/svcomp/target/libs
+[INFO] org.sosy-lab:javasmt-solver-mathsat5:libmathsat5j:5.6.10:so already exists in /home/Dat3M/svcomp/target/libs
+[INFO] org.sosy-lab:javasmt-solver-boolector:libboolector:3.2.2-g1a89c229:so already exists in /home/Dat3M/svcomp/target/libs
+[INFO] org.sosy-lab:javasmt-solver-boolector:libminisat:3.2.2-g1a89c229:so already exists in /home/Dat3M/svcomp/target/libs
+[INFO] org.sosy-lab:javasmt-solver-boolector:libpicosat:3.2.2-g1a89c229:so already exists in /home/Dat3M/svcomp/target/libs
+[INFO] org.sosy-lab:javasmt-solver-cvc4:libcvc4:1.8-prerelease-2020-06-24-g7825d8f28:so already exists in /home/Dat3M/svcomp/target/libs
+[INFO] org.sosy-lab:javasmt-solver-cvc4:libcvc4jni:1.8-prerelease-2020-06-24-g7825d8f28:so already exists in /home/Dat3M/svcomp/target/libs
+[INFO] org.sosy-lab:javasmt-solver-cvc4:libcvc4parser:1.8-prerelease-2020-06-24-g7825d8f28:so already exists in /home/Dat3M/svcomp/target/libs
+[INFO] org.sosy-lab:javasmt-solver-cvc5:libcvc5:1.0.5-g4cb2ab9eb:so already exists in /home/Dat3M/svcomp/target/libs
+[INFO] org.sosy-lab:javasmt-solver-cvc5:libcvc5jni:1.0.5-g4cb2ab9eb:so already exists in /home/Dat3M/svcomp/target/libs
+[INFO] org.sosy-lab:javasmt-solver-cvc5:libcvc5parser:1.0.5-g4cb2ab9eb:so already exists in /home/Dat3M/svcomp/target/libs
+[INFO] org.sosy-lab:javasmt-solver-cvc5:libpoly:1.0.5-g4cb2ab9eb:so already exists in /home/Dat3M/svcomp/target/libs
+[INFO] org.sosy-lab:javasmt-solver-cvc5:libpolyxx:1.0.5-g4cb2ab9eb:so already exists in /home/Dat3M/svcomp/target/libs
+[INFO] org.sosy-lab:javasmt-solver-opensmt:libopensmtjava:2.5.2-g7f502169:so already exists in /home/Dat3M/svcomp/target/libs
+[INFO] org.sosy-lab:javasmt-solver-opensmt:libopensmt:2.5.2-g7f502169:so already exists in /home/Dat3M/svcomp/target/libs
+[INFO] org.sosy-lab:javasmt-solver-yices2:libyices2j:2.6.2-396-g194350c1:so already exists in /home/Dat3M/svcomp/target/libs
+[INFO]
+[INFO] --- git-commit-id-plugin:4.9.10:revision (populate-git-commit-information) @ svcomp ---
+[INFO]
+[INFO] --- maven-resources-plugin:3.3.1:resources (default-resources) @ svcomp ---
+[INFO] Copying 1 resource from src/main/resources to target/classes
+[INFO]
+[INFO] --- maven-compiler-plugin:3.11.0:compile (default-compile) @ svcomp ---
+[INFO] Changes detected - recompiling the module! :dependency
+[INFO] Compiling 1 source file with javac [debug target 17] to target/classes
+[INFO]
+[INFO] --- maven-resources-plugin:3.3.1:testResources (default-testResources) @ svcomp ---
+[INFO] skip non existing resourceDirectory /home/Dat3M/svcomp/src/test/resources
+[INFO]
+[INFO] --- maven-compiler-plugin:3.11.0:testCompile (default-testCompile) @ svcomp ---
+[INFO] No sources to compile
+[INFO]
+[INFO] --- maven-surefire-plugin:3.1.2:test (default-test) @ svcomp ---
+[INFO] No tests to run.
+[INFO] ------------------------------------------------------------------------
+[INFO] Reactor Summary for dat3m 4.0.0:
+[INFO]
+[INFO] dat3m .............................................. SUCCESS [  0.002 s]
+[INFO] dartagnan .......................................... SUCCESS [52:58 min]
+[INFO] ui ................................................. SUCCESS [  0.286 s]
+[INFO] svcomp ............................................. SUCCESS [  1.527 s]
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD SUCCESS
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time:  53:00 min
+[INFO] Finished at: 2024-04-20T23:06:05Z
+[INFO] ------------------------------------------------------------------------

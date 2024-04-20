@@ -6,16 +6,26 @@ import subprocess
 
 def get_test_number(tests_path):
     test_extension = ".test"
-    test_count = 1
+    safety_check = 0
+    dr_check = 0
     for root, _, filenames in os.walk(tests_path):
         for file in filenames:
             if file.endswith(test_extension):
                 content = ""
                 with open(os.path.join(root, file), "r") as f:
                     content = f.read()
-                test_count += content.count("NOSOLUTION")
-                test_count += content.count("SATISFIABLE")
-    return test_count
+                lines = content.split("\n")
+                for line in lines:
+                    if "#dr=0" in line:
+                        safety_check += 1
+                        continue
+                    if "#dr>0" in line:
+                        dr_check += 1
+                        continue
+                    if "NOSOLUTION" in line or "SATISFIABLE" in line:
+                        safety_check += 1
+                        continue
+    return safety_check, dr_check
 
 
 def main():
@@ -33,12 +43,14 @@ def main():
     start = time.time()
     subprocess.run(["make", "-j4"])
     end = time.time()
-    test_size = get_test_number(os.path.join(vulkan_repo_path, "tests"))
+    safety_check, dr_check = get_test_number(os.path.join(vulkan_repo_path, "tests"))
+    test_size = safety_check + dr_check
 
     with open(log, "w") as f:
-        f.write("Time:(s) " + str(end - start) + "\n")
-        f.write("Tests: " + str(test_size) + "\n")
-        f.write("Average:(s) " + str((end - start) / test_size) + "\n")
+        f.write(f"Time:(s) {end - start}\n")
+        f.write(f"Safety Check: {safety_check}\n")
+        f.write(f"DR Check: {dr_check}\n")
+        f.write(f"Average:(s) {(end - start) / test_size}\n")
 
 
 if __name__ == "__main__":
