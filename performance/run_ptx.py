@@ -36,12 +36,12 @@ def main():
         output += "\n"
     end = time.time()
     test_size = output.count("Launching Alloy...")
+    cost_time = (end - start) * 1000
 
     with open(log, "w") as f:
-        f.write(f"Time:(s) {end - start}\n")
+        f.write(f"Time:(ms) {cost_time}\n")
         f.write(f"Safety Check: {test_size}\n")
         f.write("DR Check: 0\n")
-        f.write(f"Average:(s) {(end - start) / test_size}\n")
 
 
 if __name__ == "__main__":

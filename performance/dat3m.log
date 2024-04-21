@@ -105,13 +105,13 @@
 [INFO]
 [INFO] --- maven-compiler-plugin:3.11.0:compile (default-compile) @ dartagnan ---
 [INFO] Changes detected - recompiling the module! :source
-[INFO] Compiling 545 source files with javac [debug target 17] to target/classes
+[INFO] Compiling 546 source files with javac [debug target 17] to target/classes
 [WARNING] /home/Dat3M/dartagnan/src/main/java/com/dat3m/dartagnan/GlobalSettings.java:[14,1] @Options annotation on class without @Option fields or methods is useless.
 [WARNING] /home/Dat3M/dartagnan/src/main/java/com/dat3m/dartagnan/wmm/processing/WmmProcessingManager.java:[13,1] @Options annotation on class without @Option fields or methods is useless.
 [INFO] /home/Dat3M/dartagnan/src/main/java/com/dat3m/dartagnan/Dartagnan.java: /home/Dat3M/dartagnan/src/main/java/com/dat3m/dartagnan/Dartagnan.java uses or overrides a deprecated API.
 [INFO] /home/Dat3M/dartagnan/src/main/java/com/dat3m/dartagnan/Dartagnan.java: Recompile with -Xlint:deprecation for details.
-[INFO] /home/Dat3M/dartagnan/src/main/java/com/dat3m/dartagnan/utils/logic/Conjunction.java: Some input files use unchecked or unsafe operations.
-[INFO] /home/Dat3M/dartagnan/src/main/java/com/dat3m/dartagnan/utils/logic/Conjunction.java: Recompile with -Xlint:unchecked for details.
+[INFO] /home/Dat3M/dartagnan/src/main/java/com/dat3m/dartagnan/utils/logic/DNF.java: Some input files use unchecked or unsafe operations.
+[INFO] /home/Dat3M/dartagnan/src/main/java/com/dat3m/dartagnan/utils/logic/DNF.java: Recompile with -Xlint:unchecked for details.
 [INFO]
 [INFO] --- maven-resources-plugin:3.3.1:testResources (default-testResources) @ dartagnan ---
 [INFO] Copying 285 resources from src/test/resources to target/test-classes
@@ -123,176 +123,187 @@
 [INFO] --- maven-surefire-plugin:3.1.2:test (default-test) @ dartagnan ---
 [INFO] Using auto detected provider org.apache.maven.surefire.junit4.JUnit4Provider
 Downloading from central: https://repo.maven.apache.org/maven2/org/apache/maven/surefire/surefire-junit4/3.1.2/surefire-junit4-3.1.2.pom
-Downloaded from central: https://repo.maven.apache.org/maven2/org/apache/maven/surefire/surefire-junit4/3.1.2/surefire-junit4-3.1.2.pom (3.0 kB at 30 kB/s)
+Downloaded from central: https://repo.maven.apache.org/maven2/org/apache/maven/surefire/surefire-junit4/3.1.2/surefire-junit4-3.1.2.pom (3.0 kB at 35 kB/s)
 Downloading from central: https://repo.maven.apache.org/maven2/org/apache/maven/surefire/surefire-providers/3.1.2/surefire-providers-3.1.2.pom
-Downloaded from central: https://repo.maven.apache.org/maven2/org/apache/maven/surefire/surefire-providers/3.1.2/surefire-providers-3.1.2.pom (2.6 kB at 201 kB/s)
+Downloaded from central: https://repo.maven.apache.org/maven2/org/apache/maven/surefire/surefire-providers/3.1.2/surefire-providers-3.1.2.pom (2.6 kB at 174 kB/s)
 Downloading from central: https://repo.maven.apache.org/maven2/org/apache/maven/surefire/common-junit4/3.1.2/common-junit4-3.1.2.pom
-Downloaded from central: https://repo.maven.apache.org/maven2/org/apache/maven/surefire/common-junit4/3.1.2/common-junit4-3.1.2.pom (3.1 kB at 241 kB/s)
+Downloaded from central: https://repo.maven.apache.org/maven2/org/apache/maven/surefire/common-junit4/3.1.2/common-junit4-3.1.2.pom (3.1 kB at 196 kB/s)
 Downloading from central: https://repo.maven.apache.org/maven2/org/apache/maven/surefire/common-junit3/3.1.2/common-junit3-3.1.2.pom
-Downloaded from central: https://repo.maven.apache.org/maven2/org/apache/maven/surefire/common-junit3/3.1.2/common-junit3-3.1.2.pom (2.8 kB at 231 kB/s)
+Downloaded from central: https://repo.maven.apache.org/maven2/org/apache/maven/surefire/common-junit3/3.1.2/common-junit3-3.1.2.pom (2.8 kB at 48 kB/s)
 Downloading from central: https://repo.maven.apache.org/maven2/org/apache/maven/surefire/common-java5/3.1.2/common-java5-3.1.2.pom
-Downloaded from central: https://repo.maven.apache.org/maven2/org/apache/maven/surefire/common-java5/3.1.2/common-java5-3.1.2.pom (2.8 kB at 176 kB/s)
+Downloaded from central: https://repo.maven.apache.org/maven2/org/apache/maven/surefire/common-java5/3.1.2/common-java5-3.1.2.pom (2.8 kB at 148 kB/s)
 Downloading from central: https://repo.maven.apache.org/maven2/org/apache/maven/surefire/surefire-junit4/3.1.2/surefire-junit4-3.1.2.jar
 Downloading from central: https://repo.maven.apache.org/maven2/org/apache/maven/surefire/common-junit4/3.1.2/common-junit4-3.1.2.jar
 Downloading from central: https://repo.maven.apache.org/maven2/org/apache/maven/surefire/common-java5/3.1.2/common-java5-3.1.2.jar
 Downloading from central: https://repo.maven.apache.org/maven2/org/apache/maven/surefire/common-junit3/3.1.2/common-junit3-3.1.2.jar
-Downloaded from central: https://repo.maven.apache.org/maven2/org/apache/maven/surefire/common-junit4/3.1.2/common-junit4-3.1.2.jar (26 kB at 562 kB/s)
 Downloaded from central: https://repo.maven.apache.org/maven2/org/apache/maven/surefire/surefire-junit4/3.1.2/surefire-junit4-3.1.2.jar (18 kB at 357 kB/s)
-Downloaded from central: https://repo.maven.apache.org/maven2/org/apache/maven/surefire/common-java5/3.1.2/common-java5-3.1.2.jar (18 kB at 288 kB/s)
-Downloaded from central: https://repo.maven.apache.org/maven2/org/apache/maven/surefire/common-junit3/3.1.2/common-junit3-3.1.2.jar (12 kB at 192 kB/s)
+Downloaded from central: https://repo.maven.apache.org/maven2/org/apache/maven/surefire/common-java5/3.1.2/common-java5-3.1.2.jar (18 kB at 303 kB/s)
+Downloaded from central: https://repo.maven.apache.org/maven2/org/apache/maven/surefire/common-junit3/3.1.2/common-junit3-3.1.2.jar (12 kB at 202 kB/s)
+Downloaded from central: https://repo.maven.apache.org/maven2/org/apache/maven/surefire/common-junit4/3.1.2/common-junit4-3.1.2.jar (26 kB at 397 kB/s)
 [INFO]
 [INFO] -------------------------------------------------------
 [INFO]  T E S T S
 [INFO] -------------------------------------------------------
 [INFO] Running com.dat3m.dartagnan.GlobalSettingsTest
-[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.636 s -- in com.dat3m.dartagnan.GlobalSettingsTest
+[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.620 s -- in com.dat3m.dartagnan.GlobalSettingsTest
 [INFO] Running com.dat3m.dartagnan.c.RC11Test
-[INFO] Tests run: 20, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 3.347 s -- in com.dat3m.dartagnan.c.RC11Test
+[INFO] Tests run: 20, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 3.241 s -- in com.dat3m.dartagnan.c.RC11Test
 [INFO] Running com.dat3m.dartagnan.c.IMMLocksTest
-[INFO] Tests run: 27, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 11.14 s -- in com.dat3m.dartagnan.c.IMMLocksTest
+[INFO] Tests run: 27, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 10.30 s -- in com.dat3m.dartagnan.c.IMMLocksTest
 [INFO] Running com.dat3m.dartagnan.c.CLocksTest
-[INFO] Tests run: 112, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 34.71 s -- in com.dat3m.dartagnan.c.CLocksTest
+[INFO] Tests run: 112, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 33.46 s -- in com.dat3m.dartagnan.c.CLocksTest
 [INFO] Running com.dat3m.dartagnan.c.LivenessTest
-[INFO] Tests run: 96, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 33.65 s -- in com.dat3m.dartagnan.c.LivenessTest
+[INFO] Tests run: 96, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 33.70 s -- in com.dat3m.dartagnan.c.LivenessTest
 [INFO] Running com.dat3m.dartagnan.c.IMMTest
-[INFO] Tests run: 26, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 3.565 s -- in com.dat3m.dartagnan.c.IMMTest
+[INFO] Tests run: 26, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 3.707 s -- in com.dat3m.dartagnan.c.IMMTest
 [INFO] Running com.dat3m.dartagnan.c.CLKMMTest
-[INFO] Tests run: 38, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 27.65 s -- in com.dat3m.dartagnan.c.CLKMMTest
+[INFO] Tests run: 38, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 22.01 s -- in com.dat3m.dartagnan.c.CLKMMTest
 [INFO] Running com.dat3m.dartagnan.c.C11OrigLocksTest
-[INFO] Tests run: 50, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 148.7 s -- in com.dat3m.dartagnan.c.C11OrigLocksTest
+[INFO] Tests run: 50, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 155.1 s -- in com.dat3m.dartagnan.c.C11OrigLocksTest
 [INFO] Running com.dat3m.dartagnan.c.LFDSTest
-[INFO] Tests run: 42, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 650.9 s -- in com.dat3m.dartagnan.c.LFDSTest
+[INFO] Tests run: 42, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 334.2 s -- in com.dat3m.dartagnan.c.LFDSTest
 [INFO] Running com.dat3m.dartagnan.c.RC11LocksTest
-[INFO] Tests run: 27, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 9.926 s -- in com.dat3m.dartagnan.c.RC11LocksTest
+[INFO] Tests run: 27, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 10.13 s -- in com.dat3m.dartagnan.c.RC11LocksTest
 [INFO] Running com.dat3m.dartagnan.c.EBRTest
-[INFO] Tests run: 4, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 132.7 s -- in com.dat3m.dartagnan.c.EBRTest
+[INFO] Tests run: 4, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 157.2 s -- in com.dat3m.dartagnan.c.EBRTest
 [INFO] Running com.dat3m.dartagnan.c.C11OrigLFDSTest
-[INFO] Tests run: 14, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 18.19 s -- in com.dat3m.dartagnan.c.C11OrigLFDSTest
+[INFO] Tests run: 14, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 17.88 s -- in com.dat3m.dartagnan.c.C11OrigLFDSTest
 [INFO] Running com.dat3m.dartagnan.c.MiscellaneousTest
-[INFO] Tests run: 40, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 7.378 s -- in com.dat3m.dartagnan.c.MiscellaneousTest
+[INFO] Tests run: 40, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 6.734 s -- in com.dat3m.dartagnan.c.MiscellaneousTest
 [INFO] Running com.dat3m.dartagnan.c.IMMLFDSTest
-[INFO] Tests run: 10, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 22.85 s -- in com.dat3m.dartagnan.c.IMMLFDSTest
+[INFO] Tests run: 10, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 19.82 s -- in com.dat3m.dartagnan.c.IMMLFDSTest
 [INFO] Running com.dat3m.dartagnan.c.C11LFDSTest
-[INFO] Tests run: 14, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 13.56 s -- in com.dat3m.dartagnan.c.C11LFDSTest
+[INFO] Tests run: 14, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 15.38 s -- in com.dat3m.dartagnan.c.C11LFDSTest
 [INFO] Running com.dat3m.dartagnan.c.LibvsyncTest
-[INFO] Tests run: 14, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 16.21 s -- in com.dat3m.dartagnan.c.LibvsyncTest
+[INFO] Tests run: 14, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 14.99 s -- in com.dat3m.dartagnan.c.LibvsyncTest
 [INFO] Running com.dat3m.dartagnan.c.RC11LFDSTest
-[INFO] Tests run: 10, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 21.03 s -- in com.dat3m.dartagnan.c.RC11LFDSTest
+[INFO] Tests run: 10, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 20.95 s -- in com.dat3m.dartagnan.c.RC11LFDSTest
 [INFO] Running com.dat3m.dartagnan.c.C11LocksTest
-[INFO] Tests run: 50, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 150.2 s -- in com.dat3m.dartagnan.c.C11LocksTest
+[INFO] Tests run: 50, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 161.3 s -- in com.dat3m.dartagnan.c.C11LocksTest
 [INFO] Running com.dat3m.dartagnan.parsers.program.ParserSpirvTest
-[INFO] Tests run: 38, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 1.193 s -- in com.dat3m.dartagnan.parsers.program.ParserSpirvTest
+[INFO] Tests run: 38, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 1.319 s -- in com.dat3m.dartagnan.parsers.program.ParserSpirvTest
 [INFO] Running com.dat3m.dartagnan.parsers.program.utils.ProgramBuilderTest
-[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.298 s -- in com.dat3m.dartagnan.parsers.program.utils.ProgramBuilderTest
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.315 s -- in com.dat3m.dartagnan.parsers.program.utils.ProgramBuilderTest
 [INFO] Running com.dat3m.dartagnan.witness.ParseWitnessTest
-[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.726 s -- in com.dat3m.dartagnan.witness.ParseWitnessTest
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.734 s -- in com.dat3m.dartagnan.witness.ParseWitnessTest
 [INFO] Running com.dat3m.dartagnan.witness.BuildWitnessTest
-[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 1.779 s -- in com.dat3m.dartagnan.witness.BuildWitnessTest
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 1.868 s -- in com.dat3m.dartagnan.witness.BuildWitnessTest
 [INFO] Running com.dat3m.dartagnan.litmus.LitmusVulkanTest
-[INFO] Tests run: 97, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 6.174 s -- in com.dat3m.dartagnan.litmus.LitmusVulkanTest
+[INFO] Tests run: 97, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 6.394 s -- in com.dat3m.dartagnan.litmus.LitmusVulkanTest
 [INFO] Running com.dat3m.dartagnan.litmus.LitmusX86Test
-[INFO] Tests run: 487, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 17.16 s -- in com.dat3m.dartagnan.litmus.LitmusX86Test
+[INFO] Tests run: 487, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 17.18 s -- in com.dat3m.dartagnan.litmus.LitmusX86Test
 [INFO] Running com.dat3m.dartagnan.litmus.LitmusVulkanRacesTest
-[INFO] Tests run: 94, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 6.499 s -- in com.dat3m.dartagnan.litmus.LitmusVulkanRacesTest
+[INFO] Tests run: 94, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 6.479 s -- in com.dat3m.dartagnan.litmus.LitmusVulkanRacesTest
 [INFO] Running com.dat3m.dartagnan.litmus.LitmusPTXv7_5Test
-[INFO] Tests run: 235, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 9.613 s -- in com.dat3m.dartagnan.litmus.LitmusPTXv7_5Test
+[INFO] Tests run: 235, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 9.711 s -- in com.dat3m.dartagnan.litmus.LitmusPTXv7_5Test
 [INFO] Running com.dat3m.dartagnan.litmus.LitmusC11Test
-[INFO] Tests run: 135, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 6.468 s -- in com.dat3m.dartagnan.litmus.LitmusC11Test
+[INFO] Tests run: 135, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 6.315 s -- in com.dat3m.dartagnan.litmus.LitmusC11Test
 [INFO] Running com.dat3m.dartagnan.litmus.LitmusRISCVTest
-[INFO] Tests run: 6661, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 196.9 s -- in com.dat3m.dartagnan.litmus.LitmusRISCVTest
+[INFO] Tests run: 6661, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 194.5 s -- in com.dat3m.dartagnan.litmus.LitmusRISCVTest
 [INFO] Running com.dat3m.dartagnan.litmus.LitmusPTXv6_0LivenessTest
-[INFO] Tests run: 73, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 4.599 s -- in com.dat3m.dartagnan.litmus.LitmusPTXv6_0LivenessTest
+[INFO] Tests run: 73, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 4.588 s -- in com.dat3m.dartagnan.litmus.LitmusPTXv6_0LivenessTest
 [INFO] Running com.dat3m.dartagnan.litmus.LISA_X86_Test
-[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 1.455 s -- in com.dat3m.dartagnan.litmus.LISA_X86_Test
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 1.584 s -- in com.dat3m.dartagnan.litmus.LISA_X86_Test
 [INFO] Running com.dat3m.dartagnan.litmus.LitmusPTXv7_5LivenessTest
-[INFO] Tests run: 73, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 4.721 s -- in com.dat3m.dartagnan.litmus.LitmusPTXv7_5LivenessTest
+[INFO] Tests run: 73, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 4.722 s -- in com.dat3m.dartagnan.litmus.LitmusPTXv7_5LivenessTest
 [INFO] Running com.dat3m.dartagnan.litmus.LitmusLinuxTest
-[INFO] Tests run: 5099, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 277.8 s -- in com.dat3m.dartagnan.litmus.LitmusLinuxTest
+[INFO] Tests run: 5099, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 284.3 s -- in com.dat3m.dartagnan.litmus.LitmusLinuxTest
 [INFO] Running com.dat3m.dartagnan.litmus.LitmusRC11Test
-[INFO] Tests run: 135, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 6.239 s -- in com.dat3m.dartagnan.litmus.LitmusRC11Test
+[INFO] Tests run: 135, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 6.220 s -- in com.dat3m.dartagnan.litmus.LitmusRC11Test
 [INFO] Running com.dat3m.dartagnan.litmus.LitmusVulkanNochainsTest
-[INFO] Tests run: 6, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 2.023 s -- in com.dat3m.dartagnan.litmus.LitmusVulkanNochainsTest
+[INFO] Tests run: 6, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 2.143 s -- in com.dat3m.dartagnan.litmus.LitmusVulkanNochainsTest
 [INFO] Running com.dat3m.dartagnan.litmus.LitmusLinuxRacesTest
-[INFO] Tests run: 5006, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 270.3 s -- in com.dat3m.dartagnan.litmus.LitmusLinuxRacesTest
+[INFO] Tests run: 5006, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 271.4 s -- in com.dat3m.dartagnan.litmus.LitmusLinuxRacesTest
 [INFO] Running com.dat3m.dartagnan.litmus.LitmusPPCTest
-[INFO] Tests run: 2362, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 69.61 s -- in com.dat3m.dartagnan.litmus.LitmusPPCTest
+[INFO] Tests run: 2362, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 71.00 s -- in com.dat3m.dartagnan.litmus.LitmusPPCTest
 [INFO] Running com.dat3m.dartagnan.litmus.LitmusVulkanRacesNochainsTest
-[INFO] Tests run: 6, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 1.984 s -- in com.dat3m.dartagnan.litmus.LitmusVulkanRacesNochainsTest
+[INFO] Tests run: 6, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 2.146 s -- in com.dat3m.dartagnan.litmus.LitmusVulkanRacesNochainsTest
 [INFO] Running com.dat3m.dartagnan.litmus.LitmusPTXv6_0Test
-[INFO] Tests run: 106, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 5.427 s -- in com.dat3m.dartagnan.litmus.LitmusPTXv6_0Test
+[INFO] Tests run: 106, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 5.611 s -- in com.dat3m.dartagnan.litmus.LitmusPTXv6_0Test
 [INFO] Running com.dat3m.dartagnan.litmus.LitmusAARCH64Test
-[INFO] Tests run: 5141, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 145.1 s -- in com.dat3m.dartagnan.litmus.LitmusAARCH64Test
+[INFO] Tests run: 5141, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 143.4 s -- in com.dat3m.dartagnan.litmus.LitmusAARCH64Test
 [INFO] Running com.dat3m.dartagnan.litmus.LISA_LKMM_Test
-[INFO] Tests run: 4, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 1.662 s -- in com.dat3m.dartagnan.litmus.LISA_LKMM_Test
+[INFO] Tests run: 4, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 1.741 s -- in com.dat3m.dartagnan.litmus.LISA_LKMM_Test
 [INFO] Running com.dat3m.dartagnan.litmus.LISA_AARCH64_Test
-[INFO] Tests run: 5, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 1.823 s -- in com.dat3m.dartagnan.litmus.LISA_AARCH64_Test
+[INFO] Tests run: 5, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 1.775 s -- in com.dat3m.dartagnan.litmus.LISA_AARCH64_Test
 [INFO] Running com.dat3m.dartagnan.litmus.LitmusVulkanLivenessTest
-[INFO] Tests run: 73, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 5.346 s -- in com.dat3m.dartagnan.litmus.LitmusVulkanLivenessTest
+[INFO] Tests run: 73, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 5.255 s -- in com.dat3m.dartagnan.litmus.LitmusVulkanLivenessTest
 [INFO] Running com.dat3m.dartagnan.litmus.LitmusVulkanCheckerTest
-[INFO] Tests run: 239, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 12.56 s -- in com.dat3m.dartagnan.litmus.LitmusVulkanCheckerTest
+[INFO] Tests run: 239, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 12.85 s -- in com.dat3m.dartagnan.litmus.LitmusVulkanCheckerTest
 [INFO] Running com.dat3m.dartagnan.wmm.utils.EventGraphTest
-[INFO] Tests run: 77, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.096 s -- in com.dat3m.dartagnan.wmm.utils.EventGraphTest
+[INFO] Tests run: 77, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.091 s -- in com.dat3m.dartagnan.wmm.utils.EventGraphTest
 [INFO] Running com.dat3m.dartagnan.wmm.utils.EmptyEventGraphTest
-[INFO] Tests run: 29, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.078 s -- in com.dat3m.dartagnan.wmm.utils.EmptyEventGraphTest
+[INFO] Tests run: 29, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.106 s -- in com.dat3m.dartagnan.wmm.utils.EmptyEventGraphTest
 [INFO] Running com.dat3m.dartagnan.exceptions.ArrayIllegalTest
-line 4:15 extraneous input '-' expecting {DigitSequence, ']'}
-[INFO] Tests run: 6, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.302 s -- in com.dat3m.dartagnan.exceptions.ArrayIllegalTest
+[INFO] Tests run: 6, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.354 s -- in com.dat3m.dartagnan.exceptions.ArrayIllegalTest
 [INFO] Running com.dat3m.dartagnan.exceptions.ExceptionsTest
-[INFO] Tests run: 9, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.423 s -- in com.dat3m.dartagnan.exceptions.ExceptionsTest
+[INFO] Tests run: 9, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.416 s -- in com.dat3m.dartagnan.exceptions.ExceptionsTest
 [INFO] Running com.dat3m.dartagnan.exceptions.WrongTargetTest
-[INFO] Tests run: 6, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.900 s -- in com.dat3m.dartagnan.exceptions.WrongTargetTest
+[INFO] Tests run: 6, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.957 s -- in com.dat3m.dartagnan.exceptions.WrongTargetTest
 [INFO] Running com.dat3m.dartagnan.miscellaneous.BranchTest
-[INFO] Tests run: 21, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 2.818 s -- in com.dat3m.dartagnan.miscellaneous.BranchTest
+[INFO] Tests run: 21, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 2.690 s -- in com.dat3m.dartagnan.miscellaneous.BranchTest
 [INFO] Running com.dat3m.dartagnan.miscellaneous.AnalysisTest
-[INFO] Tests run: 13, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.902 s -- in com.dat3m.dartagnan.miscellaneous.AnalysisTest
+[INFO] Tests run: 13, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.925 s -- in com.dat3m.dartagnan.miscellaneous.AnalysisTest
 [INFO] Running com.dat3m.dartagnan.miscellaneous.LoopTest
-[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.974 s -- in com.dat3m.dartagnan.miscellaneous.LoopTest
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.800 s -- in com.dat3m.dartagnan.miscellaneous.LoopTest
 [INFO] Running com.dat3m.dartagnan.miscellaneous.PrinterTest
-[INFO] Tests run: 11, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 1.657 s -- in com.dat3m.dartagnan.miscellaneous.PrinterTest
+[INFO] Tests run: 11, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 1.512 s -- in com.dat3m.dartagnan.miscellaneous.PrinterTest
 [INFO] Running com.dat3m.dartagnan.miscellaneous.ApplicationTest
 Condition forall ((x==bv64(1) && (y==bv64(2) || y==bv64(1)) || x==bv64(2) && y==bv64(1)))
 Ok
-Total verification time: 0.521 secs
+Total verification time: 0.472 secs
+=========== Not fully unrolled loops ============
+        E144:   T1:thread_n -> ttaslock_acquire @ttas.c#17 -> @ttas.h#40
+=================================================
 UNKNOWN
-Total verification time: 0.324 secs
+Total verification time: 0.288 secs
 UNKNOWN
-Total verification time: 0.284 secs
+Total verification time: 0.274 secs
+=========== Not fully unrolled loops ============
+        E144:   T1:thread_n -> ttaslock_acquire @ttas.c#17 -> @ttas.h#40
+=================================================
 UNKNOWN
-Total verification time: 0.315 secs
+Total verification time: 0.285 secs
+=========== Not fully unrolled loops ============
+        E144:   T1:thread_n -> ttaslock_acquire @ttas.c#17 -> @ttas.h#40
+=================================================
 UNKNOWN
-Total verification time: 0.197 secs
+Total verification time: 0.175 secs
 ===== Program specification violation found =====
         E144:   reach_error @lazy01.i#722 -> @lazy01.i#20: user assertion
 =================================================
 FAIL
-Total verification time: 0.127 secs
+Total verification time: 0.104 secs
+=========== Not fully unrolled loops ============
+        E144:   T1:thread_n -> ttaslock_acquire @ttas.c#17 -> @ttas.h#40
+=================================================
 UNKNOWN
-Total verification time: 0.181 secs
-[INFO] Tests run: 12, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 3.722 s -- in com.dat3m.dartagnan.miscellaneous.ApplicationTest
+Total verification time: 0.130 secs
+[INFO] Tests run: 12, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 3.302 s -- in com.dat3m.dartagnan.miscellaneous.ApplicationTest
 [INFO] Running com.dat3m.dartagnan.miscellaneous.ArrayValidTest
-[INFO] Tests run: 19, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 3.123 s -- in com.dat3m.dartagnan.miscellaneous.ArrayValidTest
+[INFO] Tests run: 19, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 2.973 s -- in com.dat3m.dartagnan.miscellaneous.ArrayValidTest
 [INFO] Running com.dat3m.dartagnan.compilation.LKMMToAarch64Test
-[INFO] Tests run: 5292, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 224.8 s -- in com.dat3m.dartagnan.compilation.LKMMToAarch64Test
+[INFO] Tests run: 5292, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 225.7 s -- in com.dat3m.dartagnan.compilation.LKMMToAarch64Test
 [INFO] Running com.dat3m.dartagnan.compilation.C11ToPPCTest
-[INFO] Tests run: 136, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 6.832 s -- in com.dat3m.dartagnan.compilation.C11ToPPCTest
+[INFO] Tests run: 136, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 6.728 s -- in com.dat3m.dartagnan.compilation.C11ToPPCTest
 [INFO] Running com.dat3m.dartagnan.compilation.C11ToRISCVTest
-[INFO] Tests run: 136, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 6.614 s -- in com.dat3m.dartagnan.compilation.C11ToRISCVTest
+[INFO] Tests run: 136, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 6.743 s -- in com.dat3m.dartagnan.compilation.C11ToRISCVTest
 [INFO] Running com.dat3m.dartagnan.compilation.LKMMToRISCVTest
-[INFO] Tests run: 5292, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 227.7 s -- in com.dat3m.dartagnan.compilation.LKMMToRISCVTest
+[INFO] Tests run: 5292, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 233.1 s -- in com.dat3m.dartagnan.compilation.LKMMToRISCVTest
 [INFO] Running com.dat3m.dartagnan.compilation.RC11ToAarch64Test
-[INFO] Tests run: 136, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 7.084 s -- in com.dat3m.dartagnan.compilation.RC11ToAarch64Test
+[INFO] Tests run: 136, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 6.816 s -- in com.dat3m.dartagnan.compilation.RC11ToAarch64Test
 [INFO] Running com.dat3m.dartagnan.compilation.RC11ToRISCVTest
-[INFO] Tests run: 136, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 6.861 s -- in com.dat3m.dartagnan.compilation.RC11ToRISCVTest
+[INFO] Tests run: 136, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 6.979 s -- in com.dat3m.dartagnan.compilation.RC11ToRISCVTest
 [INFO] Running com.dat3m.dartagnan.compilation.RC11ToPPCTest
-[INFO] Tests run: 136, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 6.957 s -- in com.dat3m.dartagnan.compilation.RC11ToPPCTest
+[INFO] Tests run: 136, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 6.822 s -- in com.dat3m.dartagnan.compilation.RC11ToPPCTest
 [INFO] Running com.dat3m.dartagnan.compilation.LKMMToPPCTest
-[INFO] Tests run: 5292, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 252.5 s -- in com.dat3m.dartagnan.compilation.LKMMToPPCTest
+[INFO] Tests run: 5292, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 254.6 s -- in com.dat3m.dartagnan.compilation.LKMMToPPCTest
 [INFO] Running com.dat3m.dartagnan.compilation.C11ToAarch64Test
-[INFO] Tests run: 136, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 6.451 s -- in com.dat3m.dartagnan.compilation.C11ToAarch64Test
+[INFO] Tests run: 136, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 6.472 s -- in com.dat3m.dartagnan.compilation.C11ToAarch64Test
 [INFO] Running com.dat3m.dartagnan.compilation.C11ToTSOTest
-[INFO] Tests run: 136, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 6.472 s -- in com.dat3m.dartagnan.compilation.C11ToTSOTest
+[INFO] Tests run: 136, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 6.523 s -- in com.dat3m.dartagnan.compilation.C11ToTSOTest
 [INFO] Running com.dat3m.dartagnan.compilation.RC11ToTSOTest
-[INFO] Tests run: 136, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 6.627 s -- in com.dat3m.dartagnan.compilation.RC11ToTSOTest
+[INFO] Tests run: 136, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 6.691 s -- in com.dat3m.dartagnan.compilation.RC11ToTSOTest
 [INFO]
 [INFO] Results:
 [INFO]
@@ -489,12 +500,12 @@ Total verification time: 0.181 secs
 [INFO] Reactor Summary for dat3m 4.0.0:
 [INFO]
 [INFO] dat3m .............................................. SUCCESS [  0.002 s]
-[INFO] dartagnan .......................................... SUCCESS [52:58 min]
-[INFO] ui ................................................. SUCCESS [  0.286 s]
-[INFO] svcomp ............................................. SUCCESS [  1.527 s]
+[INFO] dartagnan .......................................... SUCCESS [48:25 min]
+[INFO] ui ................................................. SUCCESS [  0.310 s]
+[INFO] svcomp ............................................. SUCCESS [  1.410 s]
 [INFO] ------------------------------------------------------------------------
 [INFO] BUILD SUCCESS
 [INFO] ------------------------------------------------------------------------
-[INFO] Total time:  53:00 min
-[INFO] Finished at: 2024-04-20T23:06:05Z
+[INFO] Total time:  48:27 min
+[INFO] Finished at: 2024-04-21T12:29:34Z
 [INFO] ------------------------------------------------------------------------
