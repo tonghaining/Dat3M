@@ -45,9 +45,10 @@ def main():
     end = time.time()
     safety_check, dr_check = get_test_number(os.path.join(vulkan_repo_path, "tests"))
     test_size = safety_check + dr_check
+    cost_time = (end - start) * 1000
 
     with open(log, "w") as f:
-        f.write(f"Time:(s) {end - start}\n")
+        f.write(f"Time:(ms) {cost_time}\n")
         f.write(f"Safety Check: {safety_check}\n")
         f.write(f"DR Check: {dr_check}\n")
         f.write(f"Average:(s) {(end - start) / test_size}\n")

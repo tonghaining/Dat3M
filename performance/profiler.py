@@ -72,9 +72,7 @@ def get_alloy_performance(alloy_log):
                 safety_check = line.split(" ")[-1]
             if line.startswith("DR Check:"):
                 dr_check = line.split(" ")[-1]
-            if line.startswith("Average:"):
-                average = line.split(" ")[-1]
-    return safety_check, dr_check, time, average
+    return safety_check, dr_check, time
 
 
 def get_dat3m_performance(dat3m_log, tests=RELEVANT_TESTS):
@@ -100,7 +98,7 @@ def get_dat3m_performance(dat3m_log, tests=RELEVANT_TESTS):
             "\x1b[m", ""
         )
         test_size += int(current_size)
-        test_time += float(current_time)
+        test_time += float(current_time) * 1000
 
     test_average = test_time / test_size
 
@@ -109,7 +107,6 @@ def get_dat3m_performance(dat3m_log, tests=RELEVANT_TESTS):
 
 def main():
     if len(sys.argv) != 5:
-        print(f"sys.argv: {sys.argv}")
         print("Usage: profiler.py <dat3m_log> <ptx_log> <vmm_log> <result_csv>")
         sys.exit(1)
 
@@ -136,19 +133,21 @@ def main():
     dat3m_vmm_time_total = dat3m_vmm_time_safety + dat3m_vmm_time_liveness + dat3m_vmm_time_drf
     dat3m_vmm_average_total = dat3m_vmm_time_total / dat3m_vmm_size_total
 
-    ptx_safety, ptx_dr, ptx_time, ptx_average = get_alloy_performance(ptx_log)
+    ptx_safety, ptx_dr, ptx_time = get_alloy_performance(ptx_log)
     ptx_total = int(ptx_safety) + int(ptx_dr)
-    vmm_safety, vmm_dr, vmm_time, vmm_average = get_alloy_performance(vmm_log)
+    ptx_average = float(ptx_time) / ptx_total
+    vmm_safety, vmm_dr, vmm_time = get_alloy_performance(vmm_log)
     vmm_total = int(vmm_safety) + int(vmm_dr)
+    vmm_average = float(vmm_time) / vmm_total
 
     table = [
         ["Tool", "Model", "Safety", "Liveness", "DRF", "Total", "Time", "Time/Tests"],
-        ["Sabre", "PTX6.0", dat3m_ptx60_size_safety, dat3m_ptx60_size_liveness, 0, dat3m_ptx60_size_total, dat3m_ptx60_time_total, dat3m_ptx60_average_total],
-        ["Alloy", "PTX6.0", 0, 0, 0, 0, 0, 0],
-        ["Sabre", "PTX7.5", dat3m_ptx75_size_safety, dat3m_ptx75_size_liveness, 0, dat3m_ptx75_size_total, dat3m_ptx75_time_total, dat3m_ptx75_average_total],
-        ["Alloy", "PTX7.5", ptx_safety, 0, ptx_dr, ptx_total, ptx_time, ptx_average],
-        ["Sabre", "VMM", dat3m_vmm_size_safety, dat3m_vmm_size_liveness, dat3m_vmm_size_drf, dat3m_vmm_size_total, dat3m_vmm_time_total, dat3m_vmm_average_total],
-        ["Alloy", "VMM", vmm_safety, 0, vmm_dr, vmm_total, vmm_time, vmm_average],
+        ["\\sabre", "PTX6.0", dat3m_ptx60_size_safety, dat3m_ptx60_size_liveness, 0, dat3m_ptx60_size_total, dat3m_ptx60_time_total, dat3m_ptx60_average_total],
+        ["\\alloy", "PTX6.0", 0, 0, 0, 0, 0, 0],
+        ["\\sabre", "PTX7.5", dat3m_ptx75_size_safety, dat3m_ptx75_size_liveness, 0, dat3m_ptx75_size_total, dat3m_ptx75_time_total, dat3m_ptx75_average_total],
+        ["\\alloy", "PTX7.5", ptx_safety, 0, ptx_dr, ptx_total, ptx_time, ptx_average],
+        ["\\sabre", "VMM", dat3m_vmm_size_safety, dat3m_vmm_size_liveness, dat3m_vmm_size_drf, dat3m_vmm_size_total, dat3m_vmm_time_total, dat3m_vmm_average_total],
+        ["\\alloy", "VMM", vmm_safety, 0, vmm_dr, vmm_total, vmm_time, vmm_average],
     ]
 
     profiler_result = tabulate(table[1:], headers=table[0])
