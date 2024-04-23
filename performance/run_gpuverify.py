@@ -4,21 +4,19 @@ import time
 import subprocess
 
 
-def get_files_under_dir(dir_path):
-    files = []
-    for root, _, filenames in os.walk(dir_path):
-        for file in filenames:
-            if file.endswith(".cl"):
-                files.append(os.path.join(root, file))
-    return files
-
-
 def get_config(test):
     with open(test, "r") as f:
         test_content = f.read()
     config_line = test_content.split("\n")[1]
     config = config_line.strip("//").split(" ")
     return config
+
+def get_general_tests(gpuverify_repo_path):
+    general_test_txt = os.path.join(gpuverify_repo_path, "PortAndVerify/no_gpuverify_specific_feature.txt")
+    with open(general_test_txt, "r") as f:
+        general_tests = f.read().split("\n")
+    general_tests_path = [os.path.join(gpuverify_repo_path, test[2:]) for test in general_tests]
+    return general_tests_path
 
 
 def main():
@@ -28,9 +26,8 @@ def main():
 
     gpuverify_repo_path = sys.argv[1]
     log = sys.argv[2]
-    tests_path = os.path.join(gpuverify_repo_path, "latest_benchmarks/OpenCL/")
+    tests = get_general_tests(gpuverify_repo_path)
     gpuverify_path = os.path.join(gpuverify_repo_path, "gpuverify")
-    tests = get_files_under_dir(tests_path)
     test_size = len(tests)
     start = time.time()
     for i, test in enumerate(tests):

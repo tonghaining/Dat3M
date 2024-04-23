@@ -33,6 +33,14 @@ RUN gpg --homedir /tmp --no-default-keyring --keyring /usr/share/keyrings/mono-o
     apt update && \
     apt install -y mono-devel
 
+
+# Set up Dat3M
+WORKDIR /home
+RUN git clone --depth=1 --branch artifact https://github.com/tonghaining/Dat3M.git && \
+    cd Dat3M && \
+    mvn clean install -DskipTests
+
+
 # Set up gpuverify
 WORKDIR /home
 RUN git clone --depth=1 --branch port-verify https://github.com/tonghaining/gpuverify-release.git && \
