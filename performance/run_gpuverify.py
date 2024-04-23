@@ -15,7 +15,8 @@ def get_general_tests(gpuverify_repo_path):
     general_test_txt = os.path.join(gpuverify_repo_path, "PortAndVerify/no_gpuverify_specific_feature.txt")
     with open(general_test_txt, "r") as f:
         general_tests = f.read().split("\n")
-    general_tests_path = [os.path.join(gpuverify_repo_path, test[2:]) for test in general_tests]
+    general_tests = [test for test in general_tests if test != ""]
+    general_tests_path = [os.path.join(gpuverify_repo_path, test[3:]) for test in general_tests]
     return general_tests_path
 
 

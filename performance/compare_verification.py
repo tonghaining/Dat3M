@@ -5,7 +5,8 @@ from tabulate import tabulate
 import profiler
 
 SPIRV_RACY_TESTS = [
-    "SpirvRacesVerifyTest.java",
+    "SpirvRacesTest",
+    # "SpirvRacesVerifyTest",
 ]
 
 def main():
@@ -18,17 +19,18 @@ def main():
     result_csv = sys.argv[3]
 
 
-    _, gpuverify_dr, gpuverify_time, _ = profiler.get_alloy_performance(gpuverify_log)
+    _, gpuverify_dr, gpuverify_time = profiler.get_alloy_performance(gpuverify_log)
     gpuverify_total = int(gpuverify_dr)
-    gpuverify_time = float(gpuverify_time) * 1000
+    gpuverify_time = float(gpuverify_time)
     gpuverify_average = gpuverify_time / gpuverify_total
 
     # TODO: LOAD DAT3M SPIRV RACY TESTS LOG
+    dat3m_total, dat3m_time, dat3m_average = profiler.get_dat3m_performance(dat3m_log, tests=SPIRV_RACY_TESTS)
 
     table = [
-        ["Tool", "Total", "Time", "Time/Tests"],
-        ["GPUVerify", gpuverify_total, gpuverify_time, gpuverify_average],
-        ["Dat3m", 0, 0, 0],
+        ["Tool", "benchmarks", "TPT"],
+        ["\sabre", dat3m_total, dat3m_average],
+        ["\gpuverify", gpuverify_total, gpuverify_average],
     ]
 
     profiler_result = profiler.tabulate(table[1:], headers=table[0])
@@ -41,5 +43,5 @@ def main():
 
 if __name__ == "__main__":
     # sys.argv = ['compare_verification.py', '/home/Dat3M/performance/dat3m.log',
-    # '/home/Dat3M/performance/gpuverify.log', '/home/Dat3M/performance/verification.csv']
+    # '/home/Dat3M/performance/gpuverify.log', '/home/Dat3M/performance/spirv_result.csv']
     main()

@@ -51,7 +51,6 @@ def main():
         f.write(f"Time:(ms) {cost_time}\n")
         f.write(f"Safety Check: {safety_check}\n")
         f.write(f"DR Check: {dr_check}\n")
-        f.write(f"Average:(s) {(end - start) / test_size}\n")
 
 
 if __name__ == "__main__":
