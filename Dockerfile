@@ -61,7 +61,18 @@ RUN git clone --depth=1 --branch manual https://github.com/tonghaining/Vulkan-Me
 
 # Run Dat3M
 WORKDIR /home/Dat3M
-RUN mvn test | tee /home/Dat3M/performance/dat3m.log
+RUN mvn test -Dtest=" \
+    LitmusPTXv6_0Test,\
+    LitmusPTXv7_5Test, \
+    LitmusPTXv6_0LivenessTest, \
+    LitmusPTXv7_5LivenessTest, \
+    LitmusVulkanTest, \
+    LitmusVulkanNochainsTest, \
+    LitmusVulkanRacesTest, \
+    LitmusVulkanRacesNochainsTest, \
+    LitmusVulkanLivenessTest, \
+    SpirvRacesTest, \
+    " -Dsurefire.failIfNoSpecifiedTests=false | tee /home/Dat3M/performance/dat3m.log
 
 # Profiler
 WORKDIR /home/Dat3M/performance

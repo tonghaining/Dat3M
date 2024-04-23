@@ -160,5 +160,5 @@ def main():
 
 if __name__ == "__main__":
     # sys.argv = ['profiler.py', '/home/Dat3M/performance/dat3m.log',
-    #            '/home/Dat3M/performance/ptx.log', '/home/Dat3M/performance/vmm.log', '/home/Dat3M/performance/result.csv']
+    #            '/home/Dat3M/performance/ptx.log', '/home/Dat3M/performance/vmm.log', '/home/Dat3M/performance/litmus_result.csv']
     main()
