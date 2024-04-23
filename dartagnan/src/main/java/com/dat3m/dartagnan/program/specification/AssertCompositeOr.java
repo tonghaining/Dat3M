@@ -12,6 +12,14 @@ public class AssertCompositeOr extends AbstractAssert {
     private final AbstractAssert a1;
     private final AbstractAssert a2;
 
+    public AbstractAssert getLeft() {
+        return a1;
+    }
+
+    public AbstractAssert getRight() {
+        return a2;
+    }
+
     public AssertCompositeOr(AbstractAssert a1, AbstractAssert a2) {
         this.a1 = a1;
         this.a2 = a2;
