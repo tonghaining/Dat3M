@@ -79,6 +79,6 @@ WORKDIR /home/Dat3M/performance
 RUN python3 -m pip install tabulate && \
     python3 run_ptx.py /home/mixedproxy/ /home/Dat3M/performance/ptx.log && \
     python3 run_vmm.py /home/Vulkan-MemoryModel/alloy/ /home/Dat3M/performance/vmm.log && \
-    python3 run_gpuverify.py /home/gpuverify-release/ /home/Dat3M/performance/gpuverify.log && \
+    python3 run_gpuverify.py /home/gpuverify-release/ /home/Dat3M/performance/gpuverify-filter/ /home/Dat3M/performance/gpuverify.log && \
     python3 profiler.py dat3m.log ptx.log vmm.log litmus_result.csv && \
     python3 compare_verification.py dat3m.log gpuverify.log spirv_result.csv

@@ -1,0 +1,5 @@
+latest_benchmarks/OpenCL/sourcelocation_tests/races_from_indirect_calls/kernel.cl
+latest_benchmarks/OpenCL/sourcelocation_tests/race_from_call_in_loop/kernel.cl
+latest_benchmarks/OpenCL/sourcelocation_tests/race_from_call/kernel.cl
+latest_benchmarks/OpenCL/pointertests/test_copy_between_memory_spaces/kernel.cl
+latest_benchmarks/OpenCL/misc/fail/miscfail8/kernel.cl
