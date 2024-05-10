@@ -11,10 +11,13 @@ public class OptionNames {
     public static final String TIMEOUT = "timeout";
     public static final String VALIDATE = "validate";
     public static final String COVERAGE = "coverage";
+    public static final String WITNESS = "witness";
 
     // Modeling Options
     public static final String THREAD_CREATE_ALWAYS_SUCCEEDS = "modeling.threadCreateAlwaysSucceeds";
     public static final String RECURSION_BOUND = "modeling.recursionBound";
+    public static final String MEMORY_IS_ZEROED = "modeling.memoryIsZeroed";
+    public static final String INIT_DYNAMIC_ALLOCATIONS = "modeling.initDynamicAllocations";
 
     // Compilation Options
     public static final String USE_RC11_TO_ARCH_SCHEME = "compilation.rc11ToArch";
@@ -36,7 +39,8 @@ public class OptionNames {
     public static final String REDUCE_SYMMETRY = "program.processing.reduceSymmetry";
     public static final String CONSTANT_PROPAGATION = "program.processing.constantPropagation";
     public static final String DEAD_ASSIGNMENT_ELIMINATION = "program.processing.dce";
-    public static final String DYNAMIC_PURE_LOOP_CUTTING = "program.processing.dplc";
+    public static final String ASSIGNMENT_INLINING = "program.processing.assignmentInlining";
+    public static final String DYNAMIC_SPINLOOP_DETECTION = "program.processing.spinloops";
     public static final String PROPAGATE_COPY_ASSIGNMENTS = "program.processing.propagateCopyAssignments";
     public static final String REMOVE_ASSERTION_OF_TYPE = "program.processing.skipAssertionsOfType";
 
@@ -45,6 +49,7 @@ public class OptionNames {
     public static final String ALIAS_GRAPHVIZ = "program.analysis.generateAliasGraph";
     public static final String ALIAS_GRAPHVIZ_SPLIT_BY_THREAD = "program.analysis.generateAliasGraph.splitByThread";
     public static final String ALIAS_GRAPHVIZ_SHOW_ALL = "program.analysis.generateAliasGraph.showAllEvents";
+    public static final String ALIAS_GRAPHVIZ_INTERNAL = "program.analysis.generateAliasGraph.internal";
     public static final String ALWAYS_SPLIT_ON_JUMPS = "program.analysis.cf.alwaysSplitOnJump";
     public static final String MERGE_BRANCHES = "program.analysis.cf.mergeBranches";
 
@@ -61,7 +66,6 @@ public class OptionNames {
 
     // Witness Options
     public static final String WITNESS_ORIGINAL_PROGRAM_PATH = "witness.originalProgramFilePath";
-    public static final String WITNESS_GRAPHVIZ = "witness.graphviz";
 
     // SVCOMP Options
     public static final String PROPERTYPATH = "svcomp.property";

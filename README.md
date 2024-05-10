@@ -12,7 +12,7 @@ Requirements
 * [Maven](https://maven.apache.org/) 3.8 or above
 * [Java](https://openjdk.java.net/projects/jdk/17/) 17 or above
 * [Clang](https://clang.llvm.org) (only to verify C programs)
-* [Graphviz](https://graphviz.org) (only if option `--witness.graphviz=true` is used)
+* [Graphviz](https://graphviz.org) (only if option `--witness=png` is used)
 
 Installation
 ======
@@ -103,9 +103,18 @@ The target architecture is supposed to match (this is responsibility of the user
 Further options can be specified using `--<option>=<value>`. Common options include:
 - `bound`: unrolling bound for the BMC (default is 1).
 - `solver`: specifies which SMT solver to use as a backend. Since we use [JavaSMT](https://github.com/sosy-lab/java-smt), several SMT solvers are supported depending on the OS and the used SMT logic (default is Z3).
-- `method`: specifies which solving method to use. Option `caat` (the default one) uses a customized solver for memory consistency. Options `incremental` and `assume` solve a monolithic formula using incremental/assume-based SMT solving. 
+- `method`: specifies which solving method to use. Option `lazy` (the default one) uses a customized solver for memory consistency. Option `eager` solves a monolithic formula using SMT solving. 
 
 Dartagnan supports input non-determinism using the [SVCOMP](https://sv-comp.sosy-lab.org/2020/index.php) command `__VERIFIER_nondet_X`.
+
+You can set up specific bounds for individual loops in the C code by annotating the loop with `__VERIFIER_loop_bound(...)`. For example,
+```
+__VERIFIER_loop_bound(2);
+while(1) {
+    ...
+}
+```
+will unroll this loop twice and use the bound passed to the `--bound` option for all other loops.
 
 Authors and Contact
 ======
@@ -125,6 +134,12 @@ Authors and Contact
 * Florian Furbach
 
 Please feel free to [contact us](mailto:hernanl.leon@huawei.com) in case of questions or to send feedback.
+
+Awards
+======
+- Distinguished Paper @ OOPSLA 2023
+- Gold Medal @ SVCOMP 2023
+- Gold Medal (x2) @ SVCOMP 2024
 
 References
 ======

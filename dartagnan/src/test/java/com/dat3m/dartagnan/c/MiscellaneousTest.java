@@ -32,7 +32,7 @@ public class MiscellaneousTest extends AbstractCTest {
 
     @Override
     protected Provider<String> getProgramPathProvider() {
-        return Provider.fromSupplier(() -> getTestResourcePath("miscellaneous/" + name + ".ll"));
+        return () -> getTestResourcePath("miscellaneous/" + name + ".ll");
     }
 
     @Override
@@ -80,6 +80,8 @@ public class MiscellaneousTest extends AbstractCTest {
                 {"thread_loop", IMM, FAIL, 1},
                 {"thread_id", IMM, PASS, 1},
                 {"funcPtrInStaticMemory", IMM, PASS, 1},
+                {"verifierAssert", ARM8, FAIL, 1},
+                {"uninitRead", IMM, FAIL, 1}
         });
     }
 

@@ -8,12 +8,14 @@ import com.dat3m.dartagnan.program.Thread;
 import com.dat3m.dartagnan.program.analysis.BranchEquivalence;
 import com.dat3m.dartagnan.program.analysis.SyntacticContextAnalysis;
 import com.dat3m.dartagnan.program.analysis.ThreadSymmetry;
+import com.dat3m.dartagnan.program.analysis.alias.AliasAnalysis;
 import com.dat3m.dartagnan.program.event.Event;
 import com.dat3m.dartagnan.program.event.MemoryEvent;
+import com.dat3m.dartagnan.program.event.core.MemoryCoreEvent;
 import com.dat3m.dartagnan.program.event.metadata.OriginalId;
 import com.dat3m.dartagnan.program.event.metadata.SourceLocation;
-import com.dat3m.dartagnan.program.filter.Filter;
 import com.dat3m.dartagnan.solver.caat.CAATSolver;
+import com.dat3m.dartagnan.solver.caat4wmm.RefinementModel;
 import com.dat3m.dartagnan.solver.caat4wmm.Refiner;
 import com.dat3m.dartagnan.solver.caat4wmm.WMMSolver;
 import com.dat3m.dartagnan.solver.caat4wmm.coreReasoning.CoreLiteral;
@@ -25,15 +27,16 @@ import com.dat3m.dartagnan.verification.Context;
 import com.dat3m.dartagnan.verification.VerificationTask;
 import com.dat3m.dartagnan.verification.model.EventData;
 import com.dat3m.dartagnan.verification.model.ExecutionModel;
-import com.dat3m.dartagnan.wmm.Assumption;
+import com.dat3m.dartagnan.wmm.Constraint;
 import com.dat3m.dartagnan.wmm.Definition;
 import com.dat3m.dartagnan.wmm.Relation;
 import com.dat3m.dartagnan.wmm.Wmm;
 import com.dat3m.dartagnan.wmm.analysis.RelationAnalysis;
-import com.dat3m.dartagnan.wmm.axiom.Acyclic;
-import com.dat3m.dartagnan.wmm.axiom.Empty;
-import com.dat3m.dartagnan.wmm.axiom.ForceEncodeAxiom;
+import com.dat3m.dartagnan.wmm.axiom.Acyclicity;
+import com.dat3m.dartagnan.wmm.axiom.Axiom;
+import com.dat3m.dartagnan.wmm.axiom.Emptiness;
 import com.dat3m.dartagnan.wmm.definition.*;
+import com.dat3m.dartagnan.wmm.utils.Cut;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import org.apache.logging.log4j.LogManager;
@@ -47,6 +50,7 @@ import org.sosy_lab.java_smt.api.*;
 import java.text.DecimalFormat;
 import java.util.*;
 import java.util.function.BiPredicate;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import static com.dat3m.dartagnan.GlobalSettings.REFINEMENT_GENERATE_GRAPHVIZ_DEBUG_FILES;
@@ -56,7 +60,8 @@ import static com.dat3m.dartagnan.configuration.OptionNames.COVERAGE;
 import static com.dat3m.dartagnan.program.analysis.SyntacticContextAnalysis.*;
 import static com.dat3m.dartagnan.solver.caat.CAATSolver.Status.*;
 import static com.dat3m.dartagnan.utils.Result.*;
-import static com.dat3m.dartagnan.utils.visualization.ExecutionGraphVisualizer.generateGraphvizFile;
+import static com.dat3m.dartagnan.utils.Utils.toTimeString;
+import static com.dat3m.dartagnan.witness.graphviz.ExecutionGraphVisualizer.generateGraphvizFile;
 import static com.dat3m.dartagnan.wmm.RelationNameRepository.*;
 
 ;
@@ -170,36 +175,37 @@ public class RefinementSolver extends ModelChecker {
             throws InterruptedException, SolverException, InvalidConfigurationException {
         final Program program = task.getProgram();
         final Wmm memoryModel = task.getMemoryModel();
-        final Wmm baselineModel = createDefaultWmm();
         final Context analysisContext = Context.create();
         final Configuration config = task.getConfig();
-        final VerificationTask baselineTask = VerificationTask.builder()
-                .withConfig(task.getConfig())
-                .build(program, baselineModel, task.getProperty());
 
         // ------------------------ Preprocessing / Analysis ------------------------
 
-        preprocessProgram(task, config);
-        preprocessMemoryModel(task);
-        // We cut the rhs of differences to get a semi-positive model, if possible.
-        // This call modifies the baseline model!
-        Set<Relation> cutRelations = cutRelationDifferences(memoryModel, baselineModel);
+        // TODO: This is a reasonable transformation for all methods (eager/lazy), however,
+        //  our current processing pipelines (WmmProcessor/ProgramProcessor) are unaware of the property
+        //  so we cannot perform property-aware transformation in those pipelines right now.
+        removeFlaggedAxiomsIfNotNeeded(task);
+
         memoryModel.configureAll(config);
-        baselineModel.configureAll(config); // Configure after cutting!
+        preprocessProgram(task, config);
+        preprocessMemoryModel(task, config);
+        instrumentPolaritySeparation(memoryModel);
 
         performStaticProgramAnalyses(task, analysisContext, config);
+        // Copy context without WMM analyses because we want to analyse a second model later
         Context baselineContext = Context.createCopyFrom(analysisContext);
         performStaticWmmAnalyses(task, analysisContext, config);
-        // Transfer knowledge from target model to baseline model
-        final RelationAnalysis ra = analysisContext.requires(RelationAnalysis.class);
-        for (Relation baselineRelation : baselineModel.getRelations()) {
-            String name = baselineRelation.getNameOrTerm();
-            memoryModel.getRelations().stream()
-                    .filter(r -> name.equals(r.getNameOrTerm()))
-                    .map(ra::getKnowledge)
-                    .map(k -> new Assumption(baselineRelation, k.getMaySet(), k.getMustSet()))
-                    .forEach(baselineModel::addConstraint);
-        }
+
+        //  ------- Generate refinement model -------
+        final RefinementModel refinementModel = generateRefinementModel(memoryModel);
+        final Wmm baselineModel = refinementModel.getBaseModel();
+        addBiases(baselineModel, baselines);
+        baselineModel.configureAll(config); // Configure after cutting!
+        refinementModel.transferKnowledgeFromOriginal(analysisContext.requires(RelationAnalysis.class));
+        refinementModel.forceEncodeBoundary();
+
+        final VerificationTask baselineTask = VerificationTask.builder()
+                .withConfig(task.getConfig())
+                .build(program, baselineModel, task.getProperty());
         performStaticWmmAnalyses(baselineTask, baselineContext, config);
 
         // ------------------------ Encoding ------------------------
@@ -213,8 +219,8 @@ public class RefinementSolver extends ModelChecker {
         final WmmEncoder baselineEncoder = WmmEncoder.withContext(context);
 
         final BooleanFormulaManager bmgr = ctx.getFormulaManager().getBooleanFormulaManager();
-        final WMMSolver solver = WMMSolver.withContext(context, cutRelations, task, analysisContext);
-        final Refiner refiner = new Refiner();
+        final WMMSolver solver = WMMSolver.withContext(refinementModel, context, analysisContext);
+        final Refiner refiner = new Refiner(refinementModel);
         final Property.Type propertyType = Property.getCombinedType(task.getProperty(), task);
 
         logger.info("Starting encoding using " + ctx.getVersion());
@@ -232,21 +238,23 @@ public class RefinementSolver extends ModelChecker {
         final RefinementTrace propertyTrace = runRefinement(task, prover, solver, refiner);
         SMTStatus smtStatus = propertyTrace.getFinalResult();
 
+        if (smtStatus == SMTStatus.UNKNOWN) {
+            // Refinement got no result (should not be able to happen), so we cannot proceed further.
+            logger.warn("Refinement procedure was inconclusive. Trying to find reason of inconclusiveness.");
+            analyzeInconclusiveness(task, propertyTrace, analysisContext);
+            throw new RuntimeException("Terminated verification due to inconclusiveness (bug?).");
+        }
+
         if (logger.isInfoEnabled()) {
             final String message = switch (smtStatus) {
-                case UNKNOWN -> "SMT Solver was inconclusive (bug?).";
                 case SAT -> propertyType == Property.Type.SAFETY ? "Specification violation found."
                         : "Specification witness found.";
                 case UNSAT -> propertyType == Property.Type.SAFETY ? "Bounded specification proven."
                         : "Bounded specification falsified.";
+                // Cannot be reached due to the above checks.
+                default -> throw new RuntimeException("unreachable");
             };
             logger.info(message);
-        }
-
-        if (smtStatus == SMTStatus.UNKNOWN) {
-            // Refinement got no result (should not be able to happen), so we cannot proceed further.
-            res = UNKNOWN;
-            return;
         }
 
         RefinementTrace combinedTrace = propertyTrace;
@@ -277,6 +285,7 @@ public class RefinementSolver extends ModelChecker {
             }
         } else {
             res = FAIL;
+            saveFlaggedPairsOutput(baselineModel, baselineEncoder, prover, context, task.getProgram());
         }
 
         // -------------------------- Report statistics summary --------------------------
@@ -303,6 +312,54 @@ public class RefinementSolver extends ModelChecker {
         logger.info("Verification finished with result " + res);
     }
 
+    private void analyzeInconclusiveness(VerificationTask task, RefinementTrace propertyTrace, Context analysisContext) {
+        final AliasAnalysis alias = analysisContext.get(AliasAnalysis.class);
+        if (alias == null) {
+            return;
+        }
+        SyntacticContextAnalysis synContext = analysisContext.get(SyntacticContextAnalysis.class);
+        if (synContext == null) {
+            synContext = newInstance(task.getProgram());
+        }
+
+        final DNF<CoreLiteral> lastReasons = propertyTrace.getFinalIteration().inconsistencyReasons;
+        for (Conjunction<CoreLiteral> reason : lastReasons.getCubes()) {
+            for (CoreLiteral literal : reason.getLiterals()) {
+                if (literal instanceof RelLiteral relLit && doesViolateAliasingRules(relLit, alias)) {
+                    final Event e1 = relLit.getSource();
+                    final Event e2 = relLit.getTarget();
+
+                    final StringBuilder builder = new StringBuilder();
+                    builder.append("Found unexpected aliasing between:\n");
+                    builder.append("\t")
+                            .append(synContext.getSourceLocationWithContext(e1, true))
+                            .append("\n")
+                            .append("AND\n")
+                            .append("\t")
+                            .append(synContext.getSourceLocationWithContext(e2, true))
+                            .append("\n");
+                    builder.append("Possible out-of-bounds access in source code or error in alias analysis.");
+
+                    logger.warn(builder.toString());
+                    return;
+                }
+            }
+        }
+    }
+
+    private boolean doesViolateAliasingRules(RelLiteral lit, AliasAnalysis alias) {
+        final Predicate<Relation> isMemRel = r -> r.getDefinition() instanceof ReadFrom
+                || r.getDefinition() instanceof Coherence;
+
+        if (lit.isPositive() && isMemRel.test(lit.getRelation())) {
+            final MemoryCoreEvent e1 = (MemoryCoreEvent) lit.getSource();
+            final MemoryCoreEvent e2 = (MemoryCoreEvent) lit.getTarget();
+            return !alias.mayAlias(e1, e2);
+        } else {
+            return false;
+        }
+    }
+
     // ================================================================================================================
     // Refinement core algorithm
 
@@ -316,7 +373,7 @@ public class RefinementSolver extends ModelChecker {
 
             final RefinementIteration iteration = doRefinementIteration(prover, solver, refiner);
             trace.add(iteration);
-            isFinalIteration = iteration.isConclusive();
+            isFinalIteration = !checkProgress(trace) || iteration.isConclusive();
 
             // ------------------------- Debugging/Logging -------------------------
             if (REFINEMENT_GENERATE_GRAPHVIZ_DEBUG_FILES) {
@@ -356,6 +413,15 @@ public class RefinementSolver extends ModelChecker {
         }
 
         return new RefinementTrace(trace);
+    }
+
+    private boolean checkProgress(List<RefinementIteration> trace) {
+        if (trace.size() < 2 || trace.get(trace.size() - 1).isConclusive()) {
+            return true;
+        }
+        final RefinementIteration last = trace.get(trace.size() - 1);
+        final RefinementIteration prev = trace.get(trace.size() - 2);
+        return !last.inconsistencyReasons.equals(prev.inconsistencyReasons);
     }
 
     private RefinementIteration doRefinementIteration(ProverEnvironment prover, WMMSolver solver, Refiner refiner)
@@ -409,113 +475,229 @@ public class RefinementSolver extends ModelChecker {
     // ================================================================================================================
     // Special memory model processing
 
-    // This method cuts off negated relations that are dependencies of some
-    // consistency axiom. It ignores dependencies of flagged axioms, as those get
-    // eagerly encoded and can be completely ignored for Refinement.
-    private static Set<Relation> cutRelationDifferences(Wmm targetWmm, Wmm baselineWmm) {
-        // TODO: Add support to move flagged axioms to the baselineWmm
-        Set<Relation> cutRelations = new HashSet<>();
-        Set<Relation> cutCandidates = new HashSet<>();
-        int cutCounter = 0;
-        targetWmm.getAxioms().stream().filter(ax -> !ax.isFlagged())
-                .forEach(ax -> collectDependencies(ax.getRelation(), cutCandidates));
-        for (Relation rel : cutCandidates) {
-            if (rel.getDefinition() instanceof Difference) {
-                Relation sec = ((Difference) rel.getDefinition()).complement;
-                if (!sec.getDependencies().isEmpty() || sec.getDefinition() instanceof Identity
-                        || sec.getDefinition() instanceof CartesianProduct) {
-                    // NOTE: The check for RelSetIdentity/RelCartesian is needed because they appear
-                    // non-derived in our Wmm but for CAAT they are derived from unary predicates!
-                    logger.info("Found difference {}. Cutting rhs relation {}", rel, sec);
-                    cutRelations.add(sec);
-                    Relation baselineCopy = getCopyOfRelation(sec, baselineWmm);
-                    baselineWmm.addConstraint(new ForceEncodeAxiom(baselineCopy));
-                    // We give the cut relations new aliases in the original and the baseline wmm
-                    // so that we can match them later by name.
-                    targetWmm.addAlias("cut#" + cutCounter, sec);
-                    baselineWmm.addAlias("cut#" + cutCounter, baselineCopy);
-                    cutCounter++;
+    private static RefinementModel generateRefinementModel(Wmm original) {
+        // We cut (i) negated axioms, (ii) negated relations (if derived),
+        // and (iii) some special relations because they are derived from internal relations (like data/addr/ctrl)
+        // or because we have no dedicated implementation for them in CAAT (like Linux' rscs).
+        final Set<Constraint> constraintsToCut = new HashSet<>();
+        for (Constraint c : original.getConstraints()) {
+            if (c instanceof Axiom ax && ax.isNegated()) {
+                // (i) Negated axioms
+                constraintsToCut.add(ax);
+            } else if (c instanceof Difference diff) {
+                // (ii) Negated relations (if derived)
+                final Relation sub = diff.getSubtrahend();
+                final Definition subDef = sub.getDefinition();
+                if (!sub.getDependencies().isEmpty()
+                        // The following three definitions are "semi-derived" and need to get cut
+                        // to get a semi-positive model.
+                        || subDef instanceof SetIdentity
+                        || subDef instanceof CartesianProduct) {
+                    constraintsToCut.add(subDef);
                 }
+            } else if (c instanceof Definition def && def.getDefinedRelation().hasName()) {
+                // (iii) Special relations
+                final String name = def.getDefinedRelation().getName().get();
+                if (name.equals(DATA) || name.equals(CTRL) || name.equals(ADDR) || name.equals(CRIT)) {
+                    constraintsToCut.add(c);
+                }
+            } else if (c instanceof Definition def && def instanceof Fences) {
+                // (iii) continued: fencerel(F) is unsupported in CAAT.
+                //  It should get rewritten to "po;[F];po" by our passes,
+                //  but if it was not, we cut it instead.
+                constraintsToCut.add(c);
             }
         }
-        return cutRelations;
+
+        return RefinementModel.fromCut(Cut.computeInducedCut(original, constraintsToCut));
     }
 
-    private static void collectDependencies(Relation root, Set<Relation> collected) {
-        if (collected.add(root)) {
-            root.getDependencies().forEach(dep -> collectDependencies(dep, collected));
-        }
-    }
-
-    private static Relation getCopyOfRelation(Relation rel, Wmm m) {
-        Optional<String> name = rel.getName();
-        if (name.isPresent() && m.containsRelation(name.get())) {
-            return m.getRelation(name.get());
-        }
-        Relation copy = name.map(m::newRelation).orElseGet(m::newRelation);
-        return m.addDefinition(rel.getDefinition().accept(new RelationCopier(m, copy)));
-    }
-
-    private static final class RelationCopier implements Definition.Visitor<Definition> {
-        final Wmm targetModel;
-        final Relation relation;
-
-        RelationCopier(Wmm m, Relation r) {
-            targetModel = m;
-            relation = r;
-        }
-
-        @Override public Definition visitUnion(Relation r, Relation... o) { return new Union(relation, copy(o)); }
-        @Override public Definition visitIntersection(Relation r, Relation... o) { return new Intersection(relation, copy(o)); }
-        @Override public Definition visitDifference(Relation r, Relation r1, Relation r2) { return new Difference(relation, copy(r1), copy(r2)); }
-        @Override public Definition visitComposition(Relation r, Relation r1, Relation r2) { return new Composition(relation, copy(r1), copy(r2)); }
-        @Override public Definition visitInverse(Relation r, Relation r1) { return new Inverse(relation, copy(r1)); }
-        @Override public Definition visitDomainIdentity(Relation r, Relation r1) { return new DomainIdentity(relation, copy(r1)); }
-        @Override public Definition visitRangeIdentity(Relation r, Relation r1) { return new RangeIdentity(relation, copy(r1)); }
-        @Override public Definition visitTransitiveClosure(Relation r, Relation r1) { return new TransitiveClosure(relation, copy(r1)); }
-        @Override public Definition visitIdentity(Relation r, Filter filter) { return new Identity(relation, filter); }
-        @Override public Definition visitProduct(Relation r, Filter f1, Filter f2) { return new CartesianProduct(relation, f1, f2); }
-        @Override public Definition visitFences(Relation r, Filter type) { return new Fences(relation, type); }
-
-        private Relation copy(Relation r) { return getCopyOfRelation(r, targetModel); }
-        private Relation[] copy(Relation[] r) {
-            Relation[] a = new Relation[r.length];
-            for (int i = 0; i < r.length; i++) {
-                a[i] = copy(r[i]);
-            }
-            return a;
-        }
-    }
-
-    private Wmm createDefaultWmm() {
-        Wmm baseline = new Wmm();
-        Relation rf = baseline.getRelation(RF);
-        if (baselines.contains(Baseline.UNIPROC)) {
+    private static void addBiases(Wmm memoryModel, EnumSet<Baseline> biases) {
+        // FIXME: This can (in theory) add redundant intermediate relations and/or constraints that
+        //  already exist in the model.
+        final Relation rf = memoryModel.getRelation(RF);
+        if (biases.contains(Baseline.UNIPROC)) {
             // ---- acyclic(po-loc | com) ----
-            baseline.addConstraint(new Acyclic(baseline.addDefinition(new Union(baseline.newRelation(),
-                    baseline.getRelation(POLOC),
+            memoryModel.addConstraint(new Acyclicity(memoryModel.addDefinition(new Union(memoryModel.newRelation(),
+                    memoryModel.getOrCreatePredefinedRelation(POLOC),
                     rf,
-                    baseline.getRelation(CO),
-                    baseline.getRelation(FR)))));
+                    memoryModel.getOrCreatePredefinedRelation(CO),
+                    memoryModel.getOrCreatePredefinedRelation(FR)))));
         }
-        if (baselines.contains(Baseline.NO_OOTA)) {
+        if (biases.contains(Baseline.NO_OOTA)) {
             // ---- acyclic (dep | rf) ----
-            baseline.addConstraint(new Acyclic(baseline.addDefinition(new Union(baseline.newRelation(),
-                    baseline.getRelation(CTRL),
-                    baseline.getRelation(DATA),
-                    baseline.getRelation(ADDR),
+            memoryModel.addConstraint(new Acyclicity(memoryModel.addDefinition(new Union(memoryModel.newRelation(),
+                    memoryModel.getOrCreatePredefinedRelation(CTRL),
+                    memoryModel.getOrCreatePredefinedRelation(DATA),
+                    memoryModel.getOrCreatePredefinedRelation(ADDR),
                     rf))));
         }
-        if (baselines.contains(Baseline.ATOMIC_RMW)) {
+        if (biases.contains(Baseline.ATOMIC_RMW)) {
             // ---- empty (rmw & fre;coe) ----
-            Relation rmw = baseline.getRelation(RMW);
-            Relation coe = baseline.getRelation(COE);
-            Relation fre = baseline.getRelation(FRE);
-            Relation frecoe = baseline.addDefinition(new Composition(baseline.newRelation(), fre, coe));
-            Relation rmwANDfrecoe = baseline.addDefinition(new Intersection(baseline.newRelation(), rmw, frecoe));
-            baseline.addConstraint(new Empty(rmwANDfrecoe));
+            Relation rmw = memoryModel.getOrCreatePredefinedRelation(RMW);
+            Relation coe = memoryModel.getOrCreatePredefinedRelation(COE);
+            Relation fre = memoryModel.getOrCreatePredefinedRelation(FRE);
+            Relation frecoe = memoryModel.addDefinition(new Composition(memoryModel.newRelation(), fre, coe));
+            Relation rmwANDfrecoe = memoryModel.addDefinition(new Intersection(memoryModel.newRelation(), rmw, frecoe));
+            memoryModel.addConstraint(new Emptiness(rmwANDfrecoe));
         }
-        return baseline;
+    }
+
+    private static void removeFlaggedAxiomsIfNotNeeded(VerificationTask task) {
+        // We remove flagged axioms if we do not check for them.
+        if (!task.getProperty().contains(Property.CAT_SPEC)) {
+            List.copyOf(task.getMemoryModel().getAxioms()).stream()
+                    .filter(Axiom::isFlagged)
+                    .forEach(task.getMemoryModel()::removeConstraint);
+        }
+    }
+
+    /*
+        The constraints/relations of the Wmm can be categorised into positive and negative,
+        depending on whether the number of negations applied to the constraint/relation is even (=positive)
+        or odd (=negative).
+        Negations come from negated axioms (~empty(r)), RHS of differences (c = a \ b), or
+        complementation (Y = ~X). Complementation is just a difference: ~X = _ \ X, so there is no special
+        treatment required.
+        A relation can be both negative and positive if it is used multiple times,
+        once with odd negations and once with even negations.
+        It can also be neither, if the relation is dead (i.e., irrelevant for all axioms).
+     */
+    private record PolaritySeparator(Set<Constraint> positives, Set<Constraint> negatives) { }
+
+    private PolaritySeparator computePolaritySeparator(Wmm wmm) {
+        final Set<Constraint> positives = new HashSet<>();
+        final Set<Constraint> negatives = new HashSet<>();
+        final Constraint.Visitor<Void> collector = new Constraint.Visitor<>() {
+            private boolean polarity = true;
+
+            @Override
+            public Void visitAxiom(Axiom axiom) {
+                polarity = !axiom.isNegated();
+                process(axiom);
+                return axiom.getRelation().getDefinition().accept(this);
+            }
+
+            @Override
+            public Void visitDefinition(Definition def) {
+                if (process(def)) {
+                    def.getConstrainedRelations().subList(1, def.getConstrainedRelations().size())
+                            .forEach(r -> r.getDefinition().accept(this));
+                }
+                return null;
+            }
+
+            @Override
+            public Void visitDifference(Difference def) {
+                if (process(def)) {
+                    def.getMinuend().getDefinition().accept(this);
+                    polarity = !polarity;
+                    def.getSubtrahend().getDefinition().accept(this);
+                    polarity = !polarity;
+                }
+                return null;
+            }
+
+            private boolean process(Constraint c) {
+                return (polarity ? positives : negatives).add(c);
+            }
+        };
+
+        wmm.getAxioms().forEach(ax -> ax.accept(collector));
+        return new PolaritySeparator(positives, negatives);
+    }
+
+    /*
+        This pass rewrites the memory model so that no non-negative constraints appear on the RHS of a difference.
+        Consider "r = a \ b" where b is non-negative (note that r and a must be non-positive then).
+        For example, this is the case if there is a constraint "~empty(r)"
+        We rewrite the model to
+
+            let b'= free()
+            let r = a \ b' // b' gets cut, but it is effectively a base relation so this causes no large encoding.
+            empty (r & b) // b is now in a positive position and thus not need to get cut.
+
+        We claim that this model is equisatisfiable to the original memory model.
+        To understand this intuitively, it is helpful so think of the fresh b' as the original b but with "some slack".
+        We will argue that the best choice for b' is precisely b.
+        Any larger choice for b' will make r smaller, but since r is non-positive this reduces the chances
+        of satisfying negated axioms (e.g., if "~empty(r)" is true for some small r, then it is also true for all larger r).
+        On the other hand, if b' is chosen too small, then r gets so large that it violates "empty(r & b)".
+
+        We prove this formally. Towards this, we reason about executions M which are to be understood
+        as an interpretation of the relations of the memory model.
+        So, e.g., M(rf) is the value of rf (=the concrete binary relation) in the execution M.
+
+        "NEW => ORIGINAL":
+        Suppose M' is a consistent execution under the new memory model.
+        Then from "let r = a \ b'" it follows that
+            M'(r) \subseteq M'(a).
+        Furthermore, from "empty (r & b)" it follows that
+            M'(r) \subseteq ~M'(b).
+        Combining both, we get
+            M'(r) \subseteq (M'(a) & ~M'(b)) = (M'(a) \ M'(b)).
+        Now consider an execution M under the original memory model that matches with M' on the base relations
+        (modulo b' which does not exist in the original model).
+        Since both models agree on all base relations except b', they also agree on all derived relations
+        that are independent of b'.
+        In particular, since a and b are independent of b', we have M(a) = M'(a) and M(b) = M'(b), so that
+            M'(r) \subseteq (M'(a) \ M'(b)) = (M(a) \ M(b)) = M(r).
+        So the original memory model has a potentially larger interpretation for r (M'(r) \subseteq M(r)).
+        Since r is non-positive, we know that a larger relation satisfies more axioms (e.g.,
+        if r' is non-empty/non-acyclic/non-irreflexive, then the larger r will also satisfy these).
+        So M is a consistent execution under the original memory model.
+
+        "NEW <= ORIGINAL":
+        Suppose M is a consistent execution under the original model.
+        Then we can construct M' that matches with M on all common base relations but also sets M'(b') := M(b).
+        It is clear that M' now matches on all derived relations with M and so it satisfies the same axioms
+        and thus is also consistent.
+
+        NOTE: We argued about consistency only, but the same reasoning also applies to violation of flagged axioms,
+        i.e., the difference between "~empty(r)" and "flag ~empty(r)" is irrelevant for the argumentation.
+
+        NOTE 2: This rewriting is always possible.
+
+        NOTE 3: There is a minor caveat in the new memory model.
+        If an execution under the original memory model violates, e.g., "flag ~empty(r)" with multiple edges {e1, ..., ek},
+        then for the same execution the new memory model could report only a subset of those violations.
+        The reason is that the SMT solver has some slack in the choice of b':
+        it will choose b' such "flag ~empty(r)" holds (i.e., we have a violation), but it will not guarantee to
+        make the choice in such a way that it maximizes the number of violations.
+        If we want to get all violations of an execution, we could take the found execution (under the new memory model)
+        and simply recompute it under the original memory model, giving us the precise violations.
+     */
+    private void instrumentPolaritySeparation(Wmm wmm) {
+        final PolaritySeparator separator = computePolaritySeparator(wmm);
+        final Set<Difference> negDiff = separator.negatives().stream()
+                .filter(Difference.class::isInstance).map(Difference.class::cast)
+                .filter(diff -> !separator.negatives().contains(diff.getSubtrahend().getDefinition()))
+                .collect(Collectors.toSet());
+
+        final Map<Relation, Relation> replacements = new HashMap<>();
+        int counter = 0;
+        for (Difference diff : negDiff) {
+            // r = a \ b where r and a are non-positive and b is non-negative.
+            final Relation r = diff.getDefinedRelation();
+            final Relation a = diff.getMinuend();
+            final Relation b = diff.getSubtrahend();
+
+            // (1) Create b' (if not already existing)
+            final Relation bPrime;
+            if (replacements.containsKey(b)) {
+                bPrime = replacements.get(b);
+            } else {
+                final String bPrimeName = b.getName().map(n -> n + "#POS").orElse("__POS" + counter++);
+                bPrime = wmm.addDefinition(new Free(wmm.newRelation(bPrimeName)));
+                replacements.put(b, bPrime);
+            }
+            // (2) Rewrite  r = a \ b  to  r = a \ b'
+            wmm.removeDefinition(r);
+            wmm.addDefinition(new Difference(r, a, bPrime));
+            // (3) Add empty (r & b)
+            final Relation intersection = wmm.addDefinition(new Intersection(wmm.newRelation(), r, b));
+            wmm.addConstraint(new Emptiness(intersection));
+        }
     }
 
     // ================================================================================================================
@@ -554,14 +736,14 @@ public class RefinementSolver extends ModelChecker {
         StringBuilder message = new StringBuilder().append("Summary").append("\n")
                 .append(" ======== Summary ========").append("\n")
                 .append("Number of iterations: ").append(trace.iterations.size()).append("\n")
-                .append("Total native solving time(ms): ").append(totalNativeSolvingTime + boundCheckTime).append("\n")
-                .append("   -- Bound check time(ms): ").append(boundCheckTime).append("\n")
-                .append("Total CAAT solving time(ms): ").append(totalCaatTime).append("\n")
-                .append("   -- Model extraction time(ms): ").append(totalModelExtractTime).append("\n")
-                .append("   -- Population time(ms): ").append(totalPopulationTime).append("\n")
-                .append("   -- Consistency check time(ms): ").append(totalConsistencyCheckTime).append("\n")
-                .append("   -- Reason computation time(ms): ").append(totalReasonComputationTime).append("\n")
-                .append("   -- Refining time(ms): ").append(totalRefiningTime).append("\n")
+                .append("Total native solving time: ").append(toTimeString(totalNativeSolvingTime)).append("\n")
+                .append("   -- Bound check time: ").append(toTimeString(boundCheckTime)).append("\n")
+                .append("Total CAAT solving time: ").append(toTimeString(totalCaatTime)).append("\n")
+                .append("   -- Model extraction time: ").append(toTimeString(totalModelExtractTime)).append("\n")
+                .append("   -- Population time: ").append(toTimeString(totalPopulationTime)).append("\n")
+                .append("   -- Consistency check time: ").append(toTimeString(totalConsistencyCheckTime)).append("\n")
+                .append("   -- Reason computation time: ").append(toTimeString(totalReasonComputationTime)).append("\n")
+                .append("   -- Refining time: ").append(toTimeString(totalRefiningTime)).append("\n")
                 .append("   -- #Computed core reasons: ").append(totalNumReasons).append("\n")
                 .append("   -- #Computed core reduced reasons: ").append(totalNumReducedReasons).append("\n");
         if (!statList.isEmpty()) {
@@ -649,8 +831,8 @@ public class RefinementSolver extends ModelChecker {
             for (Conjunction<CoreLiteral> cube : reasons.getCubes()) {
                 for (CoreLiteral lit : cube.getLiterals()) {
                     if (lit instanceof RelLiteral edgeLit) {
-                        if (model.getData(edgeLit.getData().first()).get() == e1 &&
-                                model.getData(edgeLit.getData().second()).get() == e2) {
+                        if (model.getData(edgeLit.getSource()).get() == e1 &&
+                                model.getData(edgeLit.getTarget()).get() == e2) {
                             return true;
                         }
                     }

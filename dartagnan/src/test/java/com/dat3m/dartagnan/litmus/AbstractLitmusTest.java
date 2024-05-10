@@ -10,7 +10,7 @@ import com.dat3m.dartagnan.utils.rules.Providers;
 import com.dat3m.dartagnan.utils.rules.RequestShutdownOnError;
 import com.dat3m.dartagnan.verification.VerificationTask;
 import com.dat3m.dartagnan.verification.solving.RefinementSolver;
-import com.dat3m.dartagnan.verification.solving.TwoSolvers;
+import com.dat3m.dartagnan.verification.solving.AssumeSolver;
 import com.dat3m.dartagnan.wmm.Wmm;
 import org.junit.Rule;
 import org.junit.Test;
@@ -18,6 +18,7 @@ import org.junit.rules.RuleChain;
 import org.junit.rules.Timeout;
 import org.sosy_lab.common.ShutdownManager;
 import org.sosy_lab.common.configuration.Configuration;
+import org.sosy_lab.java_smt.SolverContextFactory.Solvers;
 import org.sosy_lab.java_smt.api.ProverEnvironment;
 import org.sosy_lab.java_smt.api.SolverContext;
 import org.sosy_lab.java_smt.api.SolverContext.ProverOptions;
@@ -108,7 +109,7 @@ public abstract class AbstractLitmusTest {
     protected final Provider<Result> expectedResultProvider = Provider.fromSupplier(() -> expectedResults.get(filePathProvider.get().substring(filePathProvider.get().indexOf("/") + 1)));
     protected final Provider<Configuration> configProvider = getConfigurationProvider();
     protected final Provider<VerificationTask> taskProvider = Providers.createTask(programProvider, wmmProvider, propertyProvider, targetProvider, boundProvider, configProvider);
-    protected final Provider<SolverContext> contextProvider = Providers.createSolverContextFromManager(shutdownManagerProvider);
+    protected final Provider<SolverContext> contextProvider = Providers.createSolverContextFromManager(shutdownManagerProvider, () -> Solvers.Z3);
     protected final Provider<ProverEnvironment> proverProvider = Providers.createProverWithFixedOptions(contextProvider, ProverOptions.GENERATE_MODELS);
     protected final Provider<ProverEnvironment> prover2Provider = Providers.createProverWithFixedOptions(contextProvider, ProverOptions.GENERATE_MODELS);
 
@@ -135,8 +136,8 @@ public abstract class AbstractLitmusTest {
 
 
     @Test
-    public void test() throws Exception {
-        TwoSolvers s = TwoSolvers.run(contextProvider.get(), proverProvider.get(), prover2Provider.get(), taskProvider.get());
+    public void testAssume() throws Exception {
+        AssumeSolver s = AssumeSolver.run(contextProvider.get(), proverProvider.get(), taskProvider.get());
         assertEquals(expected, s.getResult());
     }
 

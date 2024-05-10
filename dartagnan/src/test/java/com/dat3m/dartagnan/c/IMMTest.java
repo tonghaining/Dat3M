@@ -1,9 +1,9 @@
 package com.dat3m.dartagnan.c;
 
 import com.dat3m.dartagnan.configuration.Arch;
-import com.dat3m.dartagnan.parsers.cat.ParserCat;
 import com.dat3m.dartagnan.utils.Result;
 import com.dat3m.dartagnan.utils.rules.Provider;
+import com.dat3m.dartagnan.utils.rules.Providers;
 import com.dat3m.dartagnan.verification.solving.AssumeSolver;
 import com.dat3m.dartagnan.verification.solving.RefinementSolver;
 import com.dat3m.dartagnan.wmm.Wmm;
@@ -11,12 +11,10 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
 
 import static com.dat3m.dartagnan.configuration.Arch.IMM;
-import static com.dat3m.dartagnan.utils.ResourceHelper.getRootPath;
 import static com.dat3m.dartagnan.utils.ResourceHelper.getTestResourcePath;
 import static com.dat3m.dartagnan.utils.Result.FAIL;
 import static com.dat3m.dartagnan.utils.Result.PASS;
@@ -31,7 +29,7 @@ public class IMMTest extends AbstractCTest {
 
     @Override
     protected Provider<String> getProgramPathProvider() {
-        return Provider.fromSupplier(() -> getTestResourcePath("imm/" + name + ".ll"));
+        return () -> getTestResourcePath("imm/" + name + ".ll");
     }
 
     @Override
@@ -41,7 +39,7 @@ public class IMMTest extends AbstractCTest {
 
     @Override
     protected Provider<Wmm> getWmmProvider() {
-        return Provider.fromSupplier(() -> new ParserCat().parse(new File(getRootPath("cat/imm.cat"))));
+        return Providers.createWmmFromArch(() -> IMM);
     }
 
     @Parameterized.Parameters(name = "{index}: {0}, target={1}")
@@ -59,7 +57,7 @@ public class IMMTest extends AbstractCTest {
                 {"paper-E3.9", IMM, PASS},
                 {"paper-E3.10", IMM, PASS},
                 {"paper-R2", IMM, PASS},
-                // IMM from the paper returns PASS in the test bewow.
+                // IMM from the paper returns PASS in the test below.
                 // But since we follow the sw definition of RC11, the
                 // expected result is FAIL (confirmed by genMC) 
                 {"paper-R2-alt", IMM, FAIL},

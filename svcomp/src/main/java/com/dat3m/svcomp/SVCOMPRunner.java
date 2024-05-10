@@ -2,8 +2,8 @@ package com.dat3m.svcomp;
 
 import com.dat3m.dartagnan.parsers.witness.ParserWitness;
 import com.dat3m.dartagnan.utils.options.BaseOptions;
+import com.dat3m.dartagnan.witness.graphml.WitnessGraph;
 import com.dat3m.dartagnan.configuration.Property;
-import com.dat3m.dartagnan.witness.WitnessGraph;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.io.Files;
 import org.sosy_lab.common.configuration.Configuration;
@@ -25,7 +25,8 @@ import org.apache.logging.log4j.Logger;
 import static com.dat3m.dartagnan.configuration.OptionInfo.collectOptions;
 import static com.dat3m.dartagnan.configuration.OptionNames.*;
 import static com.dat3m.dartagnan.parsers.program.utils.Compilation.*;
-import static com.dat3m.dartagnan.witness.GraphAttributes.UNROLLBOUND;
+import static com.dat3m.dartagnan.witness.WitnessType.GRAPHML;
+import static com.dat3m.dartagnan.witness.graphml.GraphAttributes.UNROLLBOUND;
 import static java.lang.Integer.parseInt;
 
 @Options
@@ -130,6 +131,7 @@ public class SVCOMPRunner extends BaseOptions {
             cmd.add(llvmName);
             cmd.add(String.format("--%s=%s", PROPERTY, r.property.asStringOption()));
             cmd.add(String.format("--%s=%s", BOUND, bound));
+            cmd.add(String.format("--%s=%s", WITNESS, GRAPHML.asStringOption()));
             cmd.add(String.format("--%s=%s", WITNESS_ORIGINAL_PROGRAM_PATH, programPath));
             cmd.addAll(filterOptions(config));
 
@@ -142,7 +144,7 @@ public class SVCOMPRunner extends BaseOptions {
                     String next = read.readLine();
                     // This is now the last line in the console.
                     // We avoid updating the output
-                    if(next.contains("Total verification time(ms):")) {
+                    if(next.contains("Total verification time:")) {
                         break;
                     }
                     output = next;

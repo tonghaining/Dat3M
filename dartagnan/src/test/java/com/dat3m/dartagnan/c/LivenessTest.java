@@ -14,7 +14,6 @@ import java.util.Arrays;
 import java.util.EnumSet;
 
 import static com.dat3m.dartagnan.configuration.Arch.*;
-import static com.dat3m.dartagnan.utils.ResourceHelper.getTestResourcePath;
 import static com.dat3m.dartagnan.utils.Result.*;
 import static org.junit.Assert.assertEquals;
 
@@ -26,18 +25,13 @@ public class LivenessTest extends AbstractCTest {
     }
 
     @Override
-    protected Provider<String> getProgramPathProvider() {
-        return Provider.fromSupplier(() -> getTestResourcePath(name + ".ll"));
-    }
-
-    @Override
     protected long getTimeout() {
         return 60000;
     }
 
     @Override
     protected Provider<EnumSet<Property>> getPropertyProvider() {
-        return Provider.fromSupplier(() -> EnumSet.of(Property.LIVENESS));
+        return () -> EnumSet.of(Property.LIVENESS);
     }
 
     @Parameterized.Parameters(name = "{index}: {0}, target={1}")
