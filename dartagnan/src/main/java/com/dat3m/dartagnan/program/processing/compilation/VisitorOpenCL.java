@@ -35,8 +35,8 @@ public class VisitorOpenCL extends VisitorBase {
         FenceWithId exitFence = new FenceWithId(e.getName() + "_exit", e.getFenceID());
         String scope = Tag.getScopeTag(e, Arch.OPENCL);
         String fenceFlag = Tag.OpenCL.getFenceFlagTag(e);
-        entryFence.addTags(fenceFlag);
-        exitFence.addTags(fenceFlag);
+        entryFence.addTags(Tag.OpenCL.ENTRY_FENCE, C11.MO_RELEASE, fenceFlag);
+        exitFence.addTags(Tag.OpenCL.EXIT_FENCE, C11.MO_ACQUIRE, fenceFlag);
         return tagList(scope, eventSequence(
                 entryFence,
                 exitFence

@@ -212,7 +212,6 @@ public class VisitorLitmusC extends LitmusCBaseVisitor<Object> {
         //  For now, herd7 also seems to ignore most modifiers, in particular the atomic one.
         String name = ctx.varName().getText();
         MemoryObject object = programBuilder.getOrNewMemoryObject(name);
-        PointerTypeSpecifierContext pType = ctx.pointerTypeSpecifier();
         Register register = programBuilder.getOrNewRegister(scope, name, archType);
         if (ctx.openCLSpace() != null) {
             register.setFromLocalObject(ctx.openCLSpace().space.equals(Tag.OpenCL.LOCAL_SPACE));

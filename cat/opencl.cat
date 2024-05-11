@@ -14,16 +14,16 @@ OpenCL
 // ALL: all-svm-devices
 // GLOBAL: global
 // LOCAL: local, "For local memory, all visibility is constrained to within a given work-group and scopes wider than memory_scope_work_group carry no additional meaning."
-// EF: entry fence ???
-// XF: exit fence
+// EF: entry fence of barrier
+// XF: exit fence of barrier
 
 (* Inclusive scopes *)
 let incl = int | sr // our sr is HRF-indirect, so it includes swg and sdev
-//let incl =
-//    (swi & (WI * WI)) |
-//    (swg & (WG * WG)) |
-//    (sdev & (DEV * DEV)) |
-//    (ALL * ALL)
+// let incl =
+//     (swi & (WI * WI)) |
+//     (swg & (WG * WG)) |
+//     (sdev & (DEV * DEV)) |
+//     (ALL * ALL)
 
 (*******************)
 (* Synchronisation *)
@@ -47,8 +47,8 @@ let ra_sw_l = incl & ext & ([LOCAL]; relf; max_co; [LOCAL]; rf; acqf; [LOCAL])
 (* Barrier synchronisation *)
 // in OpenCL a barrier results in two fence operations: entry and exit fences:
 // https://registry.khronos.org/OpenCL/specs/3.0-unified/html/OpenCL_API.html#_work_group_functions
-let bar_sw_g = ((F & REL) * (F & ACQ)) & syncbar & ext & swg & (GLOBAL * GLOBAL)
-let bar_sw_l = ((F & REL) * (F & ACQ)) & syncbar & ext & swg & (LOCAL * LOCAL)
+let bar_sw_g = (EF * XF) & syncbar & ext & swg & (GLOBAL * GLOBAL)
+let bar_sw_l = (EF * XF) & syncbar & ext & swg & (LOCAL * LOCAL)
 
 (* Synchronisation on a region *)
 let region_sw_g = ra_sw_g | bar_sw_g
@@ -120,15 +120,26 @@ let scp = (SC * SC) & (ghb | lhb | co | sc1 | sc2 | sc3 | sc4 | sc5)
 
 let sc6 = rf^-1; (ghb | lhb); [W]
 
-(* BEGIN PARTIAL SC STUFF *)
+
 // https://github.com/herd/herdtools7/blob/master/herd-www/cat_includes/opencl.cat
+
+(* BEGIN PARTIAL SC STUFF *)
 let p_sc = scp & sc6
 let x_exists = [_] ; [SC & (_ \ ALL)]; [_]
 acyclic p_sc & x_exists as S_exists
 (* END PARTIAL SC STUFF *)
 
 (***************)
-(* Data Races *)
+(*    Races    *)
 (***************)
-let dr = ((_ * NA) | (NA * _) | ~sr) & (((GLOBAL * GLOBAL) \ ghb) | ((LOCAL * LOCAL) \ lhb)) // + &loc ?
-flag ~empty dr as racy
+let conflict =  (((W * _) | (_ * W)) \ ((IW * _) | (_ * IW))) & loc
+
+let dr = conflict & ((ghb | lhb) | ((ghb | lhb)^-1)) & ~incl
+flag ~empty dr as data_race
+
+let ur = (int & conflict & (po | po^-1)) \ id
+flag ~empty ur as unsequenced_race
+
+let bsw = bar_sw_g | bar_sw_l
+let bd = [EF] & ((ext & swg); [_]) \ (bsw; [_]) // unv == [_]?
+flag ~empty bd as barrier_divergence

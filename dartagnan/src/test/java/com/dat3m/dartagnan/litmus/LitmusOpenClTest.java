@@ -1,6 +1,7 @@
 package com.dat3m.dartagnan.litmus;
 
 import com.dat3m.dartagnan.configuration.Arch;
+import com.dat3m.dartagnan.configuration.Property;
 import com.dat3m.dartagnan.utils.Result;
 import com.dat3m.dartagnan.utils.rules.Provider;
 import com.dat3m.dartagnan.utils.rules.Providers;
@@ -9,9 +10,10 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 
 import java.io.IOException;
+import java.util.EnumSet;
 
 @RunWith(Parameterized.class)
-public class LitmusOpenCLTest extends AbstractLitmusTest {
+public class LitmusOpenClTest extends AbstractLitmusTest {
 
     @Parameterized.Parameters(name = "{index}: {0}, {1}")
     public static Iterable<Object[]> data() throws IOException {
@@ -28,7 +30,7 @@ public class LitmusOpenCLTest extends AbstractLitmusTest {
         return Providers.createWmmFromName(() -> "opencl");
     }
 
-    public LitmusOpenCLTest(String path, Result expected) {
+    public LitmusOpenClTest(String path, Result expected) {
         super(path, expected);
     }
 }
