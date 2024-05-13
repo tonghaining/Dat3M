@@ -34,7 +34,6 @@ import com.dat3m.dartagnan.program.event.lang.catomic.*;
 import com.dat3m.dartagnan.program.event.lang.linux.*;
 import com.dat3m.dartagnan.program.event.lang.llvm.*;
 import com.dat3m.dartagnan.program.event.lang.opencl.OpenCLBarrier;
-import com.dat3m.dartagnan.program.event.lang.opencl.OpenCLFence;
 import com.dat3m.dartagnan.program.event.lang.pthread.InitLock;
 import com.dat3m.dartagnan.program.event.lang.pthread.Lock;
 import com.dat3m.dartagnan.program.event.lang.pthread.Unlock;
@@ -755,10 +754,6 @@ public class EventFactory {
     // =============================================================================================
     public static class OpenCL {
         private OpenCL() {}
-
-        public static OpenCLFence newOpenCLFence(String fenceFlag, String mo, String scope) {
-            return new OpenCLFence(fenceFlag, mo, scope);
-        }
 
         public static OpenCLBarrier newOpenCLBarrier(Expression fenceId, String fenceFlag) {
             return new OpenCLBarrier(fenceId, fenceFlag);

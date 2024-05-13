@@ -15,7 +15,6 @@ import com.dat3m.dartagnan.program.event.lang.catomic.*;
 import com.dat3m.dartagnan.program.event.lang.linux.*;
 import com.dat3m.dartagnan.program.event.lang.llvm.*;
 import com.dat3m.dartagnan.program.event.lang.opencl.OpenCLBarrier;
-import com.dat3m.dartagnan.program.event.lang.opencl.OpenCLFence;
 import com.dat3m.dartagnan.program.event.lang.pthread.InitLock;
 import com.dat3m.dartagnan.program.event.lang.pthread.Lock;
 import com.dat3m.dartagnan.program.event.lang.pthread.Unlock;
@@ -110,6 +109,5 @@ public interface EventVisitor<T> {
     default T visitPtxAtomExch(PTXAtomExch e) { return visitMemEvent(e); }
     default T visitVulkanRMW(VulkanRMW e) { return visitMemEvent(e); }
     default T visitVulkanRMWOp(VulkanRMWOp e) { return visitMemEvent(e); }
-    default T visitOpenCLFence(OpenCLFence e) { return visitEvent(e); }
     default T visitOpenCLBarrier(OpenCLBarrier e) { return visitEvent(e); }
 }

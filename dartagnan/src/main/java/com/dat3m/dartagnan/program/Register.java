@@ -17,7 +17,6 @@ public class Register extends LeafExpressionBase<Type> {
     private final String name;
     private String cVar;
     private final Function function;
-    private boolean fromLocalObject = false;
 
     Register(String name, Function function, Type type) {
         super(type);
@@ -85,14 +84,6 @@ public class Register extends LeafExpressionBase<Type> {
     public static Set<Read> collectRegisterReads(Expression expr, Register.UsageType usageType, Set<Read> collector) {
         expr.getRegs().stream().map(r -> new Register.Read(r, usageType)).forEach(collector::add);
         return collector;
-    }
-
-    public boolean isFromLocalObject() {
-        return fromLocalObject;
-    }
-
-    public void setFromLocalObject(boolean fromLocalObject) {
-        this.fromLocalObject = fromLocalObject;
     }
 
     // ==========================================================================

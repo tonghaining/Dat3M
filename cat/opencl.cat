@@ -3,8 +3,8 @@ OpenCL
 
 // Base relations:
 // swi: same work-item = same thread
-// swg: same work-group, included in sr, reuse from vulkan
-// sdev: same device, included in sr
+// incl_wg: same work-group
+// incl_dev: same device
 // syncbar: same barrier id, reuse from spirv because the ptx's sync_barrier requires scta.
 
 // Tags:
@@ -18,12 +18,10 @@ OpenCL
 // XF: exit fence of barrier
 
 (* Inclusive scopes *)
-let incl = int | sr // our sr is HRF-indirect, so it includes swg and sdev
-// let incl =
-//     (swi & (WI * WI)) |
-//     (swg & (WG * WG)) |
-//     (sdev & (DEV * DEV)) |
-//     (ALL * ALL)
+let incl = (int & (WI * WI)) |
+    (incl_wg & (WG * WG)) |
+    (incl_dev & (DEV * DEV)) |
+    (ALL * ALL)
 
 (*******************)
 (* Synchronisation *)
@@ -41,14 +39,14 @@ let relf = [rel_op]; ([F]; po)?; [A & W]
 let acqf = [A & R]; (po; [F])?; [acq_op]
 
 (* Release-acquire synchronisation *)
-let ra_sw_g = incl & ext & ([GLOBAL]; relf; max_co; [GLOBAL]; rf; acqf; [GLOBAL])
-let ra_sw_l = incl & ext & ([LOCAL]; relf; max_co; [LOCAL]; rf; acqf; [LOCAL])
+let ra_sw_g = incl & (~int) & ([GLOBAL]; relf; max_co; [GLOBAL]; rf; acqf; [GLOBAL])
+let ra_sw_l = incl & (~int) & ([LOCAL]; relf; max_co; [LOCAL]; rf; acqf; [LOCAL])
 
 (* Barrier synchronisation *)
 // in OpenCL a barrier results in two fence operations: entry and exit fences:
 // https://registry.khronos.org/OpenCL/specs/3.0-unified/html/OpenCL_API.html#_work_group_functions
-let bar_sw_g = (EF * XF) & syncbar & ext & swg & (GLOBAL * GLOBAL)
-let bar_sw_l = (EF * XF) & syncbar & ext & swg & (LOCAL * LOCAL)
+let bar_sw_g = (EF * XF) & syncbar & (~int) & incl_wg & (GLOBAL * GLOBAL)
+let bar_sw_l = (EF * XF) & syncbar & (~int) & incl_wg & (LOCAL * LOCAL)
 
 (* Synchronisation on a region *)
 let region_sw_g = ra_sw_g | bar_sw_g
@@ -66,8 +64,8 @@ let lsw = region_sw_l | (scf & region_sw_g)
 (******************)
 
 (* Global and local happens-before *)
-let ghb = (((GLOBAL * GLOBAL) & (po | (I * (_ \ I)))) | gsw)+ // !I
-let lhb = (((LOCAL * LOCAL) & (po | (I * (_ \ I)))) | lsw)+ // !I
+let ghb = (((GLOBAL * GLOBAL) & (po | (IW * (_ \ IW)))) | gsw)+ // !I
+let lhb = (((LOCAL * LOCAL) & (po | (IW * (_ \ IW)))) | lsw)+ // !I
 
 acyclic ghb as global_hb_acyclic
 acyclic lhb as local_hb_acyclic
@@ -132,14 +130,17 @@ acyclic p_sc & x_exists as S_exists
 (***************)
 (*    Races    *)
 (***************)
-let conflict =  (((W * _) | (_ * W)) \ ((IW * _) | (_ * IW))) & loc
 
-let dr = conflict & ((ghb | lhb) | ((ghb | lhb)^-1)) & ~incl
+let conflict =  ((W * _) | (_ * W)) & loc
+
+let gl_hb = ghb | lhb
+let dr = conflict & ~(gl_hb | gl_hb^-1) & ~incl
 flag ~empty dr as data_race
 
-let ur = (int & conflict & (po | po^-1)) \ id
+let ur = (int & conflict & ~(po | po^-1)) \ id
 flag ~empty ur as unsequenced_race
 
 let bsw = bar_sw_g | bar_sw_l
-let bd = [EF] & ((ext & swg); [_]) \ (bsw; [_]) // unv == [_]?
+// let bd = [EF] & ((~int & incl_wg & ~(bar_sw_g | bar_sw_l)); [_]) // opencl_total
+let bd = [EF] & ((~int & incl_wg); [_]) \ (bsw; [_]) // unv == [_]?
 flag ~empty bd as barrier_divergence

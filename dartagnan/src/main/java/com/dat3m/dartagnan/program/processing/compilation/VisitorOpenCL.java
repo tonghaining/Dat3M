@@ -13,7 +13,6 @@ import com.dat3m.dartagnan.program.event.core.*;
 import com.dat3m.dartagnan.program.event.core.RMWStore;
 import com.dat3m.dartagnan.program.event.lang.catomic.*;
 import com.dat3m.dartagnan.program.event.lang.opencl.OpenCLBarrier;
-import com.dat3m.dartagnan.program.event.lang.opencl.OpenCLFence;
 import com.dat3m.dartagnan.program.event.metadata.MemoryOrder;
 
 import java.util.List;
@@ -23,21 +22,13 @@ import static com.dat3m.dartagnan.program.event.EventFactory.*;
 public class VisitorOpenCL extends VisitorBase {
 
     @Override
-    public List<Event> visitOpenCLFence(OpenCLFence e) {
-        return eventSequence(
-                newFence(e.getName())
-        );
-    }
-
-    @Override
     public List<Event> visitOpenCLBarrier(OpenCLBarrier e) {
         FenceWithId entryFence = new FenceWithId(e.getName() + "_entry", e.getFenceID());
         FenceWithId exitFence = new FenceWithId(e.getName() + "_exit", e.getFenceID());
-        String scope = Tag.getScopeTag(e, Arch.OPENCL);
-        String fenceFlag = Tag.OpenCL.getFenceFlagTag(e);
+        String fenceFlag = Tag.OpenCL.getSpaceTag(e);
         entryFence.addTags(Tag.OpenCL.ENTRY_FENCE, C11.MO_RELEASE, fenceFlag);
         exitFence.addTags(Tag.OpenCL.EXIT_FENCE, C11.MO_ACQUIRE, fenceFlag);
-        return tagList(scope, eventSequence(
+        return tagList(e, eventSequence(
                 entryFence,
                 exitFence
         ));
@@ -45,7 +36,6 @@ public class VisitorOpenCL extends VisitorBase {
 
     @Override
     public List<Event> visitAtomicCmpXchg(AtomicCmpXchg e) {
-        String scope = Tag.getScopeTag(e, Arch.OPENCL);
         Register resultRegister = e.getResultRegister();
         Expression address = e.getAddress();
         String mo = e.getMo();
@@ -67,7 +57,7 @@ public class VisitorOpenCL extends VisitorBase {
         Load loadValue = newRMWLoadWithMo(regValue, address, mo);
         Store storeValue = newRMWStoreWithMo(loadValue, address, e.getStoreValue(), mo);
 
-        return tagList(scope, eventSequence(
+        return tagList(e, eventSequence(
                 loadExpected,
                 loadValue,
                 casCmpResult,
@@ -83,7 +73,6 @@ public class VisitorOpenCL extends VisitorBase {
 
     @Override
     public List<Event> visitAtomicFetchOp(AtomicFetchOp e) {
-        String scope = Tag.getScopeTag(e, Arch.OPENCL);
         Register resultRegister = e.getResultRegister();
         Expression address = e.getAddress();
         String mo = e.getMo();
@@ -93,7 +82,7 @@ public class VisitorOpenCL extends VisitorBase {
         Local localOp = newLocal(dummyReg, expressions.makeBinary(resultRegister, e.getOperator(), e.getOperand()));
         RMWStore store = newRMWStoreWithMo(load, address, dummyReg, mo);
 
-        return tagList(scope, eventSequence(
+        return tagList(e, eventSequence(
                 load,
                 localOp,
                 store
@@ -102,23 +91,38 @@ public class VisitorOpenCL extends VisitorBase {
 
     @Override
     public List<Event> visitAtomicLoad(AtomicLoad e) {
-        String scope = Tag.getScopeTag(e, Arch.OPENCL);
-        return tagList(scope, eventSequence(
+        return tagList(e, eventSequence(
                 newLoadWithMo(e.getResultRegister(), e.getAddress(), e.getMo())
         ));
     }
 
     @Override
     public List<Event> visitAtomicStore(AtomicStore e) {
-        String scope = Tag.getScopeTag(e, Arch.OPENCL);
-        return tagList(scope, eventSequence(
+        return tagList(e, eventSequence(
                 newStoreWithMo(e.getAddress(), e.getMemValue(), e.getMo())
         ));
     }
 
-    private List<Event> tagList(String scope, List<Event> in) {
+    @Override
+    public List<Event> visitAtomicThreadFence(AtomicThreadFence e) {
+        GenericVisibleEvent fence = newFence(e.getMo());
+        fence.addTags(C11.ATOMIC);
+        return tagList(e, eventSequence(
+                fence
+        ));
+    }
+
+    private List<Event> tagList(Event originalEvent, List<Event> in) {
         in.forEach(this::tagEvent);
-        in.forEach(e -> e.addTags(scope));
+        String scope = Tag.getScopeTag(originalEvent, Arch.OPENCL);
+        if (!scope.isEmpty()) {
+            in.forEach(e -> e.addTags(scope));
+        }
+        String space = Tag.OpenCL.getSpaceTag(originalEvent);
+        if (!space.isEmpty()) {
+            in.forEach(e -> e.addTags(space));
+        }
+
         return in;
     }
 

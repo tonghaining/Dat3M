@@ -384,30 +384,12 @@ public final class Tag {
             return List.of(MEMORY_SCOPE_WG, MEMORY_SCOPE_DEV, MEMORY_SCOPE_ALL);
         }
 
-        public static List<String> getFenceFlags() {
+        public static List<String> getSpaceTags() {
             return List.of(GLOBAL_SPACE, LOCAL_SPACE);
         }
 
-        public static String MemoryScope(String scope) {
-            return switch (scope) {
-                case "memory_scope_work_item" -> MEMORY_SCOPE_WI;
-                case "memory_scope_work_group" -> MEMORY_SCOPE_WG;
-                case "memory_scope_device" -> MEMORY_SCOPE_DEV;
-                case "memory_scope_all_svm_devices" -> MEMORY_SCOPE_ALL;
-                default -> "";
-            };
-        }
-
-        public static String FenceFlag(String flag) {
-            return switch (flag) {
-                case "CLK_GLOBAL_MEM_FENCE" -> GLOBAL_SPACE;
-                case "CLK_LOCAL_MEM_FENCE" -> LOCAL_SPACE;
-                default -> "";
-            };
-        }
-
-        public static String getFenceFlagTag(Event e) {
-            return getFenceFlags().stream().filter(e::hasTag).findFirst().orElse("");
+        public static String getSpaceTag(Event e) {
+            return getSpaceTags().stream().filter(e::hasTag).findFirst().orElse("");
         }
     }
 

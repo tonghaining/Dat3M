@@ -9,7 +9,7 @@ public class OpenCLBarrier extends FenceWithId {
 
     public OpenCLBarrier(Expression fenceId, String fenceFlag) {
         super("work_group_barrier", fenceId);
-        this.addTags(Tag.OpenCL.FenceFlag(fenceFlag));
+        this.addTags(fenceFlag);
     }
 
     protected OpenCLBarrier(OpenCLBarrier other) {
