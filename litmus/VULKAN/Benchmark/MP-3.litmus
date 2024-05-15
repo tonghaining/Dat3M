@@ -1,0 +1,14 @@
+VULKAN MP-3
+{
+x0=0;
+x1=0;
+x2=0;
+P1:r1=0;
+P2:r2=0;
+P2:r0=0;
+}
+ P0@sg 0, wg 0, qf 0              | P1@sg 1, wg 0, qf 0               | P2@sg 2, wg 0, qf 0               ;
+ st.av.dv.sc0 x0, 1               | ld.atom.acq.wg.sc0.semsc0 r1, x1  | ld.atom.acq.wg.sc0.semsc0 r2, x2  ;
+ st.atom.rel.wg.sc0.semsc0 x1, 1  | st.atom.rel.wg.sc0.semsc0 x2, 1   | ld.vis.dv.sc0 r0,x0                      ;
+exists
+(P1:r1 == 1 /\ P2:r2 == 1 /\ P2:r0 == 0)

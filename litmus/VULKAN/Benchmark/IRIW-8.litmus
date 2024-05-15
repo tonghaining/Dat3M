@@ -1,0 +1,33 @@
+Vulkan IRIW-8
+{
+x0=0;
+x1=0;
+x2=0;
+x3=0;
+P4:r0=0;
+P4:r1=0;
+P4:r2=0;
+P4:r3=0;
+P5:r0=0;
+P5:r1=0;
+P5:r2=0;
+P5:r3=0;
+P6:r0=0;
+P6:r1=0;
+P6:r2=0;
+P6:r3=0;
+P7:r0=0;
+P7:r1=0;
+P7:r2=0;
+P7:r3=0;
+}
+ P0@sg 0, wg 0, qf 0                | P1@sg 1, wg 0, qf 0               | P2@sg 2, wg 0, qf 0               | P3@sg 3, wg 0, qf 0                | P4@sg 4, wg 0, qf 0                | P5@sg 5, wg 0, qf 0                | P6@sg 6, wg 0, qf 0                | P7@sg 7, wg 0, qf 0                ;
+ st.atom.rel.wg.sc0.semsc0 x0, 1    | st.atom.rel.wg.sc0.semsc0 x1, 1   | st.atom.rel.wg.sc0.semsc0 x2, 1   | st.atom.rel.wg.sc0.semsc0 x3, 1    | ld.atom.acq.dv.sc0.semsc0 r0, x0   | ld.atom.acq.dv.sc0.semsc0 r0, x0   | ld.atom.acq.dv.sc0.semsc0 r0, x0   | ld.atom.acq.dv.sc0.semsc0 r0, x0   ;
+                                    |                                   |                                   |                                    | ld.atom.acq.dv.sc0.semsc0 r1, x1   | ld.atom.acq.dv.sc0.semsc0 r1, x1   | ld.atom.acq.dv.sc0.semsc0 r1, x1   | ld.atom.acq.dv.sc0.semsc0 r1, x1   ;
+                                    |                                   |                                   |                                    | ld.atom.acq.dv.sc0.semsc0 r2, x2   | ld.atom.acq.dv.sc0.semsc0 r2, x2   | ld.atom.acq.dv.sc0.semsc0 r2, x2   | ld.atom.acq.dv.sc0.semsc0 r2, x2   ;
+                                    |                                   |                                   |                                    | ld.atom.acq.dv.sc0.semsc0 r3, x3   | ld.atom.acq.dv.sc0.semsc0 r3, x3   | ld.atom.acq.dv.sc0.semsc0 r3, x3   | ld.atom.acq.dv.sc0.semsc0 r3, x3   ;
+exists
+(P4:r0=1 /\ P4:r1=0 /\ P4:r2=0 /\ P4:r3=0 /\
+ P5:r0=0 /\ P5:r1=1 /\ P5:r2=0 /\ P5:r3=0 /\
+ P6:r0=0 /\ P6:r1=0 /\ P6:r2=1 /\ P6:r3=0 /\
+ P7:r0=0 /\ P7:r1=0 /\ P7:r2=0 /\ P7:r3=1)
