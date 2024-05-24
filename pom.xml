@@ -58,6 +58,7 @@
         <module>dartagnan</module>
         <module>ui</module>
         <module>svcomp</module>
+        <module>modelMutation</module>
     </modules>
 
     <build>

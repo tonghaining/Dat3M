@@ -20,10 +20,13 @@ public class Thread extends Function {
     // Threads that are system-synchronized-with this thread
     private final Optional<Set<Thread>> syncSet;
 
+    private final List<String> parameterNames;
+
     public Thread(String name, FunctionType funcType, List<String> parameterNames, int id, ThreadStart entry) {
         super(name, funcType, parameterNames, id, entry);
         Preconditions.checkArgument(id >= 0, "Invalid thread ID");
         Preconditions.checkNotNull(entry, "Thread entry event must be not null");
+        this.parameterNames = parameterNames;
         this.scopeHierarchy = Optional.empty();
         this.syncSet = Optional.empty();
     }
@@ -35,6 +38,7 @@ public class Thread extends Function {
         Preconditions.checkNotNull(entry, "Thread entry event must be not null");
         Preconditions.checkNotNull(scopeHierarchy, "Thread scopeHierarchy must be not null");
         Preconditions.checkNotNull(syncSet, "Thread syncSet must be not null");
+        this.parameterNames = parameterNames;
         this.scopeHierarchy = Optional.of(scopeHierarchy);
         this.syncSet = Optional.of(syncSet);
     }
@@ -80,5 +84,9 @@ public class Thread extends Function {
         assert startStore.getAddress().equals(startLoad.getAddress());
         
         return List.of(startLoad, startStore);
+    }
+
+    public Thread getCopy() {
+        return new Thread(name, functionType, parameterNames, id, getEntry().getCopy());
     }
 }

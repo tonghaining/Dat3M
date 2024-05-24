@@ -7,6 +7,7 @@ import com.dat3m.dartagnan.expression.Type;
 import com.dat3m.dartagnan.expression.type.AggregateType;
 import com.dat3m.dartagnan.expression.type.ArrayType;
 import com.dat3m.dartagnan.program.event.Event;
+import com.dat3m.dartagnan.program.event.core.threading.ThreadStart;
 import com.dat3m.dartagnan.program.memory.Memory;
 import com.dat3m.dartagnan.program.misc.NonDetValue;
 import com.dat3m.dartagnan.program.specification.AbstractAssert;
@@ -16,6 +17,17 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 public class Program {
+
+    public void replaceEvent(Event oldEvent, Event newEvent) {
+        for (Thread thread : threads) {
+            for (int i = 0; i < thread.getEvents().size(); i++) {
+                Event currentEvent = thread.getEvents().get(i);
+                if (currentEvent.getGlobalId() == oldEvent.getGlobalId()) {
+                    thread.getEvents().set(i, newEvent);
+                }
+            }
+        }
+    }
 
     public enum SourceLanguage { LITMUS, LLVM, SPV }
 
