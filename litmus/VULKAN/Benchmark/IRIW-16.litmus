@@ -1,26 +1,86 @@
 Vulkan IRIW-16
 {
-x0=0; x1=0; x2=0; x3=0; x4=0; x5=0; x6=0; x7=0;
-P4:r0=0; P4:r1=0; P4:r2=0; P4:r3=0; P4:r4=0; P4:r5=0; P4:r6=0; P4:r7=0;
-P5:r0=0; P5:r1=0; P5:r2=0; P5:r3=0; P5:r4=0; P5:r5=0; P5:r6=0; P5:r7=0;
-P6:r0=0; P6:r1=0; P6:r2=0; P6:r3=0; P6:r4=0; P6:r5=0; P6:r6=0; P6:r7=0;
-P7:r0=0; P7:r1=0; P7:r2=0; P7:r3=0; P7:r4=0; P7:r5=0; P7:r6=0; P7:r7=0;
+x0=0;
+x1=0;
+x2=0;
+x3=0;
+x4=0;
+x5=0;
+x6=0;
+x7=0;
+P8:r0=0;
+P8:r1=0;
+P8:r2=0;
+P8:r3=0;
+P8:r4=0;
+P8:r5=0;
+P8:r6=0;
+P8:r7=0;
+P9:r0=0;
+P9:r1=0;
+P9:r2=0;
+P9:r3=0;
+P9:r4=0;
+P9:r5=0;
+P9:r6=0;
+P9:r7=0;
+P10:r0=0;
+P10:r1=0;
+P10:r2=0;
+P10:r3=0;
+P10:r4=0;
+P10:r5=0;
+P10:r6=0;
+P10:r7=0;
+P11:r0=0;
+P11:r1=0;
+P11:r2=0;
+P11:r3=0;
+P11:r4=0;
+P11:r5=0;
+P11:r6=0;
+P11:r7=0;
+P12:r0=0;
+P12:r1=0;
+P12:r2=0;
+P12:r3=0;
+P12:r4=0;
+P12:r5=0;
+P12:r6=0;
+P12:r7=0;
+P13:r0=0;
+P13:r1=0;
+P13:r2=0;
+P13:r3=0;
+P13:r4=0;
+P13:r5=0;
+P13:r6=0;
+P13:r7=0;
+P14:r0=0;
+P14:r1=0;
+P14:r2=0;
+P14:r3=0;
+P14:r4=0;
+P14:r5=0;
+P14:r6=0;
+P14:r7=0;
+P15:r0=0;
+P15:r1=0;
+P15:r2=0;
+P15:r3=0;
+P15:r4=0;
+P15:r5=0;
+P15:r6=0;
+P15:r7=0;
 }
- P0@sg 0, wg 0, qf 0                | P1@sg 1, wg 0, qf 0               | P2@sg 2, wg 0, qf 0               | P3@sg 3, wg 0, qf 0                | P4@sg 4, wg 0, qf 0                | P5@sg 5, wg 0, qf 0                | P6@sg 6, wg 0, qf 0                | P7@sg 7, wg 0, qf 0                | P8@sg 8, wg 0, qf 0                | P9@sg 9, wg 0, qf 0                | P10@sg 10, wg 0, qf 0              | P11@sg 11, wg 0, qf 0              | P12@sg 12, wg 0, qf 0              | P13@sg 13, wg 0, qf 0              | P14@sg 14, wg 0, qf 0              | P15@sg 15, wg 0, qf 0              ;
- st.atom.rel.wg.sc0.semsc0 x0, 1    | st.atom.rel.wg.sc0.semsc0 x1, 1   | st.atom.rel.wg.sc0.semsc0 x2, 1   | st.atom.rel.wg.sc0.semsc0 x3, 1    | st.atom.rel.wg.sc0.semsc0 x4, 1    | st.atom.rel.wg.sc0.semsc0 x5, 1    | st.atom.rel.wg.sc0.semsc0 x6, 1    | st.atom.rel.wg.sc0.semsc0 x7, 1    | ld.atom.acq.dv.sc0.semsc0 r0, x0   | ld.atom.acq.dv.sc0.semsc0 r0, x0   | ld.atom.acq.dv.sc0.semsc0 r0, x0   | ld.atom.acq.dv.sc0.semsc0 r0, x0   | ld.atom.acq.dv.sc0.semsc0 r0, x0   | ld.atom.acq.dv.sc0.semsc0 r0, x0   | ld.atom.acq.dv.sc0.semsc0 r0, x0   | ld.atom.acq.dv.sc0.semsc0 r0, x0   ;
-                                    |                                   |                                   |                                    |                                    |                                    |                                    |                                    | ld.atom.acq.dv.sc0.semsc0 r1, x1   | ld.atom.acq.dv.sc0.semsc0 r1, x1   | ld.atom.acq.dv.sc0.semsc0 r1, x1   | ld.atom.acq.dv.sc0.semsc0 r1, x1   | ld.atom.acq.dv.sc0.semsc0 r1, x1   | ld.atom.acq.dv.sc0.semsc0 r1, x1   | ld.atom.acq.dv.sc0.semsc0 r1, x1   | ld.atom.acq.dv.sc0.semsc0 r1, x1   ;
-                                    |                                   |                                   |                                    |                                    |                                    |                                    |                                    | ld.atom.acq.dv.sc0.semsc0 r2, x2   | ld.atom.acq.dv.sc0.semsc0 r2, x2   | ld.atom.acq.dv.sc0.semsc0 r2, x2   | ld.atom.acq.dv.sc0.semsc0 r2, x2   | ld.atom.acq.dv.sc0.semsc0 r2, x2   | ld.atom.acq.dv.sc0.semsc0 r2, x2   | ld.atom.acq.dv.sc0.semsc0 r2, x2   | ld.atom.acq.dv.sc0.semsc0 r2, x2   ;
-                                    |                                   |                                   |                                    |                                    |                                    |                                    |                                    | ld.atom.acq.dv.sc0.semsc0 r3, x3   | ld.atom.acq.dv.sc0.semsc0 r3, x3   | ld.atom.acq.dv.sc0.semsc0 r3, x3   | ld.atom.acq.dv.sc0.semsc0 r3, x3   | ld.atom.acq.dv.sc0.semsc0 r3, x3   | ld.atom.acq.dv.sc0.semsc0 r3, x3   | ld.atom.acq.dv.sc0.semsc0 r3, x3   | ld.atom.acq.dv.sc0.semsc0 r3, x3   ;
-                                    |                                   |                                   |                                    |                                    |                                    |                                    |                                    | ld.atom.acq.dv.sc0.semsc0 r4, x4   | ld.atom.acq.dv.sc0.semsc0 r4, x4   | ld.atom.acq.dv.sc0.semsc0 r4, x4   | ld.atom.acq.dv.sc0.semsc0 r4, x4   | ld.atom.acq.dv.sc0.semsc0 r4, x4   | ld.atom.acq.dv.sc0.semsc0 r4, x4   | ld.atom.acq.dv.sc0.semsc0 r4, x4   | ld.atom.acq.dv.sc0.semsc0 r4, x4   ;
-                                    |                                   |                                   |                                    |                                    |                                    |                                    |                                    | ld.atom.acq.dv.sc0.semsc0 r5, x5   | ld.atom.acq.dv.sc0.semsc0 r5, x5   | ld.atom.acq.dv.sc0.semsc0 r5, x5   | ld.atom.acq.dv.sc0.semsc0 r5, x5   | ld.atom.acq.dv.sc0.semsc0 r5, x5   | ld.atom.acq.dv.sc0.semsc0 r5, x5   | ld.atom.acq.dv.sc0.semsc0 r5, x5   | ld.atom.acq.dv.sc0.semsc0 r5, x5   ;
-                                    |                                   |                                   |                                    |                                    |                                    |                                    |                                    | ld.atom.acq.dv.sc0.semsc0 r6, x6   | ld.atom.acq.dv.sc0.semsc0 r6, x6   | ld.atom.acq.dv.sc0.semsc0 r6, x6   | ld.atom.acq.dv.sc0.semsc0 r6, x6   | ld.atom.acq.dv.sc0.semsc0 r6, x6   | ld.atom.acq.dv.sc0.semsc0 r6, x6   | ld.atom.acq.dv.sc0.semsc0 r6, x6   | ld.atom.acq.dv.sc0.semsc0 r6, x6   ;
-                                    |                                   |                                   |                                    |                                    |                                    |                                    |                                    | ld.atom.acq.dv.sc0.semsc0 r7, x7   | ld.atom.acq.dv.sc0.semsc0 r7, x7   | ld.atom.acq.dv.sc0.semsc0 r7, x7   | ld.atom.acq.dv.sc0.semsc0 r7, x7   | ld.atom.acq.dv.sc0.semsc0 r7, x7   | ld.atom.acq.dv.sc0.semsc0 r7, x7   | ld.atom.acq.dv.sc0.semsc0 r7, x7   | ld.atom.acq.dv.sc0.semsc0 r7, x7   ;
- exists
-(P8:r0=1 /\ P8:r1=0 /\ P8:r2=0 /\ P8:r3=0 /\ P8:r4=0 /\ P8:r5=0 /\ P8:r6=0 /\ P8:r7=0 /\
- P9:r0=0 /\ P9:r1=1 /\ P9:r2=0 /\ P9:r3=0 /\ P9:r4=0 /\ P9:r5=0 /\ P9:r6=0 /\ P9:r7=0 /\
- P10:r0=0 /\ P10:r1=0 /\ P10:r2=1 /\ P10:r3=0 /\ P10:r4=0 /\ P10:r5=0 /\ P10:r6=0 /\ P10:r7=0 /\
- P11:r0=0 /\ P11:r1=0 /\ P11:r2=0 /\ P11:r3=1 /\ P11:r4=0 /\ P11:r5=0 /\ P11:r6=0 /\ P11:r7=0 /\
- P12:r0=0 /\ P12:r1=0 /\ P12:r2=0 /\ P12:r3=0 /\ P12:r4=1 /\ P12:r5=0 /\ P12:r6=0 /\ P12:r7=0 /\
- P13:r0=0 /\ P13:r1=0 /\ P13:r2=0 /\ P13:r3=0 /\ P13:r4=0 /\ P13:r5=1 /\ P13:r6=0 /\ P13:r7=0 /\
- P14:r0=0 /\ P14:r1=0 /\ P14:r2=0 /\ P14:r3=0 /\ P14:r4=0 /\ P14:r5=0 /\ P14:r6=1 /\ P14:r7=0 /\
- P15:r0=0 /\ P15:r1=0 /\ P15:r2=0 /\ P15:r3=0 /\ P15:r4=0 /\ P15:r5=0 /\ P15:r6=0 /\ P15:r7=1)
+P0@sg 0,wg 0, qf 0 | P1@sg 0,wg 1, qf 0 | P2@sg 0,wg 2, qf 0 | P3@sg 0,wg 3, qf 0 | P4@sg 0,wg 4, qf 0 | P5@sg 0,wg 5, qf 0 | P6@sg 0,wg 6, qf 0 | P7@sg 0,wg 7, qf 0 | P8@sg 0,wg 8, qf 0 | P9@sg 0,wg 9, qf 0 | P10@sg 0,wg 10, qf 0 | P11@sg 0,wg 11, qf 0 | P12@sg 0,wg 12, qf 0 | P13@sg 0,wg 13, qf 0 | P14@sg 0,wg 14, qf 0 | P15@sg 0,wg 15, qf 0 ;
+st.atom.rel.dv.sc0.semsc0 x0, 1  |  st.atom.rel.dv.sc0.semsc0 x1, 1  |  st.atom.rel.dv.sc0.semsc0 x2, 1  |  st.atom.rel.dv.sc0.semsc0 x3, 1  |  st.atom.rel.dv.sc0.semsc0 x4, 1  |  st.atom.rel.dv.sc0.semsc0 x5, 1  |  st.atom.rel.dv.sc0.semsc0 x6, 1  |  st.atom.rel.dv.sc0.semsc0 x7, 1  |  ld.atom.acq.dv.sc0.semsc0 r0, x0  |  ld.atom.acq.dv.sc0.semsc0 r1, x1  |  ld.atom.acq.dv.sc0.semsc0 r2, x2  |  ld.atom.acq.dv.sc0.semsc0 r3, x3  |  ld.atom.acq.dv.sc0.semsc0 r4, x4  |  ld.atom.acq.dv.sc0.semsc0 r5, x5  |  ld.atom.acq.dv.sc0.semsc0 r6, x6  |  ld.atom.acq.dv.sc0.semsc0 r7, x7  ;
+    |     |     |     |     |     |     |     |  ld.atom.acq.dv.sc0.semsc0 r1, x1  |  ld.atom.acq.dv.sc0.semsc0 r0, x0  |  ld.atom.acq.dv.sc0.semsc0 r1, x1  |  ld.atom.acq.dv.sc0.semsc0 r1, x1  |  ld.atom.acq.dv.sc0.semsc0 r1, x1  |  ld.atom.acq.dv.sc0.semsc0 r1, x1  |  ld.atom.acq.dv.sc0.semsc0 r1, x1  |  ld.atom.acq.dv.sc0.semsc0 r1, x1  ;
+    |     |     |     |     |     |     |     |  ld.atom.acq.dv.sc0.semsc0 r2, x2  |  ld.atom.acq.dv.sc0.semsc0 r2, x2  |  ld.atom.acq.dv.sc0.semsc0 r0, x0  |  ld.atom.acq.dv.sc0.semsc0 r2, x2  |  ld.atom.acq.dv.sc0.semsc0 r2, x2  |  ld.atom.acq.dv.sc0.semsc0 r2, x2  |  ld.atom.acq.dv.sc0.semsc0 r2, x2  |  ld.atom.acq.dv.sc0.semsc0 r2, x2  ;
+    |     |     |     |     |     |     |     |  ld.atom.acq.dv.sc0.semsc0 r3, x3  |  ld.atom.acq.dv.sc0.semsc0 r3, x3  |  ld.atom.acq.dv.sc0.semsc0 r3, x3  |  ld.atom.acq.dv.sc0.semsc0 r0, x0  |  ld.atom.acq.dv.sc0.semsc0 r3, x3  |  ld.atom.acq.dv.sc0.semsc0 r3, x3  |  ld.atom.acq.dv.sc0.semsc0 r3, x3  |  ld.atom.acq.dv.sc0.semsc0 r3, x3  ;
+    |     |     |     |     |     |     |     |  ld.atom.acq.dv.sc0.semsc0 r4, x4  |  ld.atom.acq.dv.sc0.semsc0 r4, x4  |  ld.atom.acq.dv.sc0.semsc0 r4, x4  |  ld.atom.acq.dv.sc0.semsc0 r4, x4  |  ld.atom.acq.dv.sc0.semsc0 r0, x0  |  ld.atom.acq.dv.sc0.semsc0 r4, x4  |  ld.atom.acq.dv.sc0.semsc0 r4, x4  |  ld.atom.acq.dv.sc0.semsc0 r4, x4  ;
+    |     |     |     |     |     |     |     |  ld.atom.acq.dv.sc0.semsc0 r5, x5  |  ld.atom.acq.dv.sc0.semsc0 r5, x5  |  ld.atom.acq.dv.sc0.semsc0 r5, x5  |  ld.atom.acq.dv.sc0.semsc0 r5, x5  |  ld.atom.acq.dv.sc0.semsc0 r5, x5  |  ld.atom.acq.dv.sc0.semsc0 r0, x0  |  ld.atom.acq.dv.sc0.semsc0 r5, x5  |  ld.atom.acq.dv.sc0.semsc0 r5, x5  ;
+    |     |     |     |     |     |     |     |  ld.atom.acq.dv.sc0.semsc0 r6, x6  |  ld.atom.acq.dv.sc0.semsc0 r6, x6  |  ld.atom.acq.dv.sc0.semsc0 r6, x6  |  ld.atom.acq.dv.sc0.semsc0 r6, x6  |  ld.atom.acq.dv.sc0.semsc0 r6, x6  |  ld.atom.acq.dv.sc0.semsc0 r6, x6  |  ld.atom.acq.dv.sc0.semsc0 r0, x0  |  ld.atom.acq.dv.sc0.semsc0 r6, x6  ;
+    |     |     |     |     |     |     |     |  ld.atom.acq.dv.sc0.semsc0 r7, x7  |  ld.atom.acq.dv.sc0.semsc0 r7, x7  |  ld.atom.acq.dv.sc0.semsc0 r7, x7  |  ld.atom.acq.dv.sc0.semsc0 r7, x7  |  ld.atom.acq.dv.sc0.semsc0 r7, x7  |  ld.atom.acq.dv.sc0.semsc0 r7, x7  |  ld.atom.acq.dv.sc0.semsc0 r7, x7  |  ld.atom.acq.dv.sc0.semsc0 r0, x0  ;
+exists
+(P8:r0==1 /\ P8:r1==0 /\ P8:r2==0 /\ P8:r3==0 /\ P8:r4==0 /\ P8:r5==0 /\ P8:r6==0 /\ P8:r7==0 /\ P9:r0==0 /\ P9:r1==1 /\ P9:r2==0 /\ P9:r3==0 /\ P9:r4==0 /\ P9:r5==0 /\ P9:r6==0 /\ P9:r7==0 /\ P10:r0==0 /\ P10:r1==0 /\ P10:r2==1 /\ P10:r3==0 /\ P10:r4==0 /\ P10:r5==0 /\ P10:r6==0 /\ P10:r7==0 /\ P11:r0==0 /\ P11:r1==0 /\ P11:r2==0 /\ P11:r3==1 /\ P11:r4==0 /\ P11:r5==0 /\ P11:r6==0 /\ P11:r7==0 /\ P12:r0==0 /\ P12:r1==0 /\ P12:r2==0 /\ P12:r3==0 /\ P12:r4==1 /\ P12:r5==0 /\ P12:r6==0 /\ P12:r7==0 /\ P13:r0==0 /\ P13:r1==0 /\ P13:r2==0 /\ P13:r3==0 /\ P13:r4==0 /\ P13:r5==1 /\ P13:r6==0 /\ P13:r7==0 /\ P14:r0==0 /\ P14:r1==0 /\ P14:r2==0 /\ P14:r3==0 /\ P14:r4==0 /\ P14:r5==0 /\ P14:r6==1 /\ P14:r7==0 /\ P15:r0==0 /\ P15:r1==0 /\ P15:r2==0 /\ P15:r3==0 /\ P15:r4==0 /\ P15:r5==0 /\ P15:r6==0 /\ P15:r7==1)
