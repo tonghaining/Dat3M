@@ -105,10 +105,8 @@ public class VisitorOpenCL extends VisitorBase {
 
     @Override
     public List<Event> visitAtomicThreadFence(AtomicThreadFence e) {
-        GenericVisibleEvent fence = newFence(e.getMo());
-        fence.addTags(C11.ATOMIC);
         return tagList(e, eventSequence(
-                fence
+                newFence(e.getMo())
         ));
     }
 

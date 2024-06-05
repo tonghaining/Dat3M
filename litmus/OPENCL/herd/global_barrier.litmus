@@ -10,7 +10,7 @@ C global_barrier
   [tyler] = 0;
 }
 
-P0@wg 0, dev 0 (global int* f0, global int* f1) { // slave wg0, wi0
+P0@wg 0, dev 0 (global atomic_int* f0, global atomic_int* f1) { // slave wg0, wi0
   B1: barrier(CLK_GLOBAL_MEM_FENCE);
 
   atomic_store_explicit(f0, 1, memory_order_release);
@@ -28,7 +28,7 @@ P0@wg 0, dev 0 (global int* f0, global int* f1) { // slave wg0, wi0
   B3: barrier(CLK_GLOBAL_MEM_FENCE);
 }
 
-P1@wg 0, dev 0 (global int* f0, global int* f1, global int* tyler) { // slave wg0, wi1
+P1@wg 0, dev 0 (global atomic_int* f0, global atomic_int* f1, global int* tyler) { // slave wg0, wi1
 
   *tyler = 1;
 
@@ -50,7 +50,7 @@ P1@wg 0, dev 0 (global int* f0, global int* f1, global int* tyler) { // slave wg
 
 }
 
-P2@wg 1, dev 0 (global int* f0, global int* f1) { // master wg, wi0
+P2@wg 1, dev 0 (global atomic_int* f0, global atomic_int* f1) { // master wg, wi0
 
   atomic_work_item_fence(CLK_LOCAL_MEM_FENCE, memory_order_relaxed, memory_scope_work_group);
 
@@ -63,7 +63,7 @@ P2@wg 1, dev 0 (global int* f0, global int* f1) { // master wg, wi0
   atomic_store_explicit(f0, 0, memory_order_release);
 }
 
-P3@wg 1, dev 0 (global int* f0, global int* f1) { // master wg, wi1
+P3@wg 1, dev 0 (global atomic_int* f0, global atomic_int* f1) { // master wg, wi1
 
   atomic_work_item_fence(CLK_LOCAL_MEM_FENCE, memory_order_relaxed, memory_scope_work_group);
 
@@ -78,7 +78,7 @@ P3@wg 1, dev 0 (global int* f0, global int* f1) { // master wg, wi1
 
 
 
-P4@wg 2, dev 0 (global int* f0, global int* f1) { // slave wg1, wi0
+P4@wg 2, dev 0 (global atomic_int* f0, global atomic_int* f1) { // slave wg1, wi0
   B11: barrier(CLK_GLOBAL_MEM_FENCE);
 
   atomic_store_explicit(f1, 1, memory_order_release);
@@ -96,7 +96,7 @@ P4@wg 2, dev 0 (global int* f0, global int* f1) { // slave wg1, wi0
   B31: barrier(CLK_GLOBAL_MEM_FENCE);
 }
 
-P5@wg 2, dev 0 (global int* f0, global int* f1, global int* tyler) { // slave wg1, wi1
+P5@wg 2, dev 0 (global atomic_int* f0, global atomic_int* f1, global int* tyler) { // slave wg1, wi1
   B11: barrier(CLK_GLOBAL_MEM_FENCE);
 
   atomic_work_item_fence(CLK_LOCAL_MEM_FENCE, memory_order_relaxed, memory_scope_work_group);

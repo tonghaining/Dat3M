@@ -12,6 +12,7 @@ import com.dat3m.dartagnan.program.Function;
 import com.dat3m.dartagnan.program.Register;
 import com.dat3m.dartagnan.program.event.arch.StoreExclusive;
 import com.dat3m.dartagnan.program.event.arch.lisa.LISARMW;
+import com.dat3m.dartagnan.program.event.arch.opencl.OpenCLInit;
 import com.dat3m.dartagnan.program.event.arch.ptx.PTXAtomCAS;
 import com.dat3m.dartagnan.program.event.arch.ptx.PTXAtomExch;
 import com.dat3m.dartagnan.program.event.arch.ptx.PTXAtomOp;
@@ -757,6 +758,12 @@ public class EventFactory {
 
         public static OpenCLBarrier newOpenCLBarrier(Expression fenceId, String fenceFlag) {
             return new OpenCLBarrier(fenceId, fenceFlag);
+        }
+
+        public static OpenCLInit newOpenCLInit(MemoryObject base, int offset) {
+            final Expression address = offset == 0 ? base :
+                    expressions.makeAdd(base, expressions.makeValue(offset, (IntegerType) base.getType()));
+            return new OpenCLInit(base, offset, address);
         }
 
     }

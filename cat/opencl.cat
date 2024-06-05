@@ -2,7 +2,6 @@ OpenCL
 // Modified from: https://github.com/herd/herdtools7/blob/master/herd-www/cat_includes/opencl_base.cat
 
 // Base relations:
-// swi: same work-item = same thread
 // incl_wg: same work-group
 // incl_dev: same device
 // syncbar: same barrier id, reuse from spirv because the ptx's sync_barrier requires scta.
@@ -39,14 +38,14 @@ let relf = [rel_op]; ([F]; po)?; [A & W]
 let acqf = [A & R]; (po; [F])?; [acq_op]
 
 (* Release-acquire synchronisation *)
-let ra_sw_g = incl & (~int) & ([GLOBAL]; relf; max_co; [GLOBAL]; rf; acqf; [GLOBAL])
-let ra_sw_l = incl & (~int) & ([LOCAL]; relf; max_co; [LOCAL]; rf; acqf; [LOCAL])
+let ra_sw_g = incl & ~int & ([GLOBAL]; relf; max_co; [GLOBAL]; rf; acqf; [GLOBAL])
+let ra_sw_l = incl & ~int & ([LOCAL]; relf; max_co; [LOCAL]; rf; acqf; [LOCAL])
 
 (* Barrier synchronisation *)
 // in OpenCL a barrier results in two fence operations: entry and exit fences:
 // https://registry.khronos.org/OpenCL/specs/3.0-unified/html/OpenCL_API.html#_work_group_functions
-let bar_sw_g = (EF * XF) & syncbar & (~int) & incl_wg & (GLOBAL * GLOBAL)
-let bar_sw_l = (EF * XF) & syncbar & (~int) & incl_wg & (LOCAL * LOCAL)
+let bar_sw_g = (EF * XF) & syncbar & ~int & incl_wg & (GLOBAL * GLOBAL)
+let bar_sw_l = (EF * XF) & syncbar & ~int & incl_wg & (LOCAL * LOCAL)
 
 (* Synchronisation on a region *)
 let region_sw_g = ra_sw_g | bar_sw_g
@@ -64,8 +63,8 @@ let lsw = region_sw_l | (scf & region_sw_g)
 (******************)
 
 (* Global and local happens-before *)
-let ghb = (((GLOBAL * GLOBAL) & (po | (IW * (_ \ IW)))) | gsw)+ // !I
-let lhb = (((LOCAL * LOCAL) & (po | (IW * (_ \ IW)))) | lsw)+ // !I
+let ghb = (((GLOBAL * GLOBAL) & (po | (IW * (_ \ IW)))) | gsw)+
+let lhb = (((LOCAL * LOCAL) & (po | (IW * (_ \ IW)))) | lsw)+
 
 acyclic ghb as global_hb_acyclic
 acyclic lhb as local_hb_acyclic
@@ -94,7 +93,6 @@ let gvse = [GLOBAL]; vse_hbl_g
 let lvse = [LOCAL]; vse_hbl_l
 
 (* A non-atomic load can only read from a store that is visible. *)
-// nonatomicloc -> NA
 irreflexive rf; [NA & GLOBAL]; ~(gvse^-1) as global_nonatomic_rf_consistent
 irreflexive rf; [NA & LOCAL]; ~(lvse^-1) as local_nonatomic_rf_consistent
 
@@ -131,7 +129,7 @@ acyclic p_sc & x_exists as S_exists
 (*    Races    *)
 (***************)
 
-let conflict =  ((W * _) | (_ * W)) & loc
+let conflict =  (((W * _) | (_ * W)) \ ((IW * _) | (_ * IW))) & loc
 
 let gl_hb = ghb | lhb
 let dr = conflict & ~(gl_hb | gl_hb^-1) & ~incl
