@@ -301,6 +301,8 @@ public class ProgramBuilder {
         newScopedThread(arch, String.valueOf(id), id, ids);
     }
 
+    // ----------------------------------------------------------------------------------------------------------------
+    // PTX
     public void initVirLocEqCon(String leftName, IntLiteral iValue){
         MemoryObject object = locations.computeIfAbsent(
                 leftName, k->program.getMemory().allocateVirtual(1, true, null));

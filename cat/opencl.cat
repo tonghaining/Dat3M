@@ -1,18 +1,24 @@
 OpenCL
-// Modified from: https://github.com/herd/herdtools7/blob/master/herd-www/cat_includes/opencl_base.cat
+(* OpenCL Memory Model *)
+
+(*
+* This model is based on:
+* https://github.com/herd/herdtools7/blob/master/herd-www/cat_includes/opencl_base.cat
+* https://github.com/herd/herdtools7/blob/master/herd-www/cat_includes/opencl.cat
+*)
 
 // Base relations:
 // incl_wg: same work-group
 // incl_dev: same device
-// syncbar: same barrier id, reuse from spirv because the ptx's sync_barrier requires scta.
+// syncbar: same barrier id
 
 // Tags:
-// WI: work-item
-// WG: work-group
-// DEV: device
-// ALL: all-svm-devices
-// GLOBAL: global
-// LOCAL: local, "For local memory, all visibility is constrained to within a given work-group and scopes wider than memory_scope_work_group carry no additional meaning."
+// WI: work-item scope
+// WG: work-group scope
+// DEV: device scope
+// ALL: all-svm-devices scope
+// GLOBAL: global memory
+// LOCAL: local memory
 // EF: entry fence of barrier
 // XF: exit fence of barrier
 
@@ -115,9 +121,6 @@ let sc5 = [F]; po; fr
 let scp = (SC * SC) & (ghb | lhb | co | sc1 | sc2 | sc3 | sc4 | sc5)
 
 let sc6 = rf^-1; (ghb | lhb); [W]
-
-
-// https://github.com/herd/herdtools7/blob/master/herd-www/cat_includes/opencl.cat
 
 (* BEGIN PARTIAL SC STUFF *)
 let p_sc = scp & sc6

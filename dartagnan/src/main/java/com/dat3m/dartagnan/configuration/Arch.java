@@ -3,7 +3,7 @@ package com.dat3m.dartagnan.configuration;
 import java.util.Arrays;
 
 public enum Arch implements OptionInterface {
-    C11, ARM8, IMM, LKMM, OPENCL, POWER, PTX, RISCV, TSO, VULKAN;
+    C11, ARM8, POWER, PTX, TSO, IMM, LKMM, RISCV, VULKAN, OPENCL;
 
 	// Used to display in UI
     @Override
@@ -13,22 +13,22 @@ public enum Arch implements OptionInterface {
                 return "C11";
             case ARM8:
                 return "ARM8";
-            case IMM:
-                return "IMM";
-            case LKMM:
-                return "LKMM";
-            case OPENCL:
-                return "OpenCL";
             case POWER:
                 return "Power";
             case PTX:
                 return "PTX";
             case TSO:
                 return "TSO";
+            case IMM:
+                return "IMM";
+            case LKMM:
+                return "LKMM";
             case RISCV:
                 return "RISCV";
             case VULKAN:
                 return "VULKAN";
+            case OPENCL:
+                return "OpenCL";
         }
         throw new UnsupportedOperationException("Unrecognized architecture " + this);
     }
