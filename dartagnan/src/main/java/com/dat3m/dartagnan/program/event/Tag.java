@@ -388,8 +388,8 @@ public final class Tag {
             return List.of(GLOBAL_SPACE, LOCAL_SPACE);
         }
 
-        public static String getSpaceTag(Event e) {
-            return getSpaceTags().stream().filter(e::hasTag).findFirst().orElse("");
+        public static List<String> getSpaceTags(Event e) {
+            return getSpaceTags().stream().filter(e::hasTag).toList();
         }
     }
 

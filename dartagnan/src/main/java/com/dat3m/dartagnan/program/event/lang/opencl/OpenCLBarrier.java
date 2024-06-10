@@ -5,11 +5,13 @@ import com.dat3m.dartagnan.program.event.Tag;
 import com.dat3m.dartagnan.program.event.EventVisitor;
 import com.dat3m.dartagnan.program.event.core.FenceWithId;
 
+import java.util.List;
+
 public class OpenCLBarrier extends FenceWithId {
 
-    public OpenCLBarrier(Expression fenceId, String fenceFlag) {
+    public OpenCLBarrier(Expression fenceId, List<String> fenceFlags) {
         super("work_group_barrier", fenceId);
-        this.addTags(fenceFlag);
+        this.addTags(fenceFlags);
     }
 
     protected OpenCLBarrier(OpenCLBarrier other) {

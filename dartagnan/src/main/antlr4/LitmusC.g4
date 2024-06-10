@@ -212,9 +212,9 @@ nre locals [IntBinaryOp op, String mo, String name]
 
     |   C11AtomicFence LPar c11Mo RPar                                                                                                      # nreC11Fence
 
-    |   OpenCLAtomicFenceWI LPar openCLFenceFlag Comma c11Mo Comma openCLScope RPar                                                         # nreOpenCLFence
+    |   OpenCLAtomicFenceWI LPar openCLFenceFlags Comma c11Mo Comma openCLScope RPar                                                         # nreOpenCLFence
 
-    |   barrierId Colon OpenCLBarrier LPar openCLFenceFlag (Comma openCLScope)? RPar                                                        # nreOpenCLBarrier
+    |   barrierId Colon OpenCLBarrier LPar openCLFenceFlags (Comma openCLScope)? RPar                                                        # nreOpenCLBarrier
 
     ;
 
@@ -268,6 +268,11 @@ openCLScope returns [String scope]
     |   OpenCLMemoryScopeWG    {$scope = OpenCL.MEMORY_SCOPE_WG;}
     |   OpenCLMemoryScopeDEV   {$scope = OpenCL.MEMORY_SCOPE_DEV;}
     |   OpenCLMemoryScopeALL   {$scope = OpenCL.MEMORY_SCOPE_ALL;}
+    ;
+
+openCLFenceFlags
+    :   openCLFenceFlag Bar openCLFenceFlag
+    |   openCLFenceFlag
     ;
 
 openCLFenceFlag returns [String flag]

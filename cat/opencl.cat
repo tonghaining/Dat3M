@@ -135,7 +135,7 @@ acyclic p_sc & x_exists as S_exists
 let conflict =  (((W * _) | (_ * W)) \ ((IW * _) | (_ * IW))) & loc
 
 let gl_hb = ghb | lhb
-let dr = conflict & ~(gl_hb | gl_hb^-1) & ~incl
+let dr = conflict & ~(gl_hb | gl_hb^-1) & ~incl \ id
 flag ~empty dr as data_race
 
 let ur = (int & conflict & ~(po | po^-1)) \ id

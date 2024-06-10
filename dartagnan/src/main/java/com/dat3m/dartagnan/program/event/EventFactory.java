@@ -750,8 +750,8 @@ public class EventFactory {
     public static class OpenCL {
         private OpenCL() {}
 
-        public static OpenCLBarrier newOpenCLBarrier(Expression fenceId, String fenceFlag) {
-            return new OpenCLBarrier(fenceId, fenceFlag);
+        public static OpenCLBarrier newOpenCLBarrier(Expression fenceId, List<String> fenceFlags) {
+            return new OpenCLBarrier(fenceId, fenceFlags);
         }
 
         public static OpenCLInit newOpenCLInit(MemoryObject base, int offset) {

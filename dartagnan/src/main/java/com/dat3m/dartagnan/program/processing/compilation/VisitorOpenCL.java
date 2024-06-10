@@ -25,9 +25,11 @@ public class VisitorOpenCL extends VisitorBase {
     public List<Event> visitOpenCLBarrier(OpenCLBarrier e) {
         FenceWithId entryFence = new FenceWithId(e.getName() + "_entry", e.getFenceID());
         FenceWithId exitFence = new FenceWithId(e.getName() + "_exit", e.getFenceID());
-        String fenceFlag = Tag.OpenCL.getSpaceTag(e);
-        entryFence.addTags(Tag.OpenCL.ENTRY_FENCE, C11.MO_RELEASE, fenceFlag);
-        exitFence.addTags(Tag.OpenCL.EXIT_FENCE, C11.MO_ACQUIRE, fenceFlag);
+        List<String> fenceFlags = Tag.OpenCL.getSpaceTags(e);
+        entryFence.addTags(Tag.OpenCL.ENTRY_FENCE, C11.MO_RELEASE);
+        entryFence.addTags(fenceFlags);
+        exitFence.addTags(Tag.OpenCL.EXIT_FENCE, C11.MO_ACQUIRE);
+        exitFence.addTags(fenceFlags);
         return tagList(e, eventSequence(
                 entryFence,
                 exitFence
@@ -116,9 +118,9 @@ public class VisitorOpenCL extends VisitorBase {
         if (!scope.isEmpty()) {
             in.forEach(e -> e.addTags(scope));
         }
-        String space = Tag.OpenCL.getSpaceTag(originalEvent);
-        if (!space.isEmpty()) {
-            in.forEach(e -> e.addTags(space));
+        List<String> spaces = Tag.OpenCL.getSpaceTags(originalEvent);
+        if (!spaces.isEmpty()) {
+            in.forEach(e -> e.addTags(spaces));
         }
 
         return in;

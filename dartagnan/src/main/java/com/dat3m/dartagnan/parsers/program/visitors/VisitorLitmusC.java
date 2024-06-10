@@ -627,8 +627,10 @@ public class VisitorLitmusC extends LitmusCBaseVisitor<Object> {
         if (ctx.openCLScope() != null) {
             fence.addTags(ctx.openCLScope().scope);
         }
-        if (ctx.openCLFenceFlag() != null) {
-            fence.addTags(ctx.openCLFenceFlag().flag);
+        if (ctx.openCLFenceFlags() != null) {
+            for (LitmusCParser.OpenCLFenceFlagContext flagCtx : ctx.openCLFenceFlags().openCLFenceFlag()) {
+                fence.addTags(flagCtx.flag);
+            }
         }
         return programBuilder.addChild(currentThread, fence);
     }
@@ -636,7 +638,8 @@ public class VisitorLitmusC extends LitmusCBaseVisitor<Object> {
     @Override
     public Object visitNreOpenCLBarrier(LitmusCParser.NreOpenCLBarrierContext ctx){
         Expression fenceId = expressions.makeValue(ctx.barrierId().id, archType);
-        Event fence = EventFactory.OpenCL.newOpenCLBarrier(fenceId, ctx.openCLFenceFlag().flag);
+        List<String> flags = ctx.openCLFenceFlags().openCLFenceFlag().stream().map(f -> f.flag).toList();
+        Event fence = EventFactory.OpenCL.newOpenCLBarrier(fenceId, flags);
         if (ctx.openCLScope() != null) {
             fence.addTags(ctx.openCLScope().scope);
         }
