@@ -27,6 +27,10 @@ public class Compilation {
         cflags = cflags.isEmpty() ? System.getenv().getOrDefault("CFLAGS", "") : cflags;
         // Needed to handle more than one flag in CFLAGS
         Collections.addAll(cmd, cflags.split(" "));
+        // Specify OpenCL standard when needed
+        if(file.getPath().endsWith(".cl")) {
+            cmd.add("-cl-std=CL2.0");
+        }
         cmd.add(file.getAbsolutePath());
 
         runCmd(cmd);
@@ -49,6 +53,23 @@ public class Compilation {
             runCmd(cmd);
         } catch (Exception e) {
             logger.warn("Failed to run opt (llvm optimizations). Continuing without optimizations.");
+            return file;
+        }
+        return new File(outputFileName);
+    }
+
+    public static File applyDemangling(File file) throws IOException {
+        final String outputFileName = getOutputName(file, "-dmg.ll");
+        ArrayList<String> cmd = new ArrayList<>();
+        cmd.add("llvm-cxxfilt");
+        cmd.add("<");
+        cmd.add(file.getAbsolutePath());
+        cmd.add(">");
+        cmd.add(outputFileName);
+        try {
+            runCmd(cmd);
+        } catch (Exception e) {
+            logger.warn("Failed to run llvm-cxxfilt (llvm symbol name demangler). Continuing without demangling.");
             return file;
         }
         return new File(outputFileName);
