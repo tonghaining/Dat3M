@@ -27,10 +27,6 @@ public class Compilation {
         cflags = cflags.isEmpty() ? System.getenv().getOrDefault("CFLAGS", "") : cflags;
         // Needed to handle more than one flag in CFLAGS
         Collections.addAll(cmd, cflags.split(" "));
-        // Specify OpenCL standard when needed
-        if(file.getPath().endsWith(".cl")) {
-            cmd.add("-cl-std=CL2.0");
-        }
         cmd.add(file.getAbsolutePath());
 
         runCmd(cmd);
@@ -59,20 +55,16 @@ public class Compilation {
     }
 
     public static File applyDemangling(File file) throws IOException {
-        final String outputFileName = getOutputName(file, "-dmg.ll");
+        final File outputFile = new File(getOutputName(file, "-dmg.ll"));
         ArrayList<String> cmd = new ArrayList<>();
         cmd.add("llvm-cxxfilt");
-        cmd.add("<");
-        cmd.add(file.getAbsolutePath());
-        cmd.add(">");
-        cmd.add(outputFileName);
         try {
-            runCmd(cmd);
+            runCmd(cmd, file, outputFile);
         } catch (Exception e) {
             logger.warn("Failed to run llvm-cxxfilt (llvm symbol name demangler). Continuing without demangling.");
             return file;
         }
-        return new File(outputFileName);
+        return outputFile;
     }
 
     private static String getOutputName(File file, String postfix) throws IOException {
@@ -81,19 +73,28 @@ public class Compilation {
     }
 
     private static void runCmd(ArrayList<String> cmd) throws Exception {
+        runCmd(cmd, null, null);
+    }
+
+    private static void runCmd(ArrayList<String> cmd, File inputFile, File outputFile) throws Exception {
         logger.debug(String.join(" ", cmd));
         ProcessBuilder processBuilder = new ProcessBuilder(cmd);
+        if(inputFile != null) {
+            processBuilder.redirectInput(inputFile);
+        }
         // "Unless the standard input and output streams are promptly written and read respectively
         // of the sub process, it may block or deadlock the sub process."
         //		https://www.developer.com/design/understanding-java-process-and-java-processbuilder/
         // The lines below take care of this.
-        File log = File.createTempFile("log", null);
+        if(outputFile == null) {
+            outputFile = File.createTempFile("log", null);
+        }
         processBuilder.redirectErrorStream(true);
-        processBuilder.redirectOutput(log);
+        processBuilder.redirectOutput(outputFile);
         Process proc = processBuilder.start();
         proc.waitFor();
         if(proc.exitValue() != 0) {
-            String errorString =  Files.asCharSource(log, Charsets.UTF_8).read();
+            String errorString =  Files.asCharSource(outputFile, Charsets.UTF_8).read();
             throw new IOException("'" + String.join("' '", cmd) + "': " + errorString);
         }
     }
