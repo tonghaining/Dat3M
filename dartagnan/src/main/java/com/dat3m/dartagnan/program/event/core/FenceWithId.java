@@ -18,7 +18,7 @@ public class FenceWithId extends GenericVisibleEvent implements RegReader {
         this.fenceID = fenceID;
     }
 
-    private FenceWithId(FenceWithId other) {
+    protected FenceWithId(FenceWithId other) {
         super(other);
         this.fenceID = other.fenceID;
     }

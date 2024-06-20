@@ -122,7 +122,7 @@ public final class Tag {
         public static final String MO_ACQUIRE           = "ACQ";
         public static final String MO_RELEASE           = "REL";
         public static final String MO_ACQUIRE_RELEASE   = "ACQ_REL";
-        public static final String MO_SC                 = "SC";
+        public static final String MO_SC                = "SC";
 
         public static String intToMo(int i) {
             switch (i) {
@@ -363,10 +363,41 @@ public final class Tag {
         }
     }
 
+    // =============================================================================================
+    // ========================================= OpenCL ============================================
+    // =============================================================================================
+    public static final class OpenCL {
+        // Scopes
+        public static final String MEMORY_SCOPE_WI = "WI";
+        public static final String MEMORY_SCOPE_WG = "WG";
+        public static final String MEMORY_SCOPE_DEV = "DEV";
+        public static final String MEMORY_SCOPE_ALL = "ALL";
+        // Space
+        public static final String GLOBAL_SPACE = "GLOBAL";
+        public static final String LOCAL_SPACE = "LOCAL";
+
+        // Barrier
+        public static final String ENTRY_FENCE = "EF";
+        public static final String EXIT_FENCE = "XF";
+
+        public static List<String> getScopeTags() {
+            return List.of(MEMORY_SCOPE_WG, MEMORY_SCOPE_DEV, MEMORY_SCOPE_ALL);
+        }
+
+        public static List<String> getSpaceTags() {
+            return List.of(GLOBAL_SPACE, LOCAL_SPACE);
+        }
+
+        public static List<String> getSpaceTags(Event e) {
+            return getSpaceTags().stream().filter(e::hasTag).toList();
+        }
+    }
+
     public static String getScopeTag(Event e, Arch arch) {
         return switch (arch) {
             case PTX -> PTX.getScopeTags().stream().filter(e::hasTag).findFirst().orElse("");
             case VULKAN -> Vulkan.getScopeTags().stream().filter(e::hasTag).findFirst().orElse("");
+            case OPENCL -> OpenCL.getScopeTags().stream().filter(e::hasTag).findFirst().orElse("");
             default -> throw new UnsupportedOperationException("Scope tags not implemented for architecture " + arch);
         };
 

@@ -259,6 +259,8 @@ public class Wmm {
             case SWG -> new SameScope(r, Tag.Vulkan.WORK_GROUP);
             case SQF -> new SameScope(r, Tag.Vulkan.QUEUE_FAMILY);
             case SSW -> new SyncWith(r);
+            case INCL_WG -> new SameScope(r, Tag.OpenCL.MEMORY_SCOPE_WG);
+            case INCL_DEV -> new SameScope(r, Tag.OpenCL.MEMORY_SCOPE_DEV);
             case SYNCBAR -> new SyncBar(r);
             case SYNC_BARRIER -> intersection(r, getOrCreatePredefinedRelation(SYNCBAR), getOrCreatePredefinedRelation(SCTA));
             case SYNC_FENCE -> new SyncFence(r);

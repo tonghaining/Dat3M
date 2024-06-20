@@ -11,6 +11,7 @@ import com.dat3m.dartagnan.expression.type.TypeFactory;
 import com.dat3m.dartagnan.program.Function;
 import com.dat3m.dartagnan.program.Register;
 import com.dat3m.dartagnan.program.event.arch.StoreExclusive;
+import com.dat3m.dartagnan.program.event.arch.opencl.OpenCLInit;
 import com.dat3m.dartagnan.program.event.arch.ptx.PTXAtomCAS;
 import com.dat3m.dartagnan.program.event.arch.ptx.PTXAtomExch;
 import com.dat3m.dartagnan.program.event.arch.ptx.PTXAtomOp;
@@ -32,6 +33,7 @@ import com.dat3m.dartagnan.program.event.functions.VoidFunctionCall;
 import com.dat3m.dartagnan.program.event.lang.catomic.*;
 import com.dat3m.dartagnan.program.event.lang.linux.*;
 import com.dat3m.dartagnan.program.event.lang.llvm.*;
+import com.dat3m.dartagnan.program.event.lang.opencl.OpenCLBarrier;
 import com.dat3m.dartagnan.program.event.lang.pthread.InitLock;
 import com.dat3m.dartagnan.program.event.lang.pthread.Lock;
 import com.dat3m.dartagnan.program.event.lang.pthread.Unlock;
@@ -444,6 +446,14 @@ public class EventFactory {
         public static LoopBound newLoopBound(Expression bound) {
             return new LoopBound(bound);
         }
+
+        public static NonDetChoice newNonDetChoice(Register register) {
+            return new NonDetChoice(register, false);
+        }
+
+        public static NonDetChoice newSignedNonDetChoice(Register register, boolean isSigned) {
+            return new NonDetChoice(register, isSigned);
+        }
     }
 
     // =============================================================================================
@@ -740,6 +750,24 @@ public class EventFactory {
                                            IntBinaryOp op, String mo, String scope) {
             return new VulkanRMWOp(register, address, op, value, mo, scope);
         }
+    }
+
+    // =============================================================================================
+    // =========================================== OpenCL ==========================================
+    // =============================================================================================
+    public static class OpenCL {
+        private OpenCL() {}
+
+        public static OpenCLBarrier newOpenCLBarrier(Expression fenceId, List<String> fenceFlags) {
+            return new OpenCLBarrier(fenceId, fenceFlags);
+        }
+
+        public static OpenCLInit newOpenCLInit(MemoryObject base, int offset) {
+            final Expression address = offset == 0 ? base :
+                    expressions.makeAdd(base, expressions.makeValue(offset, (IntegerType) base.getType()));
+            return new OpenCLInit(base, offset, address);
+        }
+
     }
 
 }
