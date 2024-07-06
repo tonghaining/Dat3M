@@ -254,13 +254,12 @@ public class Wmm {
             case CTRLISYNC -> intersection(r, getOrCreatePredefinedRelation(CTRL), getOrCreatePredefinedRelation(ISYNC));
             case CTRLISB -> intersection(r, getOrCreatePredefinedRelation(CTRL), getOrCreatePredefinedRelation(ISB));
             case SR -> new SameScope(r);
-            case SCTA -> new SameScope(r, Tag.PTX.CTA);
-            case SSG -> new SameScope(r, Tag.Vulkan.SUB_GROUP);
-            case SWG -> new SameScope(r, Tag.Vulkan.WORK_GROUP);
-            case SQF -> new SameScope(r, Tag.Vulkan.QUEUE_FAMILY);
+            case SCTA -> new SameScope(r, Tag.GPU_SCOPES.CTA);
+            case SSG -> new SameScope(r, Tag.GPU_SCOPES.SUB_GROUP);
+            case SWG -> new SameScope(r, Tag.GPU_SCOPES.WORK_GROUP);
+            case SQF -> new SameScope(r, Tag.GPU_SCOPES.QUEUE_FAMILY);
+            case SDV -> new SameScope(r, Tag.GPU_SCOPES.DEVICE);
             case SSW -> new SyncWith(r);
-            case INCL_WG -> new SameScope(r, Tag.OpenCL.MEMORY_SCOPE_WG);
-            case INCL_DEV -> new SameScope(r, Tag.OpenCL.MEMORY_SCOPE_DEV);
             case SYNCBAR -> new SyncBar(r);
             case SYNC_BARRIER -> intersection(r, getOrCreatePredefinedRelation(SYNCBAR), getOrCreatePredefinedRelation(SCTA));
             case SYNC_FENCE -> new SyncFence(r);

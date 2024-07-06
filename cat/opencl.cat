@@ -8,14 +8,15 @@ OpenCL
 *)
 
 // Base relations:
-// incl_wg: same work-group
-// incl_dev: same device
+// int: same work-item
+// swg: same work-group
+// sdv: same device
 // syncbar: same barrier id
 
 // Tags:
 // WI: work-item scope
 // WG: work-group scope
-// DEV: device scope
+// DV: device scope
 // ALL: all-svm-devices scope
 // GLOBAL: global memory
 // LOCAL: local memory
@@ -24,24 +25,24 @@ OpenCL
 
 (* Inclusive scopes *)
 let incl = (int & (WI * WI)) |
-    (incl_wg & (WG * WG)) |
-    (incl_dev & (DEV * DEV)) |
+    (swg & (WG * WG)) |
+    (sdv & (DV * DV)) |
     (ALL * ALL)
 
 (*******************)
 (* Synchronisation *)
 (*******************)
 
-let acq_op = (ACQ | SC | ACQ_REL) & (R | F | RMW)
-let rel_op = (REL | SC | ACQ_REL) & (W | F | RMW)
+let Acq = (ACQ | SC | ACQ_REL) & (R | F | RMW)
+let Rel = (REL | SC | ACQ_REL) & (W | F | RMW)
 
 (* Release sequence *)
 let rs = (_ * RMW) | int
 let max_co = co? & rs & ~((co & ~rs) ; co)
 
 (* Including release-acquire fences *)
-let relf = [rel_op]; ([F]; po)?; [A & W]
-let acqf = [A & R]; (po; [F])?; [acq_op]
+let relf = [Rel]; ([F]; po)?; [A & W]
+let acqf = [A & R]; (po; [F])?; [Acq]
 
 (* Release-acquire synchronisation *)
 let ra_sw_g = incl & ~int & ([GLOBAL]; relf; max_co; [GLOBAL]; rf; acqf; [GLOBAL])
@@ -50,8 +51,8 @@ let ra_sw_l = incl & ~int & ([LOCAL]; relf; max_co; [LOCAL]; rf; acqf; [LOCAL])
 (* Barrier synchronisation *)
 // in OpenCL a barrier results in two fence operations: entry and exit fences:
 // https://registry.khronos.org/OpenCL/specs/3.0-unified/html/OpenCL_API.html#_work_group_functions
-let bar_sw_g = (EF * XF) & syncbar & ~int & incl_wg & (GLOBAL * GLOBAL)
-let bar_sw_l = (EF * XF) & syncbar & ~int & incl_wg & (LOCAL * LOCAL)
+let bar_sw_g = (EF * XF) & syncbar & ~int & swg & (GLOBAL * GLOBAL)
+let bar_sw_l = (EF * XF) & syncbar & ~int & swg & (LOCAL * LOCAL)
 
 (* Synchronisation on a region *)
 let region_sw_g = ra_sw_g | bar_sw_g
@@ -142,6 +143,6 @@ let ur = (int & conflict & ~(po | po^-1)) \ id
 flag ~empty ur as unsequenced_race
 
 let bsw = bar_sw_g | bar_sw_l
-// let bd = [EF] & ((~int & incl_wg & ~(bar_sw_g | bar_sw_l)); [_]) // opencl_total
-let bd = [EF] & ((~int & incl_wg); [_]) \ (bsw; [_]) // unv == [_]?
+// let bd = [EF] & ((~int & swg & ~(bar_sw_g | bar_sw_l)); [_]) // opencl_total
+let bd = [EF] & ((~int & swg); [_]) \ (bsw; [_]) // unv == [_]?
 flag ~empty bd as barrier_divergence
