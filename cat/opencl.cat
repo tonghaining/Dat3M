@@ -70,8 +70,8 @@ let lsw = region_sw_l | (scf & region_sw_g)
 (******************)
 
 (* Global and local happens-before *)
-let ghb = (((GLOBAL * GLOBAL) & (po | (IW * (_ \ IW)))) | gsw)+
-let lhb = (((LOCAL * LOCAL) & (po | (IW * (_ \ IW)))) | lsw)+
+let ghb = (((GLOBAL * GLOBAL) & (po | (IW * ~IW))) | gsw)+
+let lhb = (((LOCAL * LOCAL) & (po | (IW * ~IW))) | lsw)+
 
 acyclic ghb as global_hb_acyclic
 acyclic lhb as local_hb_acyclic
@@ -125,8 +125,7 @@ let sc6 = rf^-1; (ghb | lhb); [W]
 
 (* BEGIN PARTIAL SC STUFF *)
 let p_sc = scp & sc6
-let x_exists = [_] ; [SC & (_ \ ALL)]; [_]
-acyclic p_sc & x_exists as S_exists
+acyclic p_sc & [SC & ~ALL] as S_exists
 (* END PARTIAL SC STUFF *)
 
 (***************)
@@ -144,5 +143,5 @@ flag ~empty ur as unsequenced_race
 
 let bsw = bar_sw_g | bar_sw_l
 // let bd = [EF] & ((~int & swg & ~(bar_sw_g | bar_sw_l)); [_]) // opencl_total
-let bd = [EF] & ((~int & swg); [_]) \ (bsw; [_]) // unv == [_]?
+let bd = [EF] & (~int & swg) \ bsw
 flag ~empty bd as barrier_divergence
