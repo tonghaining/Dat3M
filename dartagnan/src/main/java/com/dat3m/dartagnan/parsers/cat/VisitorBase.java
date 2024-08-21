@@ -33,6 +33,10 @@ class VisitorBase extends CatBaseVisitor<Object> {
     private final Map<String, Integer> nameOccurrenceCounter = new HashMap<>();
     // Used to handle recursive definitions properly
     private Relation relationToBeDefined;
+    // Used to handle parametric definition
+    private String currentParameter;
+    private String currentParameterAlias;
+    private Object currentParameterObject;
 
     VisitorBase() {
         this.wmm = new Wmm();
@@ -88,6 +92,31 @@ class VisitorBase extends CatBaseVisitor<Object> {
             wmm.addFilter(filter);
         }
         namespace.put(name, definedPredicate);
+        return null;
+    }
+
+    @Override
+    public Void visitLetParaDefinition(LetParaDefinitionContext ctx) {
+        String name = ctx.n.getText();
+        currentParameter = ctx.p.getText();
+        currentParameterAlias = name + "_" + currentParameter;
+        Relation defineParametric = (Relation) ctx.e.accept(this);
+        if (currentParameterObject instanceof Filter filter) {
+            ParametricFilter parametric = new ParametricFilter(defineParametric, currentParameterAlias, filter);
+            String alias = createUniqueName(name);
+            wmm.addAlias(alias, defineParametric);
+            namespace.put(name, parametric);
+        } else if (currentParameterObject instanceof Relation relatoin) {
+            ParametricRelation parametric = new ParametricRelation(defineParametric, currentParameterAlias, relatoin);
+            String alias = createUniqueName(name);
+            wmm.addAlias(alias, defineParametric);
+            namespace.put(name, parametric);
+        } else {
+            throw new ParsingException("Expected relation or filter, got " + currentParameterObject.getClass().getSimpleName());
+        }
+        currentParameter = null;
+        currentParameterAlias = null;
+        currentParameterObject = null;
         return null;
     }
 
@@ -149,9 +178,12 @@ class VisitorBase extends CatBaseVisitor<Object> {
     @Override
     public Object visitExprBasic(ExprBasicContext ctx) {
         String name = ctx.n.getText();
-        Object predicate = namespace.computeIfAbsent(name,
-                k -> RelationNameRepository.contains(name) ? wmm.getOrCreatePredefinedRelation(k) : Filter.byTag(k));
-        return predicate;
+        if (name.equals(currentParameter)) {
+            return currentParameterObject;
+        } else {
+            return namespace.computeIfAbsent(name,
+                    k -> RelationNameRepository.contains(name) ? wmm.getOrCreatePredefinedRelation(k) : Filter.byTag(k));
+        }
     }
 
     @Override
@@ -279,6 +311,25 @@ class VisitorBase extends CatBaseVisitor<Object> {
         return addDefinition(new Fences(r0, s1));
     }
 
+    @Override
+    public Relation visitExprParametricCall(ExprParametricCallContext ctx) {
+        String name = ctx.n.getText();
+        if (!namespace.containsKey(name)) {
+            throw new ParsingException("Undefined parametric call: " + name);
+        }
+        if (namespace.get(name) instanceof ParametricRelation parametricRelation) {
+            Relation parameterRelation = parseAsRelation(ctx.p);
+            ParametricCallRelation parametricCall = new ParametricCallRelation(wmm.newRelation(), parametricRelation, parameterRelation);
+            return addDefinition(parametricCall);
+        }
+        if (namespace.get(name) instanceof ParametricFilter parametricFilter) {
+            Filter parameterFilter = parseAsFilter(ctx.p);
+            ParametricCallFilter parametricCall = new ParametricCallFilter(wmm.newRelation(), parametricFilter, parameterFilter);
+            return addDefinition(parametricCall);
+        }
+        throw new ParsingException("Expected parametric relation or filter, got " + namespace.get(name).getClass().getSimpleName());
+    }
+
     // ============================ Utility ============================
 
     private Relation addDefinition(Definition definition) {
@@ -308,6 +359,10 @@ class VisitorBase extends CatBaseVisitor<Object> {
     private Relation parseAsRelation(Object o, ExpressionContext t) {
         if (o instanceof Relation relation) {
             return relation;
+        } else if (o == null) {
+            Relation relation = wmm.newRelation(currentParameterAlias);
+            currentParameterObject = relation;
+            return relation;
         }
         throw new ParsingException("Expected relation, got " + o.getClass().getSimpleName() + " " + o + " from expression " + t.getText());
     }
@@ -316,8 +371,12 @@ class VisitorBase extends CatBaseVisitor<Object> {
         return parseAsFilter(t.accept(this), t);
     }
 
-    private static Filter parseAsFilter(Object o, ExpressionContext t) {
+    private Filter parseAsFilter(Object o, ExpressionContext t) {
         if (o instanceof Filter filter) {
+            return filter;
+        } else if (o == null) {
+            Filter filter = Filter.byTag(currentParameterAlias);
+            currentParameterObject = filter;
             return filter;
         }
         throw new ParsingException("Expected set, got " + o.getClass().getSimpleName() + " " + o + " from expression " + t.getText());

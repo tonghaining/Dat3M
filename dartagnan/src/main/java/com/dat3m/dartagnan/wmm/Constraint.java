@@ -83,6 +83,12 @@ public interface Constraint {
         default T visitRangeIdentity(RangeIdentity def) { return visitDefinition(def); }
         default T visitInverse(Inverse def) { return visitDefinition(def); }
         default T visitTransitiveClosure(TransitiveClosure def) { return visitDefinition(def); }
+        default T visitParametric(Parametric def) { return visitDefinition(def); }
+        default T visitParametricRelation(ParametricRelation def) { return visitDefinition(def); }
+        default T visitParametricFilter(ParametricFilter def) { return visitDefinition(def); }
+        default T visitParametricCall(ParametricCall def) { return visitDefinition(def); }
+        default T visitParametricCallRelation(ParametricCallRelation def) { return visitDefinition(def); }
+        default T visitParametricCallFilter(ParametricCallFilter def) { return visitDefinition(def); }
         // These three are semi-derived (they are derived from sets/filters and not from relations).
         default T visitSetIdentity(SetIdentity def) { return visitDefinition(def); }
         default T visitProduct(CartesianProduct def) { return visitDefinition(def); }

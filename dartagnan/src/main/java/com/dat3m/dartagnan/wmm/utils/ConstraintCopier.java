@@ -132,6 +132,36 @@ public final class ConstraintCopier implements Constraint.Visitor<Constraint> {
     }
 
     @Override
+    public Parametric visitParametric(Parametric def) {
+        return new Parametric(translate(def.getDefinedRelation()), def.getParameterName(), def.getParameterFiller());
+    }
+
+    @Override
+    public ParametricRelation visitParametricRelation(ParametricRelation def) {
+        return new ParametricRelation(translate(def.getDefinedRelation()), def.getParameterName(), def.getParameterRelation());
+    }
+
+    @Override
+    public ParametricFilter visitParametricFilter(ParametricFilter def) {
+        return new ParametricFilter(translate(def.getDefinedRelation()), def.getParameterName(), def.getParameterFilter());
+    }
+
+    @Override
+    public ParametricCall visitParametricCall(ParametricCall def) {
+        return new ParametricCall(translate(def.getDefinedRelation()), def.getParametric(), def.getParameter());
+    }
+
+    @Override
+    public ParametricCallRelation visitParametricCallRelation(ParametricCallRelation def) {
+        return new ParametricCallRelation(translate(def.getDefinedRelation()), def.getParametricRelation(), def.getParametricRelation().getParameterRelation()) ;
+    }
+
+    @Override
+    public ParametricCallFilter visitParametricCallFilter(ParametricCallFilter def) {
+        return new ParametricCallFilter(translate(def.getDefinedRelation()), def.getParametricFilter(), def.getParametricFilter().getParameterFilter());
+    }
+
+    @Override
     public Empty visitEmpty(Empty def) {
         return new Empty(translate(def.getDefinedRelation()));
     }
