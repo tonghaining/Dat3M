@@ -23,6 +23,8 @@ OpenCL
 // EF: entry fence of barrier
 // XF: exit fence of barrier
 
+let symm(r) = r | r^-1
+
 (* Inclusive scopes *)
 let incl = (int & (WI * WI)) |
     (swg & (WG * WG)) |
@@ -45,25 +47,22 @@ let relf = [Rel]; ([F]; po)?; [A & W]
 let acqf = [A & R]; (po; [F])?; [Acq]
 
 (* Release-acquire synchronisation *)
-let ra_sw_g = incl & ~int & ([GLOBAL]; relf; max_co; [GLOBAL]; rf; acqf; [GLOBAL])
-let ra_sw_l = incl & ~int & ([LOCAL]; relf; max_co; [LOCAL]; rf; acqf; [LOCAL])
+let ra_sw(r) = incl & ~int & ([r]; relf; max_co; [r]; rf; acqf; [r])
 
 (* Barrier synchronisation *)
 // in OpenCL a barrier results in two fence operations: entry and exit fences:
 // https://registry.khronos.org/OpenCL/specs/3.0-unified/html/OpenCL_API.html#_work_group_functions
-let bar_sw_g = (EF * XF) & syncbar & ~int & swg & (GLOBAL * GLOBAL)
-let bar_sw_l = (EF * XF) & syncbar & ~int & swg & (LOCAL * LOCAL)
+let bar_sw(r) = (EF * XF) & syncbar & ~int & swg & (r * r)
 
 (* Synchronisation on a region *)
-let region_sw_g = ra_sw_g | bar_sw_g
-let region_sw_l = ra_sw_l | bar_sw_l
+let region_sw(r) = ra_sw(r) | bar_sw(r)
 
 (* Allowed to synchronise on the other region *)
 let scf = (SC * SC) | ((GLOBAL & LOCAL & F) * (GLOBAL & LOCAL & F))
 
 (* Global and local synchronises-with *)
-let gsw = region_sw_g | (scf & region_sw_l)
-let lsw = region_sw_l | (scf & region_sw_g)
+let gsw = region_sw(GLOBAL) | (scf & region_sw(LOCAL))
+let lsw = region_sw(LOCAL) | (scf & region_sw(GLOBAL))
 
 (******************)
 (* Happens-before *)
@@ -84,20 +83,18 @@ let lhbl = lhb & loc
 (* Coherence *)
 (*************)
 
-let coh_hb_g = (rf^-1)?; co; rf?; ghb
-let coh_hb_l = (rf^-1)?; co; rf?; lhb
-irreflexive coh_hb_g as global_coherence
-irreflexive coh_hb_l as local_coherence
+let coh(hb) = (rf^-1)?; co; rf?; hb
+irreflexive coh(ghb) as global_coherence
+irreflexive coh(lhb) as local_coherence
 
 (************************)
 (* Consistency of reads *)
 (************************)
 
 (* Visible side effects *)
-let vse_hbl_g = (W * R) & ghbl & ~(ghbl; [W]; ghbl)
-let vse_hbl_l = (W * R) & lhbl & ~(lhbl; [W]; lhbl)
-let gvse = [GLOBAL]; vse_hbl_g
-let lvse = [LOCAL]; vse_hbl_l
+let vse(hbl) = (W * R) & hbl & ~(hbl; [W]; hbl)
+let gvse = [GLOBAL]; vse(ghbl)
+let lvse = [LOCAL]; vse(lhbl)
 
 (* A non-atomic load can only read from a store that is visible. *)
 irreflexive rf; [NA & GLOBAL]; ~(gvse^-1) as global_nonatomic_rf_consistent
@@ -132,16 +129,15 @@ acyclic p_sc & [SC & ~ALL] as S_exists
 (*    Races    *)
 (***************)
 
-let conflict =  (((W * _) | (_ * W)) \ ((IW * _) | (_ * IW))) & loc
+let conflict =  ((W * _) | (_ * W)) & loc
 
-let gl_hb = ghb | lhb
-let dr = conflict & ~(gl_hb | gl_hb^-1) & ~incl \ id
+let dr = conflict & ~symm(ghb | lhb) & ~incl \ id
 flag ~empty dr as data_race
 
-let ur = (int & conflict & ~(po | po^-1)) \ id
+let ur = (int & conflict & ~symm(po)) \ id
 flag ~empty ur as unsequenced_race
 
-let bsw = bar_sw_g | bar_sw_l
-// let bd = [EF] & ((~int & swg & ~(bar_sw_g | bar_sw_l)); [_]) // opencl_total
+let bsw = bar_sw(GLOBAL) | bar_sw(LOCAL)
+// let bd = [EF] & ((~int & swg & ~(bar_sw(GLOBAL) | bar_sw(LOCAL))); [_]) // opencl_total
 let bd = [EF] & (~int & swg) \ bsw
 flag ~empty bd as barrier_divergence
