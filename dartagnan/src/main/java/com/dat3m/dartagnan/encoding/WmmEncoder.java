@@ -9,7 +9,7 @@ import com.dat3m.dartagnan.program.event.Event;
 import com.dat3m.dartagnan.program.event.MemoryEvent;
 import com.dat3m.dartagnan.program.event.RegWriter;
 import com.dat3m.dartagnan.program.event.Tag;
-import com.dat3m.dartagnan.program.event.core.FenceWithId;
+import com.dat3m.dartagnan.program.event.core.ControlBarrier;
 import com.dat3m.dartagnan.program.event.core.Load;
 import com.dat3m.dartagnan.program.event.core.MemoryCoreEvent;
 import com.dat3m.dartagnan.program.event.core.RMWStoreExclusive;
@@ -135,7 +135,7 @@ public class WmmEncoder implements Encoder {
                 enc.addAll(a.consistent(context));
             }
         }
-        ra.getMutuallyExclusiveEdges()
+        ra.getContradictions()
                 .apply((e1, e2) -> enc.add(bmgr.not(context.execution(e1, e2))));
         return bmgr.and(enc);
     }
@@ -145,7 +145,7 @@ public class WmmEncoder implements Encoder {
         EventGraph encodeSet = encodeSets.getOrDefault(relation, EventGraph.empty())
                 .filter((e1, e2) -> TRUE.equals(model.evaluate(edge.encode(e1, e2))));
         EventGraph mustEncodeSet = context.getAnalysisContext().get(RelationAnalysis.class).getKnowledge(relation).getMustSet()
-                        .filter((e1, e2) -> TRUE.equals(model.evaluate(context.execution(e1, e2))));
+                .filter((e1, e2) -> TRUE.equals(model.evaluate(context.execution(e1, e2))));
         encodeSet.addAll(mustEncodeSet);
         return encodeSet;
     }
@@ -627,30 +627,30 @@ public class WmmEncoder implements Encoder {
             EncodingContext.EdgeEncoder encoder = context.edge(rel);
             EventGraph mustSet = ra.getKnowledge(rel).getMustSet();
             encodeSets.get(rel).apply((e1, e2) -> {
-                FenceWithId f1 = (FenceWithId) e1;
-                FenceWithId f2 = (FenceWithId) e2;
+                ControlBarrier b1 = (ControlBarrier) e1;
+                ControlBarrier b2 = (ControlBarrier) e2;
                 BooleanFormula sameId;
                 // If they are in must, they are guaranteed to have the same id
-                if (mustSet.contains(f1, f2)) {
+                if (mustSet.contains(b1, b2)) {
                     sameId = bmgr.makeTrue();
                 } else {
-                    Expression id1 = f1.getFenceID();
-                    Expression id2 = f2.getFenceID();
-                    sameId = context.equal(context.encodeExpressionAt(id1, f1),
-                            context.encodeExpressionAt(id2, f2));
+                    Expression id1 = b1.getId();
+                    Expression id2 = b2.getId();
+                    sameId = context.equal(context.encodeExpressionAt(id1, b1),
+                            context.encodeExpressionAt(id2, b2));
                 }
                 enc.add(bmgr.equivalence(
-                        encoder.encode(f1, f2),
-                        bmgr.and(execution(f1, f2), sameId)));
+                        encoder.encode(b1, b2),
+                        bmgr.and(execution(b1, b2), sameId)));
             });
             return null;
         }
 
         @Override
         public Void visitSyncFence(SyncFence syncFenceDef) {
-            final Relation syncFence = syncFenceDef.getDefinedRelation();;
+            final Relation syncFence = syncFenceDef.getDefinedRelation();
             final boolean idl = !context.useSATEncoding;
-            final String relName = syncFence.getName().get(); // syncFence is base, it always has a name
+            final String relName = syncFence.getName().orElseThrow(); // syncFence is base, it always has a name
             List<Event> allFenceSC = program.getThreadEventsWithAllTags(VISIBLE, FENCE, PTX.SC);
             allFenceSC.removeIf(e -> !e.getThread().hasScope());
             EncodingContext.EdgeEncoder edge = context.edge(syncFence);
@@ -725,25 +725,7 @@ public class WmmEncoder implements Encoder {
             }
         }
         RelationAnalysis ra = context.getAnalysisContext().get(RelationAnalysis.class);
-        RelationAnalysis.Propagator p = ra.new Propagator();
-        for (Relation r : context.getTask().getMemoryModel().getRelations()) {
-            EventGraph may = new EventGraph();
-            EventGraph must = new EventGraph();
-            if (r.getDependencies().isEmpty()) {
-                continue;
-            }
-            for (Relation c : r.getDependencies()) {
-                p.setSource(c);
-                p.setMay(ra.getKnowledge(p.getSource()).getMaySet());
-                p.setMust(ra.getKnowledge(p.getSource()).getMustSet());
-                RelationAnalysis.Delta s = r.getDefinition().accept(p);
-                may.addAll(s.may);
-                must.addAll(s.must);
-            }
-            may.removeAll(ra.getKnowledge(r).getMaySet());
-            EventGraph must2 = difference(ra.getKnowledge(r).getMustSet(), must);
-            queue.computeIfAbsent(r, k -> new ArrayList<>()).add(EventGraph.union(may, must2));
-        }
+        ra.populateQueue(queue, context.getTask().getMemoryModel().getRelations());
         while (!queue.isEmpty()) {
             Relation r = queue.keySet().iterator().next();
             logger.trace("Update encode set of '{}'", r);

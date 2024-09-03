@@ -10,7 +10,6 @@ import com.dat3m.dartagnan.expression.type.IntegerType;
 import com.dat3m.dartagnan.expression.type.TypeFactory;
 import com.dat3m.dartagnan.parsers.LitmusVulkanBaseVisitor;
 import com.dat3m.dartagnan.parsers.LitmusVulkanParser;
-import com.dat3m.dartagnan.parsers.program.utils.AssertionHelper;
 import com.dat3m.dartagnan.parsers.program.utils.ProgramBuilder;
 import com.dat3m.dartagnan.program.Program;
 import com.dat3m.dartagnan.program.Register;
@@ -24,7 +23,6 @@ import com.dat3m.dartagnan.program.event.core.Label;
 import com.dat3m.dartagnan.program.event.core.Load;
 import com.dat3m.dartagnan.program.event.core.Store;
 import com.dat3m.dartagnan.program.memory.MemoryObject;
-import org.antlr.v4.runtime.misc.Interval;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -56,18 +54,7 @@ public class VisitorLitmusVulkan extends LitmusVulkanBaseVisitor<Object> {
                 programBuilder.addSwwPairThreads(threadId0, threadId1);
             }
         }
-        if (ctx.assertionList() != null) {
-            int a = ctx.assertionList().getStart().getStartIndex();
-            int b = ctx.assertionList().getStop().getStopIndex();
-            String raw = ctx.assertionList().getStart().getInputStream().getText(new Interval(a, b));
-            programBuilder.setAssert(AssertionHelper.parseAssertionList(programBuilder, raw));
-        }
-        if (ctx.assertionFilter() != null) {
-            int a = ctx.assertionFilter().getStart().getStartIndex();
-            int b = ctx.assertionFilter().getStop().getStopIndex();
-            String raw = ctx.assertionFilter().getStart().getInputStream().getText(new Interval(a, b));
-            programBuilder.setAssertFilter(AssertionHelper.parseAssertionFilter(programBuilder, raw));
-        }
+        VisitorLitmusAssertions.parseAssertions(programBuilder, ctx.assertionList(), ctx.assertionFilter());
         return programBuilder.build();
     }
 
@@ -350,24 +337,24 @@ public class VisitorLitmusVulkan extends LitmusVulkanBaseVisitor<Object> {
         String scope = (ctx.scope() != null) ? ctx.scope().content : "";
         List<String> storageClassSemantics = (List<String>) ctx.storageClassSemanticList().accept(this);
         List<String> avvisSemantics = (List<String>) ctx.avvisSemanticList().accept(this);
-        Expression fenceId = (Expression) ctx.value().accept(this);
-        String fenceIdString = ctx.getText().replace(fenceId.toString(), "");
-        Event fence = EventFactory.newFenceWithId(fenceIdString.toLowerCase(), fenceId);
-        fence.addTags(Tag.Vulkan.CBAR);
+        Expression barrierId = (Expression) ctx.value().accept(this);
+        String barrierIdString = ctx.getText().replace(barrierId.toString(), "");
+        Event barrier = EventFactory.newControlBarrier(barrierIdString.toLowerCase(), barrierId);
+        barrier.addTags(Tag.Vulkan.CBAR);
         if (!mo.equals(Tag.Vulkan.ACQUIRE) && !mo.equals(Tag.Vulkan.RELEASE) && !mo.equals(Tag.Vulkan.ACQ_REL)) {
-            fence.removeTags(Tag.FENCE);
+            barrier.removeTags(Tag.FENCE);
         }
         if (!mo.isEmpty()) {
-            fence.addTags(mo);
+            barrier.addTags(mo);
         }
         if (!avvis.isEmpty()) {
-            fence.addTags(avvis);
+            barrier.addTags(avvis);
         }
         if (!scope.isEmpty()) {
-            fence.addTags(scope);
+            barrier.addTags(scope);
         }
-        tagControl(fence, false, mo, avvis, scope, "", storageClassSemantics, avvisSemantics);
-        return programBuilder.addChild(mainThread, fence);
+        tagControl(barrier, false, mo, avvis, scope, "", storageClassSemantics, avvisSemantics);
+        return programBuilder.addChild(mainThread, barrier);
     }
 
     @Override

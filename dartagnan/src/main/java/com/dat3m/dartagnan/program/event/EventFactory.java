@@ -5,6 +5,7 @@ import com.dat3m.dartagnan.expression.ExpressionFactory;
 import com.dat3m.dartagnan.expression.Type;
 import com.dat3m.dartagnan.expression.booleans.BoolLiteral;
 import com.dat3m.dartagnan.expression.integers.IntBinaryOp;
+import com.dat3m.dartagnan.expression.integers.IntCmpOp;
 import com.dat3m.dartagnan.expression.type.FunctionType;
 import com.dat3m.dartagnan.expression.type.IntegerType;
 import com.dat3m.dartagnan.expression.type.TypeFactory;
@@ -17,7 +18,9 @@ import com.dat3m.dartagnan.program.event.arch.ptx.PTXAtomExch;
 import com.dat3m.dartagnan.program.event.arch.ptx.PTXAtomOp;
 import com.dat3m.dartagnan.program.event.arch.ptx.PTXRedOp;
 import com.dat3m.dartagnan.program.event.arch.tso.TSOXchg;
+import com.dat3m.dartagnan.program.event.arch.vulkan.VulkanCmpXchg;
 import com.dat3m.dartagnan.program.event.arch.vulkan.VulkanRMW;
+import com.dat3m.dartagnan.program.event.arch.vulkan.VulkanRMWExtremum;
 import com.dat3m.dartagnan.program.event.arch.vulkan.VulkanRMWOp;
 import com.dat3m.dartagnan.program.event.core.*;
 import com.dat3m.dartagnan.program.event.core.annotations.FunCallMarker;
@@ -33,10 +36,10 @@ import com.dat3m.dartagnan.program.event.functions.VoidFunctionCall;
 import com.dat3m.dartagnan.program.event.lang.catomic.*;
 import com.dat3m.dartagnan.program.event.lang.linux.*;
 import com.dat3m.dartagnan.program.event.lang.llvm.*;
-import com.dat3m.dartagnan.program.event.lang.opencl.OpenCLBarrier;
 import com.dat3m.dartagnan.program.event.lang.pthread.InitLock;
 import com.dat3m.dartagnan.program.event.lang.pthread.Lock;
 import com.dat3m.dartagnan.program.event.lang.pthread.Unlock;
+import com.dat3m.dartagnan.program.event.lang.spirv.*;
 import com.dat3m.dartagnan.program.event.lang.svcomp.*;
 import com.dat3m.dartagnan.program.memory.MemoryObject;
 
@@ -124,8 +127,8 @@ public class EventFactory {
         return fence;
     }
 
-    public static FenceWithId newFenceWithId(String name, Expression fenceId) {
-        return new FenceWithId(name, fenceId);
+    public static ControlBarrier newControlBarrier(String name, Expression fenceId) {
+        return new ControlBarrier(name, fenceId);
     }
 
     public static Init newInit(MemoryObject base, int offset) {
@@ -750,6 +753,54 @@ public class EventFactory {
                                            IntBinaryOp op, String mo, String scope) {
             return new VulkanRMWOp(register, address, op, value, mo, scope);
         }
+
+        public static VulkanRMWExtremum newRMWExtremum(Expression address, Register register, IntCmpOp op,
+                                                       Expression value, String mo, String scope) {
+            return new VulkanRMWExtremum(register, address, op, value, mo, scope);
+        }
+
+        public static VulkanCmpXchg newVulkanCmpXchg(Expression address, Register register, Expression expected,
+                                                     Expression value, String mo, String scope) {
+            return new VulkanCmpXchg(register, address, expected, value, mo, scope);
+        }
+    }
+
+    // =============================================================================================
+    // =========================================== Spir-V ==========================================
+    // =============================================================================================
+
+    public static class Spirv {
+        private Spirv() {}
+
+        public static SpirvLoad newSpirvLoad(Register register, Expression address, String scope,
+                                             Set<String> tags) {
+            return new SpirvLoad(register, address, scope, tags);
+        }
+
+        public static SpirvStore newSpirvStore(Expression address, Expression value, String scope,
+                                               Set<String> tags) {
+            return new SpirvStore(address, value, scope, tags);
+        }
+
+        public static SpirvXchg newSpirvXchg(Register register, Expression address, Expression value,
+                                             String scope, Set<String> tags) {
+            return new SpirvXchg(register, address, value, scope, tags);
+        }
+
+        public static SpirvRmw newSpirvRmw(Register register, Expression address, IntBinaryOp op, Expression value,
+                                            String scope, Set<String> tags) {
+            return new SpirvRmw(register, address, op, value, scope, tags);
+        }
+
+        public static SpirvCmpXchg newSpirvCmpXchg(Register register, Expression address, Expression cmp, Expression value,
+                                                   String scope, Set<String> eqTags, Set<String> neqTags) {
+            return new SpirvCmpXchg(register, address, cmp, value, scope, eqTags, neqTags);
+        }
+
+        public static SpirvRmwExtremum newSpirvRmwExtremum(Register register, Expression address, IntCmpOp op, Expression value,
+                                                           String scope, Set<String> tags) {
+            return new SpirvRmwExtremum(register, address, op, value, scope, tags);
+        }
     }
 
     // =============================================================================================
@@ -757,10 +808,6 @@ public class EventFactory {
     // =============================================================================================
     public static class OpenCL {
         private OpenCL() {}
-
-        public static OpenCLBarrier newOpenCLBarrier(Expression fenceId, List<String> fenceFlags) {
-            return new OpenCLBarrier(fenceId, fenceFlags);
-        }
 
         public static OpenCLInit newOpenCLInit(MemoryObject base, int offset) {
             final Expression address = offset == 0 ? base :

@@ -38,7 +38,7 @@ public class CoreCodeVerification implements FunctionProcessor {
             Skip.class, RMWStore.class, RMWStoreExclusive.class, Alloc.class,
             Assume.class, Assert.class,
             ThreadCreate.class, ThreadArgument.class, ThreadStart.class,
-            FenceWithId.class, // For PTX and Vulkan
+            ControlBarrier.class, // For PTX and Vulkan
             BeginAtomic.class, EndAtomic.class,
             OpenCLInit.class // For OpenCL
             // We add SVCOMP atomic blocks here as well, despite them not being part of the core package.

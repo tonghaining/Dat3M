@@ -10,7 +10,6 @@ import com.dat3m.dartagnan.expression.type.IntegerType;
 import com.dat3m.dartagnan.expression.type.TypeFactory;
 import com.dat3m.dartagnan.parsers.LitmusPTXBaseVisitor;
 import com.dat3m.dartagnan.parsers.LitmusPTXParser;
-import com.dat3m.dartagnan.parsers.program.utils.AssertionHelper;
 import com.dat3m.dartagnan.parsers.program.utils.ProgramBuilder;
 import com.dat3m.dartagnan.program.Program;
 import com.dat3m.dartagnan.program.Register;
@@ -25,7 +24,6 @@ import com.dat3m.dartagnan.program.event.core.Label;
 import com.dat3m.dartagnan.program.event.core.Load;
 import com.dat3m.dartagnan.program.event.core.Store;
 import com.dat3m.dartagnan.program.memory.MemoryObject;
-import org.antlr.v4.runtime.misc.Interval;
 
 public class VisitorLitmusPTX extends LitmusPTXBaseVisitor<Object> {
     private final ProgramBuilder programBuilder = ProgramBuilder.forArch(Program.SourceLanguage.LITMUS, Arch.PTX);
@@ -46,18 +44,7 @@ public class VisitorLitmusPTX extends LitmusPTXBaseVisitor<Object> {
         visitThreadDeclaratorList(ctx.program().threadDeclaratorList());
         visitVariableDeclaratorList(ctx.variableDeclaratorList());
         visitInstructionList(ctx.program().instructionList());
-        if (ctx.assertionList() != null) {
-            int a = ctx.assertionList().getStart().getStartIndex();
-            int b = ctx.assertionList().getStop().getStopIndex();
-            String raw = ctx.assertionList().getStart().getInputStream().getText(new Interval(a, b));
-            programBuilder.setAssert(AssertionHelper.parseAssertionList(programBuilder, raw));
-        }
-        if (ctx.assertionFilter() != null) {
-            int a = ctx.assertionFilter().getStart().getStartIndex();
-            int b = ctx.assertionFilter().getStop().getStopIndex();
-            String raw = ctx.assertionFilter().getStart().getInputStream().getText(new Interval(a, b));
-            programBuilder.setAssertFilter(AssertionHelper.parseAssertionFilter(programBuilder, raw));
-        }
+        VisitorLitmusAssertions.parseAssertions(programBuilder, ctx.assertionList(), ctx.assertionFilter());
         return programBuilder.build();
     }
 
@@ -311,12 +298,12 @@ public class VisitorLitmusPTX extends LitmusPTXBaseVisitor<Object> {
 
     @Override
     public Object visitBarrier(LitmusPTXParser.BarrierContext ctx) {
-        Expression fenceId = (Expression) ctx.value().accept(this);
-        Event fence = EventFactory.newFenceWithId(ctx.getText().toLowerCase(), fenceId);
+        Expression barrierId = (Expression) ctx.value().accept(this);
+        Event barrier = EventFactory.newControlBarrier(ctx.getText().toLowerCase(), barrierId);
         if(ctx.barrierMode().Arrive() != null) {
-            fence.addTags(Tag.PTX.ARRIVE);
+            barrier.addTags(Tag.PTX.ARRIVE);
         }
-        return programBuilder.addChild(mainThread, fence);
+        return programBuilder.addChild(mainThread, barrier);
     }
 
     @Override

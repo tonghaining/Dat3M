@@ -12,7 +12,6 @@ import com.dat3m.dartagnan.program.event.MemoryEvent;
 import com.dat3m.dartagnan.program.event.core.*;
 import com.dat3m.dartagnan.program.event.core.RMWStore;
 import com.dat3m.dartagnan.program.event.lang.catomic.*;
-import com.dat3m.dartagnan.program.event.lang.opencl.OpenCLBarrier;
 import com.dat3m.dartagnan.program.event.metadata.MemoryOrder;
 
 import java.util.List;
@@ -20,21 +19,6 @@ import java.util.List;
 import static com.dat3m.dartagnan.program.event.EventFactory.*;
 
 public class VisitorOpenCL extends VisitorBase {
-
-    @Override
-    public List<Event> visitOpenCLBarrier(OpenCLBarrier e) {
-        FenceWithId entryFence = new FenceWithId(e.getName() + "_entry", e.getFenceID());
-        FenceWithId exitFence = new FenceWithId(e.getName() + "_exit", e.getFenceID());
-        List<String> fenceFlags = Tag.OpenCL.getSpaceTags(e);
-        entryFence.addTags(Tag.OpenCL.ENTRY_FENCE, C11.MO_RELEASE);
-        entryFence.addTags(fenceFlags);
-        exitFence.addTags(Tag.OpenCL.EXIT_FENCE, C11.MO_ACQUIRE);
-        exitFence.addTags(fenceFlags);
-        return tagList(e, eventSequence(
-                entryFence,
-                exitFence
-        ));
-    }
 
     @Override
     public List<Event> visitAtomicCmpXchg(AtomicCmpXchg e) {

@@ -20,7 +20,6 @@ import com.dat3m.dartagnan.program.memory.Memory;
 import com.dat3m.dartagnan.program.memory.MemoryObject;
 import com.dat3m.dartagnan.program.memory.VirtualMemoryObject;
 import com.dat3m.dartagnan.program.processing.IdReassignment;
-import com.dat3m.dartagnan.program.specification.AbstractAssert;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Verify;
 import com.google.common.collect.Iterables;
@@ -38,6 +37,7 @@ public class ProgramBuilder {
 
     private static final TypeFactory types = TypeFactory.getInstance();
     private static final ExpressionFactory expressions = ExpressionFactory.getInstance();
+    private static final int ARCH_SIZE = types.getMemorySizeInBytes(types.getArchType());
     private static final FunctionType DEFAULT_THREAD_TYPE =
             types.getFunctionType(types.getVoidType(), List.of());
 
@@ -101,11 +101,11 @@ public class ProgramBuilder {
         return expressions;
     }
 
-    public void setAssert(AbstractAssert ass) {
-        program.setSpecification(ass);
+    public void setAssert(Program.SpecificationType type, Expression ass) {
+        program.setSpecification(type, ass);
     }
 
-    public void setAssertFilter(AbstractAssert ass) {
+    public void setAssertFilter(Expression ass) {
         program.setFilterSpecification(ass);
     }
 
@@ -181,7 +181,7 @@ public class ProgramBuilder {
             mem.setName(name);
             if (program.getFormat() == LITMUS) {
                 // Litmus code always initializes memory
-                final Expression zero = expressions.makeZero(types.getByteType());
+                final Expression zero = expressions.makeZero(types.getArchType());
                 for (int offset = 0; offset < size; offset++) {
                     mem.setInitialValue(offset, zero);
                 }
@@ -192,7 +192,7 @@ public class ProgramBuilder {
     }
 
     public MemoryObject getOrNewMemoryObject(String name) {
-        return getOrNewMemoryObject(name, 1);
+        return getOrNewMemoryObject(name, ARCH_SIZE);
     }
 
     public MemoryObject newMemoryObject(String name, int size) {
@@ -216,7 +216,7 @@ public class ProgramBuilder {
     }
 
     public void initLocEqConst(String locName, Expression iValue){
-        getOrNewMemoryObject(locName).setInitialValue(0,iValue);
+        getOrNewMemoryObject(locName).setInitialValue(0, iValue);
     }
 
     public void initRegEqLocPtr(int regThread, String regName, String locName, Type type) {
@@ -305,7 +305,7 @@ public class ProgramBuilder {
     // PTX
     public void initVirLocEqCon(String leftName, IntLiteral iValue){
         MemoryObject object = locations.computeIfAbsent(
-                leftName, k->program.getMemory().allocateVirtual(1, true, null));
+                leftName, k->program.getMemory().allocateVirtual(ARCH_SIZE, true, null));
         object.setName(leftName);
         object.setInitialValue(0, iValue);
     }
@@ -316,7 +316,7 @@ public class ProgramBuilder {
             throw new MalformedProgramException("Alias to non-exist location: " + rightName);
         }
         MemoryObject object = locations.computeIfAbsent(leftName,
-                k->program.getMemory().allocateVirtual(1, true, null));
+                k->program.getMemory().allocateVirtual(ARCH_SIZE, true, null));
         object.setName(leftName);
         object.setInitialValue(0,rightLocation.getInitialValue(0));
     }
@@ -327,7 +327,7 @@ public class ProgramBuilder {
             throw new MalformedProgramException("Alias to non-exist location: " + rightName);
         }
         MemoryObject object = locations.computeIfAbsent(leftName,
-                k->program.getMemory().allocateVirtual(1, true, rightLocation));
+                k->program.getMemory().allocateVirtual(ARCH_SIZE, true, rightLocation));
         object.setName(leftName);
         object.setInitialValue(0,rightLocation.getInitialValue(0));
     }
@@ -338,9 +338,9 @@ public class ProgramBuilder {
             throw new MalformedProgramException("Alias to non-exist location: " + rightName);
         }
         MemoryObject object = locations.computeIfAbsent(
-                leftName, k->program.getMemory().allocateVirtual(1, false, rightLocation));
+                leftName, k->program.getMemory().allocateVirtual(ARCH_SIZE, false, rightLocation));
         object.setName(leftName);
-        object.setInitialValue(0,rightLocation.getInitialValue(0));
+        object.setInitialValue(0, rightLocation.getInitialValue(0));
     }
 
     // ----------------------------------------------------------------------------------------------------------------
