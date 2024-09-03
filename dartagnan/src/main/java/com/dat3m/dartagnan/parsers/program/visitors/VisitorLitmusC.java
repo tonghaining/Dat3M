@@ -210,6 +210,8 @@ public class VisitorLitmusC extends LitmusCBaseVisitor<Object> {
         Register register = programBuilder.getOrNewRegister(scope, name, archType);
         if (ctx.openCLSpace() != null) {
             programBuilder.setAddressSpace(currentThread, name, ctx.openCLSpace().space);
+            boolean atomicity = ctx.pointerTypeSpecifier().atomicTypeSpecifier() != null;
+            object.setIsAtomic(atomicity);
             object.setMemorySpace(ctx.openCLSpace().space);
         }
         programBuilder.addChild(currentThread, EventFactory.newLocal(register, object));

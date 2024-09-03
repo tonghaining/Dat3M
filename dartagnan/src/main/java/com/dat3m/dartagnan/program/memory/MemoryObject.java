@@ -28,6 +28,7 @@ public class MemoryObject extends LeafExpressionBase<Type> {
 
     private String name = null;
     private boolean isThreadLocal = false;
+    private boolean isAtomic = false;
     private String memorySpace = null;
 
     private final Map<Integer, Expression> initialValues = new TreeMap<>();
@@ -49,6 +50,9 @@ public class MemoryObject extends LeafExpressionBase<Type> {
 
     public boolean isThreadLocal() { return this.isThreadLocal; }
     public void setIsThreadLocal(boolean value) { this.isThreadLocal = value;}
+
+    public boolean isAtomic() { return this.isAtomic; }
+    public void setIsAtomic(boolean value) { this.isAtomic = value;}
 
     public String getMemorySpace() { return this.memorySpace; }
     public void setMemorySpace(String value) { this.memorySpace = value; }
