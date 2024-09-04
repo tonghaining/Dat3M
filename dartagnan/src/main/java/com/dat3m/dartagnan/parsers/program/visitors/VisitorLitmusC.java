@@ -15,10 +15,7 @@ import com.dat3m.dartagnan.program.ScopeHierarchy;
 import com.dat3m.dartagnan.program.event.Event;
 import com.dat3m.dartagnan.program.event.EventFactory;
 import com.dat3m.dartagnan.program.event.Tag;
-import com.dat3m.dartagnan.program.event.core.CondJump;
-import com.dat3m.dartagnan.program.event.core.IfAsJump;
-import com.dat3m.dartagnan.program.event.core.Label;
-import com.dat3m.dartagnan.program.event.core.Load;
+import com.dat3m.dartagnan.program.event.core.*;
 import com.dat3m.dartagnan.program.event.lang.catomic.*;
 import com.dat3m.dartagnan.program.memory.MemoryObject;
 
@@ -582,6 +579,7 @@ public class VisitorLitmusC extends LitmusCBaseVisitor<Object> {
             Event event = EventFactory.newStoreWithMo(variable, value, C11.NONATOMIC);
             if (variable instanceof Register reg) {
                 addOpenCLMemorySpaceTag(event, reg.getName());
+                event.addTags(Tag.GPU_SCOPES.WORK_ITEM); // default memory_scope for OpenCL weak access
             }
             return programBuilder.addChild(currentThread, event);
         }
