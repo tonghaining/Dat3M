@@ -1,4 +1,4 @@
-package com.dat3m.dartagnan.compilation;
+package com.dat3m.dartagnan.comparison;
 
 import com.dat3m.dartagnan.configuration.Arch;
 import com.dat3m.dartagnan.configuration.Property;

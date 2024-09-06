@@ -1,4 +1,4 @@
-package com.dat3m.dartagnan.compilation;
+package com.dat3m.dartagnan.comparison;
 
 import com.dat3m.dartagnan.configuration.Arch;
 import com.dat3m.dartagnan.utils.rules.Provider;
@@ -10,7 +10,7 @@ import org.junit.runners.Parameterized;
 import java.io.IOException;
 
 @RunWith(Parameterized.class)
-public class C11AndOpenCLTest extends AbstractCompilationTest {
+public class C11AndOpenCLTest extends AbstractComparisonTest {
 
     @Parameterized.Parameters(name = "{index}: {0}")
     public static Iterable<Object[]> data() throws IOException {

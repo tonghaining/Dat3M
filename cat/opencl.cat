@@ -110,6 +110,12 @@ irreflexive rf | (fr;co) | (co;rf) as rmw_consistent
 (* Sequential consistency *)
 (**************************)
 
+(* ifexists(s) = { 0    if s is empty
+                 { unv  otherwise     *)
+let unv = ~0
+let ifexists(s) = unv; [s]; unv
+
+
 let sc1 = rf^-1; [SC]; co
 let sc2 = [F]; po; co; po; [F]
 let sc3 = [F]; po; fr; po; [F]
@@ -121,8 +127,8 @@ let scp = (SC * SC) & (ghb | lhb | co | sc1 | sc2 | sc3 | sc4 | sc5)
 let sc6 = rf^-1; (ghb | lhb); [W]
 
 (* BEGIN PARTIAL SC STUFF *)
-let p_sc = scp & sc6
-acyclic p_sc & [SC & ~ALL] as S_exists
+let scp_prime = scp & sc6
+acyclic scp_prime & ifexists(SC & ~ALL) as S_exists
 (* END PARTIAL SC STUFF *)
 
 (***************)
