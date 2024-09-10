@@ -158,6 +158,10 @@ public class VisitorLitmusC extends LitmusCBaseVisitor<Object> {
         programBuilder.getOrNewThread(currentThread);
         if (ctx.threadScope() != null) {
             ctx.threadScope().accept(this);
+        } else {
+            // Set default scope hierarchy for OpenCL
+            programBuilder.setThreadScopeHierarchy(currentThread,
+                    ScopeHierarchy.ScopeHierarchyForOpenCL(0, 0));
         }
         visitThreadArguments(ctx.threadArguments());
 
@@ -199,6 +203,13 @@ public class VisitorLitmusC extends LitmusCBaseVisitor<Object> {
             boolean atomicity = ctx.pointerTypeSpecifier().atomicTypeSpecifier() != null;
             object.setIsAtomic(atomicity);
             object.setMemorySpace(ctx.openCLSpace().space);
+        } else {
+            // Using GLOBAL_SPACE as default memory space for OpenCL
+            programBuilder.setAddressSpace(currentThread, name, Tag.OpenCL.GLOBAL_SPACE);
+            boolean atomicity = ctx.pointerTypeSpecifier().atomicTypeSpecifier() != null
+                    || ctx.pointerTypeSpecifier().basicTypeSpecifier().AtomicInt() != null;
+            object.setIsAtomic(atomicity);
+            object.setMemorySpace(Tag.OpenCL.GLOBAL_SPACE);
         }
         programBuilder.addChild(currentThread, EventFactory.newLocal(register, object));
         return null;

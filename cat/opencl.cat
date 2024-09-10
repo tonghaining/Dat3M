@@ -26,7 +26,8 @@ OpenCL
 let symm(r) = r | r^-1
 
 (* Inclusive scopes *)
-let incl = (int & (WI * WI)) |
+let swi = int & (NA * NA)
+let incl = (swi & (WI * WI)) |
     (swg & (WG * WG)) |
     (sdv & (DV * DV)) |
     (ALL * ALL)
@@ -128,7 +129,7 @@ let sc6 = rf^-1; (ghb | lhb); [W]
 
 (* BEGIN PARTIAL SC STUFF *)
 let scp_prime = scp & sc6
-acyclic scp_prime & ifexists(SC & ~ALL) as S_exists
+acyclic scp_prime & ifexists(SC & ~ALL) as s_exists
 (* END PARTIAL SC STUFF *)
 
 (***************)
@@ -140,7 +141,7 @@ let conflict = (((W * _) | (_ * W)) \ ((IW * _) | (_ * IW))) & loc
 let dr = conflict & ~symm(ghb | lhb) & ~incl
 flag ~empty dr as data_race
 
-let ur = (int & conflict & ~symm(po)) \ id
+let ur = (swi & conflict & ~symm(po)) \ id
 flag ~empty ur as unsequenced_race
 
 let bsw = bar_sw(GLOBAL) | bar_sw(LOCAL)

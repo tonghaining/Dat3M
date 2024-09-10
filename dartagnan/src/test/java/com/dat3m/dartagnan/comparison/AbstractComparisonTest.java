@@ -3,8 +3,6 @@ package com.dat3m.dartagnan.comparison;
 import com.dat3m.dartagnan.configuration.Arch;
 import com.dat3m.dartagnan.configuration.Property;
 import com.dat3m.dartagnan.program.Program;
-import com.dat3m.dartagnan.program.event.Event;
-import com.dat3m.dartagnan.program.event.Tag;
 import com.dat3m.dartagnan.utils.ResourceHelper;
 import com.dat3m.dartagnan.utils.rules.Provider;
 import com.dat3m.dartagnan.utils.rules.Providers;
