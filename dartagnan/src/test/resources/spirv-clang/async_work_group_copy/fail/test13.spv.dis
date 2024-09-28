@@ -1,0 +1,69 @@
+; @Config: 3, 1, 1
+; SPIR-V
+; Version: 1.0
+; Generator: Khronos LLVM/SPIR-V Translator; 14
+; Bound: 38
+; Schema: 0
+               OpCapability Addresses
+               OpCapability Linkage
+               OpCapability Kernel
+               OpCapability GenericPointer
+               OpCapability Int8
+          %1 = OpExtInstImport "OpenCL.std"
+               OpMemoryModel Physical32 OpenCL
+               OpEntryPoint Kernel %13 "foo" %__spirv_BuiltInGlobalInvocationId
+               OpSource OpenCL_C 200000
+               OpName %foo_mydata "foo.mydata"
+               OpName %__spirv_BuiltInGlobalInvocationId "__spirv_BuiltInGlobalInvocationId"
+               OpDecorate %__spirv_BuiltInGlobalInvocationId BuiltIn GlobalInvocationId
+               OpDecorate %__spirv_BuiltInGlobalInvocationId Constant
+               OpDecorate %14 FuncParamAttr NoAlias
+               OpDecorate %15 FuncParamAttr NoAlias
+               OpDecorate %15 FuncParamAttr NoCapture
+               OpDecorate %__spirv_BuiltInGlobalInvocationId LinkageAttributes "__spirv_BuiltInGlobalInvocationId" Import
+               OpDecorate %foo_mydata Alignment 4
+               OpDecorate %19 Alignment 4
+       %uint = OpTypeInt 32 0
+      %uchar = OpTypeInt 8 0
+  %uint_1024 = OpConstant %uint 1024
+     %uint_0 = OpConstant %uint 0
+     %uint_2 = OpConstant %uint 2
+     %uint_1 = OpConstant %uint 1
+   %uint_784 = OpConstant %uint 784
+%_arr_uint_uint_1024 = OpTypeArray %uint %uint_1024
+%_ptr_Workgroup__arr_uint_uint_1024 = OpTypePointer Workgroup %_arr_uint_uint_1024
+     %v3uint = OpTypeVector %uint 3
+%_ptr_Input_v3uint = OpTypePointer Input %v3uint
+       %void = OpTypeVoid
+%_ptr_CrossWorkgroup_uint = OpTypePointer CrossWorkgroup %uint
+         %12 = OpTypeFunction %void %_ptr_CrossWorkgroup_uint %_ptr_CrossWorkgroup_uint
+      %Event = OpTypeEvent
+%_ptr_Function_Event = OpTypePointer Function %Event
+%_ptr_Function_uchar = OpTypePointer Function %uchar
+%_ptr_Workgroup_uint = OpTypePointer Workgroup %uint
+%_ptr_Generic_Event = OpTypePointer Generic %Event
+ %foo_mydata = OpVariable %_ptr_Workgroup__arr_uint_uint_1024 Workgroup
+%__spirv_BuiltInGlobalInvocationId = OpVariable %_ptr_Input_v3uint Input
+         %28 = OpConstantNull %Event
+         %13 = OpFunction %void None %12
+         %14 = OpFunctionParameter %_ptr_CrossWorkgroup_uint
+         %15 = OpFunctionParameter %_ptr_CrossWorkgroup_uint
+         %16 = OpLabel
+         %19 = OpVariable %_ptr_Function_Event Function
+         %22 = OpBitcast %_ptr_Function_uchar %19
+               OpLifetimeStart %22 4
+         %25 = OpInBoundsPtrAccessChain %_ptr_Workgroup_uint %foo_mydata %uint_0 %uint_0
+         %29 = OpGroupAsyncCopy %Event %uint_2 %25 %14 %uint_1024 %uint_1 %28
+               OpStore %19 %29 Aligned 4
+               OpControlBarrier %uint_2 %uint_2 %uint_784
+         %31 = OpLoad %v3uint %__spirv_BuiltInGlobalInvocationId Aligned 16
+         %32 = OpCompositeExtract %uint %31 0
+         %33 = OpInBoundsPtrAccessChain %_ptr_Workgroup_uint %foo_mydata %uint_0 %32
+         %34 = OpLoad %uint %33 Aligned 4
+         %35 = OpInBoundsPtrAccessChain %_ptr_CrossWorkgroup_uint %15 %32
+               OpStore %35 %34 Aligned 4
+         %37 = OpPtrCastToGeneric %_ptr_Generic_Event %19
+               OpGroupWaitEvents %uint_2 %uint_1 %37
+               OpLifetimeStop %22 4
+               OpReturn
+               OpFunctionEnd
