@@ -141,6 +141,7 @@ public class VisitorSpirv extends SpirvBaseVisitor<Program> {
                 VisitorOpsBits.class,
                 VisitorOpsConstant.class,
                 VisitorOpsControlFlow.class,
+                VisitorOpsConversion.class,
                 VisitorOpsDebug.class,
                 VisitorOpsExtension.class,
                 VisitorOpsFunction.class,

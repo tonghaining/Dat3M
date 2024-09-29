@@ -35,7 +35,7 @@ import static org.junit.Assert.assertEquals;
 @RunWith(Parameterized.class)
 public class SpirvClangChecksTest {
 
-    private final String modelPath = getRootPath("cat/opencl-overhauling.cat");
+    private final String modelPath = getRootPath("cat/opencl.cat");
     private final String programPath;
     private final int bound;
     private final Result expected;
