@@ -159,6 +159,51 @@ public class VisitorOpsMemory extends SpirvBaseVisitor<Event> {
         return null;
     }
 
+    @Override
+    public Event visitOpPtrAccessChain(SpirvParser.OpPtrAccessChainContext ctx) {
+        visitOpPtrAccessChain(ctx.idResult().getText(), ctx.idResultType().getText(),
+                ctx.base().getText(), ctx.element().getText(), ctx.indexesIdRef());
+        return null;
+    }
+
+    @Override
+    public Event visitOpInBoundsPtrAccessChain(SpirvParser.OpInBoundsPtrAccessChainContext ctx) {
+        visitOpPtrAccessChain(ctx.idResult().getText(), ctx.idResultType().getText(),
+                ctx.base().getText(), ctx.element().getText(), ctx.indexesIdRef());
+        return null;
+    }
+
+    private void visitOpPtrAccessChain(String id, String typeId, String baseId, String elementId,
+                                       List<SpirvParser.IndexesIdRefContext> idxContexts) {
+        if (builder.getType(typeId) instanceof ScopedPointerType pointerType) {
+            Expression basePointer = builder.getExpression(baseId);
+            if (!(basePointer.getType() instanceof ScopedPointerType basePointerType)) {
+                throw new ParsingException("Type '%s' is not a pointer type", baseId);
+            }
+            Expression element = builder.getExpression(elementId);
+            Type resultType = pointerType.getPointedType();
+            Expression address = HelperTypes.getPointerOffset(baseId, basePointer, basePointerType, element);
+            ScopedPointer baseWithOffset = expressions.makeScopedPointer(baseId, pointerType.getScopeId(), basePointerType, address);
+            List<Integer> intIndexes = new ArrayList<>();
+            List<Expression> exprIndexes = new ArrayList<>();
+            idxContexts.forEach(c -> {
+                Expression expression = builder.getExpression(c.getText());
+                exprIndexes.add(expression);
+                intIndexes.add(expression instanceof IntLiteral intLiteral ? intLiteral.getValueAsInt() : -1);
+            });
+            Type runtimeResultType = HelperTypes.getMemberType(baseId, basePointerType.getPointedType(), intIndexes);
+            if (!TypeFactory.isStaticTypeOf(runtimeResultType, resultType)) {
+                throw new ParsingException("Invalid result type in access chain '%s', " +
+                        "expected '%s' but received '%s'", id, resultType, runtimeResultType);
+            }
+            Expression expression = HelperTypes.getMemberAddress(baseId, baseWithOffset, basePointerType, exprIndexes);
+            ScopedPointer pointer = expressions.makeScopedPointer(id, pointerType.getScopeId(), runtimeResultType, expression);
+            builder.addExpression(id, pointer);
+            return;
+        }
+        throw new ParsingException("Type '%s' is not a pointer type", typeId);
+    }
+
     private void visitOpAccessChain(String id, String typeId, String baseId,
                                     List<SpirvParser.IndexesIdRefContext> idxContexts) {
         if (builder.getType(typeId) instanceof ScopedPointerType pointerType) {
@@ -220,7 +265,9 @@ public class VisitorOpsMemory extends SpirvBaseVisitor<Event> {
                 "OpLoad",
                 "OpStore",
                 "OpAccessChain",
-                "OpInBoundsAccessChain"
+                "OpInBoundsAccessChain",
+                "OpPtrAccessChain",
+                "OpInBoundsPtrAccessChain"
         );
     }
 }
