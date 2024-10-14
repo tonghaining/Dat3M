@@ -7,6 +7,7 @@ import com.dat3m.dartagnan.program.event.Event;
 import com.dat3m.dartagnan.program.event.EventFactory;
 import com.dat3m.dartagnan.program.event.core.Label;
 import com.dat3m.dartagnan.program.event.metadata.SourceLocation;
+import com.dat3m.dartagnan.program.memory.ScopedPointerVariable;
 import com.google.common.collect.Sets;
 
 import java.util.*;
@@ -87,6 +88,14 @@ public class ControlFlowBuilder {
 
     public boolean hasCurrentLocation() {
         return currentLocation != null;
+    }
+
+    public void addLifetimeStart(ScopedPointerVariable pointer, Integer offset) {
+        // TODO
+    }
+
+    public void addLifetimeStop(ScopedPointerVariable pointer, Integer offset) {
+        // TODO
     }
 
     private void validateBeforeBuild() {

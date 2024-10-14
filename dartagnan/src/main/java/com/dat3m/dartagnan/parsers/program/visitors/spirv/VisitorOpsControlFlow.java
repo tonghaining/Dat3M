@@ -12,8 +12,10 @@ import com.dat3m.dartagnan.parsers.program.visitors.spirv.builders.ProgramBuilde
 import com.dat3m.dartagnan.program.Register;
 import com.dat3m.dartagnan.program.event.Event;
 import com.dat3m.dartagnan.program.event.EventFactory;
+import com.dat3m.dartagnan.program.event.Tag;
 import com.dat3m.dartagnan.program.event.core.Label;
 import com.dat3m.dartagnan.program.event.functions.Return;
+import com.dat3m.dartagnan.program.memory.ScopedPointerVariable;
 
 import java.util.*;
 
@@ -140,6 +142,34 @@ public class VisitorOpsControlFlow extends SpirvBaseVisitor<Event> {
                 builder.getCurrentFunctionName());
     }
 
+    @Override
+    public Event visitOpLifetimeStart(SpirvParser.OpLifetimeStartContext ctx) {
+        // Declare that an object was not defined before this instruction.
+        String pointerId = ctx.pointer().getText();
+        Integer size = Integer.parseInt(ctx.sizeLiteralInteger().getText());
+        Expression pointerExp = builder.getExpression(pointerId);
+        if (!(pointerExp instanceof ScopedPointerVariable pointerVariable)
+                || !pointerVariable.getScopeId().equals(Tag.Spirv.SC_FUNCTION) ) {
+            throw new ParsingException("Lifetime start can only be applied to a pointer with Function storage class: '%s'", pointerId);
+        }
+        cfBuilder.addLifetimeStart(pointerVariable, size);
+        return null;
+    }
+
+    @Override
+    public Event visitOpLifetimeStop(SpirvParser.OpLifetimeStopContext ctx) {
+        // Declare that an object is not used after this instruction.
+        String pointerId = ctx.pointer().getText();
+        Integer size = Integer.parseInt(ctx.sizeLiteralInteger().getText());
+        Expression pointerExp = builder.getExpression(pointerId);
+        if (!(pointerExp instanceof ScopedPointerVariable pointerVariable)
+                || !pointerVariable.getScopeId().equals(Tag.Spirv.SC_FUNCTION)) {
+            throw new ParsingException("Lifetime stop can only be applied to a pointer with Function storage class: '%s'", pointerId);
+        }
+        cfBuilder.addLifetimeStop(pointerVariable, size);
+        return null;
+    }
+
     private Event visitGoto(String labelId) {
         Label label = cfBuilder.getOrCreateLabel(labelId);
         Event event = EventFactory.newGoto(label);
@@ -211,7 +241,9 @@ public class VisitorOpsControlFlow extends SpirvBaseVisitor<Event> {
                 "OpLoopMerge",
                 "OpSelectionMerge",
                 "OpReturn",
-                "OpReturnValue"
+                "OpReturnValue",
+                "OpLifetimeStart",
+                "OpLifetimeStop"
         );
     }
 }
