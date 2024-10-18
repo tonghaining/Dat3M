@@ -1,0 +1,40 @@
+; @Config: 3, 1, 3
+; SPIR-V
+; Version: 1.0
+; Generator: Khronos LLVM/SPIR-V Translator; 14
+; Bound: 21
+; Schema: 0
+               OpCapability Addresses
+               OpCapability Linkage
+               OpCapability Kernel
+          %1 = OpExtInstImport "OpenCL.std"
+               OpMemoryModel Physical32 OpenCL
+               OpEntryPoint Kernel %9 "foo" %__spirv_BuiltInGlobalInvocationId
+               OpSource OpenCL_C 200000
+               OpName %__spirv_BuiltInGlobalInvocationId "__spirv_BuiltInGlobalInvocationId"
+               OpDecorate %__spirv_BuiltInGlobalInvocationId BuiltIn GlobalInvocationId
+               OpDecorate %__spirv_BuiltInGlobalInvocationId Constant
+               OpDecorate %10 FuncParamAttr NoCapture
+               OpDecorate %__spirv_BuiltInGlobalInvocationId LinkageAttributes "__spirv_BuiltInGlobalInvocationId" Import
+       %uint = OpTypeInt 32 0
+     %v3uint = OpTypeVector %uint 3
+%_ptr_Input_v3uint = OpTypePointer Input %v3uint
+       %void = OpTypeVoid
+%_ptr_CrossWorkgroup_v3uint = OpTypePointer CrossWorkgroup %v3uint
+          %8 = OpTypeFunction %void %_ptr_CrossWorkgroup_v3uint
+     %v4uint = OpTypeVector %uint 4
+%_ptr_CrossWorkgroup_v4uint = OpTypePointer CrossWorkgroup %v4uint
+%__spirv_BuiltInGlobalInvocationId = OpVariable %_ptr_Input_v3uint Input
+         %14 = OpUndef %v3uint
+          %9 = OpFunction %void None %8
+         %10 = OpFunctionParameter %_ptr_CrossWorkgroup_v3uint
+         %11 = OpLabel
+         %12 = OpLoad %v3uint %__spirv_BuiltInGlobalInvocationId Aligned 16
+         %13 = OpCompositeExtract %uint %12 0
+         %15 = OpCompositeInsert %v3uint %13 %14 0
+         %16 = OpInBoundsPtrAccessChain %_ptr_CrossWorkgroup_v3uint %10 %13
+         %18 = OpVectorShuffle %v4uint %15 %14 0 0 0 4294967295
+         %20 = OpBitcast %_ptr_CrossWorkgroup_v4uint %16
+               OpStore %20 %18 Aligned 16
+               OpReturn
+               OpFunctionEnd
