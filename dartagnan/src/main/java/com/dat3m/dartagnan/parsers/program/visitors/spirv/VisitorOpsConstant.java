@@ -21,7 +21,6 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import static com.dat3m.dartagnan.parsers.program.visitors.spirv.decorations.DecorationType.BUILT_IN;
 import static com.dat3m.dartagnan.parsers.program.visitors.spirv.decorations.DecorationType.SPEC_ID;
@@ -105,17 +104,6 @@ public class VisitorOpsConstant extends SpirvBaseVisitor<Expression> {
             }
         }
         return builder.addExpression(id, makeConstantComposite(id, type, elementIds));
-    }
-
-    @Override
-    public Expression visitOpCompositeExtract(SpirvParser.OpCompositeExtractContext ctx) {
-        String id = ctx.idResult().getText();
-        Type type = builder.getType(ctx.idResultType().getText());
-        String compositeId = ctx.composite().getText();
-        Expression composite = builder.getExpression(compositeId);
-        int index = Integer.parseInt(ctx.indexesLiteralInteger().stream().map(RuleContext::getText)
-                .collect(Collectors.joining()));
-        return builder.addExpression(id, makeCompositeElement(composite, index, type));
     }
 
     @Override
@@ -230,34 +218,6 @@ public class VisitorOpsConstant extends SpirvBaseVisitor<Expression> {
         return expressions.makeArray(elementType, elements, true);
     }
 
-    private Expression makeCompositeElement(Expression composite, int index, Type type) {
-        if (composite.getType() instanceof AggregateType aType) {
-            List<Type> elementTypes = aType.getDirectFields();
-            if (index >= elementTypes.size()) {
-                throw new ParsingException("Index out of bounds for composite '%s', " +
-                        "expected index less than %d but received %d", composite, elementTypes.size(), index);
-            }
-            Type elementType = elementTypes.get(index);
-            if (!elementType.equals(type)) {
-                throw new ParsingException("Mismatching type of a composite '%s' element '%d', " +
-                        "expected '%s' but received '%s'", composite, index, elementType, type);
-            }
-            return expressions.makeExtract(index, composite);
-        } else if (composite.getType() instanceof ArrayType aType) {
-            if (index >= aType.getNumElements()) {
-                throw new ParsingException("Index out of bounds for array '%s', " +
-                        "expected index less than %d but received %d", composite, aType.getNumElements(), index);
-            }
-            Type elementType = aType.getElementType();
-            if (!elementType.equals(type)) {
-                throw new ParsingException("Mismatching type of an array '%s' element '%d', " +
-                        "expected '%s' but received '%s'", composite, index, elementType, type);
-            }
-            return expressions.makeExtract(index, composite);
-        }
-        throw new ParsingException("Illegal composite type '%s'", composite.getType());
-    }
-
     private Integer getInputValue(String id) {
         if (builder.hasInput(id)) {
             Expression expr = builder.getInput(id);
@@ -277,11 +237,10 @@ public class VisitorOpsConstant extends SpirvBaseVisitor<Expression> {
                 "OpConstant",
                 "OpConstantComposite",
                 "OpConstantNull",
-                "OpCompositeExtract",
+                "OpSpecConstantComposite",
                 "OpSpecConstantTrue",
                 "OpSpecConstantFalse",
-                "OpSpecConstant",
-                "OpSpecConstantComposite"
+                "OpSpecConstant"
         );
     }
 }
