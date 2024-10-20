@@ -381,6 +381,7 @@ public final class Tag {
         // Space
         public static final String GLOBAL_SPACE = "GLOBAL";
         public static final String LOCAL_SPACE = "LOCAL";
+        public static final String GENERIC_SPACE = "GENERIC";
         // Barrier
         public static final String ENTRY_FENCE = "EF";
         public static final String EXIT_FENCE = "XF";
