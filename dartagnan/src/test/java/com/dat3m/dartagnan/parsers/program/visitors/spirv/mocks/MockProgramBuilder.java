@@ -125,6 +125,17 @@ public class MockProgramBuilder extends ProgramBuilder {
         return (ScopedPointerVariable) addExpression(id, pointer);
     }
 
+    public ScopedPointerVariable mockVirtualVariable(String id, String typeId) {
+        ScopedPointerType pointerType = (ScopedPointerType)getType(typeId);
+        Type pointedType = pointerType.getPointedType();
+        String scopeId = pointerType.getScopeId();
+        int bytes = typeFactory.getMemorySizeInBytes(pointedType);
+        MemoryObject memoryObject =program.getMemory().allocateVirtual(bytes, true, null);
+        memoryObject.setName(id);
+        ScopedPointerVariable pointer = exprFactory.makeScopedPointerVariable(id, scopeId, pointedType, memoryObject);
+        return (ScopedPointerVariable) addExpression(id, pointer);
+    }
+
     public void mockFunctionStart(boolean addStartLabel) {
         FunctionType type = typeFactory.getFunctionType(typeFactory.getVoidType(), List.of());
         startCurrentFunction(new Function("mock_function", type, List.of(), 0, null));

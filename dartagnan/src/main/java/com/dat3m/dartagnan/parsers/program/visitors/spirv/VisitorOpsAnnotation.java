@@ -34,7 +34,8 @@ public class VisitorOpsAnnotation extends SpirvBaseVisitor<Void> {
                 String value = ctx.decoration().specializationConstantID().getText();
                 specId.addDecoration(id, value);
             }
-            case ARRAY_STRIDE, BINDING, BLOCK, BUFFER_BLOCK, COHERENT, DESCRIPTOR_SET, OFFSET, NO_CONTRACTION, NO_PERSPECTIVE, NON_WRITABLE -> {
+            case ARRAY_STRIDE, BINDING, BLOCK, BUFFER_BLOCK, COHERENT, DESCRIPTOR_SET, OFFSET, NO_CONTRACTION, NO_PERSPECTIVE, NON_WRITABLE,
+                 ALIGNMENT, CONSTANT, FUNC_PARAM_ATTR, LINKAGE_ATTRIBUTES -> {
                 // TODO: Implementation
             }
             default -> throw new ParsingException("Unsupported decoration type '%s'", type);
