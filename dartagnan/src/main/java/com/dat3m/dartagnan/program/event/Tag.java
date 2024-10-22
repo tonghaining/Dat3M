@@ -386,6 +386,7 @@ public final class Tag {
         public static final String ENTRY_FENCE = "EF";
         public static final String EXIT_FENCE = "XF";
         // Default Tags
+        public static final String DEFAULT_SPACE = GENERIC_SPACE;
         public static final String DEFAULT_SCOPE = DEVICE;
         public static final String DEFAULT_WEAK_SCOPE = WORK_ITEM;
 
