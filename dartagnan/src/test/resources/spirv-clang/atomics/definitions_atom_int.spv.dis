@@ -1,0 +1,72 @@
+; @Config: 3, 1, 1
+; SPIR-V
+; Version: 1.0
+; Generator: Khronos LLVM/SPIR-V Translator; 14
+; Bound: 60
+; Schema: 0
+               OpCapability Addresses
+               OpCapability Kernel
+          %1 = OpExtInstImport "OpenCL.std"
+               OpMemoryModel Physical32 OpenCL
+               OpEntryPoint Kernel %7 "definitions"
+               OpSource OpenCL_C 200000
+       %uint = OpTypeInt 32 0
+     %uint_2 = OpConstant %uint 2
+     %uint_0 = OpConstant %uint 0
+    %uint_10 = OpConstant %uint 10
+       %void = OpTypeVoid
+%_ptr_Workgroup_uint = OpTypePointer Workgroup %uint
+%_ptr_CrossWorkgroup_uint = OpTypePointer CrossWorkgroup %uint
+          %6 = OpTypeFunction %void %_ptr_Workgroup_uint %_ptr_Workgroup_uint %_ptr_CrossWorkgroup_uint %_ptr_CrossWorkgroup_uint
+          %7 = OpFunction %void None %6
+          %8 = OpFunctionParameter %_ptr_Workgroup_uint
+          %9 = OpFunctionParameter %_ptr_Workgroup_uint
+         %10 = OpFunctionParameter %_ptr_CrossWorkgroup_uint
+         %11 = OpFunctionParameter %_ptr_CrossWorkgroup_uint
+         %12 = OpLabel
+         %16 = OpAtomicIAdd %uint %8 %uint_2 %uint_0 %uint_10
+         %17 = OpAtomicISub %uint %8 %uint_2 %uint_0 %uint_10
+         %18 = OpAtomicExchange %uint %8 %uint_2 %uint_0 %uint_10
+         %19 = OpAtomicSMin %uint %8 %uint_2 %uint_0 %uint_10
+         %20 = OpAtomicSMax %uint %8 %uint_2 %uint_0 %uint_10
+         %21 = OpAtomicAnd %uint %8 %uint_2 %uint_0 %uint_10
+         %22 = OpAtomicOr %uint %8 %uint_2 %uint_0 %uint_10
+         %23 = OpAtomicXor %uint %8 %uint_2 %uint_0 %uint_10
+         %24 = OpAtomicIIncrement %uint %8 %uint_2 %uint_0
+         %25 = OpAtomicIDecrement %uint %8 %uint_2 %uint_0
+         %26 = OpAtomicCompareExchange %uint %8 %uint_2 %uint_0 %uint_0 %uint_10 %uint_10
+         %27 = OpAtomicIAdd %uint %9 %uint_2 %uint_0 %uint_10
+         %28 = OpAtomicISub %uint %9 %uint_2 %uint_0 %uint_10
+         %29 = OpAtomicExchange %uint %9 %uint_2 %uint_0 %uint_10
+         %30 = OpAtomicUMin %uint %9 %uint_2 %uint_0 %uint_10
+         %31 = OpAtomicUMax %uint %9 %uint_2 %uint_0 %uint_10
+         %32 = OpAtomicAnd %uint %9 %uint_2 %uint_0 %uint_10
+         %33 = OpAtomicOr %uint %9 %uint_2 %uint_0 %uint_10
+         %34 = OpAtomicXor %uint %9 %uint_2 %uint_0 %uint_10
+         %35 = OpAtomicIIncrement %uint %9 %uint_2 %uint_0
+         %36 = OpAtomicIDecrement %uint %9 %uint_2 %uint_0
+         %37 = OpAtomicCompareExchange %uint %9 %uint_2 %uint_0 %uint_0 %uint_10 %uint_10
+         %38 = OpAtomicIAdd %uint %10 %uint_2 %uint_0 %uint_10
+         %39 = OpAtomicISub %uint %10 %uint_2 %uint_0 %uint_10
+         %40 = OpAtomicExchange %uint %10 %uint_2 %uint_0 %uint_10
+         %41 = OpAtomicSMin %uint %10 %uint_2 %uint_0 %uint_10
+         %42 = OpAtomicSMax %uint %10 %uint_2 %uint_0 %uint_10
+         %43 = OpAtomicAnd %uint %10 %uint_2 %uint_0 %uint_10
+         %44 = OpAtomicOr %uint %10 %uint_2 %uint_0 %uint_10
+         %45 = OpAtomicXor %uint %10 %uint_2 %uint_0 %uint_10
+         %46 = OpAtomicIIncrement %uint %10 %uint_2 %uint_0
+         %47 = OpAtomicIDecrement %uint %10 %uint_2 %uint_0
+         %48 = OpAtomicCompareExchange %uint %10 %uint_2 %uint_0 %uint_0 %uint_10 %uint_10
+         %49 = OpAtomicIAdd %uint %11 %uint_2 %uint_0 %uint_10
+         %50 = OpAtomicISub %uint %11 %uint_2 %uint_0 %uint_10
+         %51 = OpAtomicExchange %uint %11 %uint_2 %uint_0 %uint_10
+         %52 = OpAtomicUMin %uint %11 %uint_2 %uint_0 %uint_10
+         %53 = OpAtomicUMax %uint %11 %uint_2 %uint_0 %uint_10
+         %54 = OpAtomicAnd %uint %11 %uint_2 %uint_0 %uint_10
+         %55 = OpAtomicOr %uint %11 %uint_2 %uint_0 %uint_10
+         %56 = OpAtomicXor %uint %11 %uint_2 %uint_0 %uint_10
+         %57 = OpAtomicIIncrement %uint %11 %uint_2 %uint_0
+         %58 = OpAtomicIDecrement %uint %11 %uint_2 %uint_0
+         %59 = OpAtomicCompareExchange %uint %11 %uint_2 %uint_0 %uint_0 %uint_10 %uint_10
+               OpReturn
+               OpFunctionEnd

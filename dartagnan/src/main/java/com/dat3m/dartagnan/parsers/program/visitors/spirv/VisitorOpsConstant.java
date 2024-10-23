@@ -237,10 +237,10 @@ public class VisitorOpsConstant extends SpirvBaseVisitor<Expression> {
                 "OpConstant",
                 "OpConstantComposite",
                 "OpConstantNull",
+                "OpSpecConstantComposite",
                 "OpSpecConstantTrue",
                 "OpSpecConstantFalse",
-                "OpSpecConstant",
-                "OpSpecConstantComposite"
+                "OpSpecConstant"
         );
     }
 }
