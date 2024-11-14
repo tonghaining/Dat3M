@@ -1,0 +1,50 @@
+; @Config: 3, 1, 3
+; SPIR-V
+; Version: 1.0
+; Generator: Khronos LLVM/SPIR-V Translator; 14
+; Bound: 25
+; Schema: 0
+               OpCapability Addresses
+               OpCapability Linkage
+               OpCapability Kernel
+          %1 = OpExtInstImport "OpenCL.std"
+               OpMemoryModel Physical32 OpenCL
+               OpEntryPoint Kernel %17 "baz" %__spirv_BuiltInLocalInvocationId
+               OpSource OpenCL_C 200000
+               OpName %__spirv_BuiltInLocalInvocationId "__spirv_BuiltInLocalInvocationId"
+               OpName %foo "foo"
+               OpDecorate %__spirv_BuiltInLocalInvocationId BuiltIn LocalInvocationId
+               OpDecorate %__spirv_BuiltInLocalInvocationId Constant
+               OpDecorate %9 FuncParamAttr NoCapture
+               OpDecorate %18 FuncParamAttr NoCapture
+               OpDecorate %9 FuncParamAttr NoWrite
+               OpDecorate %foo LinkageAttributes "foo" Export
+               OpDecorate %__spirv_BuiltInLocalInvocationId LinkageAttributes "__spirv_BuiltInLocalInvocationId" Import
+       %uint = OpTypeInt 32 0
+     %uint_1 = OpConstant %uint 1
+     %v3uint = OpTypeVector %uint 3
+%_ptr_Input_v3uint = OpTypePointer Input %v3uint
+%_ptr_Workgroup_uint = OpTypePointer Workgroup %uint
+          %7 = OpTypeFunction %uint %_ptr_Workgroup_uint
+       %void = OpTypeVoid
+         %16 = OpTypeFunction %void %_ptr_Workgroup_uint
+%__spirv_BuiltInLocalInvocationId = OpVariable %_ptr_Input_v3uint Input
+        %foo = OpFunction %uint Const %7
+          %9 = OpFunctionParameter %_ptr_Workgroup_uint
+         %10 = OpLabel
+         %11 = OpLoad %v3uint %__spirv_BuiltInLocalInvocationId Aligned 16
+         %12 = OpCompositeExtract %uint %11 0
+         %13 = OpInBoundsPtrAccessChain %_ptr_Workgroup_uint %9 %12
+         %14 = OpLoad %uint %13 Aligned 4
+               OpReturnValue %14
+               OpFunctionEnd
+         %17 = OpFunction %void None %16
+         %18 = OpFunctionParameter %_ptr_Workgroup_uint
+         %19 = OpLabel
+         %20 = OpLoad %v3uint %__spirv_BuiltInLocalInvocationId Aligned 16
+         %21 = OpCompositeExtract %uint %20 0
+         %23 = OpIAdd %uint %21 %uint_1
+         %24 = OpInBoundsPtrAccessChain %_ptr_Workgroup_uint %18 %23
+               OpStore %24 %21 Aligned 4
+               OpReturn
+               OpFunctionEnd

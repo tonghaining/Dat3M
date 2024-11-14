@@ -22,6 +22,7 @@ public class VisitorOpsExtension extends SpirvBaseVisitor<Void> {
         VisitorExtensionClspvReflection clspv = new VisitorExtensionClspvReflection(builder);
         this.availableVisitors.put("NonSemantic.ClspvReflection.5", clspv);
         this.availableVisitors.put("NonSemantic.ClspvReflection.6", clspv);
+        this.availableVisitors.put("OpenCL.std", clspv); // TODO: add OpenCL Reflection?
     }
 
     @Override

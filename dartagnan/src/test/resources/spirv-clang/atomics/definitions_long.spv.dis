@@ -1,0 +1,75 @@
+; @Config: 3, 1, 1
+; SPIR-V
+; Version: 1.0
+; Generator: Khronos LLVM/SPIR-V Translator; 14
+; Bound: 61
+; Schema: 0
+               OpCapability Addresses
+               OpCapability Kernel
+               OpCapability Int64
+               OpCapability Int64Atomics
+          %1 = OpExtInstImport "OpenCL.std"
+               OpMemoryModel Physical32 OpenCL
+               OpEntryPoint Kernel %7 "definitions"
+               OpSource OpenCL_C 200000
+      %ulong = OpTypeInt 64 0
+       %uint = OpTypeInt 32 0
+     %uint_2 = OpConstant %uint 2
+     %uint_0 = OpConstant %uint 0
+   %ulong_10 = OpConstant %ulong 10
+       %void = OpTypeVoid
+%_ptr_Workgroup_ulong = OpTypePointer Workgroup %ulong
+%_ptr_CrossWorkgroup_ulong = OpTypePointer CrossWorkgroup %ulong
+          %6 = OpTypeFunction %void %_ptr_Workgroup_ulong %_ptr_Workgroup_ulong %_ptr_CrossWorkgroup_ulong %_ptr_CrossWorkgroup_ulong
+          %7 = OpFunction %void None %6
+          %8 = OpFunctionParameter %_ptr_Workgroup_ulong
+          %9 = OpFunctionParameter %_ptr_Workgroup_ulong
+         %10 = OpFunctionParameter %_ptr_CrossWorkgroup_ulong
+         %11 = OpFunctionParameter %_ptr_CrossWorkgroup_ulong
+         %12 = OpLabel
+         %17 = OpAtomicIAdd %ulong %8 %uint_2 %uint_0 %ulong_10
+         %18 = OpAtomicISub %ulong %8 %uint_2 %uint_0 %ulong_10
+         %19 = OpAtomicExchange %ulong %8 %uint_2 %uint_0 %ulong_10
+         %20 = OpAtomicSMin %ulong %8 %uint_2 %uint_0 %ulong_10
+         %21 = OpAtomicSMax %ulong %8 %uint_2 %uint_0 %ulong_10
+         %22 = OpAtomicAnd %ulong %8 %uint_2 %uint_0 %ulong_10
+         %23 = OpAtomicOr %ulong %8 %uint_2 %uint_0 %ulong_10
+         %24 = OpAtomicXor %ulong %8 %uint_2 %uint_0 %ulong_10
+         %25 = OpAtomicIIncrement %ulong %8 %uint_2 %uint_0
+         %26 = OpAtomicIDecrement %ulong %8 %uint_2 %uint_0
+         %27 = OpAtomicCompareExchange %ulong %8 %uint_2 %uint_0 %uint_0 %ulong_10 %ulong_10
+         %28 = OpAtomicIAdd %ulong %9 %uint_2 %uint_0 %ulong_10
+         %29 = OpAtomicISub %ulong %9 %uint_2 %uint_0 %ulong_10
+         %30 = OpAtomicExchange %ulong %9 %uint_2 %uint_0 %ulong_10
+         %31 = OpAtomicUMin %ulong %9 %uint_2 %uint_0 %ulong_10
+         %32 = OpAtomicUMax %ulong %9 %uint_2 %uint_0 %ulong_10
+         %33 = OpAtomicAnd %ulong %9 %uint_2 %uint_0 %ulong_10
+         %34 = OpAtomicOr %ulong %9 %uint_2 %uint_0 %ulong_10
+         %35 = OpAtomicXor %ulong %9 %uint_2 %uint_0 %ulong_10
+         %36 = OpAtomicIIncrement %ulong %9 %uint_2 %uint_0
+         %37 = OpAtomicIDecrement %ulong %9 %uint_2 %uint_0
+         %38 = OpAtomicCompareExchange %ulong %9 %uint_2 %uint_0 %uint_0 %ulong_10 %ulong_10
+         %39 = OpAtomicIAdd %ulong %10 %uint_2 %uint_0 %ulong_10
+         %40 = OpAtomicISub %ulong %10 %uint_2 %uint_0 %ulong_10
+         %41 = OpAtomicExchange %ulong %10 %uint_2 %uint_0 %ulong_10
+         %42 = OpAtomicSMin %ulong %10 %uint_2 %uint_0 %ulong_10
+         %43 = OpAtomicSMax %ulong %10 %uint_2 %uint_0 %ulong_10
+         %44 = OpAtomicAnd %ulong %10 %uint_2 %uint_0 %ulong_10
+         %45 = OpAtomicOr %ulong %10 %uint_2 %uint_0 %ulong_10
+         %46 = OpAtomicXor %ulong %10 %uint_2 %uint_0 %ulong_10
+         %47 = OpAtomicIIncrement %ulong %10 %uint_2 %uint_0
+         %48 = OpAtomicIDecrement %ulong %10 %uint_2 %uint_0
+         %49 = OpAtomicCompareExchange %ulong %10 %uint_2 %uint_0 %uint_0 %ulong_10 %ulong_10
+         %50 = OpAtomicIAdd %ulong %11 %uint_2 %uint_0 %ulong_10
+         %51 = OpAtomicISub %ulong %11 %uint_2 %uint_0 %ulong_10
+         %52 = OpAtomicExchange %ulong %11 %uint_2 %uint_0 %ulong_10
+         %53 = OpAtomicUMin %ulong %11 %uint_2 %uint_0 %ulong_10
+         %54 = OpAtomicUMax %ulong %11 %uint_2 %uint_0 %ulong_10
+         %55 = OpAtomicAnd %ulong %11 %uint_2 %uint_0 %ulong_10
+         %56 = OpAtomicOr %ulong %11 %uint_2 %uint_0 %ulong_10
+         %57 = OpAtomicXor %ulong %11 %uint_2 %uint_0 %ulong_10
+         %58 = OpAtomicIIncrement %ulong %11 %uint_2 %uint_0
+         %59 = OpAtomicIDecrement %ulong %11 %uint_2 %uint_0
+         %60 = OpAtomicCompareExchange %ulong %11 %uint_2 %uint_0 %uint_0 %ulong_10 %ulong_10
+               OpReturn
+               OpFunctionEnd

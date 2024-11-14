@@ -5,10 +5,7 @@ import com.dat3m.dartagnan.expression.Expression;
 import com.dat3m.dartagnan.expression.ExpressionFactory;
 import com.dat3m.dartagnan.expression.Type;
 import com.dat3m.dartagnan.expression.integers.IntLiteral;
-import com.dat3m.dartagnan.expression.type.AggregateType;
-import com.dat3m.dartagnan.expression.type.ArrayType;
-import com.dat3m.dartagnan.expression.type.IntegerType;
-import com.dat3m.dartagnan.expression.type.TypeFactory;
+import com.dat3m.dartagnan.expression.type.*;
 
 import java.util.List;
 
@@ -64,6 +61,18 @@ public class HelperTypes {
             throw new ParsingException(indexTooDeepError(id));
         }
         return base;
+    }
+
+    public static Expression getPointerOffset(String id, Expression base, Type type, Expression offset) {
+        if (type instanceof ScopedPointerType sType) {
+            int size = types.getMemorySizeInBytes(sType.getPointedType());
+            IntLiteral sizeExpr = expressions.makeValue(size, archType);
+            Expression formattedOffset = expressions.makeIntegerCast(offset, archType, true);
+            Expression offsetExpr = expressions.makeBinary(sizeExpr, MUL, formattedOffset);
+            Expression formattedBase = expressions.makeIntegerCast(base, archType, true);
+            return expressions.makeBinary(formattedBase, ADD, offsetExpr);
+        }
+        throw new ParsingException("Cannot offset non-pointer variable '%s'", id);
     }
 
     private static Type getArrayMemberType(String id, ArrayType type, List<Integer> indexes) {

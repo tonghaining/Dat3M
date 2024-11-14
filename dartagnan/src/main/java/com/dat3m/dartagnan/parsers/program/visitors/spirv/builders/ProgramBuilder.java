@@ -5,17 +5,16 @@ import com.dat3m.dartagnan.exception.ParsingException;
 import com.dat3m.dartagnan.expression.Expression;
 import com.dat3m.dartagnan.expression.Type;
 import com.dat3m.dartagnan.expression.type.FunctionType;
+import com.dat3m.dartagnan.expression.type.TypeFactory;
 import com.dat3m.dartagnan.parsers.program.visitors.spirv.decorations.BuiltIn;
 import com.dat3m.dartagnan.parsers.program.visitors.spirv.utils.ThreadCreator;
 import com.dat3m.dartagnan.parsers.program.visitors.spirv.utils.ThreadGrid;
+import com.dat3m.dartagnan.program.event.core.Alloc;
 import com.dat3m.dartagnan.program.event.functions.FunctionCall;
-import com.dat3m.dartagnan.program.memory.ScopedPointer;
-import com.dat3m.dartagnan.program.memory.ScopedPointerVariable;
+import com.dat3m.dartagnan.program.memory.*;
 import com.dat3m.dartagnan.expression.type.ScopedPointerType;
 import com.dat3m.dartagnan.program.*;
 import com.dat3m.dartagnan.program.event.*;
-import com.dat3m.dartagnan.program.memory.Memory;
-import com.dat3m.dartagnan.program.memory.MemoryObject;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -28,6 +27,7 @@ public class ProgramBuilder {
     protected final Map<String, Expression> expressions = new HashMap<>();
     protected final Map<String, Expression> inputs = new HashMap<>();
     protected final Map<String, String> debugInfos = new HashMap<>();
+    protected final Map<MemoryObject, Type> localTypes = new HashMap<>();
     protected final ThreadGrid grid;
     protected final Program program;
     protected ControlFlowBuilder controlFlowBuilder;
@@ -167,6 +167,34 @@ public class ProgramBuilder {
         return memObj;
     }
 
+    public MemoryObject allocateVariable(String id, Alloc alloc) {
+        MemoryObject memObj = program.getMemory().allocate(alloc);
+        memObj.setName(id);
+        return memObj;
+    }
+
+    public Register addDummyPointerRegister(String Id, Type type) {
+        if (type instanceof ScopedPointerType || type instanceof FunctionType) {
+            throw new ParsingException("Register cannot be a pointer or a function");
+        }
+        return getCurrentFunctionOrThrowError().newRegister("dummy_" + Id,  TypeFactory.getInstance().getPointerType());
+    }
+
+    public void addLocalType(MemoryObject memoryObject, Type type) {
+        if (localTypes.containsKey(memoryObject)) {
+            throw new ParsingException("Duplicated local pointer definition '%s'", type);
+        }
+        localTypes.put(memoryObject, type);
+    }
+
+    public Type getLocalType(MemoryObject memoryObject) {
+        Type type = localTypes.get(memoryObject);
+        if (type == null) {
+            throw new ParsingException("Reference to undefined local pointer '%s'", memoryObject);
+        }
+        return type;
+    }
+
     // TODO: Proper implementation of pointers
     //  where ScopedPointer uses ScopedPointerType
     public String getPointerStorageClass(String id) {
@@ -187,6 +215,10 @@ public class ProgramBuilder {
         if (type instanceof ScopedPointerType) {
             throw new ParsingException("Register cannot be a pointer");
         }
+        return getCurrentFunctionOrThrowError().newRegister(id, type);
+    }
+
+    public Register addRegister(String id, Type type) {
         return getCurrentFunctionOrThrowError().newRegister(id, type);
     }
 

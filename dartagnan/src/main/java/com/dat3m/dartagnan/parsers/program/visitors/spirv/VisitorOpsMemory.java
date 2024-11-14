@@ -13,6 +13,7 @@ import com.dat3m.dartagnan.parsers.program.visitors.spirv.helpers.HelperTypes;
 import com.dat3m.dartagnan.parsers.program.visitors.spirv.helpers.HelperInputs;
 import com.dat3m.dartagnan.parsers.program.visitors.spirv.helpers.HelperTags;
 import com.dat3m.dartagnan.parsers.program.visitors.spirv.builders.ProgramBuilder;
+import com.dat3m.dartagnan.program.event.core.Alloc;
 import com.dat3m.dartagnan.program.memory.MemoryObject;
 import com.dat3m.dartagnan.program.memory.ScopedPointer;
 import com.dat3m.dartagnan.program.memory.ScopedPointerVariable;
@@ -23,6 +24,7 @@ import com.dat3m.dartagnan.program.event.EventFactory;
 import com.dat3m.dartagnan.program.event.Tag;
 import org.antlr.v4.runtime.RuleContext;
 
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -58,17 +60,45 @@ public class VisitorOpsMemory extends SpirvBaseVisitor<Event> {
 
     @Override
     public Event visitOpLoad(SpirvParser.OpLoadContext ctx) {
-        Register register = builder.addRegister(ctx.idResult().getText(), ctx.idResultType().getText());
-        Expression pointer = builder.getExpression(ctx.pointer().getText());
-        Event event = EventFactory.newLoad(register, pointer);
+        String id = ctx.idResult().getText();
+        String typeId = ctx.idResultType().getText();
+        Expression pointerExp = builder.getExpression(ctx.pointer().getText());
         Set<String> tags = parseMemoryAccessTags(ctx.memoryAccess());
-        if (!tags.contains(Tag.Spirv.MEM_AVAILABLE)) {
-            String storageClass = builder.getPointerStorageClass(ctx.pointer().getText());
-            event.addTags(tags);
-            event.addTags(storageClass);
-            return builder.addEvent(event);
+        String storageClass = builder.getPointerStorageClass(ctx.pointer().getText());
+        Type type = builder.getType(typeId);
+        if (!(pointerExp instanceof ScopedPointer pointer)) {
+            throw new ParsingException("Type '%s' is not a pointer type", ctx.pointer().getText());
         }
-        throw new ParsingException("OpLoad cannot contain tag '%s'", Tag.Spirv.MEM_AVAILABLE);
+        if (tags.contains(Tag.Spirv.MEM_AVAILABLE)) {
+            throw new ParsingException("OpLoad cannot contain tag '%s'", Tag.Spirv.MEM_AVAILABLE);
+        }
+        if (type instanceof ArrayType arrayType) {
+            Register register = builder.addDummyPointerRegister(id, arrayType);
+            long size = TypeFactory.getInstance().getMemorySizeInBytes(type);
+            IntegerType pointerIntegerType = TypeFactory.getInstance().getArchType();
+            Expression sizeExpression = new IntLiteral(pointerIntegerType, new BigInteger(Long.toString(size)));
+            Alloc alloc = EventFactory.newAlloc(register, type, sizeExpression, false, false);
+            builder.addEvent(alloc);
+            MemoryObject memObj = builder.allocateVariable(id, alloc);
+            builder.addLocalType(memObj, arrayType);
+            ScopedPointerVariable memObjPointer = expressions.makeScopedPointerVariable(id + "_ptr", pointer.getScopeId(), type, memObj);
+            for (int i = 0; i < arrayType.getNumElements(); i++) {
+                Expression sourceElement = HelperTypes.getMemberAddress(id + "_source", pointer, arrayType,
+                        List.of(new IntLiteral(pointerIntegerType, new BigInteger(Integer.toString(i)))));
+                Expression targetElement = HelperTypes.getMemberAddress(id + "_target", memObjPointer, arrayType,
+                        List.of(new IntLiteral(pointerIntegerType, new BigInteger(Integer.toString(i)))));
+                Register elementRegister = builder.addRegister(id + "_" + i, arrayType.getElementType());
+                builder.addEvent(EventFactory.newLoad(elementRegister, sourceElement));
+                builder.addEvent(EventFactory.newStore(targetElement, elementRegister));
+            }
+            builder.addExpression(id, memObjPointer);
+            return null;
+        }
+        Register register = builder.addRegister(id, typeId);
+        Event event = EventFactory.newLoad(register, pointer);
+        event.addTags(tags);
+        event.addTags(storageClass);
+        return builder.addEvent(event);
     }
 
     @Override
@@ -149,6 +179,51 @@ public class VisitorOpsMemory extends SpirvBaseVisitor<Event> {
         return null;
     }
 
+    @Override
+    public Event visitOpPtrAccessChain(SpirvParser.OpPtrAccessChainContext ctx) {
+        visitOpPtrAccessChain(ctx.idResult().getText(), ctx.idResultType().getText(),
+                ctx.base().getText(), ctx.element().getText(), ctx.indexesIdRef());
+        return null;
+    }
+
+    @Override
+    public Event visitOpInBoundsPtrAccessChain(SpirvParser.OpInBoundsPtrAccessChainContext ctx) {
+        visitOpPtrAccessChain(ctx.idResult().getText(), ctx.idResultType().getText(),
+                ctx.base().getText(), ctx.element().getText(), ctx.indexesIdRef());
+        return null;
+    }
+
+    private void visitOpPtrAccessChain(String id, String typeId, String baseId, String elementId,
+                                       List<SpirvParser.IndexesIdRefContext> idxContexts) {
+        if (builder.getType(typeId) instanceof ScopedPointerType pointerType) {
+            Expression basePointer = builder.getExpression(baseId);
+            if (!(basePointer.getType() instanceof ScopedPointerType basePointerType)) {
+                throw new ParsingException("Type '%s' is not a pointer type", baseId);
+            }
+            Expression element = builder.getExpression(elementId);
+            Type resultType = pointerType.getPointedType();
+            Expression address = HelperTypes.getPointerOffset(baseId, basePointer, basePointerType, element);
+            ScopedPointer baseWithOffset = expressions.makeScopedPointer(baseId, pointerType.getScopeId(), basePointerType, address);
+            List<Integer> intIndexes = new ArrayList<>();
+            List<Expression> exprIndexes = new ArrayList<>();
+            idxContexts.forEach(c -> {
+                Expression expression = builder.getExpression(c.getText());
+                exprIndexes.add(expression);
+                intIndexes.add(expression instanceof IntLiteral intLiteral ? intLiteral.getValueAsInt() : -1);
+            });
+            Type runtimeResultType = HelperTypes.getMemberType(baseId, basePointerType.getPointedType(), intIndexes);
+            if (!TypeFactory.isStaticTypeOf(runtimeResultType, resultType)) {
+                throw new ParsingException("Invalid result type in access chain '%s', " +
+                        "expected '%s' but received '%s'", id, resultType, runtimeResultType);
+            }
+            Expression expression = HelperTypes.getMemberAddress(baseId, baseWithOffset, basePointerType, exprIndexes);
+            ScopedPointer pointer = expressions.makeScopedPointer(id, pointerType.getScopeId(), runtimeResultType, expression);
+            builder.addExpression(id, pointer);
+            return;
+        }
+        throw new ParsingException("Type '%s' is not a pointer type", typeId);
+    }
+
     private void visitOpAccessChain(String id, String typeId, String baseId,
                                     List<SpirvParser.IndexesIdRefContext> idxContexts) {
         if (builder.getType(typeId) instanceof ScopedPointerType pointerType) {
@@ -192,7 +267,9 @@ public class VisitorOpsMemory extends SpirvBaseVisitor<Event> {
                 "OpLoad",
                 "OpStore",
                 "OpAccessChain",
-                "OpInBoundsAccessChain"
+                "OpInBoundsAccessChain",
+                "OpPtrAccessChain",
+                "OpInBoundsPtrAccessChain"
         );
     }
 }

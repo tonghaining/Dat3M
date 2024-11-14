@@ -1,0 +1,51 @@
+; @Config: 3, 1, 1
+; SPIR-V
+; Version: 1.0
+; Generator: Khronos LLVM/SPIR-V Translator; 14
+; Bound: 29
+; Schema: 0
+               OpCapability Addresses
+               OpCapability Linkage
+               OpCapability Kernel
+          %1 = OpExtInstImport "OpenCL.std"
+               OpMemoryModel Physical32 OpenCL
+               OpEntryPoint Kernel %9 "foo" %__spirv_BuiltInLocalInvocationId
+               OpSource OpenCL_C 200000
+               OpName %__spirv_BuiltInLocalInvocationId "__spirv_BuiltInLocalInvocationId"
+               OpDecorate %__spirv_BuiltInLocalInvocationId BuiltIn LocalInvocationId
+               OpDecorate %__spirv_BuiltInLocalInvocationId Constant
+               OpDecorate %10 FuncParamAttr NoCapture
+               OpDecorate %__spirv_BuiltInLocalInvocationId LinkageAttributes "__spirv_BuiltInLocalInvocationId" Import
+       %uint = OpTypeInt 32 0
+     %uint_1 = OpConstant %uint 1
+     %uint_2 = OpConstant %uint 2
+     %uint_0 = OpConstant %uint 0
+   %uint_272 = OpConstant %uint 272
+     %v3uint = OpTypeVector %uint 3
+%_ptr_Input_v3uint = OpTypePointer Input %v3uint
+       %void = OpTypeVoid
+%_ptr_Workgroup_uint = OpTypePointer Workgroup %uint
+          %8 = OpTypeFunction %void %_ptr_Workgroup_uint
+       %bool = OpTypeBool
+%__spirv_BuiltInLocalInvocationId = OpVariable %_ptr_Input_v3uint Input
+          %9 = OpFunction %void None %8
+         %10 = OpFunctionParameter %_ptr_Workgroup_uint
+         %11 = OpLabel
+         %14 = OpLoad %v3uint %__spirv_BuiltInLocalInvocationId Aligned 16
+         %15 = OpCompositeExtract %uint %14 0
+         %17 = OpBitwiseXor %uint %15 %uint_1
+         %19 = OpUGreaterThan %bool %17 %15
+         %21 = OpBitwiseAnd %uint %15 %uint_2
+         %23 = OpIEqual %bool %21 %uint_0
+         %24 = OpLogicalAnd %bool %19 %23
+               OpBranchConditional %24 %12 %13
+         %12 = OpLabel
+         %25 = OpInBoundsPtrAccessChain %_ptr_Workgroup_uint %10 %15
+         %26 = OpLoad %uint %25 Aligned 4
+         %27 = OpInBoundsPtrAccessChain %_ptr_Workgroup_uint %10 %17
+               OpStore %27 %26 Aligned 4
+               OpBranch %13
+         %13 = OpLabel
+               OpControlBarrier %uint_2 %uint_2 %uint_272
+               OpReturn
+               OpFunctionEnd

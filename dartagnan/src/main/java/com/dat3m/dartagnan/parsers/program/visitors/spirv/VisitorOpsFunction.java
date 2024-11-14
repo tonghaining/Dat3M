@@ -73,10 +73,6 @@ public class VisitorOpsFunction extends SpirvBaseVisitor<Void> {
                     "outside of a function definition", id);
         }
         Type type = builder.getType(ctx.idResultType().getText());
-        if (!(type instanceof ScopedPointerType)) {
-            throw new ParsingException("Attempt to use a non-pointer type for parameter '%s " +
-                    "in function '%s'", id, currentId);
-        }
         List<Type> argTypes = currentType.getParameterTypes();
         int idx = currentArgs.size();
         if (idx >= argTypes.size() || !type.equals(argTypes.get(idx))) {

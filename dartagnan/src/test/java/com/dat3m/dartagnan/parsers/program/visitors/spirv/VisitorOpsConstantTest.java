@@ -607,6 +607,69 @@ public class VisitorOpsConstantTest {
         assertEquals(expressions.makeConstruct(aType, List.of(f, t, i)), data.get("%s"));
     }
 
+    @Test
+    public void testCompositeExtract() {
+        // given
+        String input = """
+                %b1 = OpConstantTrue %bool
+                %b2 = OpConstantFalse %bool
+                %b3 = OpConstantTrue %bool
+                %b3v = OpConstantComposite %bool3v %b1 %b2 %b3
+                %b1e = OpCompositeExtract %bool %b3v 0
+                %b2e = OpCompositeExtract %bool %b3v 1
+                %b3e = OpCompositeExtract %bool %b3v 2
+                """;
+
+        BooleanType bType = builder.mockBoolType("%bool");
+        builder.mockVectorType("%bool3v", "%bool", 3);
+
+        // when
+        Map<String, Expression> data = parseConstants(input);
+
+        // then
+        Expression b1 = expressions.makeTrue();
+        Expression b2 = expressions.makeFalse();
+        Expression b3 = expressions.makeTrue();
+        Expression b3v = expressions.makeArray(bType, List.of(b1, b2, b3), true);
+        Expression b1e = expressions.makeExtract(0, b3v);
+        Expression b2e = expressions.makeExtract(1, b3v);
+        Expression b3e = expressions.makeExtract(2, b3v);
+
+        assertEquals(b1, data.get("%b1"));
+        assertEquals(b2, data.get("%b2"));
+        assertEquals(b3, data.get("%b3"));
+        assertEquals(b3v, data.get("%b3v"));
+
+        assertEquals(b1e, data.get("%b1e"));
+        assertEquals(b2e, data.get("%b2e"));
+        assertEquals(b3e, data.get("%b3e"));
+    }
+
+    @Test
+    public void testCompositeExtractOutOfRange() {
+        // given
+        String input = """
+                %b1 = OpConstantTrue %bool
+                %b2 = OpConstantFalse %bool
+                %b3 = OpConstantTrue %bool
+                %b3v = OpConstantComposite %bool3v %b1 %b2 %b3
+                %b4e = OpCompositeExtract %bool %b3v 3
+                """;
+
+        builder.mockBoolType("%bool");
+        builder.mockVectorType("%bool3v", "%bool", 3);
+
+        try {
+            // when
+            parseConstants(input);
+            fail("Should throw exception");
+        } catch (ParsingException e) {
+            // then
+            assertEquals("Index out of bounds for array '{ True, False, True }', expected index less than 3 but received 3",
+                    e.getMessage());
+        }
+    }
+
     private Map<String, Expression> parseConstants(String input) {
         new MockSpirvParser(input).spv().accept(new VisitorOpsConstant(builder));
         return builder.getExpressions();

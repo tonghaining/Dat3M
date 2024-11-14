@@ -1,0 +1,89 @@
+; @Config: 3, 1, 1
+; SPIR-V
+; Version: 1.0
+; Generator: Khronos LLVM/SPIR-V Translator; 14
+; Bound: 60
+; Schema: 0
+               OpCapability Addresses
+               OpCapability Linkage
+               OpCapability Kernel
+          %1 = OpExtInstImport "OpenCL.std"
+               OpMemoryModel Physical32 OpenCL
+               OpEntryPoint Kernel %9 "scan" %__spirv_BuiltInLocalInvocationId
+               OpSource OpenCL_C 200000
+               OpName %__spirv_BuiltInLocalInvocationId "__spirv_BuiltInLocalInvocationId"
+               OpDecorate %__spirv_BuiltInLocalInvocationId BuiltIn LocalInvocationId
+               OpDecorate %__spirv_BuiltInLocalInvocationId Constant
+               OpDecorate %10 FuncParamAttr NoCapture
+               OpDecorate %__spirv_BuiltInLocalInvocationId LinkageAttributes "__spirv_BuiltInLocalInvocationId" Import
+       %uint = OpTypeInt 32 0
+    %uint_31 = OpConstant %uint 31
+     %uint_0 = OpConstant %uint 0
+%uint_4294967295 = OpConstant %uint 4294967295
+     %uint_1 = OpConstant %uint 1
+%uint_4294967294 = OpConstant %uint 4294967294
+     %uint_3 = OpConstant %uint 3
+%uint_4294967292 = OpConstant %uint 4294967292
+     %uint_7 = OpConstant %uint 7
+%uint_4294967288 = OpConstant %uint 4294967288
+    %uint_15 = OpConstant %uint 15
+%uint_4294967280 = OpConstant %uint 4294967280
+     %v3uint = OpTypeVector %uint 3
+%_ptr_Input_v3uint = OpTypePointer Input %v3uint
+       %void = OpTypeVoid
+%_ptr_Workgroup_uint = OpTypePointer Workgroup %uint
+          %8 = OpTypeFunction %void %_ptr_Workgroup_uint
+       %bool = OpTypeBool
+%__spirv_BuiltInLocalInvocationId = OpVariable %_ptr_Input_v3uint Input
+          %9 = OpFunction %void None %8
+         %10 = OpFunctionParameter %_ptr_Workgroup_uint
+         %11 = OpLabel
+         %18 = OpLoad %v3uint %__spirv_BuiltInLocalInvocationId Aligned 16
+         %19 = OpCompositeExtract %uint %18 0
+         %21 = OpBitwiseAnd %uint %19 %uint_31
+         %24 = OpIEqual %bool %21 %uint_0
+               OpBranchConditional %24 %17 %12
+         %12 = OpLabel
+         %26 = OpIAdd %uint %19 %uint_4294967295
+         %27 = OpInBoundsPtrAccessChain %_ptr_Workgroup_uint %10 %26
+         %28 = OpLoad %uint %27 Aligned 4
+         %29 = OpInBoundsPtrAccessChain %_ptr_Workgroup_uint %10 %19
+         %30 = OpLoad %uint %29 Aligned 4
+         %31 = OpIAdd %uint %30 %28
+               OpStore %29 %31 Aligned 4
+         %33 = OpIEqual %bool %21 %uint_1
+               OpBranchConditional %33 %17 %13
+         %13 = OpLabel
+         %35 = OpIAdd %uint %19 %uint_4294967294
+         %36 = OpInBoundsPtrAccessChain %_ptr_Workgroup_uint %10 %35
+         %37 = OpLoad %uint %36 Aligned 4
+         %38 = OpIAdd %uint %31 %37
+               OpStore %29 %38 Aligned 4
+         %40 = OpUGreaterThan %bool %21 %uint_3
+               OpBranchConditional %40 %14 %17
+         %14 = OpLabel
+         %42 = OpIAdd %uint %19 %uint_4294967292
+         %43 = OpInBoundsPtrAccessChain %_ptr_Workgroup_uint %10 %42
+         %44 = OpLoad %uint %43 Aligned 4
+         %45 = OpIAdd %uint %38 %44
+               OpStore %29 %45 Aligned 4
+         %47 = OpUGreaterThan %bool %21 %uint_7
+               OpBranchConditional %47 %15 %17
+         %15 = OpLabel
+         %49 = OpIAdd %uint %19 %uint_4294967288
+         %50 = OpInBoundsPtrAccessChain %_ptr_Workgroup_uint %10 %49
+         %51 = OpLoad %uint %50 Aligned 4
+         %52 = OpIAdd %uint %45 %51
+               OpStore %29 %52 Aligned 4
+         %54 = OpUGreaterThan %bool %21 %uint_15
+               OpBranchConditional %54 %16 %17
+         %16 = OpLabel
+         %56 = OpIAdd %uint %19 %uint_4294967280
+         %57 = OpInBoundsPtrAccessChain %_ptr_Workgroup_uint %10 %56
+         %58 = OpLoad %uint %57 Aligned 4
+         %59 = OpIAdd %uint %52 %58
+               OpStore %29 %59 Aligned 4
+               OpBranch %17
+         %17 = OpLabel
+               OpReturn
+               OpFunctionEnd

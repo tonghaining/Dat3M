@@ -11,6 +11,7 @@ import com.dat3m.dartagnan.parsers.program.visitors.spirv.decorations.Decoration
 import com.dat3m.dartagnan.parsers.program.visitors.spirv.decorations.Offset;
 import com.dat3m.dartagnan.parsers.program.visitors.spirv.helpers.HelperTags;
 import com.dat3m.dartagnan.parsers.program.visitors.spirv.builders.ProgramBuilder;
+import com.dat3m.dartagnan.parsers.program.visitors.spirv.helpers.HelperTypes;
 import com.dat3m.dartagnan.parsers.program.visitors.spirv.utils.ThreadGrid;
 import com.dat3m.dartagnan.program.memory.ScopedPointerVariable;
 import com.dat3m.dartagnan.expression.type.ScopedPointerType;
@@ -137,6 +138,12 @@ public class MockProgramBuilder extends ProgramBuilder {
         for (int i = 0; i < offsets.length; i++) {
             decoration.addDecoration(id, Integer.toString(i), Integer.toString(offsets[i]));
         }
+    }
+
+    public Expression mockMemberAddress(String id, Expression base, Type type, int index) {
+        IntegerType indexType = typeFactory.getArchType();
+        List<Expression> indexes = List.of(exprFactory.makeValue(index, indexType));
+        return HelperTypes.getMemberAddress(id, base, type, indexes);
     }
 
     public void mockFunctionStart(boolean addStartLabel) {
