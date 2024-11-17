@@ -15,6 +15,7 @@ import com.dat3m.dartagnan.parsers.program.visitors.spirv.builders.ProgramBuilde
 import com.dat3m.dartagnan.parsers.program.visitors.spirv.helpers.HelperTypes;
 import com.dat3m.dartagnan.program.event.Event;
 import com.dat3m.dartagnan.program.memory.MemoryObject;
+import com.dat3m.dartagnan.program.memory.ScopedPointer;
 import com.dat3m.dartagnan.program.memory.ScopedPointerVariable;
 
 import java.util.ArrayList;
@@ -52,8 +53,13 @@ public class VisitorOpsComposite extends SpirvBaseVisitor<Event> {
             exprIndexes.add(expression);
             intIndexes.add(expression.getValueAsInt());
         });
+        Type runtimeResultType = HelperTypes.getMemberType(compositeId, scopedPointerVariable.getInnerType(), intIndexes);
+        if (builder.getType(typeId) != runtimeResultType) {
+            throw new ParsingException("Invalid type '%s' for composite '%s'", typeId, compositeId);
+        }
         Expression expression = HelperTypes.getMemberAddress(compositeId, scopedPointerVariable, scopedPointerVariable.getInnerType(), exprIndexes);
-        builder.addExpression(id, expression);
+        ScopedPointer pointer = expressions.makeScopedPointer(id, scopedPointerVariable.getScopeId(), runtimeResultType, expression);
+        builder.addExpression(id, pointer);
     }
 
     public Set<String> getSupportedOps() {

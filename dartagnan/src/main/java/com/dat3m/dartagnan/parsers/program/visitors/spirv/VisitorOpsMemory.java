@@ -66,7 +66,12 @@ public class VisitorOpsMemory extends SpirvBaseVisitor<Event> {
         Set<String> tags = parseMemoryAccessTags(ctx.memoryAccess());
         String storageClass = builder.getPointerStorageClass(ctx.pointer().getText());
         Type type = builder.getType(typeId);
-        if (!(pointerExp instanceof ScopedPointer pointer)) {
+        String scopedId;
+        if (pointerExp.getType() instanceof ScopedPointerType pointerType) {
+            scopedId = pointerType.getScopeId();
+        } else if (pointerExp instanceof ScopedPointer pointer) {
+            scopedId = pointer.getScopeId();
+        } else {
             throw new ParsingException("Type '%s' is not a pointer type", ctx.pointer().getText());
         }
         if (tags.contains(Tag.Spirv.MEM_AVAILABLE)) {
@@ -81,9 +86,9 @@ public class VisitorOpsMemory extends SpirvBaseVisitor<Event> {
             builder.addEvent(alloc);
             MemoryObject memObj = builder.allocateVariable(id, alloc);
             builder.addLocalType(memObj, arrayType);
-            ScopedPointerVariable memObjPointer = expressions.makeScopedPointerVariable(id + "_ptr", pointer.getScopeId(), type, memObj);
+            ScopedPointerVariable memObjPointer = expressions.makeScopedPointerVariable(id + "_ptr", scopedId, type, memObj);
             for (int i = 0; i < arrayType.getNumElements(); i++) {
-                Expression sourceElement = HelperTypes.getMemberAddress(id + "_source", pointer, arrayType,
+                Expression sourceElement = HelperTypes.getMemberAddress(id + "_source", pointerExp, arrayType,
                         List.of(new IntLiteral(pointerIntegerType, new BigInteger(Integer.toString(i)))));
                 Expression targetElement = HelperTypes.getMemberAddress(id + "_target", memObjPointer, arrayType,
                         List.of(new IntLiteral(pointerIntegerType, new BigInteger(Integer.toString(i)))));
@@ -95,7 +100,7 @@ public class VisitorOpsMemory extends SpirvBaseVisitor<Event> {
             return null;
         }
         Register register = builder.addRegister(id, typeId);
-        Event event = EventFactory.newLoad(register, pointer);
+        Event event = EventFactory.newLoad(register, pointerExp);
         event.addTags(tags);
         event.addTags(storageClass);
         return builder.addEvent(event);
