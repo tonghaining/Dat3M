@@ -51,6 +51,10 @@ public class VisitorOpsMemory extends SpirvBaseVisitor<Event> {
         Set<String> tags = parseMemoryAccessTags(ctx.memoryAccess());
         if (!tags.contains(Tag.Spirv.MEM_VISIBLE)) {
             String storageClass = builder.getPointerStorageClass(ctx.pointer().getText());
+            String scope = getScope(storageClass);
+            if (scope != null) {
+                event.addTags(scope);
+            }
             event.addTags(tags);
             event.addTags(storageClass);
             return builder.addEvent(event);
@@ -60,50 +64,21 @@ public class VisitorOpsMemory extends SpirvBaseVisitor<Event> {
 
     @Override
     public Event visitOpLoad(SpirvParser.OpLoadContext ctx) {
-        String id = ctx.idResult().getText();
-        String typeId = ctx.idResultType().getText();
-        Expression pointerExp = builder.getExpression(ctx.pointer().getText());
+        Register register = builder.addRegister(ctx.idResult().getText(), ctx.idResultType().getText());
+        Expression pointer = builder.getExpression(ctx.pointer().getText());
+        Event event = EventFactory.newLoad(register, pointer);
         Set<String> tags = parseMemoryAccessTags(ctx.memoryAccess());
-        String storageClass = builder.getPointerStorageClass(ctx.pointer().getText());
-        Type type = builder.getType(typeId);
-        String scopedId;
-        if (pointerExp.getType() instanceof ScopedPointerType pointerType) {
-            scopedId = pointerType.getScopeId();
-        } else if (pointerExp instanceof ScopedPointer pointer) {
-            scopedId = pointer.getScopeId();
-        } else {
-            throw new ParsingException("Type '%s' is not a pointer type", ctx.pointer().getText());
-        }
-        if (tags.contains(Tag.Spirv.MEM_AVAILABLE)) {
-            throw new ParsingException("OpLoad cannot contain tag '%s'", Tag.Spirv.MEM_AVAILABLE);
-        }
-        if (type instanceof ArrayType arrayType) {
-            Register register = builder.addDummyPointerRegister(id, arrayType);
-            long size = TypeFactory.getInstance().getMemorySizeInBytes(type);
-            IntegerType pointerIntegerType = TypeFactory.getInstance().getArchType();
-            Expression sizeExpression = new IntLiteral(pointerIntegerType, new BigInteger(Long.toString(size)));
-            Alloc alloc = EventFactory.newAlloc(register, type, sizeExpression, false, false);
-            builder.addEvent(alloc);
-            MemoryObject memObj = builder.allocateVariable(id, alloc);
-            builder.addLocalType(memObj, arrayType);
-            ScopedPointerVariable memObjPointer = expressions.makeScopedPointerVariable(id + "_ptr", scopedId, type, memObj);
-            for (int i = 0; i < arrayType.getNumElements(); i++) {
-                Expression sourceElement = HelperTypes.getMemberAddress(id + "_source", pointerExp, arrayType,
-                        List.of(new IntLiteral(pointerIntegerType, new BigInteger(Integer.toString(i)))));
-                Expression targetElement = HelperTypes.getMemberAddress(id + "_target", memObjPointer, arrayType,
-                        List.of(new IntLiteral(pointerIntegerType, new BigInteger(Integer.toString(i)))));
-                Register elementRegister = builder.addRegister(id + "_" + i, arrayType.getElementType());
-                builder.addEvent(EventFactory.newLoad(elementRegister, sourceElement));
-                builder.addEvent(EventFactory.newStore(targetElement, elementRegister));
+        if (!tags.contains(Tag.Spirv.MEM_AVAILABLE)) {
+            String storageClass = builder.getPointerStorageClass(ctx.pointer().getText());
+            String scope = getScope(storageClass);
+            if (scope != null) {
+                event.addTags(scope);
             }
-            builder.addExpression(id, memObjPointer);
-            return null;
+            event.addTags(tags);
+            event.addTags(storageClass);
+            return builder.addEvent(event);
         }
-        Register register = builder.addRegister(id, typeId);
-        Event event = EventFactory.newLoad(register, pointerExp);
-        event.addTags(tags);
-        event.addTags(storageClass);
-        return builder.addEvent(event);
+        throw new ParsingException("OpLoad cannot contain tag '%s'", Tag.Spirv.MEM_AVAILABLE);
     }
 
     @Override
@@ -264,6 +239,24 @@ public class VisitorOpsMemory extends SpirvBaseVisitor<Event> {
             return HelperTags.parseMemoryOperandsTags(operands, alignment, paramIds, paramsValues);
         }
         return Set.of();
+    }
+
+    private String getScope(String storageClass) {
+        return switch (storageClass) {
+            case Tag.Spirv.SC_UNIFORM_CONSTANT,
+                 Tag.Spirv.SC_UNIFORM,
+                 Tag.Spirv.SC_OUTPUT,
+                 Tag.Spirv.SC_PUSH_CONSTANT,
+                 Tag.Spirv.SC_STORAGE_BUFFER,
+                 Tag.Spirv.SC_PHYS_STORAGE_BUFFER -> Tag.Spirv.DEVICE;
+            case Tag.Spirv.SC_PRIVATE,
+                 Tag.Spirv.SC_FUNCTION,
+                 Tag.Spirv.SC_INPUT -> null;
+            case Tag.Spirv.SC_WORKGROUP -> Tag.Spirv.WORKGROUP;
+            case Tag.Spirv.SC_CROSS_WORKGROUP -> Tag.Spirv.INVOCATION;
+            default -> throw new UnsupportedOperationException(
+                    "Unsupported storage class " + storageClass);
+        };
     }
 
     public Set<String> getSupportedOps() {

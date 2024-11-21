@@ -18,6 +18,10 @@ public class TupleFormula implements Formula {
         this.elements = elements;
     }
 
+    public int size() {
+        return elements.size();
+    }
+
     @Override
     public String toString() {
         return elements.stream()
