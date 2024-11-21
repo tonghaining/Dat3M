@@ -3,14 +3,18 @@ package com.dat3m.dartagnan.parsers.program.visitors.spirv;
 import com.dat3m.dartagnan.exception.ParsingException;
 import com.dat3m.dartagnan.expression.Expression;
 import com.dat3m.dartagnan.expression.ExpressionFactory;
+import com.dat3m.dartagnan.expression.Type;
+import com.dat3m.dartagnan.expression.type.IntegerType;
 import com.dat3m.dartagnan.expression.type.ScopedPointerType;
 import com.dat3m.dartagnan.expression.type.TypeFactory;
 import com.dat3m.dartagnan.parsers.SpirvBaseVisitor;
 import com.dat3m.dartagnan.parsers.SpirvParser;
 import com.dat3m.dartagnan.parsers.program.visitors.spirv.builders.ProgramBuilder;
+import com.dat3m.dartagnan.program.Register;
+import com.dat3m.dartagnan.program.event.Tag;
 import com.dat3m.dartagnan.program.memory.MemoryObject;
 import com.dat3m.dartagnan.program.memory.ScopedPointerVariable;
-import com.dat3m.dartagnan.program.memory.VirtualMemoryObject;
+import scala.Int;
 
 import java.util.Set;
 
@@ -48,9 +52,27 @@ public class VisitorOpsConversion extends SpirvBaseVisitor<Void> {
         }
     }
 
+    @Override
+    public Void visitOpConvertPtrToU(SpirvParser.OpConvertPtrToUContext ctx) {
+        String id = ctx.idResult().getText();
+        String typeId = ctx.idResultType().getText();
+        Expression pointerExpr = builder.getExpression(ctx.pointer().getText());
+        if (!(pointerExpr.getType() instanceof ScopedPointerType pointerType)) {
+            throw new ParsingException("Type '%s' is not a pointer type", typeId);
+        }
+        Type type = builder.getType(typeId);
+        int size = types.getMemorySizeInBytes(type);
+        MemoryObject memObj = builder.allocateVariable(id, size);
+        memObj.setInitialValue(0, pointerExpr);
+        ScopedPointerVariable pointer = expressions.makeScopedPointerVariable(id, pointerType.getScopeId(), type, memObj);
+        builder.addExpression(id, pointer);
+        return null;
+    }
+
     public Set<String> getSupportedOps() {
         return Set.of(
-                "OpBitcast"
+                "OpBitcast",
+                "OpConvertPtrToU"
         );
     }
 }
