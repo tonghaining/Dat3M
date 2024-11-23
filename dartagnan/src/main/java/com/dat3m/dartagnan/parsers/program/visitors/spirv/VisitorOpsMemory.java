@@ -51,10 +51,6 @@ public class VisitorOpsMemory extends SpirvBaseVisitor<Event> {
         Set<String> tags = parseMemoryAccessTags(ctx.memoryAccess());
         if (!tags.contains(Tag.Spirv.MEM_VISIBLE)) {
             String storageClass = builder.getPointerStorageClass(ctx.pointer().getText());
-            String scope = getScope(storageClass);
-            if (scope != null) {
-                event.addTags(scope);
-            }
             event.addTags(tags);
             event.addTags(storageClass);
             return builder.addEvent(event);
@@ -70,10 +66,6 @@ public class VisitorOpsMemory extends SpirvBaseVisitor<Event> {
         Set<String> tags = parseMemoryAccessTags(ctx.memoryAccess());
         if (!tags.contains(Tag.Spirv.MEM_AVAILABLE)) {
             String storageClass = builder.getPointerStorageClass(ctx.pointer().getText());
-            String scope = getScope(storageClass);
-            if (scope != null) {
-                event.addTags(scope);
-            }
             event.addTags(tags);
             event.addTags(storageClass);
             return builder.addEvent(event);
@@ -239,24 +231,6 @@ public class VisitorOpsMemory extends SpirvBaseVisitor<Event> {
             return HelperTags.parseMemoryOperandsTags(operands, alignment, paramIds, paramsValues);
         }
         return Set.of();
-    }
-
-    private String getScope(String storageClass) {
-        return switch (storageClass) {
-            case Tag.Spirv.SC_UNIFORM_CONSTANT,
-                 Tag.Spirv.SC_UNIFORM,
-                 Tag.Spirv.SC_OUTPUT,
-                 Tag.Spirv.SC_PUSH_CONSTANT,
-                 Tag.Spirv.SC_STORAGE_BUFFER,
-                 Tag.Spirv.SC_PHYS_STORAGE_BUFFER -> Tag.Spirv.DEVICE;
-            case Tag.Spirv.SC_PRIVATE,
-                 Tag.Spirv.SC_FUNCTION,
-                 Tag.Spirv.SC_INPUT -> null;
-            case Tag.Spirv.SC_WORKGROUP -> Tag.Spirv.WORKGROUP;
-            case Tag.Spirv.SC_CROSS_WORKGROUP -> Tag.Spirv.INVOCATION;
-            default -> throw new UnsupportedOperationException(
-                    "Unsupported storage class " + storageClass);
-        };
     }
 
     public Set<String> getSupportedOps() {

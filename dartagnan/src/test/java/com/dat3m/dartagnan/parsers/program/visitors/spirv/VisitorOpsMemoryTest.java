@@ -104,7 +104,7 @@ public class VisitorOpsMemoryTest {
     @Test
     public void testLoadVector() {
         // given
-        IntegerType iType = builder.mockIntType("%int", 32);
+        builder.mockIntType("%int", 32);
         ArrayType arrayType = builder.mockVectorType("%v4int4", "%int", 4);
         builder.mockPtrType("%ptr_v4int4", "%int", "Uniform");
         String input = """
@@ -116,20 +116,10 @@ public class VisitorOpsMemoryTest {
         parse(input);
 
         // then
-        for (int i = 0; i < 7; i += 2) {
-            Load load = (Load) getLastNEvent(7 - i);
-            Store store = (Store) getLastNEvent(6 - i);
-            assertNotNull(load);
-            assertNotNull(store);
-            assertEquals(iType, load.getAccessType());
-            assertEquals(iType, store.getAccessType());
-            assertEquals(Set.of(Tag.VISIBLE, Tag.MEMORY, Tag.READ), load.getTags());
-            assertEquals(Set.of(Tag.VISIBLE, Tag.MEMORY, Tag.WRITE), store.getTags());
-            assertEquals(((IntBinaryExpr) load.getAddress()).getRight(), ((IntBinaryExpr) store.getAddress()).getRight());
-            assertEquals(builder.mockMemberAddress("%ptr", builder.getExpression("%ptr"), arrayType, i / 2), load.getAddress());
-        }
-        MemoryObject result = (MemoryObject) builder.getExpression("%result");
-        assertEquals(arrayType.getNumElements(), result.getKnownSize() / types.getArchType().getBitWidth());
+        Load load = (Load) getLastEvent();
+        assertNotNull(load);
+        assertEquals(arrayType, load.getAccessType());
+        assertEquals(Set.of(Tag.VISIBLE, Tag.MEMORY, Tag.READ, Tag.Spirv.SC_UNIFORM), load.getTags());
     }
 
     @Test
