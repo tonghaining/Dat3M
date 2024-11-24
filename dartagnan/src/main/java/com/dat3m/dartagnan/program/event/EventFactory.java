@@ -234,6 +234,20 @@ public class EventFactory {
         return jump;
     }
 
+    public static List<CondJump> newSwitch(Expression selector, Label defaultTarget, Map<Expression, Label> cases) {
+        List<CondJump> jumps = new ArrayList<>();
+        Expression defaultCond = expressions.makeFalse();
+        for (Expression caseExpr : cases.keySet()) {
+            Expression cond = expressions.makeEQ(selector, caseExpr);
+            defaultCond = expressions.makeOr(defaultCond, cond);
+            CondJump jump = newJump(cond, cases.get(caseExpr));
+            jumps.add(jump);
+        }
+        CondJump defaultJump = newJump(defaultCond, defaultTarget);
+        jumps.add(defaultJump);
+        return jumps;
+    }
+
     public static Assume newAssume(Expression expr) {
         return new Assume(expr);
     }
