@@ -1739,6 +1739,8 @@ glsl
     |   unpackSnorm4x8
     |   unpackUnorm2x16
     |   unpackUnorm4x8
+    |   sAddSat
+    |   sSubSat
     ;
 
 round : ModeExt_Round x;
@@ -1822,6 +1824,8 @@ interpolateAtOffset : ModeExt_InterpolateAtOffset interpolant offsetIdRef;
 nMin : ModeExt_NMin x y;
 nMax : ModeExt_NMax x y;
 nClamp : ModeExt_NClamp x minVal maxVal;
+sAddSat : ModeExt_SAddSat x y;
+sSubSat : ModeExt_SSubSat x y;
 
 // Alias types
 a : idRef;

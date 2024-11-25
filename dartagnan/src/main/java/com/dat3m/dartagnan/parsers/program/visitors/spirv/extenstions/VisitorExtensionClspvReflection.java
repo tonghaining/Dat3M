@@ -12,10 +12,11 @@ import com.dat3m.dartagnan.parsers.program.visitors.spirv.utils.ThreadGrid;
 import com.dat3m.dartagnan.program.event.Tag;
 import com.dat3m.dartagnan.program.memory.ScopedPointerVariable;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-public class VisitorExtensionClspvReflection extends VisitorExtension<Void> {
+public class VisitorExtensionClspvReflection extends VisitorExtension<Expression> {
 
     private static final TypeFactory types = TypeFactory.getInstance();
     private static final ExpressionFactory expressions = ExpressionFactory.getInstance();
@@ -29,72 +30,122 @@ public class VisitorExtensionClspvReflection extends VisitorExtension<Void> {
     }
 
     @Override
-    public Void visitKernel(SpirvParser.KernelContext ctx) {
+    public Expression visitKernel(SpirvParser.KernelContext ctx) {
         // Do nothing, kernel name and the number of arguments
         return null;
     }
 
     @Override
-    public Void visitArgumentInfo(SpirvParser.ArgumentInfoContext ctx) {
+    public Expression visitArgumentInfo(SpirvParser.ArgumentInfoContext ctx) {
         // Do nothing, variable name in OpenCL
         return null;
     }
 
     @Override
-    public Void visitArgumentStorageBuffer(SpirvParser.ArgumentStorageBufferContext ctx) {
+    public Expression visitArgumentStorageBuffer(SpirvParser.ArgumentStorageBufferContext ctx) {
         // Do nothing, variable index in OpenCL and Spir-V and descriptor set
         return null;
     }
 
     @Override
-    public Void visitArgumentWorkgroup(SpirvParser.ArgumentWorkgroupContext ctx) {
+    public Expression visitArgumentWorkgroup(SpirvParser.ArgumentWorkgroupContext ctx) {
         // Do nothing, default size of workgroup buffer defined in spec constant
         return null;
     }
 
     @Override
-    public Void visitSpecConstantWorkgroupSize(SpirvParser.SpecConstantWorkgroupSizeContext ctx) {
+    public Expression visitSpecConstantWorkgroupSize(SpirvParser.SpecConstantWorkgroupSizeContext ctx) {
         // Do nothing, will be overwritten by BuiltIn WorkgroupSize
         return null;
     }
 
     @Override
-    public Void visitPushConstantGlobalOffset(SpirvParser.PushConstantGlobalOffsetContext ctx) {
-        return setPushConstantValue("PushConstantGlobalOffset", ctx.offsetIdRef().getText(), ctx.sizeIdRef().getText());
+    public Expression visitPushConstantGlobalOffset(SpirvParser.PushConstantGlobalOffsetContext ctx) {
+        setPushConstantValue("PushConstantGlobalOffset", ctx.offsetIdRef().getText(), ctx.sizeIdRef().getText());
+        return null;
     }
 
     @Override
-    public Void visitPushConstantGlobalSize(SpirvParser.PushConstantGlobalSizeContext ctx) {
-        return setPushConstantValue("PushConstantGlobalSize", ctx.offsetIdRef().getText(), ctx.sizeIdRef().getText());
+    public Expression visitPushConstantGlobalSize(SpirvParser.PushConstantGlobalSizeContext ctx) {
+        setPushConstantValue("PushConstantGlobalSize", ctx.offsetIdRef().getText(), ctx.sizeIdRef().getText());
+        return null;
     }
 
     @Override
-    public Void visitPushConstantEnqueuedLocalSize(SpirvParser.PushConstantEnqueuedLocalSizeContext ctx) {
-        return setPushConstantValue("PushConstantEnqueuedLocalSize", ctx.offsetIdRef().getText(), ctx.sizeIdRef().getText());
+    public Expression visitPushConstantEnqueuedLocalSize(SpirvParser.PushConstantEnqueuedLocalSizeContext ctx) {
+        setPushConstantValue("PushConstantEnqueuedLocalSize", ctx.offsetIdRef().getText(), ctx.sizeIdRef().getText());
+        return null;
     }
 
     @Override
-    public Void visitPushConstantNumWorkgroups(SpirvParser.PushConstantNumWorkgroupsContext ctx) {
-        return setPushConstantValue("PushConstantNumWorkgroups", ctx.offsetIdRef().getText(), ctx.sizeIdRef().getText());
+    public Expression visitPushConstantNumWorkgroups(SpirvParser.PushConstantNumWorkgroupsContext ctx) {
+        setPushConstantValue("PushConstantNumWorkgroups", ctx.offsetIdRef().getText(), ctx.sizeIdRef().getText());
+        return null;
     }
 
     @Override
-    public Void visitPushConstantRegionOffset(SpirvParser.PushConstantRegionOffsetContext ctx) {
-        return setPushConstantValue("PushConstantRegionOffset", ctx.offsetIdRef().getText(), ctx.sizeIdRef().getText());
+    public Expression visitPushConstantRegionOffset(SpirvParser.PushConstantRegionOffsetContext ctx) {
+        setPushConstantValue("PushConstantRegionOffset", ctx.offsetIdRef().getText(), ctx.sizeIdRef().getText());
+        return null;
     }
 
     @Override
-    public Void visitPushConstantRegionGroupOffset(SpirvParser.PushConstantRegionGroupOffsetContext ctx) {
-        return setPushConstantValue("PushConstantRegionGroupOffset", ctx.offsetIdRef().getText(), ctx.sizeIdRef().getText());
+    public Expression visitPushConstantRegionGroupOffset(SpirvParser.PushConstantRegionGroupOffsetContext ctx) {
+        setPushConstantValue("PushConstantRegionGroupOffset", ctx.offsetIdRef().getText(), ctx.sizeIdRef().getText());
+        return null;
     }
 
     @Override
-    public Void visitArgumentPodPushConstant(SpirvParser.ArgumentPodPushConstantContext ctx) {
+    public Expression visitArgumentPodPushConstant(SpirvParser.ArgumentPodPushConstantContext ctx) {
         initPushConstant();
         int argOffset = getExpressionAsConstInteger(ctx.offsetIdRef().getText());
         int argSize = getExpressionAsConstInteger(ctx.sizeIdRef().getText());
         getTypeOffset("ArgumentPodPushConstant", pushConstantType, argOffset, argSize);
         return null;
+    }
+
+    @Override
+    public Expression visitSAddSat(SpirvParser.SAddSatContext ctx) {
+        Expression x = getExpression(ctx.x().getText());
+        Expression y = getExpression(ctx.y().getText());
+        if (x.getType() instanceof IntegerType && y.getType() instanceof IntegerType) {
+            return expressions.makeAdd(x, y);
+        } else if (x.getType() instanceof ArrayType xType && y.getType() instanceof ArrayType yType) {
+            if (xType.getNumElements() != yType.getNumElements() || !xType.getElementType().equals(yType.getElementType())) {
+                throw new ParsingException("Array types must have the same number of elements");
+            }
+            List<Expression> sums = new ArrayList<>();
+            for (int i = 0; i < xType.getNumElements(); i++) {
+                sums.add(expressions.makeAdd(
+                        expressions.makeExtract(i, x),
+                        expressions.makeExtract(i, y)
+                ));
+            }
+            return expressions.makeArray(xType.getElementType(), sums, true);
+        }
+        throw new ParsingException("Unsupported types for s_add_sat: %s and %s", x.getType(), y.getType());
+    }
+
+    @Override
+    public Expression visitSSubSat(SpirvParser.SSubSatContext ctx) {
+        Expression x = getExpression(ctx.x().getText());
+        Expression y = getExpression(ctx.y().getText());
+        if (x.getType() instanceof IntegerType && y.getType() instanceof IntegerType) {
+            return expressions.makeSub(x, y);
+        } else if (x.getType() instanceof ArrayType xType && y.getType() instanceof ArrayType yType) {
+            if (xType.getNumElements() != yType.getNumElements() || !xType.getElementType().equals(yType.getElementType())) {
+                throw new ParsingException("Array types must have the same number of elements");
+            }
+            List<Expression> subs = new ArrayList<>();
+            for (int i = 0; i < xType.getNumElements(); i++) {
+                subs.add(expressions.makeSub(
+                        expressions.makeExtract(i, x),
+                        expressions.makeExtract(i, y)
+                ));
+            }
+            return expressions.makeArray(xType.getElementType(), subs, true);
+        }
+        throw new ParsingException("Unsupported types for s_sub_sat: %s and %s", x.getType(), y.getType());
     }
 
     private Void setPushConstantValue(String argument, String offsetId, String sizeId) {
@@ -158,6 +209,14 @@ public class VisitorExtensionClspvReflection extends VisitorExtension<Void> {
         throw new ParsingException("Expression '%s' is not an integer constant", id);
     }
 
+    private Expression getExpression(String id) {
+        Expression expression = builder.getExpression(id);
+        if (expression == null) {
+            throw new ParsingException("Expression '%s' is not defined", id);
+        }
+        return expression;
+    }
+
     private TypeOffset getTypeOffset(String argument, AggregateType type, int argOffset, int argSize) {
         TypeOffset lastOffset = null;
         for (TypeOffset typeOffset : type.getTypeOffsets()) {
@@ -195,7 +254,9 @@ public class VisitorExtensionClspvReflection extends VisitorExtension<Void> {
                 "PushConstantNumWorkgroups",
                 "PushConstantRegionOffset",
                 "PushConstantRegionGroupOffset",
-                "SpecConstantWorkgroupSize"
+                "SpecConstantWorkgroupSize",
+                "s_add_sat",
+                "s_sub_sat"
         );
     }
 }

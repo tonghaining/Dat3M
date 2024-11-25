@@ -1,6 +1,7 @@
 package com.dat3m.dartagnan.parsers.program.visitors.spirv;
 
 import com.dat3m.dartagnan.exception.ParsingException;
+import com.dat3m.dartagnan.expression.Expression;
 import com.dat3m.dartagnan.parsers.SpirvBaseVisitor;
 import com.dat3m.dartagnan.parsers.SpirvParser;
 import com.dat3m.dartagnan.parsers.program.visitors.spirv.extenstions.VisitorExtension;
@@ -17,8 +18,10 @@ public class VisitorOpsExtension extends SpirvBaseVisitor<Void> {
 
     private final Map<String, VisitorExtension<?>> availableVisitors = new HashMap<>();
     private final Map<String, String> visitorIds = new HashMap<>();
+    private final ProgramBuilder builder;
 
     public VisitorOpsExtension(ProgramBuilder builder) {
+        this.builder = builder;
         VisitorExtensionClspvReflection clspv = new VisitorExtensionClspvReflection(builder);
         this.availableVisitors.put("NonSemantic.ClspvReflection.5", clspv);
         this.availableVisitors.put("NonSemantic.ClspvReflection.6", clspv);
@@ -40,13 +43,18 @@ public class VisitorOpsExtension extends SpirvBaseVisitor<Void> {
 
     @Override
     public Void visitOpExtInst(SpirvParser.OpExtInstContext ctx) {
+        String result = ctx.idResult().getText();
         String id = ctx.set().getText();
         String name = visitorIds.get(id);
         if (name != null) {
             VisitorExtension<?> visitor = availableVisitors.get(name);
             String instruction = getFirstTokenText(ctx.instruction());
             if (visitor.getSupportedInstructions().contains(instruction)) {
-                ctx.accept(visitor);
+                Object object = ctx.accept(visitor);
+                if (object != null) {
+                    Expression expr = (Expression) object;
+                    builder.addExpression(result, expr);
+                }
                 return null;
             }
             throw new ParsingException("External instruction '%s' is not implemented for '%s'", instruction, name);
