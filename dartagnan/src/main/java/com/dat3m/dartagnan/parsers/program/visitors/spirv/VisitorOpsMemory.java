@@ -175,7 +175,7 @@ public class VisitorOpsMemory extends SpirvBaseVisitor<Event> {
             Expression element = builder.getExpression(elementId);
             Type resultType = pointerType.getPointedType();
             Expression address = HelperTypes.getPointerOffset(baseId, basePointer, basePointerType, element);
-            ScopedPointer baseWithOffset = expressions.makeScopedPointer(baseId, pointerType.getScopeId(), basePointerType, address);
+            ScopedPointer baseWithOffset = expressions.makeScopedPointer(baseId, pointerType.getScopeId(), basePointerType.getPointedType(), address);
             List<Integer> intIndexes = new ArrayList<>();
             List<Expression> exprIndexes = new ArrayList<>();
             idxContexts.forEach(c -> {
@@ -188,7 +188,7 @@ public class VisitorOpsMemory extends SpirvBaseVisitor<Event> {
                 throw new ParsingException("Invalid result type in access chain '%s', " +
                         "expected '%s' but received '%s'", id, resultType, runtimeResultType);
             }
-            Expression expression = HelperTypes.getMemberAddress(baseId, baseWithOffset, basePointerType, exprIndexes);
+            Expression expression = HelperTypes.getMemberAddress(baseId, baseWithOffset, basePointerType.getPointedType(), exprIndexes);
             ScopedPointer pointer = expressions.makeScopedPointer(id, pointerType.getScopeId(), runtimeResultType, expression);
             builder.addExpression(id, pointer);
             return;
