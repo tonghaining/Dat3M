@@ -3,6 +3,7 @@ package com.dat3m.dartagnan.parsers.program.visitors.spirv.builders;
 import com.dat3m.dartagnan.configuration.Arch;
 import com.dat3m.dartagnan.exception.ParsingException;
 import com.dat3m.dartagnan.expression.Expression;
+import com.dat3m.dartagnan.expression.ExpressionFactory;
 import com.dat3m.dartagnan.expression.Type;
 import com.dat3m.dartagnan.expression.type.FunctionType;
 import com.dat3m.dartagnan.expression.type.TypeFactory;
@@ -239,7 +240,14 @@ public class ProgramBuilder {
         }
         addExpression(function.getName(), function);
         for (Register register : function.getParameterRegisters()) {
-            addExpression(register.getName(), register);
+            if (register.getType() instanceof ScopedPointerType pointerType) {
+                MemoryObject memoryObject= allocateVariable(register.getName(), pointerType.getBitWidth());
+                ScopedPointerVariable pointer = ExpressionFactory.getInstance().makeScopedPointerVariable(
+                        register.getName(), Tag.Spirv.SC_FUNCTION, pointerType.getPointedType(), memoryObject);
+                addExpression(register.getName(), pointer);
+            } else {
+                addExpression(register.getName(), register);
+            }
         }
         program.addFunction(function);
         currentFunction = function;
