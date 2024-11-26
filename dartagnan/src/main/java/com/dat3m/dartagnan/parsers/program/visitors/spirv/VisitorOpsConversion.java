@@ -57,14 +57,19 @@ public class VisitorOpsConversion extends SpirvBaseVisitor<Void> {
         String id = ctx.idResult().getText();
         String typeId = ctx.idResultType().getText();
         Expression pointerExpr = builder.getExpression(ctx.pointer().getText());
-        if (!(pointerExpr.getType() instanceof ScopedPointerType pointerType)) {
-            throw new ParsingException("Type '%s' is not a pointer type", typeId);
+        String scopeId;
+        if (pointerExpr.getType() instanceof ScopedPointerType pointerType) {
+            scopeId = pointerType.getScopeId();
+        } else if (pointerExpr instanceof ScopedPointerVariable scopedPointerVariable) {
+            scopeId = scopedPointerVariable.getScopeId();
+        } else {
+            throw new ParsingException("Type '%s' is not a pointer type", pointerExpr);
         }
         Type type = builder.getType(typeId);
         int size = types.getMemorySizeInBytes(type);
         MemoryObject memObj = builder.allocateVariable(id, size);
         memObj.setInitialValue(0, pointerExpr);
-        ScopedPointerVariable pointer = expressions.makeScopedPointerVariable(id, pointerType.getScopeId(), type, memObj);
+        ScopedPointerVariable pointer = expressions.makeScopedPointerVariable(id, scopeId, type, memObj);
         builder.addExpression(id, pointer);
         return null;
     }
