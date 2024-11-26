@@ -237,10 +237,6 @@ public class VisitorOpsControlFlow extends SpirvBaseVisitor<Event> {
 
     private Event visitConditionalJump(Expression guard, String trueLabelId, String falseLabelId) {
         if (cfBuilder.isBlockStarted(trueLabelId)) {
-            if (cfBuilder.isBlockStarted(falseLabelId)) {
-                throw new ParsingException("Unsupported conditional branch " +
-                        "with two backward jumps to '%s' and '%s'", trueLabelId, falseLabelId);
-            }
             String labelId = trueLabelId;
             trueLabelId = falseLabelId;
             falseLabelId = labelId;
