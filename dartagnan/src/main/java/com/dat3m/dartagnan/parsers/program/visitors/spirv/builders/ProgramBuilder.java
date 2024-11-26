@@ -167,32 +167,11 @@ public class ProgramBuilder {
         return memObj;
     }
 
-    public MemoryObject allocateVariable(String id, Alloc alloc) {
-        MemoryObject memObj = program.getMemory().allocate(alloc);
-        memObj.setName(id);
-        return memObj;
-    }
-
     public Register addDummyPointerRegister(String Id, Type type) {
         if (type instanceof ScopedPointerType || type instanceof FunctionType) {
             throw new ParsingException("Register cannot be a pointer or a function");
         }
         return getCurrentFunctionOrThrowError().newRegister("dummy_" + Id,  TypeFactory.getInstance().getPointerType());
-    }
-
-    public void addLocalType(MemoryObject memoryObject, Type type) {
-        if (localTypes.containsKey(memoryObject)) {
-            throw new ParsingException("Duplicated local pointer definition '%s'", type);
-        }
-        localTypes.put(memoryObject, type);
-    }
-
-    public Type getLocalType(MemoryObject memoryObject) {
-        Type type = localTypes.get(memoryObject);
-        if (type == null) {
-            throw new ParsingException("Reference to undefined local pointer '%s'", memoryObject);
-        }
-        return type;
     }
 
     // TODO: Proper implementation of pointers

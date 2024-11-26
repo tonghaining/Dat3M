@@ -13,7 +13,6 @@ import com.dat3m.dartagnan.parsers.program.visitors.spirv.helpers.HelperTypes;
 import com.dat3m.dartagnan.parsers.program.visitors.spirv.helpers.HelperInputs;
 import com.dat3m.dartagnan.parsers.program.visitors.spirv.helpers.HelperTags;
 import com.dat3m.dartagnan.parsers.program.visitors.spirv.builders.ProgramBuilder;
-import com.dat3m.dartagnan.program.event.core.Alloc;
 import com.dat3m.dartagnan.program.memory.MemoryObject;
 import com.dat3m.dartagnan.program.memory.ScopedPointer;
 import com.dat3m.dartagnan.program.memory.ScopedPointerVariable;
@@ -24,7 +23,6 @@ import com.dat3m.dartagnan.program.event.EventFactory;
 import com.dat3m.dartagnan.program.event.Tag;
 import org.antlr.v4.runtime.RuleContext;
 
-import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -167,33 +165,37 @@ public class VisitorOpsMemory extends SpirvBaseVisitor<Event> {
 
     private void visitOpPtrAccessChain(String id, String typeId, String baseId, String elementId,
                                        List<SpirvParser.IndexesIdRefContext> idxContexts) {
-        if (builder.getType(typeId) instanceof ScopedPointerType pointerType) {
-            Expression basePointer = builder.getExpression(baseId);
-            if (!(basePointer.getType() instanceof ScopedPointerType basePointerType)) {
-                throw new ParsingException("Type '%s' is not a pointer type", baseId);
-            }
-            Expression element = builder.getExpression(elementId);
-            Type resultType = pointerType.getPointedType();
-            Expression address = HelperTypes.getPointerOffset(baseId, basePointer, basePointerType, element);
-            ScopedPointer baseWithOffset = expressions.makeScopedPointer(baseId, pointerType.getScopeId(), basePointerType.getPointedType(), address);
-            List<Integer> intIndexes = new ArrayList<>();
-            List<Expression> exprIndexes = new ArrayList<>();
-            idxContexts.forEach(c -> {
-                Expression expression = builder.getExpression(c.getText());
-                exprIndexes.add(expression);
-                intIndexes.add(expression instanceof IntLiteral intLiteral ? intLiteral.getValueAsInt() : -1);
-            });
-            Type runtimeResultType = HelperTypes.getMemberType(baseId, basePointerType.getPointedType(), intIndexes);
-            if (!TypeFactory.isStaticTypeOf(runtimeResultType, resultType)) {
-                throw new ParsingException("Invalid result type in access chain '%s', " +
-                        "expected '%s' but received '%s'", id, resultType, runtimeResultType);
-            }
-            Expression expression = HelperTypes.getMemberAddress(baseId, baseWithOffset, basePointerType.getPointedType(), exprIndexes);
-            ScopedPointer pointer = expressions.makeScopedPointer(id, pointerType.getScopeId(), runtimeResultType, expression);
-            builder.addExpression(id, pointer);
-            return;
+        if (!(builder.getType(typeId) instanceof ScopedPointerType pointerType)) {
+            throw new ParsingException("Type '%s' is not a pointer type", typeId);
         }
-        throw new ParsingException("Type '%s' is not a pointer type", typeId);
+        Expression basePointer = builder.getExpression(baseId);
+        Type basePointedType;
+        if (basePointer.getType() instanceof ScopedPointerType basePointerType) {
+            basePointedType = basePointerType.getPointedType();
+        }  else if (basePointer instanceof ScopedPointerVariable basePointerVariable) {
+            basePointedType = basePointerVariable.getInnerType();
+        } else {
+            throw new ParsingException("Invalid base pointer type '%s' in access chain '%s'", basePointer.getType(), id);
+        }
+        Expression element = builder.getExpression(elementId);
+        Type resultType = pointerType.getPointedType();
+        Expression address = HelperTypes.getPointerOffset(basePointer, basePointedType, element);
+        ScopedPointer baseWithOffset = expressions.makeScopedPointer(baseId, pointerType.getScopeId(), basePointedType, address);
+        List<Integer> intIndexes = new ArrayList<>();
+        List<Expression> exprIndexes = new ArrayList<>();
+        idxContexts.forEach(c -> {
+            Expression expression = builder.getExpression(c.getText());
+            exprIndexes.add(expression);
+            intIndexes.add(expression instanceof IntLiteral intLiteral ? intLiteral.getValueAsInt() : -1);
+        });
+        Type runtimeResultType = HelperTypes.getMemberType(baseId, basePointedType, intIndexes);
+        if (!TypeFactory.isStaticTypeOf(runtimeResultType, resultType)) {
+            throw new ParsingException("Invalid result type in access chain '%s', " +
+                    "expected '%s' but received '%s'", id, resultType, runtimeResultType);
+        }
+        Expression expression = HelperTypes.getMemberAddress(baseId, baseWithOffset, basePointedType, exprIndexes);
+        ScopedPointer pointer = expressions.makeScopedPointer(id, pointerType.getScopeId(), runtimeResultType, expression);
+        builder.addExpression(id, pointer);
     }
 
     private void visitOpAccessChain(String id, String typeId, String baseId,
