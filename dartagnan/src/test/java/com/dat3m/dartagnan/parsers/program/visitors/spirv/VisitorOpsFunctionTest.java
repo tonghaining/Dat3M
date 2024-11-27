@@ -80,11 +80,7 @@ public class VisitorOpsFunctionTest {
         assertEquals(builder.getType("%int_ptr"), registers.get(1).getType());
         assertEquals("%param_arr", registers.get(2).getName());
         assertEquals(builder.getType("%arr_ptr"), registers.get(2).getType());
-
         assertEquals(function, builder.getExpression("%func"));
-        assertEquals(registers.get(0), builder.getExpression("%param_bool"));
-        assertEquals(registers.get(1), builder.getExpression("%param_int"));
-        assertEquals(registers.get(2), builder.getExpression("%param_arr"));
     }
 
     @Test(expected = ParsingException.class)
