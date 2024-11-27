@@ -44,7 +44,7 @@ public class VisitorOpsMemory extends SpirvBaseVisitor<Event> {
     @Override
     public Event visitOpStore(SpirvParser.OpStoreContext ctx) {
         Expression pointer = builder.getExpression(ctx.pointer().getText());
-        Expression value = builder.getExpression(ctx.object().getText());
+        Expression value = builder.getPossibleExpression(ctx.object().getText(), pointer.getType());
         Event event = EventFactory.newStore(pointer, value);
         Set<String> tags = parseMemoryAccessTags(ctx.memoryAccess());
         if (!tags.contains(Tag.Spirv.MEM_VISIBLE)) {

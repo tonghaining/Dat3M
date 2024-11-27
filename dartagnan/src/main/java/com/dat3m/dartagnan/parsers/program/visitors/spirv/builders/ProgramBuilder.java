@@ -10,6 +10,7 @@ import com.dat3m.dartagnan.expression.type.TypeFactory;
 import com.dat3m.dartagnan.parsers.program.visitors.spirv.decorations.BuiltIn;
 import com.dat3m.dartagnan.parsers.program.visitors.spirv.utils.ThreadCreator;
 import com.dat3m.dartagnan.parsers.program.visitors.spirv.utils.ThreadGrid;
+import com.dat3m.dartagnan.program.event.core.AbstractMemoryCoreEvent;
 import com.dat3m.dartagnan.program.event.functions.FunctionCall;
 import com.dat3m.dartagnan.program.memory.*;
 import com.dat3m.dartagnan.expression.type.ScopedPointerType;
@@ -25,6 +26,7 @@ public class ProgramBuilder {
 
     protected final Map<String, Type> types = new HashMap<>();
     protected final Map<String, Expression> expressions = new HashMap<>();
+    protected final Map<String, Expression> expressionsUndefined = new HashMap<>();
     protected final Map<String, Expression> inputs = new HashMap<>();
     protected final Map<String, String> debugInfos = new HashMap<>();
     protected final Map<MemoryObject, Type> localTypes = new HashMap<>();
@@ -146,6 +148,15 @@ public class ProgramBuilder {
         return expression;
     }
 
+    public Expression getPossibleExpression(String id, Type type) {
+        Expression expression = expressions.get(id);
+        if (expression == null) {
+            expression = makeUndefinedValue(type);
+            expressionsUndefined.put(id, expression);
+        }
+        return expression;
+    }
+
     public Expression addExpression(String id, Expression value) {
         if (types.containsKey(id) || expressions.containsKey(id)) {
             throw new ParsingException("Duplicated definition '%s'", id);
@@ -187,7 +198,17 @@ public class ProgramBuilder {
         if (type instanceof ScopedPointerType) {
             throw new ParsingException("Register cannot be a pointer");
         }
-        return getCurrentFunctionOrThrowError().newRegister(id, type);
+        Register register = getCurrentFunctionOrThrowError().newRegister(id, type);
+        Expression undefinedExpression = expressionsUndefined.get(id);
+        if (undefinedExpression != null) {
+            currentFunction.getEvents().stream()
+                    .filter(event -> event instanceof AbstractMemoryCoreEvent)
+                    .map(event -> (AbstractMemoryCoreEvent) event)
+                    .filter(coreEvent -> coreEvent.getAddress() == undefinedExpression)
+                    .forEach(coreEvent -> coreEvent.setAddress(register));
+            expressionsUndefined.remove(id);
+        }
+        return register;
     }
 
     public Register addRegister(String id, Type type) {
