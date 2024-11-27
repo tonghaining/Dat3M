@@ -18,6 +18,7 @@ import com.dat3m.dartagnan.program.Register;
 import com.dat3m.dartagnan.program.event.Event;
 import com.dat3m.dartagnan.program.event.EventFactory;
 import com.dat3m.dartagnan.program.event.core.Local;
+import com.dat3m.dartagnan.program.memory.MemoryObject;
 
 import java.util.Set;
 import java.util.function.Function;
@@ -55,12 +56,7 @@ public class VisitorOpsLogical extends SpirvBaseVisitor<Event> {
         Expression op2 = builder.getExpression(ctx.object2().getText());
         Type type = builder.getType(ctx.idResultType().getText());
         Type resultType = builder.getType(ctx.idResultType().getText());
-        Register register;
-        if (resultType instanceof ScopedPointerType scopedPointerType) {
-            register = builder.addRegister(id, scopedPointerType);
-        } else {
-            register = builder.addRegister(id, resultType);
-        }
+        Register register = builder.addRegister(id, resultType);
         if (!op1.getType().equals(type) || !op2.getType().equals(type)) {
             throw new ParsingException("Illegal definition for '%s', " +
                     "expected two operands type '%s but received '%s' and '%s'",
