@@ -10,7 +10,6 @@ import com.dat3m.dartagnan.expression.type.TypeFactory;
 import com.dat3m.dartagnan.parsers.program.visitors.spirv.decorations.BuiltIn;
 import com.dat3m.dartagnan.parsers.program.visitors.spirv.utils.ThreadCreator;
 import com.dat3m.dartagnan.parsers.program.visitors.spirv.utils.ThreadGrid;
-import com.dat3m.dartagnan.program.event.core.Alloc;
 import com.dat3m.dartagnan.program.event.functions.FunctionCall;
 import com.dat3m.dartagnan.program.memory.*;
 import com.dat3m.dartagnan.expression.type.ScopedPointerType;
@@ -166,13 +165,6 @@ public class ProgramBuilder {
         MemoryObject memObj = program.getMemory().allocateVirtual(bytes, true, null);
         memObj.setName(id);
         return memObj;
-    }
-
-    public Register addDummyPointerRegister(String Id, Type type) {
-        if (type instanceof ScopedPointerType || type instanceof FunctionType) {
-            throw new ParsingException("Register cannot be a pointer or a function");
-        }
-        return getCurrentFunctionOrThrowError().newRegister("dummy_" + Id,  TypeFactory.getInstance().getPointerType());
     }
 
     // TODO: Proper implementation of pointers

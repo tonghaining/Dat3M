@@ -184,7 +184,7 @@ public class VisitorOpsControlFlow extends SpirvBaseVisitor<Event> {
                 || !pointerVariable.getScopeId().equals(Tag.Spirv.SC_FUNCTION) ) {
             throw new ParsingException("Lifetime start can only be applied to a pointer with Function storage class: '%s'", pointerId);
         }
-        Register register = builder.addDummyPointerRegister(pointerId, pointerVariable.getInnerType());
+        Register register = builder.addRegister(pointerId + "_alloc", pointerVariable.getType());
         IntegerType pointerIntegerType = TypeFactory.getInstance().getArchType();
         Expression sizeExpression = new IntLiteral(pointerIntegerType, new BigInteger(Long.toString(size)));
         Alloc alloc = EventFactory.newAlloc(register, pointerExp.getType(), sizeExpression, false, false);
