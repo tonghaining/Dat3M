@@ -25,7 +25,7 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.EnumSet;
 
-import static com.dat3m.dartagnan.configuration.Property.CAT_SPEC;
+import static com.dat3m.dartagnan.configuration.Property.PROGRAM_SPEC;
 import static com.dat3m.dartagnan.utils.ResourceHelper.getRootPath;
 import static com.dat3m.dartagnan.utils.ResourceHelper.getTestResourcePath;
 import static com.dat3m.dartagnan.utils.Result.PASS;
@@ -33,15 +33,15 @@ import static com.dat3m.dartagnan.utils.Result.UNKNOWN;
 import static org.junit.Assert.assertEquals;
 
 @RunWith(Parameterized.class)
-public class SpirvClangChecksTest {
+public class ClangSpirvChecksTest {
 
     private final String modelPath = getRootPath("cat/opencl.cat");
     private final String programPath;
     private final int bound;
     private final Result expected;
 
-    public SpirvClangChecksTest(String file, int bound, Result expected) {
-        this.programPath = getTestResourcePath("spirv-clang/" + file);
+    public ClangSpirvChecksTest(String file, int bound, Result expected) {
+        this.programPath = getTestResourcePath("clang/gpuverify/" + file);
         this.bound = bound;
         this.expected = expected;
     }
@@ -51,7 +51,7 @@ public class SpirvClangChecksTest {
         return Arrays.asList(new Object[][]{
                 {"atomics/atomic_read_race.spv.dis", 1, PASS},
                 {"atomics/equality_fail.spv.dis", 1, PASS},
-                {"atomics/forloop.spv.dis", 2, UNKNOWN},
+                {"atomics/forloop.spv.dis", 2, PASS},
                 {"atomics/histo.spv.dis", 1, PASS},
                 {"barrier_intervals/test1.spv.dis", 1, PASS},
                 {"basicbarrier.spv.dis", 1, PASS},
@@ -64,13 +64,11 @@ public class SpirvClangChecksTest {
                 {"divergence/race_and_divergence.spv.dis", 1, PASS},
                 {"divergence/race_no_divergence.spv.dis", 1, PASS},
                 {"inter_group_and_barrier_flag_tests/fail/local_id.spv.dis", 1, PASS},
-                {"inter_group_and_barrier_flag_tests/fail/missing_local_barrier_flag.spv.dis", 1, PASS},
 
                 // Fails check checkRelIsSem for a barrier with semantics 0x8 (rel_acq, no storage class semantics)
                 // {"inter_group_and_barrier_flag_tests/fail/no_barrier_flags.spv.dis", 1, PASS},
 
                 {"inter_group_and_barrier_flag_tests/fail/sync.spv.dis", 1, PASS},
-                {"inter_group_and_barrier_flag_tests/pass/local_barrier_flag.spv.dis", 1, PASS},
                 {"inter_group_and_barrier_flag_tests/pass/local_id_benign_write_write.spv.dis", 1, PASS},
                 {"inter_group_and_barrier_flag_tests/pass/pass_due_to_intra_group_flag.spv.dis", 1, PASS},
                 {"localarrayaccess.spv.dis", 1, PASS},
@@ -97,16 +95,16 @@ public class SpirvClangChecksTest {
                 {"sourcelocation_tests/race_with_loop.spv.dis", 2, UNKNOWN},
                 {"sourcelocation_tests/races/fail/read_write.spv.dis", 1, PASS},
                 {"sourcelocation_tests/races/fail/write_read.spv.dis", 1, PASS},
-                {"sourcelocation_tests/races/fail/write_write/loop.spv.dis", 2, UNKNOWN},
+                {"sourcelocation_tests/races/fail/write_write/loop.spv.dis", 2, PASS},
                 {"sourcelocation_tests/races/fail/write_write/normal.spv.dis", 1, PASS},
                 {"sourcelocation_tests/races/pass/no_race.spv.dis", 1, PASS},
                 {"sourcelocation_tests/races/pass/read_read.spv.dis", 1, PASS},
-                {"test_2d_global_index_inference.spv.dis", 2, UNKNOWN},
+                {"test_2d_global_index_inference.spv.dis", 2, PASS},
                 // {"test_2d_local_index_inference_2.spv.dis", 1, PASS}, // Timeout
                 {"test_for_benign_read_write_bug.spv.dis", 1, PASS},
                 {"test_local_id_inference.spv.dis", 1, PASS},
-                {"test_mod_invariants/global_reduce_strength.spv.dis", 2, UNKNOWN},
-                {"test_mod_invariants/local_direct.spv.dis", 2, UNKNOWN},
+                {"test_mod_invariants/global_reduce_strength.spv.dis", 2, PASS},
+                {"test_mod_invariants/local_direct.spv.dis", 2, PASS},
                 {"test_part_load_store/store_int_and_short.spv.dis", 1, PASS},
                 {"test_structs/use_array_element.spv.dis", 1, PASS},
                 {"test_structs/use_element.spv.dis", 1, PASS},
@@ -126,6 +124,9 @@ public class SpirvClangChecksTest {
                 {"global_size/local_size_fail_divide_global_size.spv.dis", 1, PASS},
                 {"global_size/mismatch_dims.spv.dis", 1, PASS},
                 {"global_size/num_groups_and_global_size.spv.dis", 1, PASS},
+
+                {"inter_group_and_barrier_flag_tests/fail/missing_local_barrier_flag.spv.dis", 1, PASS},
+                {"inter_group_and_barrier_flag_tests/pass/local_barrier_flag.spv.dis", 1, PASS},
 
                 // Unsupported large array (4K elements) leading to OOM
                 // {"misc/fail/2d_array_race.spv.dis", 1, PASS},
@@ -374,6 +375,6 @@ public class SpirvClangChecksTest {
                 .withTarget(Arch.OPENCL);
         Program program = new ProgramParser().parse(new File(programPath));
         Wmm mcm = new ParserCat().parse(new File(modelPath));
-        return builder.build(program, mcm, EnumSet.of(CAT_SPEC));
+        return builder.build(program, mcm, EnumSet.of(PROGRAM_SPEC));
     }
 }
