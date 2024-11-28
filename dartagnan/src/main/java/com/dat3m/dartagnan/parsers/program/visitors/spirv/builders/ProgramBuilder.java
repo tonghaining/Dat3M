@@ -195,9 +195,6 @@ public class ProgramBuilder {
 
     public Register addRegister(String id, String typeId) {
         Type type = getType(typeId);
-        if (type instanceof ScopedPointerType) {
-            throw new ParsingException("Register cannot be a pointer");
-        }
         Register register = getCurrentFunctionOrThrowError().newRegister(id, type);
         Expression undefinedExpression = expressionsUndefined.get(id);
         if (undefinedExpression != null) {

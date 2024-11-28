@@ -172,8 +172,8 @@ public class VisitorOpsMemory extends SpirvBaseVisitor<Event> {
         Type basePointedType;
         if (basePointer.getType() instanceof ScopedPointerType basePointerType) {
             basePointedType = basePointerType.getPointedType();
-        }  else if (basePointer instanceof ScopedPointerVariable basePointerVariable) {
-            basePointedType = basePointerVariable.getInnerType();
+        } else if (basePointer instanceof ScopedPointer scopedPointer) {
+            basePointedType = scopedPointer.getInnerType();
         } else {
             throw new ParsingException("Invalid base pointer type '%s' in access chain '%s'", basePointer.getType(), id);
         }
