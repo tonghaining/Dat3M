@@ -2,7 +2,7 @@
 ; SPIR-V
 ; Version: 1.0
 ; Generator: Khronos LLVM/SPIR-V Translator; 14
-; Bound: 11
+; Bound: 12
 ; Schema: 0
                OpCapability Addresses
                OpCapability Linkage
@@ -18,11 +18,12 @@
           %3 = OpTypeFunction %uint
        %void = OpTypeVoid
           %8 = OpTypeFunction %void
-        %bar = OpFunction %uint Pure %3
+        %bar = OpFunction %uint DontInline %3
           %5 = OpLabel
                OpReturnValue %uint_0
                OpFunctionEnd
-          %9 = OpFunction %void Pure %8
+          %9 = OpFunction %void DontInline %8
          %10 = OpLabel
+         %11 = OpFunctionCall %uint %bar
                OpReturn
                OpFunctionEnd

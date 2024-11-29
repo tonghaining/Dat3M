@@ -12,7 +12,7 @@
                OpSource OpenCL_C 200000
        %void = OpTypeVoid
           %3 = OpTypeFunction %void
-          %4 = OpFunction %void Pure %3
+          %4 = OpFunction %void DontInline %3
           %5 = OpLabel
                OpBranch %6
           %6 = OpLabel

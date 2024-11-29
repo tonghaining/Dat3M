@@ -2,7 +2,7 @@
 ; SPIR-V
 ; Version: 1.0
 ; Generator: Khronos LLVM/SPIR-V Translator; 14
-; Bound: 12
+; Bound: 19
 ; Schema: 0
                OpCapability Addresses
                OpCapability Linkage
@@ -10,22 +10,33 @@
                OpCapability GenericPointer
           %1 = OpExtInstImport "OpenCL.std"
                OpMemoryModel Physical32 OpenCL
-               OpEntryPoint Kernel %10 "foo"
+               OpEntryPoint Kernel %12 "foo"
                OpSource OpenCL_C 200000
                OpName %bar "bar"
-               OpDecorate %7 FuncParamAttr NoCapture
                OpDecorate %bar LinkageAttributes "bar" Export
+               OpDecorate %10 Alignment 4
+               OpDecorate %15 Alignment 4
        %uint = OpTypeInt 32 0
+     %uint_0 = OpConstant %uint 0
        %void = OpTypeVoid
 %_ptr_Generic_uint = OpTypePointer Generic %uint
           %5 = OpTypeFunction %void %_ptr_Generic_uint
-          %9 = OpTypeFunction %void
-        %bar = OpFunction %void Pure %5
+%_ptr_Function__ptr_Generic_uint = OpTypePointer Function %_ptr_Generic_uint
+         %11 = OpTypeFunction %void
+%_ptr_Function_uint = OpTypePointer Function %uint
+        %bar = OpFunction %void DontInline %5
           %7 = OpFunctionParameter %_ptr_Generic_uint
           %8 = OpLabel
+         %10 = OpVariable %_ptr_Function__ptr_Generic_uint Function
+               OpStore %10 %7 Aligned 4
                OpReturn
                OpFunctionEnd
-         %10 = OpFunction %void Pure %9
-         %11 = OpLabel
+         %12 = OpFunction %void DontInline %11
+         %13 = OpLabel
+         %15 = OpVariable %_ptr_Function_uint Function
+               OpStore %15 %uint_0 Aligned 4
+               OpStore %15 %uint_0 Aligned 4
+         %17 = OpPtrCastToGeneric %_ptr_Generic_uint %15
+         %18 = OpFunctionCall %void %bar %17
                OpReturn
                OpFunctionEnd

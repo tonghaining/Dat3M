@@ -17,7 +17,7 @@
           %3 = OpTypeFunction %void
 %_ptr_CrossWorkgroup_uint = OpTypePointer CrossWorkgroup %uint
           %8 = OpConstantNull %_ptr_CrossWorkgroup_uint
-          %4 = OpFunction %void None %3
+          %4 = OpFunction %void DontInline %3
           %5 = OpLabel
          %11 = OpAtomicIIncrement %uint %8 %uint_2 %uint_0
                OpReturn

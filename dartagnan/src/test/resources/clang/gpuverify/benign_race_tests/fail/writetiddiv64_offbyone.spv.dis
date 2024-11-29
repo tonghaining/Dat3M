@@ -2,7 +2,7 @@
 ; SPIR-V
 ; Version: 1.0
 ; Generator: Khronos LLVM/SPIR-V Translator; 14
-; Bound: 18
+; Bound: 24
 ; Schema: 0
                OpCapability Addresses
                OpCapability Linkage
@@ -14,24 +14,33 @@
                OpName %__spirv_BuiltInLocalInvocationId "__spirv_BuiltInLocalInvocationId"
                OpDecorate %__spirv_BuiltInLocalInvocationId BuiltIn LocalInvocationId
                OpDecorate %__spirv_BuiltInLocalInvocationId Constant
-               OpDecorate %10 FuncParamAttr NoCapture
                OpDecorate %__spirv_BuiltInLocalInvocationId LinkageAttributes "__spirv_BuiltInLocalInvocationId" Import
+               OpDecorate %14 Alignment 4
+               OpDecorate %16 Alignment 4
        %uint = OpTypeInt 32 0
-     %uint_6 = OpConstant %uint 6
+    %uint_64 = OpConstant %uint 64
      %v3uint = OpTypeVector %uint 3
 %_ptr_Input_v3uint = OpTypePointer Input %v3uint
        %void = OpTypeVoid
 %_ptr_Workgroup_uint = OpTypePointer Workgroup %uint
           %8 = OpTypeFunction %void %_ptr_Workgroup_uint %uint
+%_ptr_Function__ptr_Workgroup_uint = OpTypePointer Function %_ptr_Workgroup_uint
+%_ptr_Function_uint = OpTypePointer Function %uint
 %__spirv_BuiltInLocalInvocationId = OpVariable %_ptr_Input_v3uint Input
-          %9 = OpFunction %void None %8
+          %9 = OpFunction %void DontInline %8
          %10 = OpFunctionParameter %_ptr_Workgroup_uint
          %11 = OpFunctionParameter %uint
          %12 = OpLabel
-         %13 = OpLoad %v3uint %__spirv_BuiltInLocalInvocationId Aligned 16
-         %14 = OpCompositeExtract %uint %13 0
-         %16 = OpShiftRightLogical %uint %14 %uint_6
-         %17 = OpInBoundsPtrAccessChain %_ptr_Workgroup_uint %10 %11
-               OpStore %17 %16 Aligned 4
+         %14 = OpVariable %_ptr_Function__ptr_Workgroup_uint Function
+         %16 = OpVariable %_ptr_Function_uint Function
+               OpStore %14 %10 Aligned 4
+               OpStore %16 %11 Aligned 4
+         %17 = OpLoad %v3uint %__spirv_BuiltInLocalInvocationId Aligned 16
+         %18 = OpCompositeExtract %uint %17 0
+         %20 = OpUDiv %uint %18 %uint_64
+         %21 = OpLoad %_ptr_Workgroup_uint %14 Aligned 4
+         %22 = OpLoad %uint %16 Aligned 4
+         %23 = OpInBoundsPtrAccessChain %_ptr_Workgroup_uint %21 %22
+               OpStore %23 %20 Aligned 4
                OpReturn
                OpFunctionEnd

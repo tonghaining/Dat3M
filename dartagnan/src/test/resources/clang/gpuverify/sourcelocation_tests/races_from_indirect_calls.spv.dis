@@ -2,14 +2,14 @@
 ; SPIR-V
 ; Version: 1.0
 ; Generator: Khronos LLVM/SPIR-V Translator; 14
-; Bound: 55
+; Bound: 96
 ; Schema: 0
                OpCapability Addresses
                OpCapability Linkage
                OpCapability Kernel
           %1 = OpExtInstImport "OpenCL.std"
                OpMemoryModel Physical32 OpenCL
-               OpEntryPoint Kernel %48 "baz" %__spirv_BuiltInLocalInvocationId
+               OpEntryPoint Kernel %83 "baz" %__spirv_BuiltInLocalInvocationId
                OpSource OpenCL_C 200000
                OpName %__spirv_BuiltInLocalInvocationId "__spirv_BuiltInLocalInvocationId"
                OpName %jazz "jazz"
@@ -18,85 +18,129 @@
                OpName %foo "foo"
                OpDecorate %__spirv_BuiltInLocalInvocationId BuiltIn LocalInvocationId
                OpDecorate %__spirv_BuiltInLocalInvocationId Constant
-               OpDecorate %9 FuncParamAttr NoCapture
-               OpDecorate %10 FuncParamAttr NoCapture
-               OpDecorate %11 FuncParamAttr NoCapture
-               OpDecorate %28 FuncParamAttr NoCapture
-               OpDecorate %33 FuncParamAttr NoCapture
-               OpDecorate %40 FuncParamAttr NoCapture
-               OpDecorate %49 FuncParamAttr NoCapture
-               OpDecorate %9 FuncParamAttr NoWrite
-               OpDecorate %10 FuncParamAttr NoWrite
-               OpDecorate %11 FuncParamAttr NoWrite
-               OpDecorate %28 FuncParamAttr NoWrite
-               OpDecorate %33 FuncParamAttr NoWrite
-               OpDecorate %40 FuncParamAttr NoWrite
                OpDecorate %sim LinkageAttributes "sim" Export
                OpDecorate %foo LinkageAttributes "foo" Export
                OpDecorate %bar LinkageAttributes "bar" Export
                OpDecorate %jazz LinkageAttributes "jazz" Export
                OpDecorate %__spirv_BuiltInLocalInvocationId LinkageAttributes "__spirv_BuiltInLocalInvocationId" Import
+               OpDecorate %14 Alignment 4
+               OpDecorate %15 Alignment 4
+               OpDecorate %16 Alignment 4
+               OpDecorate %43 Alignment 4
+               OpDecorate %44 Alignment 4
+               OpDecorate %54 Alignment 4
+               OpDecorate %73 Alignment 4
+               OpDecorate %86 Alignment 4
        %uint = OpTypeInt 32 0
      %uint_1 = OpConstant %uint 1
      %uint_0 = OpConstant %uint 0
+     %uint_2 = OpConstant %uint 2
      %v3uint = OpTypeVector %uint 3
 %_ptr_Input_v3uint = OpTypePointer Input %v3uint
 %_ptr_Workgroup_uint = OpTypePointer Workgroup %uint
           %7 = OpTypeFunction %uint %_ptr_Workgroup_uint %_ptr_Workgroup_uint %_ptr_Workgroup_uint
-         %25 = OpTypeFunction %uint %uint %_ptr_Workgroup_uint
-         %31 = OpTypeFunction %uint %_ptr_Workgroup_uint
+%_ptr_Function__ptr_Workgroup_uint = OpTypePointer Function %_ptr_Workgroup_uint
+         %37 = OpTypeFunction %uint %uint %_ptr_Workgroup_uint
+%_ptr_Function_uint = OpTypePointer Function %uint
+         %50 = OpTypeFunction %uint %_ptr_Workgroup_uint
        %void = OpTypeVoid
-         %47 = OpTypeFunction %void %_ptr_Workgroup_uint
+         %82 = OpTypeFunction %void %_ptr_Workgroup_uint
 %__spirv_BuiltInLocalInvocationId = OpVariable %_ptr_Input_v3uint Input
-       %jazz = OpFunction %uint Const %7
+       %jazz = OpFunction %uint DontInline %7
           %9 = OpFunctionParameter %_ptr_Workgroup_uint
          %10 = OpFunctionParameter %_ptr_Workgroup_uint
          %11 = OpFunctionParameter %_ptr_Workgroup_uint
          %12 = OpLabel
-         %13 = OpLoad %v3uint %__spirv_BuiltInLocalInvocationId Aligned 16
-         %14 = OpCompositeExtract %uint %13 0
-         %15 = OpInBoundsPtrAccessChain %_ptr_Workgroup_uint %9 %14
-         %16 = OpLoad %uint %15 Aligned 4
-         %18 = OpIAdd %uint %14 %uint_1
-         %19 = OpInBoundsPtrAccessChain %_ptr_Workgroup_uint %10 %18
-         %20 = OpLoad %uint %19 Aligned 4
-         %21 = OpIAdd %uint %20 %16
-         %22 = OpInBoundsPtrAccessChain %_ptr_Workgroup_uint %11 %18
-         %23 = OpLoad %uint %22 Aligned 4
-         %24 = OpIAdd %uint %21 %23
-               OpReturnValue %24
+         %14 = OpVariable %_ptr_Function__ptr_Workgroup_uint Function
+         %15 = OpVariable %_ptr_Function__ptr_Workgroup_uint Function
+         %16 = OpVariable %_ptr_Function__ptr_Workgroup_uint Function
+               OpStore %14 %9 Aligned 4
+               OpStore %15 %10 Aligned 4
+               OpStore %16 %11 Aligned 4
+         %17 = OpLoad %_ptr_Workgroup_uint %14 Aligned 4
+         %18 = OpLoad %v3uint %__spirv_BuiltInLocalInvocationId Aligned 16
+         %19 = OpCompositeExtract %uint %18 0
+         %20 = OpInBoundsPtrAccessChain %_ptr_Workgroup_uint %17 %19
+         %21 = OpLoad %uint %20 Aligned 4
+         %22 = OpLoad %_ptr_Workgroup_uint %15 Aligned 4
+         %23 = OpLoad %v3uint %__spirv_BuiltInLocalInvocationId Aligned 16
+         %24 = OpCompositeExtract %uint %23 0
+         %26 = OpIAdd %uint %24 %uint_1
+         %27 = OpInBoundsPtrAccessChain %_ptr_Workgroup_uint %22 %26
+         %28 = OpLoad %uint %27 Aligned 4
+         %29 = OpIAdd %uint %21 %28
+         %30 = OpLoad %_ptr_Workgroup_uint %16 Aligned 4
+         %31 = OpLoad %v3uint %__spirv_BuiltInLocalInvocationId Aligned 16
+         %32 = OpCompositeExtract %uint %31 0
+         %33 = OpIAdd %uint %32 %uint_1
+         %34 = OpInBoundsPtrAccessChain %_ptr_Workgroup_uint %30 %33
+         %35 = OpLoad %uint %34 Aligned 4
+         %36 = OpIAdd %uint %29 %35
+               OpReturnValue %36
                OpFunctionEnd
-        %sim = OpFunction %uint Const %25
-         %27 = OpFunctionParameter %uint
-         %28 = OpFunctionParameter %_ptr_Workgroup_uint
-         %29 = OpLabel
-               OpReturnValue %uint_0
-               OpFunctionEnd
-        %bar = OpFunction %uint Const %31
-         %33 = OpFunctionParameter %_ptr_Workgroup_uint
-         %34 = OpLabel
-         %35 = OpLoad %v3uint %__spirv_BuiltInLocalInvocationId Aligned 16
-         %36 = OpCompositeExtract %uint %35 0
-         %37 = OpInBoundsPtrAccessChain %_ptr_Workgroup_uint %33 %36
-         %38 = OpLoad %uint %37 Aligned 4
-               OpReturnValue %38
-               OpFunctionEnd
-        %foo = OpFunction %uint Const %31
+        %sim = OpFunction %uint DontInline %37
+         %39 = OpFunctionParameter %uint
          %40 = OpFunctionParameter %_ptr_Workgroup_uint
          %41 = OpLabel
-         %42 = OpLoad %v3uint %__spirv_BuiltInLocalInvocationId Aligned 16
-         %43 = OpCompositeExtract %uint %42 0
-         %44 = OpInBoundsPtrAccessChain %_ptr_Workgroup_uint %40 %43
-         %45 = OpLoad %uint %44 Aligned 4
-               OpReturnValue %45
+         %43 = OpVariable %_ptr_Function_uint Function
+         %44 = OpVariable %_ptr_Function__ptr_Workgroup_uint Function
+               OpStore %43 %39 Aligned 4
+               OpStore %44 %40 Aligned 4
+         %45 = OpLoad %_ptr_Workgroup_uint %44 Aligned 4
+         %46 = OpLoad %_ptr_Workgroup_uint %44 Aligned 4
+         %47 = OpLoad %_ptr_Workgroup_uint %44 Aligned 4
+         %48 = OpFunctionCall %uint %jazz %45 %46 %47
+               OpReturnValue %uint_0
                OpFunctionEnd
-         %48 = OpFunction %void None %47
-         %49 = OpFunctionParameter %_ptr_Workgroup_uint
-         %50 = OpLabel
-         %51 = OpLoad %v3uint %__spirv_BuiltInLocalInvocationId Aligned 16
-         %52 = OpCompositeExtract %uint %51 0
-         %53 = OpIAdd %uint %52 %uint_1
-         %54 = OpInBoundsPtrAccessChain %_ptr_Workgroup_uint %49 %53
+        %bar = OpFunction %uint DontInline %50
+         %52 = OpFunctionParameter %_ptr_Workgroup_uint
+         %53 = OpLabel
+         %54 = OpVariable %_ptr_Function__ptr_Workgroup_uint Function
                OpStore %54 %52 Aligned 4
+         %55 = OpLoad %_ptr_Workgroup_uint %54 Aligned 4
+         %56 = OpLoad %v3uint %__spirv_BuiltInLocalInvocationId Aligned 16
+         %57 = OpCompositeExtract %uint %56 0
+         %58 = OpInBoundsPtrAccessChain %_ptr_Workgroup_uint %55 %57
+         %59 = OpLoad %uint %58 Aligned 4
+         %60 = OpLoad %_ptr_Workgroup_uint %54 Aligned 4
+         %61 = OpLoad %v3uint %__spirv_BuiltInLocalInvocationId Aligned 16
+         %62 = OpCompositeExtract %uint %61 0
+         %64 = OpIAdd %uint %62 %uint_2
+         %65 = OpInBoundsPtrAccessChain %_ptr_Workgroup_uint %60 %64
+         %66 = OpLoad %uint %65 Aligned 4
+         %67 = OpLoad %_ptr_Workgroup_uint %54 Aligned 4
+         %68 = OpFunctionCall %uint %sim %66 %67
+         %69 = OpIAdd %uint %59 %68
+               OpReturnValue %69
+               OpFunctionEnd
+        %foo = OpFunction %uint DontInline %50
+         %71 = OpFunctionParameter %_ptr_Workgroup_uint
+         %72 = OpLabel
+         %73 = OpVariable %_ptr_Function__ptr_Workgroup_uint Function
+               OpStore %73 %71 Aligned 4
+         %74 = OpLoad %_ptr_Workgroup_uint %73 Aligned 4
+         %75 = OpFunctionCall %uint %bar %74
+         %76 = OpLoad %_ptr_Workgroup_uint %73 Aligned 4
+         %77 = OpLoad %v3uint %__spirv_BuiltInLocalInvocationId Aligned 16
+         %78 = OpCompositeExtract %uint %77 0
+         %79 = OpInBoundsPtrAccessChain %_ptr_Workgroup_uint %76 %78
+         %80 = OpLoad %uint %79 Aligned 4
+               OpReturnValue %80
+               OpFunctionEnd
+         %83 = OpFunction %void DontInline %82
+         %84 = OpFunctionParameter %_ptr_Workgroup_uint
+         %85 = OpLabel
+         %86 = OpVariable %_ptr_Function__ptr_Workgroup_uint Function
+               OpStore %86 %84 Aligned 4
+         %87 = OpLoad %_ptr_Workgroup_uint %86 Aligned 4
+         %88 = OpFunctionCall %uint %foo %87
+         %89 = OpLoad %v3uint %__spirv_BuiltInLocalInvocationId Aligned 16
+         %90 = OpCompositeExtract %uint %89 0
+         %91 = OpLoad %_ptr_Workgroup_uint %86 Aligned 4
+         %92 = OpLoad %v3uint %__spirv_BuiltInLocalInvocationId Aligned 16
+         %93 = OpCompositeExtract %uint %92 0
+         %94 = OpIAdd %uint %93 %uint_1
+         %95 = OpInBoundsPtrAccessChain %_ptr_Workgroup_uint %91 %94
+               OpStore %95 %90 Aligned 4
                OpReturn
                OpFunctionEnd

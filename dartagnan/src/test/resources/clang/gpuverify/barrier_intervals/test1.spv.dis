@@ -2,7 +2,7 @@
 ; SPIR-V
 ; Version: 1.0
 ; Generator: Khronos LLVM/SPIR-V Translator; 14
-; Bound: 17
+; Bound: 34
 ; Schema: 0
                OpCapability Addresses
                OpCapability Linkage
@@ -14,8 +14,8 @@
                OpName %__spirv_BuiltInLocalInvocationId "__spirv_BuiltInLocalInvocationId"
                OpDecorate %__spirv_BuiltInLocalInvocationId BuiltIn LocalInvocationId
                OpDecorate %__spirv_BuiltInLocalInvocationId Constant
-               OpDecorate %10 FuncParamAttr NoCapture
                OpDecorate %__spirv_BuiltInLocalInvocationId LinkageAttributes "__spirv_BuiltInLocalInvocationId" Import
+               OpDecorate %13 Alignment 4
        %uint = OpTypeInt 32 0
      %uint_2 = OpConstant %uint 2
    %uint_272 = OpConstant %uint 272
@@ -24,17 +24,35 @@
        %void = OpTypeVoid
 %_ptr_Workgroup_uint = OpTypePointer Workgroup %uint
           %8 = OpTypeFunction %void %_ptr_Workgroup_uint
+%_ptr_Function__ptr_Workgroup_uint = OpTypePointer Function %_ptr_Workgroup_uint
 %__spirv_BuiltInLocalInvocationId = OpVariable %_ptr_Input_v3uint Input
-          %9 = OpFunction %void None %8
+          %9 = OpFunction %void DontInline %8
          %10 = OpFunctionParameter %_ptr_Workgroup_uint
          %11 = OpLabel
-         %12 = OpLoad %v3uint %__spirv_BuiltInLocalInvocationId Aligned 16
-         %13 = OpCompositeExtract %uint %12 0
-         %14 = OpInBoundsPtrAccessChain %_ptr_Workgroup_uint %10 %13
-               OpStore %14 %13 Aligned 4
+         %13 = OpVariable %_ptr_Function__ptr_Workgroup_uint Function
+               OpStore %13 %10 Aligned 4
+         %14 = OpLoad %v3uint %__spirv_BuiltInLocalInvocationId Aligned 16
+         %15 = OpCompositeExtract %uint %14 0
+         %16 = OpLoad %_ptr_Workgroup_uint %13 Aligned 4
+         %17 = OpLoad %v3uint %__spirv_BuiltInLocalInvocationId Aligned 16
+         %18 = OpCompositeExtract %uint %17 0
+         %19 = OpInBoundsPtrAccessChain %_ptr_Workgroup_uint %16 %18
+               OpStore %19 %15 Aligned 4
                OpControlBarrier %uint_2 %uint_2 %uint_272
-               OpStore %14 %13 Aligned 4
+         %22 = OpLoad %v3uint %__spirv_BuiltInLocalInvocationId Aligned 16
+         %23 = OpCompositeExtract %uint %22 0
+         %24 = OpLoad %_ptr_Workgroup_uint %13 Aligned 4
+         %25 = OpLoad %v3uint %__spirv_BuiltInLocalInvocationId Aligned 16
+         %26 = OpCompositeExtract %uint %25 0
+         %27 = OpInBoundsPtrAccessChain %_ptr_Workgroup_uint %24 %26
+               OpStore %27 %23 Aligned 4
                OpControlBarrier %uint_2 %uint_2 %uint_272
-               OpStore %14 %13 Aligned 4
+         %28 = OpLoad %v3uint %__spirv_BuiltInLocalInvocationId Aligned 16
+         %29 = OpCompositeExtract %uint %28 0
+         %30 = OpLoad %_ptr_Workgroup_uint %13 Aligned 4
+         %31 = OpLoad %v3uint %__spirv_BuiltInLocalInvocationId Aligned 16
+         %32 = OpCompositeExtract %uint %31 0
+         %33 = OpInBoundsPtrAccessChain %_ptr_Workgroup_uint %30 %32
+               OpStore %33 %29 Aligned 4
                OpReturn
                OpFunctionEnd

@@ -2,7 +2,7 @@
 ; SPIR-V
 ; Version: 1.0
 ; Generator: Khronos LLVM/SPIR-V Translator; 14
-; Bound: 24
+; Bound: 27
 ; Schema: 0
                OpCapability Addresses
                OpCapability Linkage
@@ -15,6 +15,7 @@
                OpDecorate %__spirv_BuiltInWorkgroupId BuiltIn WorkgroupId
                OpDecorate %__spirv_BuiltInWorkgroupId Constant
                OpDecorate %__spirv_BuiltInWorkgroupId LinkageAttributes "__spirv_BuiltInWorkgroupId" Import
+               OpDecorate %15 Alignment 4
        %uint = OpTypeInt 32 0
      %uint_0 = OpConstant %uint 0
      %uint_2 = OpConstant %uint 2
@@ -24,21 +25,28 @@
 %_ptr_Input_v3uint = OpTypePointer Input %v3uint
        %void = OpTypeVoid
           %7 = OpTypeFunction %void
+%_ptr_Function_uint = OpTypePointer Function %uint
        %bool = OpTypeBool
 %__spirv_BuiltInWorkgroupId = OpVariable %_ptr_Input_v3uint Input
-          %8 = OpFunction %void None %7
+          %8 = OpFunction %void DontInline %7
           %9 = OpLabel
+         %15 = OpVariable %_ptr_Function_uint Function
+               OpStore %15 %uint_0 Aligned 4
                OpBranch %10
          %10 = OpLabel
-         %15 = OpPhi %uint %uint_0 %9 %14 %12
-         %16 = OpLoad %v3uint %__spirv_BuiltInWorkgroupId Aligned 16
-         %17 = OpCompositeExtract %uint %16 0
-         %19 = OpULessThan %bool %15 %17
-               OpBranchConditional %19 %12 %11
+         %17 = OpLoad %uint %15 Aligned 4
+         %18 = OpLoad %v3uint %__spirv_BuiltInWorkgroupId Aligned 16
+         %19 = OpCompositeExtract %uint %18 0
+         %21 = OpULessThan %bool %17 %19
+               OpBranchConditional %21 %11 %13
          %11 = OpLabel
-               OpReturn
-         %12 = OpLabel
                OpControlBarrier %uint_2 %uint_2 %uint_272
-         %14 = OpIAdd %uint %15 %uint_1
+               OpBranch %12
+         %12 = OpLabel
+         %24 = OpLoad %uint %15 Aligned 4
+         %26 = OpIAdd %uint %24 %uint_1
+               OpStore %15 %26 Aligned 4
                OpBranch %10
+         %13 = OpLabel
+               OpReturn
                OpFunctionEnd

@@ -16,7 +16,7 @@
      %uint_4 = OpConstant %uint 4
        %void = OpTypeVoid
           %3 = OpTypeFunction %void
-          %4 = OpFunction %void None %3
+          %4 = OpFunction %void DontInline %3
           %5 = OpLabel
                OpMemoryBarrier %uint_2 %uint_8
                OpMemoryBarrier %uint_2 %uint_2

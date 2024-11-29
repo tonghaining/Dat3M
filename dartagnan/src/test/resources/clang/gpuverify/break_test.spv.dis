@@ -2,7 +2,7 @@
 ; SPIR-V
 ; Version: 1.0
 ; Generator: Khronos LLVM/SPIR-V Translator; 14
-; Bound: 20
+; Bound: 29
 ; Schema: 0
                OpCapability Addresses
                OpCapability Linkage
@@ -15,25 +15,40 @@
                OpDecorate %__spirv_BuiltInLocalInvocationId BuiltIn LocalInvocationId
                OpDecorate %__spirv_BuiltInLocalInvocationId Constant
                OpDecorate %__spirv_BuiltInLocalInvocationId LinkageAttributes "__spirv_BuiltInLocalInvocationId" Import
+               OpDecorate %17 Alignment 4
        %uint = OpTypeInt 32 0
+   %uint_100 = OpConstant %uint 100
+   %uint_102 = OpConstant %uint 102
+     %uint_5 = OpConstant %uint 5
      %uint_2 = OpConstant %uint 2
-     %uint_4 = OpConstant %uint 4
      %v3uint = OpTypeVector %uint 3
 %_ptr_Input_v3uint = OpTypePointer Input %v3uint
        %void = OpTypeVoid
           %7 = OpTypeFunction %void %uint
+%_ptr_Function_uint = OpTypePointer Function %uint
        %bool = OpTypeBool
 %__spirv_BuiltInLocalInvocationId = OpVariable %_ptr_Input_v3uint Input
-          %8 = OpFunction %void Pure %7
+          %8 = OpFunction %void DontInline %7
           %9 = OpFunctionParameter %uint
          %10 = OpLabel
-         %15 = OpSLessThan %bool %9 %uint_2
-               OpBranchConditional %15 %11 %12
+         %17 = OpVariable %_ptr_Function_uint Function
+               OpStore %17 %9 Aligned 4
+               OpBranch %11
          %11 = OpLabel
-         %16 = OpLoad %v3uint %__spirv_BuiltInLocalInvocationId Aligned 16
-         %17 = OpCompositeExtract %uint %16 0
-         %19 = OpUGreaterThan %bool %17 %uint_4
-               OpBranchConditional %19 %11 %12
+         %18 = OpLoad %uint %17 Aligned 4
+         %20 = OpIAdd %uint %18 %uint_100
+         %23 = OpSLessThan %bool %20 %uint_102
+               OpBranchConditional %23 %12 %15
          %12 = OpLabel
+         %24 = OpLoad %v3uint %__spirv_BuiltInLocalInvocationId Aligned 16
+         %25 = OpCompositeExtract %uint %24 0
+         %27 = OpULessThan %bool %25 %uint_5
+               OpBranchConditional %27 %13 %14
+         %13 = OpLabel
+               OpStore %17 %uint_2 Aligned 4
+               OpBranch %15
+         %14 = OpLabel
+               OpBranch %11
+         %15 = OpLabel
                OpReturn
                OpFunctionEnd
