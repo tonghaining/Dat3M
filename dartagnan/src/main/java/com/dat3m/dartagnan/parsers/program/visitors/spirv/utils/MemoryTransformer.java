@@ -94,14 +94,15 @@ public class MemoryTransformer extends ExprTransformer {
             // Device-level memory (keep the same instance)
             case Tag.Spirv.SC_UNIFORM_CONSTANT,
                     Tag.Spirv.SC_UNIFORM,
+                    Tag.Spirv.SC_GENERIC,
                     Tag.Spirv.SC_OUTPUT,
                     Tag.Spirv.SC_PUSH_CONSTANT,
                     Tag.Spirv.SC_STORAGE_BUFFER,
+                    Tag.Spirv.SC_FUNCTION,
                     Tag.Spirv.SC_PHYS_STORAGE_BUFFER,
                     Tag.Spirv.SC_CROSS_WORKGROUP-> memObj;
             // Private memory (copy for each new thread)
             case Tag.Spirv.SC_PRIVATE,
-                    Tag.Spirv.SC_FUNCTION,
                     Tag.Spirv.SC_INPUT -> applyMapping(memObj, 0);
             // Workgroup-level memory (copy for each new workgroup)
             case Tag.Spirv.SC_WORKGROUP -> applyMapping(memObj, 2);

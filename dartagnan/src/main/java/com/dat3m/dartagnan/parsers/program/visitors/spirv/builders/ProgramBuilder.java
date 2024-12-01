@@ -6,7 +6,6 @@ import com.dat3m.dartagnan.expression.Expression;
 import com.dat3m.dartagnan.expression.ExpressionFactory;
 import com.dat3m.dartagnan.expression.Type;
 import com.dat3m.dartagnan.expression.type.FunctionType;
-import com.dat3m.dartagnan.expression.type.TypeFactory;
 import com.dat3m.dartagnan.parsers.program.visitors.spirv.decorations.BuiltIn;
 import com.dat3m.dartagnan.parsers.program.visitors.spirv.utils.ThreadCreator;
 import com.dat3m.dartagnan.parsers.program.visitors.spirv.utils.ThreadGrid;
@@ -29,7 +28,6 @@ public class ProgramBuilder {
     protected final Map<String, Expression> expressionsUndefined = new HashMap<>();
     protected final Map<String, Expression> inputs = new HashMap<>();
     protected final Map<String, String> debugInfos = new HashMap<>();
-    protected final Map<MemoryObject, Type> localTypes = new HashMap<>();
     protected final ThreadGrid grid;
     protected final Program program;
     protected ControlFlowBuilder controlFlowBuilder;
@@ -250,12 +248,7 @@ public class ProgramBuilder {
         }
         addExpression(function.getName(), function);
         for (Register register : function.getParameterRegisters()) {
-            if (register.getType() instanceof ScopedPointerType pointerType) {
-                MemoryObject memoryObject= allocateVariable(register.getName(), pointerType.getBitWidth());
-                ScopedPointerVariable pointer = ExpressionFactory.getInstance().makeScopedPointerVariable(
-                        register.getName(), Tag.Spirv.SC_FUNCTION, pointerType.getPointedType(), memoryObject);
-                addExpression(register.getName(), pointer);
-            } else {
+            if (!(register.getType() instanceof ScopedPointerType)) {
                 addExpression(register.getName(), register);
             }
         }
@@ -282,6 +275,16 @@ public class ProgramBuilder {
             throw new ParsingException("No debug information with id '%s'", id);
         }
         return debugInfos.get(id);
+    }
+
+    public void addReferenceParameter(String id, Type type) {
+        if (!(type instanceof ScopedPointerType pointerType)) {
+            throw new ParsingException("Reference parameter '%s' must be a pointer type", id);
+        }
+        MemoryObject memoryObject= allocateVariable(id, pointerType.getBitWidth());
+        ScopedPointerVariable pointer = ExpressionFactory.getInstance().makeScopedPointerVariable(
+                id, pointerType.getScopeId(), pointerType.getPointedType(), memoryObject);
+        addExpression(id, pointer);
     }
 
     private void validateBeforeBuild() {

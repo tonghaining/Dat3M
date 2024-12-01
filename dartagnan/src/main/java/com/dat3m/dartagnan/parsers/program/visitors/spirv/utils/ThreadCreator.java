@@ -1,6 +1,9 @@
 package com.dat3m.dartagnan.parsers.program.visitors.spirv.utils;
 
+import com.dat3m.dartagnan.expression.Type;
 import com.dat3m.dartagnan.expression.type.FunctionType;
+import com.dat3m.dartagnan.expression.type.ScopedPointerType;
+import com.dat3m.dartagnan.expression.type.TypeFactory;
 import com.dat3m.dartagnan.parsers.program.visitors.spirv.decorations.BuiltIn;
 import com.dat3m.dartagnan.program.*;
 import com.dat3m.dartagnan.program.Thread;
@@ -20,6 +23,7 @@ public class ThreadCreator {
     private final Function function;
     private final Set<ScopedPointerVariable> variables;
     private final MemoryTransformer transformer;
+    private final TypeFactory types = TypeFactory.getInstance();
 
     public ThreadCreator(ThreadGrid grid, Function function, Set<ScopedPointerVariable> variables, BuiltIn builtIn) {
         this.grid = grid;
@@ -39,10 +43,18 @@ public class ThreadCreator {
     private Thread createThreadFromFunction(int tid) {
         String name = function.getName();
         FunctionType type = function.getFunctionType();
-        List<String> args = Lists.transform(function.getParameterRegisters(), Register::getName);
+        List<Type> parameterTypes = type.getParameterTypes()
+                .stream()
+                .filter(t -> !(t instanceof ScopedPointerType))
+                .toList();
+        FunctionType threadType = types.getFunctionType(type.getReturnType(), parameterTypes, type.isVarArgs());
+        List<String> args = Lists.transform(function.getParameterRegisters(), Register::getName)
+                .stream()
+                .filter(a -> !(function.getRegister(a).getType() instanceof ScopedPointerType))
+                .toList();
         ThreadStart start = EventFactory.newThreadStart(null);
         ScopeHierarchy scope = grid.getScoreHierarchy(tid);
-        Thread thread = new Thread(name, type, args, tid, start, scope, Set.of());
+        Thread thread = new Thread(name, threadType, args, tid, start, scope, Set.of());
         thread.copyDummyCountFrom(function);
         copyThreadEvents(thread);
         transformReturnEvents(thread);
