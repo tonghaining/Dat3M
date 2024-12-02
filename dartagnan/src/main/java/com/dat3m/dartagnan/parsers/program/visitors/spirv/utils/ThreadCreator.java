@@ -43,18 +43,10 @@ public class ThreadCreator {
     private Thread createThreadFromFunction(int tid) {
         String name = function.getName();
         FunctionType type = function.getFunctionType();
-        List<Type> parameterTypes = type.getParameterTypes()
-                .stream()
-                .filter(t -> !(t instanceof ScopedPointerType))
-                .toList();
-        FunctionType threadType = types.getFunctionType(type.getReturnType(), parameterTypes, type.isVarArgs());
-        List<String> args = Lists.transform(function.getParameterRegisters(), Register::getName)
-                .stream()
-                .filter(a -> !(function.getRegister(a).getType() instanceof ScopedPointerType))
-                .toList();
+        List<String> args = Lists.transform(function.getParameterRegisters(), Register::getName);
         ThreadStart start = EventFactory.newThreadStart(null);
         ScopeHierarchy scope = grid.getScoreHierarchy(tid);
-        Thread thread = new Thread(name, threadType, args, tid, start, scope, Set.of());
+        Thread thread = new Thread(name, type, args, tid, start, scope, Set.of());
         thread.copyDummyCountFrom(function);
         copyThreadEvents(thread);
         transformReturnEvents(thread);

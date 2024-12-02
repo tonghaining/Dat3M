@@ -3,7 +3,6 @@ package com.dat3m.dartagnan.parsers.program.visitors.spirv.builders;
 import com.dat3m.dartagnan.configuration.Arch;
 import com.dat3m.dartagnan.exception.ParsingException;
 import com.dat3m.dartagnan.expression.Expression;
-import com.dat3m.dartagnan.expression.ExpressionFactory;
 import com.dat3m.dartagnan.expression.Type;
 import com.dat3m.dartagnan.expression.type.FunctionType;
 import com.dat3m.dartagnan.parsers.program.visitors.spirv.decorations.BuiltIn;
@@ -248,9 +247,7 @@ public class ProgramBuilder {
         }
         addExpression(function.getName(), function);
         for (Register register : function.getParameterRegisters()) {
-            if (!(register.getType() instanceof ScopedPointerType)) {
-                addExpression(register.getName(), register);
-            }
+            addExpression(register.getName(), register);
         }
         program.addFunction(function);
         currentFunction = function;
@@ -275,16 +272,6 @@ public class ProgramBuilder {
             throw new ParsingException("No debug information with id '%s'", id);
         }
         return debugInfos.get(id);
-    }
-
-    public void addReferenceParameter(String id, Type type) {
-        if (!(type instanceof ScopedPointerType pointerType)) {
-            throw new ParsingException("Reference parameter '%s' must be a pointer type", id);
-        }
-        MemoryObject memoryObject= allocateVariable(id, pointerType.getBitWidth());
-        ScopedPointerVariable pointer = ExpressionFactory.getInstance().makeScopedPointerVariable(
-                id, pointerType.getScopeId(), pointerType.getPointedType(), memoryObject);
-        addExpression(id, pointer);
     }
 
     private void validateBeforeBuild() {

@@ -82,9 +82,6 @@ public class VisitorOpsFunction extends SpirvBaseVisitor<Void> {
         if (currentArgs.contains(id)) {
             throw new ParsingException("Duplicated parameter id '%s' in function '%s'", id, currentId);
         }
-        if (type instanceof ScopedPointerType) {
-            builder.addReferenceParameter(id, type);
-        }
         currentArgs.add(id);
         if (currentArgs.size() == currentType.getParameterTypes().size()) {
             createFunction();
