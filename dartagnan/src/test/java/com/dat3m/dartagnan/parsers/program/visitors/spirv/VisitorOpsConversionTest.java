@@ -1,6 +1,5 @@
 package com.dat3m.dartagnan.parsers.program.visitors.spirv;
 
-import com.dat3m.dartagnan.expression.Expression;
 import com.dat3m.dartagnan.expression.type.ScopedPointerType;
 import com.dat3m.dartagnan.parsers.program.visitors.spirv.mocks.MockProgramBuilder;
 import com.dat3m.dartagnan.parsers.program.visitors.spirv.mocks.MockSpirvParser;
