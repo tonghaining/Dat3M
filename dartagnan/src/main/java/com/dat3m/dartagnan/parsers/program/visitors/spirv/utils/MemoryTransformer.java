@@ -44,13 +44,7 @@ public class MemoryTransformer extends ExprTransformer {
         this.function = function;
         this.builtIn = builtIn;
         this.scopeMapping = Stream.generate(() -> new HashMap<MemoryObject, MemoryObject>()).limit(namePrefixes.size()).toList();
-        this.pointerMapping = new HashMap<>();
-        for (ScopedPointerVariable variable : variables) {
-            MemoryObject memObj = variable.getAddress();
-            if (!this.pointerMapping.containsKey(memObj)) {
-                pointerMapping.put(memObj, variable);
-            }
-        }
+        this.pointerMapping = variables.stream().collect(Collectors.toMap((ScopedPointerVariable::getAddress), (v -> v)));
         this.scopeIdProvider = List.of(grid::thId, grid::sgId, grid::wgId, grid::qfId, grid::dvId);
         this.namePrefixIdxProvider = List.of(
                 i -> i,

@@ -41,7 +41,8 @@ public class VisitorOpsConversion extends SpirvBaseVisitor<Void> {
             if (!pointerType.getScopeId().equals(scopedPointerVariable.getScopeId())) {
                 throw new ParsingException("Storage class mismatch in OpBitcast between '%s' and '%s'", typeId, operand);
             }
-            MemoryObject memObj = scopedPointerVariable.getAddress();
+            MemoryObject memObj = builder.allocateVariable(id, types.getMemorySizeInBytes(pointerType.getPointedType()));
+            memObj.setInitialValue(0, scopedPointerVariable.getAddress());
             ScopedPointerVariable pointer = expressions.makeScopedPointerVariable(
                     id, pointerType.getScopeId(), pointerType.getPointedType(), memObj);
             builder.addExpression(id, pointer);

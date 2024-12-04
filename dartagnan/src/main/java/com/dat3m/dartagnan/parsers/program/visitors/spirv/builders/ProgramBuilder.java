@@ -196,8 +196,8 @@ public class ProgramBuilder {
         Expression undefinedExpression = expressionsUndefined.get(id);
         if (undefinedExpression != null) {
             currentFunction.getEvents().stream()
-                    .filter(event -> event instanceof AbstractMemoryCoreEvent)
-                    .map(event -> (AbstractMemoryCoreEvent) event)
+                    .filter(AbstractMemoryCoreEvent.class::isInstance)
+                    .map(AbstractMemoryCoreEvent.class::cast)
                     .filter(coreEvent -> coreEvent.getAddress() == undefinedExpression)
                     .forEach(coreEvent -> coreEvent.setAddress(register));
             expressionsUndefined.remove(id);
