@@ -129,5 +129,5 @@ flag ~empty ur as unsequenced_race
 
 (* Barrier divergence *)
 let bsw = bar_sw(dynamic_tag(GLOBAL)) | bar_sw(dynamic_tag(LOCAL))
-let bd = [EF] & [domain(~wi & swg)] \ [domain(bsw)]
+let bd = [EF] &  ((~wi & swg); unv) \ (bsw ; unv)
 flag ~empty bd as barrier_divergence
