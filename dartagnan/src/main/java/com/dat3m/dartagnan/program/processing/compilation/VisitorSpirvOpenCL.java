@@ -206,7 +206,7 @@ public class VisitorSpirvOpenCL extends VisitorC11 {
                     Tag.Spirv.SEM_WORKGROUP,
                     Tag.Spirv.SEM_CROSS_WORKGROUP,
                     Tag.Spirv.SEM_ATOMIC_COUNTER,
-                    Tag.Spirv.SEM_IMAGE -> null;
+                    Tag.Spirv.SEM_IMAGE -> Tag.OpenCL.GLOBAL_SPACE;
             case Tag.Spirv.SEM_VOLATILE,
                     Tag.Spirv.SEM_UNIFORM,
                     Tag.Spirv.SEM_OUTPUT,
