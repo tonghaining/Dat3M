@@ -16,6 +16,7 @@ import com.dat3m.dartagnan.program.event.RegWriter;
 import com.dat3m.dartagnan.program.event.core.Alloc;
 import com.dat3m.dartagnan.program.event.core.Local;
 import com.dat3m.dartagnan.program.memory.MemoryObject;
+import com.dat3m.dartagnan.program.memory.ScopedPointerVariable;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -142,6 +143,11 @@ public class RemoveDeadNullChecks implements FunctionProcessor {
         @Override
         public Sign visitMemoryObject(MemoryObject memObj) {
             return Sign.POS;
+        }
+
+        @Override
+        public Sign visitScopedPointerVariable(ScopedPointerVariable scopedPointerVariable) {
+            return scopedPointerVariable.getAddress().accept(this);
         }
 
         @Override

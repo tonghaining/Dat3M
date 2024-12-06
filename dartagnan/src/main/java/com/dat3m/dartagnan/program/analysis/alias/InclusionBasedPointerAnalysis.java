@@ -13,6 +13,7 @@ import com.dat3m.dartagnan.program.event.RegWriter;
 import com.dat3m.dartagnan.program.event.core.*;
 import com.dat3m.dartagnan.program.event.core.threading.ThreadArgument;
 import com.dat3m.dartagnan.program.memory.MemoryObject;
+import com.dat3m.dartagnan.program.memory.ScopedPointerVariable;
 import com.dat3m.dartagnan.verification.Context;
 import com.dat3m.dartagnan.witness.graphviz.Graphviz;
 import com.google.common.base.Supplier;
@@ -1023,6 +1024,11 @@ public class InclusionBasedPointerAnalysis implements AliasAnalysis {
         public Result visitMemoryObject(MemoryObject a) {
             address.add(a);
             return new Result(a, null, BigInteger.ZERO, List.of());
+        }
+
+        @Override
+        public Result visitScopedPointerVariable(ScopedPointerVariable v) {
+            return v.getAddress().accept(this);
         }
 
         @Override

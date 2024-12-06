@@ -25,6 +25,7 @@ import com.dat3m.dartagnan.program.event.functions.ValueFunctionCall;
 import com.dat3m.dartagnan.program.event.lang.llvm.LlvmCmpXchg;
 import com.dat3m.dartagnan.program.memory.Memory;
 import com.dat3m.dartagnan.program.memory.MemoryObject;
+import com.dat3m.dartagnan.program.memory.ScopedPointerVariable;
 import com.dat3m.dartagnan.program.processing.compilation.Compilation;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
@@ -356,6 +357,11 @@ public class ThreadCreation implements ProgramProcessor {
                     global2ThreadLocal.put(memObj, threadLocalCopy);
                 }
                 return global2ThreadLocal.getOrDefault(memObj, memObj);
+            }
+
+            @Override
+            public Expression visitScopedPointerVariable(ScopedPointerVariable pointer) {
+                return pointer.getAddress().accept(this);
             }
         };
 

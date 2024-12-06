@@ -14,6 +14,7 @@ import com.dat3m.dartagnan.parsers.program.visitors.spirv.helpers.HelperInputs;
 import com.dat3m.dartagnan.parsers.program.visitors.spirv.helpers.HelperTags;
 import com.dat3m.dartagnan.parsers.program.visitors.spirv.builders.ProgramBuilder;
 import com.dat3m.dartagnan.program.event.core.Alloc;
+import com.dat3m.dartagnan.program.memory.Memory;
 import com.dat3m.dartagnan.program.memory.MemoryObject;
 import com.dat3m.dartagnan.program.memory.ScopedPointer;
 import com.dat3m.dartagnan.program.memory.ScopedPointerVariable;
@@ -53,7 +54,9 @@ public class VisitorOpsMemory extends SpirvBaseVisitor<Event> {
                 throw new ParsingException("Mismatching value type for pointer '%s', " +
                         "expected '%s' but received '%s'", pointerVariable.getId(), pointerVariable.getInnerType(), valueVariable.getInnerType());
             }
-            builder.updateExpression(ctx.pointer().getText(), valueVariable);
+            MemoryObject oldMemObj = pointerVariable.getAddress();
+            pointerVariable.setAddress(valueVariable.getAddress());
+            builder.deleteVariable(oldMemObj);
             return null;
         }
         Event event = EventFactory.newStore(pointer, value);
@@ -73,14 +76,16 @@ public class VisitorOpsMemory extends SpirvBaseVisitor<Event> {
         String resultType = ctx.idResultType().getText();
         Expression pointer = builder.getExpression(ctx.pointer().getText());
         if (builder.getType(resultType) instanceof ArrayType arrayType) {
-            Register register = builder.addRegister(resultId + "_dummy", TypeFactory.getInstance().getArchType());
-            long size = TypeFactory.getInstance().getMemorySizeInBytes(arrayType);
-            Expression sizeExpression = new IntLiteral(TypeFactory.getInstance().getArchType(), new BigInteger(Long.toString(size)));
-            Alloc alloc = EventFactory.newAlloc(register, arrayType, sizeExpression, false, false);
-            MemoryObject memObj = builder.allocateVariable(resultId + "_mem", alloc);
-            memObj.setInitialValue(0, pointer);
+            int size = TypeFactory.getInstance().getMemorySizeInBytes(arrayType);
+            MemoryObject memObj = builder.allocateVariable(resultId + "_mem", size);
+            memObj.setInitialValue(0, builder.makeUndefinedValue(arrayType));
             ScopedPointerVariable pointerVariable = expressions.makeScopedPointerVariable(
                     resultId + "_ptr", Tag.Spirv.SC_FUNCTION, arrayType, memObj);
+            Register pointerRegister = builder.addRegister(resultId + "_ptr", pointer.getType());
+            Event load = EventFactory.newLoad(pointerRegister, pointer);
+            Event store = EventFactory.newStore(pointerVariable, pointerRegister);
+            builder.addEvent(load);
+            builder.addEvent(store);
             builder.addExpression(resultId, pointerVariable);
             return null;
         }

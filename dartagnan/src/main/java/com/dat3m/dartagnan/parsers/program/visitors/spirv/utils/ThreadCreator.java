@@ -27,7 +27,7 @@ public class ThreadCreator {
         this.grid = grid;
         this.function = function;
         this.variables = variables;
-        this.transformer = new MemoryTransformer(grid, function, builtIn, variables);
+        this.transformer = new MemoryTransformer(grid, function, builtIn);
     }
 
     public void create() {

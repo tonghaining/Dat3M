@@ -16,7 +16,7 @@ public class ScopedPointer extends LeafExpressionBase<IntegerType> {
     private final String id;
     private final String scopeId;
     private final Type innerType;
-    private final Expression address;
+    private Expression address;
 
     public ScopedPointer(String id, String scopeId, Type innerType, Expression address) {
         super(TypeFactory.getInstance().getArchType());
@@ -48,6 +48,10 @@ public class ScopedPointer extends LeafExpressionBase<IntegerType> {
 
     public Expression getAddress() {
         return address;
+    }
+
+    public void setAddress(Expression address) {
+        this.address = address;
     }
 
     @Override

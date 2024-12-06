@@ -32,19 +32,17 @@ public class MemoryTransformer extends ExprTransformer {
     private final Function function;
     private final BuiltIn builtIn;
     private final List<? extends Map<MemoryObject, MemoryObject>> scopeMapping;
-    private final Map<MemoryObject, ScopedPointerVariable> pointerMapping;
     private final List<IntUnaryOperator> scopeIdProvider;
     private final List<IntUnaryOperator> namePrefixIdxProvider;
     private Map<Register, Register> registerMapping;
     private Map<NonDetValue, NonDetValue> nonDetMapping;
     private int tid;
 
-    public MemoryTransformer(ThreadGrid grid, Function function, BuiltIn builtIn, Set<ScopedPointerVariable> variables) {
+    public MemoryTransformer(ThreadGrid grid, Function function, BuiltIn builtIn) {
         this.program = function.getProgram();
         this.function = function;
         this.builtIn = builtIn;
         this.scopeMapping = Stream.generate(() -> new HashMap<MemoryObject, MemoryObject>()).limit(namePrefixes.size()).toList();
-        this.pointerMapping = variables.stream().collect(Collectors.toMap((ScopedPointerVariable::getAddress), (v -> v)));
         this.scopeIdProvider = List.of(grid::thId, grid::sgId, grid::wgId, grid::qfId, grid::dvId);
         this.namePrefixIdxProvider = List.of(
                 i -> i,
@@ -82,29 +80,30 @@ public class MemoryTransformer extends ExprTransformer {
     }
 
     @Override
-    public Expression visitMemoryObject(MemoryObject memObj) {
-        String storageClass = pointerMapping.get(memObj).getScopeId();
+    public Expression visitScopedPointerVariable(ScopedPointerVariable scopedPointerVariable) {
+        String storageClass = scopedPointerVariable.getScopeId();
         return switch (storageClass) {
             // Device-level memory (keep the same instance)
             case Tag.Spirv.SC_UNIFORM_CONSTANT,
-                    Tag.Spirv.SC_UNIFORM,
-                    Tag.Spirv.SC_OUTPUT,
-                    Tag.Spirv.SC_PUSH_CONSTANT,
-                    Tag.Spirv.SC_STORAGE_BUFFER,
-                    Tag.Spirv.SC_PHYS_STORAGE_BUFFER,
-                    Tag.Spirv.SC_CROSS_WORKGROUP-> memObj;
+                 Tag.Spirv.SC_UNIFORM,
+                 Tag.Spirv.SC_OUTPUT,
+                 Tag.Spirv.SC_PUSH_CONSTANT,
+                 Tag.Spirv.SC_STORAGE_BUFFER,
+                 Tag.Spirv.SC_PHYS_STORAGE_BUFFER,
+                 Tag.Spirv.SC_CROSS_WORKGROUP-> scopedPointerVariable.getAddress();
             // Private memory (copy for each new thread)
             case Tag.Spirv.SC_PRIVATE,
-                    Tag.Spirv.SC_FUNCTION,
-                    Tag.Spirv.SC_INPUT -> applyMapping(memObj, 0);
+                 Tag.Spirv.SC_FUNCTION,
+                 Tag.Spirv.SC_INPUT -> applyMapping(scopedPointerVariable, 0);
             // Workgroup-level memory (copy for each new workgroup)
-            case Tag.Spirv.SC_WORKGROUP -> applyMapping(memObj, 2);
+            case Tag.Spirv.SC_WORKGROUP -> applyMapping(scopedPointerVariable, 2);
             default -> throw new UnsupportedOperationException(
                     "Unsupported storage class " + storageClass);
         };
     }
 
-    private Expression applyMapping(MemoryObject memObj, int scopeDepth) {
+    private Expression applyMapping(ScopedPointerVariable pointer, int scopeDepth) {
+        MemoryObject memObj = pointer.getAddress();
         Program program = function.getProgram();
         Map<MemoryObject, MemoryObject> mapping = scopeMapping.get(scopeDepth);
         if (!mapping.containsKey(memObj)) {
@@ -119,7 +118,7 @@ public class MemoryTransformer extends ExprTransformer {
                 }
                 copy.setInitialValue(offset, value);
             }
-            builtIn.decorate(memObj.getName(), copy, pointerMapping.get(memObj).getInnerType());
+            builtIn.decorate(memObj.getName(), copy, pointer.getInnerType());
             mapping.put(memObj, copy);
         }
         return mapping.getOrDefault(memObj, memObj);
