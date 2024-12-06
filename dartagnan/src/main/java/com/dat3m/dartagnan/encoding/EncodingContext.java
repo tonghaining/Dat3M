@@ -6,7 +6,10 @@ import com.dat3m.dartagnan.encoding.formulas.TupleFormulaManager;
 import com.dat3m.dartagnan.expression.Expression;
 import com.dat3m.dartagnan.expression.Type;
 import com.dat3m.dartagnan.expression.integers.IntCmpOp;
-import com.dat3m.dartagnan.expression.type.*;
+import com.dat3m.dartagnan.expression.type.AggregateType;
+import com.dat3m.dartagnan.expression.type.BooleanType;
+import com.dat3m.dartagnan.expression.type.IntegerType;
+import com.dat3m.dartagnan.expression.type.TypeFactory;
 import com.dat3m.dartagnan.program.Register;
 import com.dat3m.dartagnan.program.analysis.BranchEquivalence;
 import com.dat3m.dartagnan.program.analysis.ExecutionAnalysis;
@@ -239,9 +242,6 @@ public final class EncodingContext {
         // For example, when encoding rf(w, r), we always want to convert the store value type to the read value type
         // for otherwise, we might get an under-constrained value for val(r) (e.g., its upper bits might be unconstrained,
         // if we truncate it to smaller size of the store value).
-        if ((left instanceof TupleFormula) != (right instanceof TupleFormula)) {
-            return booleanFormulaManager.makeFalse();
-        }
         if (left instanceof IntegerFormula l) {
             IntegerFormulaManager imgr = formulaManager.getIntegerFormulaManager();
             return imgr.equal(l, toInteger(right));
@@ -311,9 +311,6 @@ public final class EncodingContext {
         if (formula instanceof BitvectorFormula f) {
             BitvectorFormulaManager bvmgr = formulaManager.getBitvectorFormulaManager();
             return bvmgr.equal(f, bvmgr.makeBitvector(bvmgr.getLength(f), 0));
-        }
-        if (formula instanceof TupleFormula) {
-            return booleanFormulaManager.makeFalse();
         }
         throw new UnsupportedOperationException(String.format("Unknown type for equalZero(%s).", formula));
     }
@@ -457,7 +454,7 @@ public final class EncodingContext {
                 return formulaManager.getBitvectorFormulaManager().makeVariable(integerType.getBitWidth(), name);
             }
         }
-        if (type instanceof AggregateType || type instanceof ArrayType) {
+        if (type instanceof AggregateType) {
             final Map<Integer, Type> primitives = TypeFactory.getInstance().decomposeIntoPrimitives(type);
             final List<Formula> elements = new ArrayList<>();
             for (Type eleType : primitives.values()) {

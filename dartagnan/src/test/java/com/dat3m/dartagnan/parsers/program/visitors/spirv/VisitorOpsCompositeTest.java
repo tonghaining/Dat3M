@@ -23,20 +23,15 @@ public class VisitorOpsCompositeTest {
         builder.mockIntType("%uint", 32);
         builder.mockVectorType("%uint_4", "%uint", 4);
         builder.mockPtrType("%_ptr_Function_uint_4", "%uint_4", "Function");
-        Expression pointer = builder.mockVariable("%value1", "%_ptr_Function_uint_4");
-        Register register = builder.addRegister("%value2", "%uint_4");
-        Load load = EventFactory.newLoad(register, pointer);
-        builder.addEvent(load);
-        String input = "%value3 = OpCompositeExtract %uint %value2 0";
+        builder.mockVariable("%value1", "%_ptr_Function_uint_4");
+        String input = "%value2 = OpCompositeExtract %uint %value1 0";
 
         // when
         visit(builder, input);
 
         // then
-        ExtractExpr value3 = (ExtractExpr) builder.getExpression("%value3");
-        assertEquals(builder.getType("%uint"), value3.getType());
-        assertEquals(0, value3.getFieldIndex());
-        assertEquals(register, value3.getOperand());
+        Register value2 = (Register) builder.getExpression("%value2");
+        assertEquals(builder.getType("%uint"), value2.getType());
     }
 
     @Test
@@ -48,20 +43,15 @@ public class VisitorOpsCompositeTest {
         builder.mockIntType("%uchar", 8);
         builder.mockAggregateType("%struct", "%uint", "%uchar");
         builder.mockPtrType("%_ptr_Function_struct", "%struct", "Function");
-        Expression pointer = builder.mockVariable("%value1", "%_ptr_Function_struct");
-        Register register = builder.addRegister("%value2", "%struct");
-        Load load = EventFactory.newLoad(register, pointer);
-        builder.addEvent(load);
-        String input = "%value3 = OpCompositeExtract %uchar %value2 1";
+        builder.mockVariable("%value1", "%_ptr_Function_struct");
+        String input = "%value2 = OpCompositeExtract %uchar %value1 1";
 
         // when
         visit(builder, input);
 
         // then
-        ExtractExpr value3 = (ExtractExpr) builder.getExpression("%value3");
-        assertEquals(builder.getType("%uchar"), value3.getType());
-        assertEquals(1, value3.getFieldIndex());
-        assertEquals(register, value3.getOperand());
+        Register value2 = (Register) builder.getExpression("%value2");
+        assertEquals(builder.getType("%uchar"), value2.getType());
     }
 
     private void visit(MockProgramBuilder builder, String input) {

@@ -9,7 +9,12 @@ import com.dat3m.dartagnan.expression.type.TypeFactory;
 import com.dat3m.dartagnan.parsers.SpirvBaseVisitor;
 import com.dat3m.dartagnan.parsers.SpirvParser;
 import com.dat3m.dartagnan.parsers.program.visitors.spirv.builders.ProgramBuilder;
+import com.dat3m.dartagnan.parsers.program.visitors.spirv.helpers.HelperTypes;
+import com.dat3m.dartagnan.program.Register;
 import com.dat3m.dartagnan.program.event.Event;
+import com.dat3m.dartagnan.program.event.core.Load;
+import com.dat3m.dartagnan.program.memory.ScopedPointer;
+import com.dat3m.dartagnan.program.memory.ScopedPointerVariable;
 
 import java.util.List;
 import java.util.Set;
@@ -42,19 +47,16 @@ public class VisitorOpsComposite extends SpirvBaseVisitor<Event> {
                         .map(SpirvParser.IndexesLiteralIntegerContext::getText)
                         .collect(Collectors.joining())
         );
-        if (compositeExpression.getType() instanceof ArrayType arrayType) {
-            if (type != arrayType.getElementType()) {
-                throw new UnsupportedOperationException("Composite tye mismatch between array and element type");
-            }
-        } else if (compositeExpression.getType() instanceof AggregateType aggregateType) {
-            if (type != aggregateType.getTypeOffsets().get(index).type()) {
-                throw new UnsupportedOperationException("Composite tye mismatch between aggregate and element type");
-            }
+        if (compositeExpression instanceof ScopedPointerVariable scopedPointerVariable) {
+            Expression indexExpression = expressions.makeValue(index, types.getArchType());
+            Expression expression = HelperTypes.getMemberAddress(id, scopedPointerVariable, scopedPointerVariable.getInnerType(), List.of(indexExpression));
+            ScopedPointer pointer = expressions.makeScopedPointer(id, scopedPointerVariable.getScopeId(), type, expression);
+            Register register = builder.addRegister(id, type);
+            Load load = new Load(register, pointer);
+            builder.addEvent(load);
         } else {
-            throw new UnsupportedOperationException("Composite type not supported");
+            throw new UnsupportedOperationException("Composite extraction is only supported for scoped pointers");
         }
-        Expression extractExpression = expressions.makeExtract(index, compositeExpression);
-        builder.addExpression(id, extractExpression);
     }
 
     public Set<String> getSupportedOps() {

@@ -13,6 +13,7 @@ import com.dat3m.dartagnan.parsers.program.visitors.spirv.helpers.HelperTypes;
 import com.dat3m.dartagnan.parsers.program.visitors.spirv.helpers.HelperInputs;
 import com.dat3m.dartagnan.parsers.program.visitors.spirv.helpers.HelperTags;
 import com.dat3m.dartagnan.parsers.program.visitors.spirv.builders.ProgramBuilder;
+import com.dat3m.dartagnan.program.event.core.Alloc;
 import com.dat3m.dartagnan.program.memory.MemoryObject;
 import com.dat3m.dartagnan.program.memory.ScopedPointer;
 import com.dat3m.dartagnan.program.memory.ScopedPointerVariable;
@@ -23,6 +24,7 @@ import com.dat3m.dartagnan.program.event.EventFactory;
 import com.dat3m.dartagnan.program.event.Tag;
 import org.antlr.v4.runtime.RuleContext;
 
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -67,8 +69,22 @@ public class VisitorOpsMemory extends SpirvBaseVisitor<Event> {
 
     @Override
     public Event visitOpLoad(SpirvParser.OpLoadContext ctx) {
-        Register register = builder.addRegister(ctx.idResult().getText(), ctx.idResultType().getText());
+        String resultId = ctx.idResult().getText();
+        String resultType = ctx.idResultType().getText();
         Expression pointer = builder.getExpression(ctx.pointer().getText());
+        if (builder.getType(resultType) instanceof ArrayType arrayType) {
+            Register register = builder.addRegister(resultId + "_dummy", TypeFactory.getInstance().getArchType());
+            long size = TypeFactory.getInstance().getMemorySizeInBytes(arrayType);
+            Expression sizeExpression = new IntLiteral(TypeFactory.getInstance().getArchType(), new BigInteger(Long.toString(size)));
+            Alloc alloc = EventFactory.newAlloc(register, arrayType, sizeExpression, false, false);
+            MemoryObject memObj = builder.allocateVariable(resultId + "_mem", alloc);
+            memObj.setInitialValue(0, pointer);
+            ScopedPointerVariable pointerVariable = expressions.makeScopedPointerVariable(
+                    resultId + "_ptr", Tag.Spirv.SC_FUNCTION, arrayType, memObj);
+            builder.addExpression(resultId, pointerVariable);
+            return null;
+        }
+        Register register = builder.addRegister(resultId, resultType);
         Event event = EventFactory.newLoad(register, pointer);
         Set<String> tags = parseMemoryAccessTags(ctx.memoryAccess());
         if (!tags.contains(Tag.Spirv.MEM_AVAILABLE)) {
@@ -284,7 +300,7 @@ public class VisitorOpsMemory extends SpirvBaseVisitor<Event> {
 
     private void visitAccessChain(String id, ScopedPointerType pointerType, String baseId, ScopedPointer base,
                                     List<SpirvParser.IndexesIdRefContext> idxContexts) {
-        Type baseType = base.getInnerType();
+        Type baseType = base.getMemoryType();
         Type resultType = pointerType.getPointedType();
         List<Integer> intIndexes = new ArrayList<>();
         List<Expression> exprIndexes = new ArrayList<>();

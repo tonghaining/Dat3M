@@ -117,10 +117,9 @@ public class VisitorOpsMemoryTest {
         parse(input);
 
         // then
-        Load load = (Load) getLastEvent();
-        assertNotNull(load);
-        assertEquals(arrayType, load.getAccessType());
-        assertEquals(Set.of(Tag.VISIBLE, Tag.MEMORY, Tag.READ, Tag.Spirv.SC_UNIFORM), load.getTags());
+        ScopedPointerVariable pointerVariable = (ScopedPointerVariable) builder.getExpression("%result");
+        assertNotNull(pointerVariable);
+        assertEquals(arrayType, pointerVariable.getInnerType());
     }
 
     @Test

@@ -6,6 +6,7 @@ import com.dat3m.dartagnan.expression.ExpressionVisitor;
 import com.dat3m.dartagnan.expression.Type;
 import com.dat3m.dartagnan.expression.base.LeafExpressionBase;
 import com.dat3m.dartagnan.expression.type.IntegerType;
+import com.dat3m.dartagnan.expression.type.ScopedPointerType;
 import com.dat3m.dartagnan.expression.type.TypeFactory;
 
 import java.util.Objects;
@@ -35,6 +36,14 @@ public class ScopedPointer extends LeafExpressionBase<IntegerType> {
 
     public Type getInnerType() {
         return innerType;
+    }
+
+    public Type getMemoryType() {
+        Type memoryType = innerType;
+        while (memoryType instanceof ScopedPointerType scopedPointerType) {
+            memoryType = scopedPointerType.getPointedType();
+        }
+        return memoryType;
     }
 
     public Expression getAddress() {
