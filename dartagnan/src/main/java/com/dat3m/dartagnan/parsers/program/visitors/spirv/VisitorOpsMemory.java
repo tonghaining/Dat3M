@@ -45,6 +45,15 @@ public class VisitorOpsMemory extends SpirvBaseVisitor<Event> {
     public Event visitOpStore(SpirvParser.OpStoreContext ctx) {
         Expression pointer = builder.getExpression(ctx.pointer().getText());
         Expression value = builder.getPossibleExpression(ctx.object().getText(), pointer.getType());
+        if (pointer instanceof ScopedPointerVariable pointerVariable
+                && value instanceof ScopedPointerVariable valueVariable) {
+            if (!TypeFactory.isStaticTypeOf(valueVariable.getInnerType(), pointerVariable.getInnerType())) {
+                throw new ParsingException("Mismatching value type for pointer '%s', " +
+                        "expected '%s' but received '%s'", pointerVariable.getId(), pointerVariable.getInnerType(), valueVariable.getInnerType());
+            }
+            builder.updateExpression(ctx.pointer().getText(), valueVariable);
+            return null;
+        }
         Event event = EventFactory.newStore(pointer, value);
         Set<String> tags = parseMemoryAccessTags(ctx.memoryAccess());
         if (!tags.contains(Tag.Spirv.MEM_VISIBLE)) {

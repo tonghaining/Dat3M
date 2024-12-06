@@ -5,6 +5,7 @@ import com.dat3m.dartagnan.exception.ParsingException;
 import com.dat3m.dartagnan.expression.Expression;
 import com.dat3m.dartagnan.expression.Type;
 import com.dat3m.dartagnan.expression.type.FunctionType;
+import com.dat3m.dartagnan.expression.type.TypeFactory;
 import com.dat3m.dartagnan.parsers.program.visitors.spirv.decorations.BuiltIn;
 import com.dat3m.dartagnan.parsers.program.visitors.spirv.utils.ThreadCreator;
 import com.dat3m.dartagnan.parsers.program.visitors.spirv.utils.ThreadGrid;
@@ -162,6 +163,13 @@ public class ProgramBuilder {
         return value;
     }
 
+    public void updateExpression(String id, Expression value) {
+        if (!expressions.containsKey(id)) {
+            throw new ParsingException("Attempt to update undefined expression '%s'", id);
+        }
+        expressions.put(id, value);
+    }
+
     public Set<ScopedPointerVariable> getVariables() {
         return expressions.values().stream()
                 .filter(ScopedPointerVariable.class::isInstance)
@@ -247,7 +255,15 @@ public class ProgramBuilder {
         }
         addExpression(function.getName(), function);
         for (Register register : function.getParameterRegisters()) {
-            addExpression(register.getName(), register);
+            if (register.getType() instanceof ScopedPointerType pointerType) {
+                MemoryObject memObj = allocateVariable(register.getName(),
+                        TypeFactory.getInstance().getMemorySizeInBytes(pointerType.getPointedType()));
+                memObj.setIsThreadLocal(false);
+                ScopedPointerVariable pointer = new ScopedPointerVariable(register.getName(), pointerType.getScopeId(), pointerType, memObj);
+                addExpression(register.getName(), pointer);
+            } else {
+                addExpression(register.getName(), register);
+            }
         }
         program.addFunction(function);
         currentFunction = function;
