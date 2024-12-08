@@ -13,6 +13,8 @@ import com.dat3m.dartagnan.parsers.program.visitors.spirv.helpers.HelperTypes;
 import com.dat3m.dartagnan.parsers.program.visitors.spirv.helpers.HelperInputs;
 import com.dat3m.dartagnan.parsers.program.visitors.spirv.helpers.HelperTags;
 import com.dat3m.dartagnan.parsers.program.visitors.spirv.builders.ProgramBuilder;
+import com.dat3m.dartagnan.program.event.core.Alloc;
+import com.dat3m.dartagnan.program.memory.Memory;
 import com.dat3m.dartagnan.program.memory.MemoryObject;
 import com.dat3m.dartagnan.program.memory.ScopedPointer;
 import com.dat3m.dartagnan.program.memory.ScopedPointerVariable;
@@ -23,6 +25,7 @@ import com.dat3m.dartagnan.program.event.EventFactory;
 import com.dat3m.dartagnan.program.event.Tag;
 import org.antlr.v4.runtime.RuleContext;
 
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -44,7 +47,18 @@ public class VisitorOpsMemory extends SpirvBaseVisitor<Event> {
     @Override
     public Event visitOpStore(SpirvParser.OpStoreContext ctx) {
         Expression pointer = builder.getExpression(ctx.pointer().getText());
-        Expression value = builder.getExpression(ctx.object().getText());
+        Expression value = builder.getPossibleExpression(ctx.object().getText(), pointer.getType());
+        if (pointer instanceof ScopedPointerVariable pointerVariable
+                && value instanceof ScopedPointerVariable valueVariable) {
+            if (!TypeFactory.isStaticTypeOf(valueVariable.getInnerType(), pointerVariable.getInnerType())) {
+                throw new ParsingException("Mismatching value type for pointer '%s', " +
+                        "expected '%s' but received '%s'", pointerVariable.getId(), pointerVariable.getInnerType(), valueVariable.getInnerType());
+            }
+            MemoryObject oldMemObj = pointerVariable.getAddress();
+            pointerVariable.setAddress(valueVariable.getAddress());
+            builder.deleteVariable(oldMemObj);
+            return null;
+        }
         Event event = EventFactory.newStore(pointer, value);
         Set<String> tags = parseMemoryAccessTags(ctx.memoryAccess());
         if (!tags.contains(Tag.Spirv.MEM_VISIBLE)) {
@@ -58,8 +72,28 @@ public class VisitorOpsMemory extends SpirvBaseVisitor<Event> {
 
     @Override
     public Event visitOpLoad(SpirvParser.OpLoadContext ctx) {
-        Register register = builder.addRegister(ctx.idResult().getText(), ctx.idResultType().getText());
+        String resultId = ctx.idResult().getText();
+        String resultType = ctx.idResultType().getText();
         Expression pointer = builder.getExpression(ctx.pointer().getText());
+        if (builder.getType(resultType) instanceof ArrayType arrayType) {
+            Register register = builder.addRegister(resultId + "_dummy", TypeFactory.getInstance().getArchType());
+            long size = TypeFactory.getInstance().getMemorySizeInBytes(arrayType);
+            Expression sizeExpression = new IntLiteral(TypeFactory.getInstance().getArchType(), new BigInteger(Long.toString(size)));
+            Alloc alloc = EventFactory.newAlloc(register, arrayType, sizeExpression, false, false);
+            MemoryObject memObj = builder.allocateVariable(resultId + "_mem", alloc);
+            memObj.setInitialValue(0, builder.makeUndefinedValue(arrayType));
+            ScopedPointerVariable pointerVariable = expressions.makeScopedPointerVariable(
+                    resultId + "_ptr", Tag.Spirv.SC_FUNCTION, arrayType, memObj);
+            Register pointerRegister = builder.addRegister(resultId + "_ptr", pointer.getType());
+            Event load = EventFactory.newLoad(pointerRegister, pointer);
+            Event store = EventFactory.newStore(pointerVariable, pointerRegister);
+            builder.addEvent(alloc);
+            builder.addEvent(load);
+            builder.addEvent(store);
+            builder.addExpression(resultId, pointerVariable);
+            return null;
+        }
+        Register register = builder.addRegister(resultId, resultType);
         Event event = EventFactory.newLoad(register, pointer);
         Set<String> tags = parseMemoryAccessTags(ctx.memoryAccess());
         if (!tags.contains(Tag.Spirv.MEM_AVAILABLE)) {
@@ -136,6 +170,84 @@ public class VisitorOpsMemory extends SpirvBaseVisitor<Event> {
     }
 
     @Override
+    public Event visitOpCopyMemory(SpirvParser.OpCopyMemoryContext ctx) {
+        Expression target = builder.getExpression(ctx.targetIdRef().getText());
+        Expression source = builder.getExpression(ctx.sourceIdRef().getText());
+        if (!(target instanceof ScopedPointerVariable) || !(source instanceof ScopedPointerVariable sourcePointer)) {
+            throw new ParsingException("Type '%s' is not a pointer type", ctx.targetIdRef().getText());
+        }
+        Register sourceRegister = builder.addRegister(ctx.sourceIdRef().getText() + "_copy", sourcePointer.getInnerType());
+        Event load = EventFactory.newLoad(sourceRegister, source);
+        builder.addEvent(load);
+        Event store = EventFactory.newStore(target, sourceRegister);
+        if (ctx.memoryAccess() != null) {
+            Set<String> tags = parseMemoryAccessTags(ctx.memoryAccess(0));
+            load.addTags(tags);
+            store.addTags(tags);
+            if (ctx.memoryAccess().size() == 2) {
+                Set<String> sourceTags = parseMemoryAccessTags(ctx.memoryAccess(1));
+                if (tags.contains(Tag.Spirv.MEM_VISIBLE) || sourceTags.contains(Tag.Spirv.MEM_AVAILABLE)) {
+                    throw new ParsingException("OpCopyMemorySized cannot contain tags '%s' and '%s'", Tag.Spirv.MEM_VISIBLE, Tag.Spirv.MEM_AVAILABLE);
+                }
+                store.addTags(sourceTags);
+            }
+        }
+        builder.addEvent(store);
+        return null;
+    }
+
+    @Override
+    public Event visitOpCopyMemorySized(SpirvParser.OpCopyMemorySizedContext ctx) {
+        Expression target = builder.getExpression(ctx.targetIdRef().getText());
+        Expression source = builder.getExpression(ctx.sourceIdRef().getText());
+        Expression size = builder.getExpression(ctx.sizeIdRef().getText());
+
+        if (!(target instanceof ScopedPointerVariable) || !(source instanceof ScopedPointerVariable sourcePointer)) {
+            throw new ParsingException("Type '%s' is not a pointer type", ctx.targetIdRef().getText());
+        }
+
+        Register sourceRegister = builder.addRegister(ctx.sourceIdRef().getText() + "_copy_source", sourcePointer.getInnerType());
+        Event load = EventFactory.newLoad(sourceRegister, source);
+        builder.addEvent(load);
+
+        Expression sourceMasked;
+        if (size instanceof IntLiteral sizeLiteral) {
+            int sizeValue = sizeLiteral.getValueAsInt();
+            if (sizeValue <= 0) {
+                throw new ParsingException("Size must be a positive integer value");
+            }
+            int sizeMask = (1 << sizeValue) - 1;
+            sourceMasked = expressions.makeIntAnd(sourceRegister, expressions.makeValue(sizeMask, (IntegerType) sourcePointer.getInnerType()));
+        } else if (size.getType() instanceof IntegerType sizeType) {
+            Expression sizeMask = expressions.makeSub(expressions.makeLshift(size, expressions.makeValue(1, sizeType)), expressions.makeOne(sizeType));
+            sourceMasked = expressions.makeIntAnd(sourceRegister, sizeMask);
+        } else {
+            throw new ParsingException("Size must be an integer value");
+        }
+
+        Register targetRegister = builder.addRegister(ctx.sourceIdRef().getText() + "_copy_target", sourcePointer.getInnerType());
+        Event local = EventFactory.newLocal(targetRegister, sourceMasked);
+        Event store = EventFactory.newStore(target, targetRegister);
+
+        if (ctx.memoryAccess() != null) {
+            Set<String> tags = parseMemoryAccessTags(ctx.memoryAccess(0));
+            load.addTags(tags);
+            store.addTags(tags);
+            if (ctx.memoryAccess().size() == 2) {
+                Set<String> sourceTags = parseMemoryAccessTags(ctx.memoryAccess(1));
+                if (tags.contains(Tag.Spirv.MEM_VISIBLE) || sourceTags.contains(Tag.Spirv.MEM_AVAILABLE)) {
+                    throw new ParsingException("OpCopyMemorySized cannot contain tags '%s' and '%s'", Tag.Spirv.MEM_VISIBLE, Tag.Spirv.MEM_AVAILABLE);
+                }
+                store.addTags(sourceTags);
+            }
+        }
+
+        builder.addEvent(local);
+        builder.addEvent(store);
+        return null;
+    }
+
+    @Override
     public Event visitOpAccessChain(SpirvParser.OpAccessChainContext ctx) {
         visitOpAccessChain(ctx.idResult().getText(), ctx.idResultType().getText(),
                 ctx.base().getText(), ctx.indexesIdRef());
@@ -149,30 +261,71 @@ public class VisitorOpsMemory extends SpirvBaseVisitor<Event> {
         return null;
     }
 
+    @Override
+    public Event visitOpPtrAccessChain(SpirvParser.OpPtrAccessChainContext ctx) {
+        visitOpPtrAccessChain(ctx.idResult().getText(), ctx.idResultType().getText(),
+                ctx.base().getText(), ctx.element().getText(), ctx.indexesIdRef());
+        return null;
+    }
+
+    @Override
+    public Event visitOpInBoundsPtrAccessChain(SpirvParser.OpInBoundsPtrAccessChainContext ctx) {
+        visitOpPtrAccessChain(ctx.idResult().getText(), ctx.idResultType().getText(),
+                ctx.base().getText(), ctx.element().getText(), ctx.indexesIdRef());
+        return null;
+    }
+
+    private void visitOpPtrAccessChain(String id, String typeId, String baseId, String elementId,
+                                       List<SpirvParser.IndexesIdRefContext> idxContexts) {
+        if (builder.getType(typeId) instanceof ScopedPointerType pointerType) {
+            Expression basePointer = builder.getExpression(baseId);
+            Type basePointedType;
+            if (basePointer.getType() instanceof ScopedPointerType basePointerType) {
+                basePointedType = basePointerType.getPointedType();
+            } else if (basePointer instanceof ScopedPointer scopedPointer) {
+                basePointedType = scopedPointer.getInnerType();
+            } else {
+                throw new ParsingException("Invalid base pointer type '%s' in access chain '%s'", basePointer.getType(), id);
+            }
+            Expression element = builder.getExpression(elementId);
+            Expression address = HelperTypes.getPointerOffset(basePointer, basePointedType, element);
+            String baseWithOffsetId = baseId + "_" + elementId;
+            ScopedPointer baseWithOffset = expressions.makeScopedPointer(baseWithOffsetId, pointerType.getScopeId(), basePointedType, address);
+            visitAccessChain(id, pointerType, baseWithOffsetId, baseWithOffset, idxContexts);
+        } else {
+            throw new ParsingException("Type '%s' is not a pointer type", typeId);
+        }
+    }
+
     private void visitOpAccessChain(String id, String typeId, String baseId,
                                     List<SpirvParser.IndexesIdRefContext> idxContexts) {
         if (builder.getType(typeId) instanceof ScopedPointerType pointerType) {
             ScopedPointer base = (ScopedPointer) builder.getExpression(baseId);
-            Type baseType = base.getInnerType();
-            Type resultType = pointerType.getPointedType();
-            List<Integer> intIndexes = new ArrayList<>();
-            List<Expression> exprIndexes = new ArrayList<>();
-            idxContexts.forEach(c -> {
-                Expression expression = builder.getExpression(c.getText());
-                exprIndexes.add(expression);
-                intIndexes.add(expression instanceof IntLiteral intLiteral ? intLiteral.getValueAsInt() : -1);
-            });
-            Type runtimeResultType = HelperTypes.getMemberType(baseId, baseType, intIndexes);
-            if (!TypeFactory.isStaticTypeOf(runtimeResultType, resultType)) {
-                throw new ParsingException("Invalid result type in access chain '%s', " +
-                        "expected '%s' but received '%s'", id, resultType, runtimeResultType);
-            }
-            Expression expression = HelperTypes.getMemberAddress(baseId, base, baseType, exprIndexes);
-            ScopedPointer pointer = expressions.makeScopedPointer(id, pointerType.getScopeId(), runtimeResultType, expression);
-            builder.addExpression(id, pointer);
+            visitAccessChain(id, pointerType, baseId, base, idxContexts);
             return;
         }
         throw new ParsingException("Type '%s' is not a pointer type", typeId);
+    }
+
+    private void visitAccessChain(String id, ScopedPointerType pointerType, String baseId, ScopedPointer base,
+                                    List<SpirvParser.IndexesIdRefContext> idxContexts) {
+        Type baseType = base.getMemoryType();
+        Type resultType = pointerType.getPointedType();
+        List<Integer> intIndexes = new ArrayList<>();
+        List<Expression> exprIndexes = new ArrayList<>();
+        idxContexts.forEach(c -> {
+            Expression expression = builder.getExpression(c.getText());
+            exprIndexes.add(expression);
+            intIndexes.add(expression instanceof IntLiteral intLiteral ? intLiteral.getValueAsInt() : -1);
+        });
+        Type runtimeResultType = HelperTypes.getMemberType(baseId, baseType, intIndexes);
+        if (!TypeFactory.isStaticTypeOf(runtimeResultType, resultType)) {
+            throw new ParsingException("Invalid result type in access chain '%s', " +
+                    "expected '%s' but received '%s'", id, resultType, runtimeResultType);
+        }
+        Expression expression = HelperTypes.getMemberAddress(baseId, base, baseType, exprIndexes);
+        ScopedPointer pointer = expressions.makeScopedPointer(id, pointerType.getScopeId(), runtimeResultType, expression);
+        builder.addExpression(id, pointer);
     }
 
     private Set<String> parseMemoryAccessTags(SpirvParser.MemoryAccessContext ctx) {
@@ -191,8 +344,12 @@ public class VisitorOpsMemory extends SpirvBaseVisitor<Event> {
                 "OpVariable",
                 "OpLoad",
                 "OpStore",
+                "OpCopyMemory",
+                "OpCopyMemorySized",
                 "OpAccessChain",
-                "OpInBoundsAccessChain"
+                "OpInBoundsAccessChain",
+                "OpPtrAccessChain",
+                "OpInBoundsPtrAccessChain"
         );
     }
 }

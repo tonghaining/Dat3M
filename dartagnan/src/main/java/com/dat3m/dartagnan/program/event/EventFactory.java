@@ -12,6 +12,7 @@ import com.dat3m.dartagnan.expression.type.TypeFactory;
 import com.dat3m.dartagnan.program.Function;
 import com.dat3m.dartagnan.program.Register;
 import com.dat3m.dartagnan.program.event.arch.StoreExclusive;
+import com.dat3m.dartagnan.program.event.arch.opencl.OpenCLRMWExtremum;
 import com.dat3m.dartagnan.program.event.arch.ptx.PTXAtomCAS;
 import com.dat3m.dartagnan.program.event.arch.ptx.PTXAtomExch;
 import com.dat3m.dartagnan.program.event.arch.ptx.PTXAtomOp;
@@ -233,6 +234,20 @@ public class EventFactory {
         return jump;
     }
 
+    public static List<CondJump> newSwitch(Expression selector, Label defaultTarget, Map<Expression, Label> cases) {
+        List<CondJump> jumps = new ArrayList<>();
+        Expression defaultCond = expressions.makeFalse();
+        for (Expression caseExpr : cases.keySet()) {
+            Expression cond = expressions.makeEQ(selector, caseExpr);
+            defaultCond = expressions.makeOr(defaultCond, cond);
+            CondJump jump = newJump(cond, cases.get(caseExpr));
+            jumps.add(jump);
+        }
+        CondJump defaultJump = newJump(defaultCond, defaultTarget);
+        jumps.add(defaultJump);
+        return jumps;
+    }
+
     public static Assume newAssume(Expression expr) {
         return new Assume(expr);
     }
@@ -393,6 +408,10 @@ public class EventFactory {
 
         public static AtomicXchg newExchange(Register register, Expression address, Expression value, String mo) {
             return new AtomicXchg(register, address, value, mo);
+        }
+
+        public static OpenCLRMWExtremum newRMWExtremum(Register register, Expression address, IntCmpOp op, Expression value, String mo, String scope) {
+            return new OpenCLRMWExtremum(register, address, op, value, mo, scope);
         }
     }
     // =============================================================================================

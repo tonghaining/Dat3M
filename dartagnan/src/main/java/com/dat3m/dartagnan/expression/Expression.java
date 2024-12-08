@@ -4,6 +4,7 @@ import com.dat3m.dartagnan.expression.processing.ExpressionInspector;
 import com.dat3m.dartagnan.program.Register;
 import com.dat3m.dartagnan.program.memory.FinalMemoryValue;
 import com.dat3m.dartagnan.program.memory.MemoryObject;
+import com.dat3m.dartagnan.program.memory.ScopedPointerVariable;
 import com.google.common.collect.ImmutableSet;
 
 import java.util.List;
@@ -37,6 +38,11 @@ public interface Expression {
             public MemoryObject visitMemoryObject(MemoryObject memObj) {
                 objects.add(memObj);
                 return memObj;
+            }
+
+            @Override
+            public MemoryObject visitScopedPointerVariable(ScopedPointerVariable scopedPointerVariable) {
+                return visitMemoryObject(scopedPointerVariable.getAddress());
             }
 
             @Override
