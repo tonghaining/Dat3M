@@ -8,6 +8,7 @@ public class ScopedPointerVariable extends ScopedPointer {
 
     public ScopedPointerVariable(String id, String scopeId, Type innerType, MemoryObject address) {
         super(id, scopeId, innerType, address);
+        address.addFeatureTag(scopeId);
     }
 
     @Override
@@ -18,6 +19,11 @@ public class ScopedPointerVariable extends ScopedPointer {
     @Override
     public <T> T accept(ExpressionVisitor<T> visitor) {
         return visitor.visitScopedPointerVariable(this);
+    }
+
+    @Override
+    public String toString() {
+        return String.format("%s(%s)* %s", getInnerType().toString(), getScopeId(), getId());
     }
 
     public void setInitialValue(int offset, Expression value) {

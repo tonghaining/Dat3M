@@ -81,7 +81,8 @@ public class MemoryTransformer extends ExprTransformer {
 
     @Override
     public Expression visitScopedPointerVariable(ScopedPointerVariable scopedPointerVariable) {
-        String storageClass = scopedPointerVariable.getScopeId();
+        MemoryObject memObj = scopedPointerVariable.getAddress();
+        String storageClass = Tag.Spirv.getStorageClassTag(memObj.getFeatureTags());
         return switch (storageClass) {
             // Device-level memory (keep the same instance)
             case Tag.Spirv.SC_UNIFORM_CONSTANT,
@@ -90,7 +91,7 @@ public class MemoryTransformer extends ExprTransformer {
                  Tag.Spirv.SC_PUSH_CONSTANT,
                  Tag.Spirv.SC_STORAGE_BUFFER,
                  Tag.Spirv.SC_PHYS_STORAGE_BUFFER,
-                 Tag.Spirv.SC_CROSS_WORKGROUP-> scopedPointerVariable.getAddress();
+                 Tag.Spirv.SC_CROSS_WORKGROUP-> memObj;
             // Private memory (copy for each new thread)
             case Tag.Spirv.SC_PRIVATE,
                  Tag.Spirv.SC_FUNCTION,
