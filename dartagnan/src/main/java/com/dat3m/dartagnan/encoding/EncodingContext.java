@@ -34,10 +34,7 @@ import org.sosy_lab.java_smt.api.*;
 import org.sosy_lab.java_smt.api.NumeralFormula.IntegerFormula;
 
 import java.math.BigInteger;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static com.dat3m.dartagnan.configuration.OptionNames.*;
 import static com.dat3m.dartagnan.program.event.Tag.INIT;
@@ -312,8 +309,10 @@ public final class EncodingContext {
             BitvectorFormulaManager bvmgr = formulaManager.getBitvectorFormulaManager();
             return bvmgr.equal(f, bvmgr.makeBitvector(bvmgr.getLength(f), 0));
         }
-        if (formula instanceof TupleFormula) {
-            return booleanFormulaManager.makeFalse();
+        if (formula instanceof TupleFormula tupleFormula) {
+            IntegerFormula zero = formulaManager.getIntegerFormulaManager().makeNumber(0);
+            List<Formula> zeroElements = Collections.nCopies(tupleFormula.size(), zero);
+            return tupleFormulaManager.equal(tupleFormulaManager.makeTuple(zeroElements), tupleFormula);
         }
         throw new UnsupportedOperationException(String.format("Unknown type for equalZero(%s).", formula));
     }
