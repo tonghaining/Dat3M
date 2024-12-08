@@ -76,14 +76,18 @@ public class VisitorOpsMemory extends SpirvBaseVisitor<Event> {
         String resultType = ctx.idResultType().getText();
         Expression pointer = builder.getExpression(ctx.pointer().getText());
         if (builder.getType(resultType) instanceof ArrayType arrayType) {
-            int size = TypeFactory.getInstance().getMemorySizeInBytes(arrayType);
-            MemoryObject memObj = builder.allocateVariable(resultId + "_mem", size);
+            Register register = builder.addRegister(resultId + "_dummy", TypeFactory.getInstance().getArchType());
+            long size = TypeFactory.getInstance().getMemorySizeInBytes(arrayType);
+            Expression sizeExpression = new IntLiteral(TypeFactory.getInstance().getArchType(), new BigInteger(Long.toString(size)));
+            Alloc alloc = EventFactory.newAlloc(register, arrayType, sizeExpression, false, false);
+            MemoryObject memObj = builder.allocateVariable(resultId + "_mem", alloc);
             memObj.setInitialValue(0, builder.makeUndefinedValue(arrayType));
             ScopedPointerVariable pointerVariable = expressions.makeScopedPointerVariable(
                     resultId + "_ptr", Tag.Spirv.SC_FUNCTION, arrayType, memObj);
             Register pointerRegister = builder.addRegister(resultId + "_ptr", pointer.getType());
             Event load = EventFactory.newLoad(pointerRegister, pointer);
             Event store = EventFactory.newStore(pointerVariable, pointerRegister);
+            builder.addEvent(alloc);
             builder.addEvent(load);
             builder.addEvent(store);
             builder.addExpression(resultId, pointerVariable);
