@@ -164,13 +164,6 @@ public class ProgramBuilder {
         return value;
     }
 
-    public void updateExpression(String id, Expression value) {
-        if (!expressions.containsKey(id)) {
-            throw new ParsingException("Attempt to update undefined expression '%s'", id);
-        }
-        expressions.put(id, value);
-    }
-
     public Set<ScopedPointerVariable> getVariables() {
         return expressions.values().stream()
                 .filter(ScopedPointerVariable.class::isInstance)
@@ -180,12 +173,6 @@ public class ProgramBuilder {
 
     public MemoryObject allocateVariable(String id, int bytes) {
         MemoryObject memObj = program.getMemory().allocateVirtual(bytes, true, null);
-        memObj.setName(id);
-        return memObj;
-    }
-
-    public MemoryObject allocateVariable(String id, Alloc alloc) {
-        MemoryObject memObj = program.getMemory().allocate(alloc);
         memObj.setName(id);
         return memObj;
     }

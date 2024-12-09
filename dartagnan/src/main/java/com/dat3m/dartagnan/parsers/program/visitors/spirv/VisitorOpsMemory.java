@@ -73,34 +73,36 @@ public class VisitorOpsMemory extends SpirvBaseVisitor<Event> {
     @Override
     public Event visitOpLoad(SpirvParser.OpLoadContext ctx) {
         String resultId = ctx.idResult().getText();
+        String pointerId = ctx.pointer().getText();
         String resultType = ctx.idResultType().getText();
-        Expression pointer = builder.getExpression(ctx.pointer().getText());
+        Expression pointer = builder.getExpression(pointerId);
+        List<Event> events = new ArrayList<>();
         if (builder.getType(resultType) instanceof ArrayType arrayType) {
-            Register register = builder.addRegister(resultId + "_dummy", TypeFactory.getInstance().getArchType());
-            long size = TypeFactory.getInstance().getMemorySizeInBytes(arrayType);
-            Expression sizeExpression = new IntLiteral(TypeFactory.getInstance().getArchType(), new BigInteger(Long.toString(size)));
-            Alloc alloc = EventFactory.newAlloc(register, arrayType, sizeExpression, false, false);
-            MemoryObject memObj = builder.allocateVariable(resultId + "_mem", alloc);
-            memObj.setInitialValue(0, builder.makeUndefinedValue(arrayType));
-            ScopedPointerVariable pointerVariable = expressions.makeScopedPointerVariable(
-                    resultId + "_ptr", Tag.Spirv.SC_FUNCTION, arrayType, memObj);
-            Register pointerRegister = builder.addRegister(resultId + "_ptr", pointer.getType());
-            Event load = EventFactory.newLoad(pointerRegister, pointer);
-            Event store = EventFactory.newStore(pointerVariable, pointerRegister);
-            builder.addEvent(alloc);
-            builder.addEvent(load);
-            builder.addEvent(store);
-            builder.addExpression(resultId, pointerVariable);
-            return null;
+            List<Expression> registers = new ArrayList<>();
+            for (int i = 0; i < arrayType.getNumElements(); i++) {
+                String elementId = resultId + "_" + i;
+                Register register = builder.addRegister(elementId, arrayType.getElementType());
+                registers.add(register);
+                List<Expression> index = List.of(new IntLiteral(TypeFactory.getInstance().getArchType(), new BigInteger(Long.toString(i))));
+                Expression elementPointer = HelperTypes.getMemberAddress(pointerId, pointer, arrayType, index);
+                Event load = EventFactory.newLoad(register, elementPointer);
+                events.add(load);
+            }
+            Expression arrayRegister = expressions.makeArray(arrayType.getElementType(), registers, true);
+            builder.addExpression(resultId, arrayRegister);
+        } else {
+            Register register = builder.addRegister(resultId, resultType);
+            events.add(EventFactory.newLoad(register, pointer));
         }
-        Register register = builder.addRegister(resultId, resultType);
-        Event event = EventFactory.newLoad(register, pointer);
         Set<String> tags = parseMemoryAccessTags(ctx.memoryAccess());
         if (!tags.contains(Tag.Spirv.MEM_AVAILABLE)) {
             String storageClass = builder.getPointerStorageClass(ctx.pointer().getText());
-            event.addTags(tags);
-            event.addTags(storageClass);
-            return builder.addEvent(event);
+            events.forEach(e -> {
+                e.addTags(tags);
+                e.addTags(storageClass);
+                builder.addEvent(e);
+            });
+            return null;
         }
         throw new ParsingException("OpLoad cannot contain tag '%s'", Tag.Spirv.MEM_AVAILABLE);
     }
