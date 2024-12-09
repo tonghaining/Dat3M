@@ -10,6 +10,7 @@ import com.dat3m.dartagnan.expression.integers.IntCmpOp;
 import com.dat3m.dartagnan.expression.type.ArrayType;
 import com.dat3m.dartagnan.expression.type.BooleanType;
 import com.dat3m.dartagnan.expression.type.IntegerType;
+import com.dat3m.dartagnan.expression.type.ScopedPointerType;
 import com.dat3m.dartagnan.parsers.SpirvBaseVisitor;
 import com.dat3m.dartagnan.parsers.SpirvParser;
 import com.dat3m.dartagnan.parsers.program.visitors.spirv.builders.ProgramBuilder;
@@ -17,6 +18,7 @@ import com.dat3m.dartagnan.program.Register;
 import com.dat3m.dartagnan.program.event.Event;
 import com.dat3m.dartagnan.program.event.EventFactory;
 import com.dat3m.dartagnan.program.event.core.Local;
+import com.dat3m.dartagnan.program.memory.MemoryObject;
 
 import java.util.Set;
 import java.util.function.Function;
@@ -53,13 +55,14 @@ public class VisitorOpsLogical extends SpirvBaseVisitor<Event> {
         Expression op1 = builder.getExpression(ctx.object1().getText());
         Expression op2 = builder.getExpression(ctx.object2().getText());
         Type type = builder.getType(ctx.idResultType().getText());
-        Register register = builder.addRegister(id, ctx.idResultType().getText());
+        Type resultType = builder.getType(ctx.idResultType().getText());
+        Register register = builder.addRegister(id, resultType);
         if (!op1.getType().equals(type) || !op2.getType().equals(type)) {
             throw new ParsingException("Illegal definition for '%s', " +
                     "expected two operands type '%s but received '%s' and '%s'",
                     id, type, op1.getType(), op2.getType());
         }
-        if (op1.getType() instanceof IntegerType || op1.getType() instanceof  BooleanType) {
+        if (op1.getType() instanceof IntegerType || op1.getType() instanceof BooleanType) {
             return builder.addEvent(new Local(register, expressions.makeITE(cond, op1, op2)));
         }
         throw new ParsingException("Illegal definition for '%s', " +
