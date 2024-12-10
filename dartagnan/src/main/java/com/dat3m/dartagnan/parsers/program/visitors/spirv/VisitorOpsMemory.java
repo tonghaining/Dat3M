@@ -50,13 +50,7 @@ public class VisitorOpsMemory extends SpirvBaseVisitor<Event> {
         Expression value = builder.getPossibleExpression(ctx.object().getText(), pointer.getType());
         if (pointer instanceof ScopedPointerVariable pointerVariable
                 && value instanceof ScopedPointerVariable valueVariable) {
-            if (!TypeFactory.isStaticTypeOf(valueVariable.getInnerType(), pointerVariable.getInnerType())) {
-                throw new ParsingException("Mismatching value type for pointer '%s', " +
-                        "expected '%s' but received '%s'", pointerVariable.getId(), pointerVariable.getInnerType(), valueVariable.getInnerType());
-            }
-            MemoryObject oldMemObj = pointerVariable.getAddress();
             pointerVariable.setAddress(valueVariable.getAddress());
-            builder.deleteVariable(oldMemObj);
             return null;
         }
         Event event = EventFactory.newStore(pointer, value);
@@ -90,6 +84,12 @@ public class VisitorOpsMemory extends SpirvBaseVisitor<Event> {
             }
             Expression arrayRegister = expressions.makeArray(arrayType.getElementType(), registers, true);
             builder.addExpression(resultId, arrayRegister);
+        } else if (builder.getType(resultType) instanceof ScopedPointerType pointerType
+                && pointer instanceof ScopedPointerVariable scopedPointerVariable) {
+            ScopedPointerVariable pointerVariable = expressions.makeScopedPointerVariable(
+                    resultId, pointerType.getScopeId(), pointerType.getPointedType(), scopedPointerVariable.getAddress());
+            builder.addExpression(resultId, pointerVariable);
+            return null;
         } else {
             Register register = builder.addRegister(resultId, resultType);
             events.add(EventFactory.newLoad(register, pointer));

@@ -7,10 +7,10 @@ import com.dat3m.dartagnan.expression.Type;
 import com.dat3m.dartagnan.expression.type.FunctionType;
 import com.dat3m.dartagnan.expression.type.TypeFactory;
 import com.dat3m.dartagnan.parsers.program.visitors.spirv.decorations.BuiltIn;
+import com.dat3m.dartagnan.parsers.program.visitors.spirv.helpers.HelperTags;
 import com.dat3m.dartagnan.parsers.program.visitors.spirv.utils.ThreadCreator;
 import com.dat3m.dartagnan.parsers.program.visitors.spirv.utils.ThreadGrid;
 import com.dat3m.dartagnan.program.event.core.AbstractMemoryCoreEvent;
-import com.dat3m.dartagnan.program.event.core.Alloc;
 import com.dat3m.dartagnan.program.event.functions.FunctionCall;
 import com.dat3m.dartagnan.program.memory.*;
 import com.dat3m.dartagnan.expression.type.ScopedPointerType;
@@ -177,10 +177,6 @@ public class ProgramBuilder {
         return memObj;
     }
 
-    public void deleteVariable(MemoryObject memObj) {
-        program.getMemory().deleteMemoryObject(memObj);
-    }
-
     // TODO: Proper implementation of pointers
     //  where ScopedPointer uses ScopedPointerType
     public String getPointerStorageClass(String id) {
@@ -254,10 +250,12 @@ public class ProgramBuilder {
         addExpression(function.getName(), function);
         for (Register register : function.getParameterRegisters()) {
             if (register.getType() instanceof ScopedPointerType pointerType) {
+                String storageClass = pointerType.getScopeId();
                 MemoryObject memObj = allocateVariable(register.getName(),
                         TypeFactory.getInstance().getMemorySizeInBytes(pointerType.getPointedType()));
                 memObj.setIsThreadLocal(false);
-                ScopedPointerVariable pointer = new ScopedPointerVariable(register.getName(), pointerType.getScopeId(), pointerType, memObj);
+                HelperTags.addFeatureTags(memObj, storageClass, arch);
+                ScopedPointerVariable pointer = new ScopedPointerVariable(register.getName(), storageClass, pointerType, memObj);
                 addExpression(register.getName(), pointer);
             } else {
                 addExpression(register.getName(), register);
