@@ -3,6 +3,7 @@ package com.dat3m.dartagnan.parsers.program.visitors.spirv.builders;
 import com.dat3m.dartagnan.configuration.Arch;
 import com.dat3m.dartagnan.exception.ParsingException;
 import com.dat3m.dartagnan.expression.Expression;
+import com.dat3m.dartagnan.expression.ExpressionFactory;
 import com.dat3m.dartagnan.expression.Type;
 import com.dat3m.dartagnan.expression.type.FunctionType;
 import com.dat3m.dartagnan.expression.type.TypeFactory;
@@ -175,6 +176,14 @@ public class ProgramBuilder {
         MemoryObject memObj = program.getMemory().allocateVirtual(bytes, true, null);
         memObj.setName(id);
         return memObj;
+    }
+
+    public ScopedPointerVariable allocateScopedPointerVariable(String id, Expression initValue, String storageClass, Type type) {
+        MemoryObject memObj = allocateVariable(id, TypeFactory.getInstance().getMemorySizeInBytes(type));
+        memObj.setInitialValue(0, initValue);
+        memObj.addFeatureTag(storageClass);
+        return ExpressionFactory.getInstance().makeScopedPointerVariable(
+                id, storageClass, type, memObj);
     }
 
     // TODO: Proper implementation of pointers

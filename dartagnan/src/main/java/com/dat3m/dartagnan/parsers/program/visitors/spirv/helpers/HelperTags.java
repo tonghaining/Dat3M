@@ -134,6 +134,7 @@ public class HelperTags {
 
     public static void addFeatureTags(MemoryObject memObj, String storageClass, Arch arch) {
         if (arch.equals(Arch.OPENCL)) {
+            memObj.addFeatureTag(storageClass);
             String openCLSpace = switch (storageClass) {
                 case Tag.Spirv.SC_GENERIC -> Tag.OpenCL.GENERIC_SPACE;
                 case Tag.Spirv.SC_FUNCTION,

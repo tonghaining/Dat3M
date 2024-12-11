@@ -82,12 +82,12 @@ public class ClangSpirvRacesTest {
                 {"null_pointers/null_pointer_assignment_unequal.spv.dis", 1, FAIL},
                 {"null_pointers/null_pointer_greater.spv.dis", 1, FAIL},
                 {"pointertests/test_return_pointer.spv.dis", 1, PASS},
-                // {"report_global_id/test1.spv.dis", 1, PASS},
+                {"report_global_id/test1.spv.dis", 1, PASS},
                 {"report_global_id/test2.spv.dis", 1, FAIL},
                 {"sourcelocation_tests/barrier_divergence/pass.spv.dis", 1, PASS},
                 {"sourcelocation_tests/needs_source_location_ensures.spv.dis", 1, PASS},
                 {"sourcelocation_tests/needs_source_location_requires.spv.dis", 1, PASS},
-                // {"sourcelocation_tests/race_with_loop.spv.dis", 2, UNKNOWN},
+                {"sourcelocation_tests/race_with_loop.spv.dis", 2, UNKNOWN},
                 {"sourcelocation_tests/races/fail/read_write.spv.dis", 1, FAIL},
                 {"sourcelocation_tests/races/fail/write_read.spv.dis", 1, FAIL},
                 {"sourcelocation_tests/races/fail/write_write/loop.spv.dis", 1, FAIL},
@@ -117,8 +117,8 @@ public class ClangSpirvRacesTest {
                 {"atomics/counter.spv.dis", 1, FAIL},
 
                 // In gpu-verify fails barrier divergence but not leading to a data race
-                {"barrier_intervals/test2.spv.dis", 1, PASS},
-                {"sourcelocation_tests/barrier_divergence/fail.spv.dis", 1, PASS},
+                {"barrier_intervals/test2.spv.dis", 1, FAIL},
+                {"sourcelocation_tests/barrier_divergence/fail.spv.dis", 1, FAIL},
 
                 // In gpu-verify fails command-line test, no races
                 {"global_size/local_size_fail_divide_global_size.spv.dis", 1, PASS},

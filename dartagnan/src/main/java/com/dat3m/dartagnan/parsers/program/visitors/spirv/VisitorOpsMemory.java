@@ -125,11 +125,7 @@ public class VisitorOpsMemory extends SpirvBaseVisitor<Event> {
             } else {
                 value = builder.makeUndefinedValue(type);
             }
-            int size = types.getMemorySizeInBytes(type);
-            MemoryObject memObj = builder.allocateVariable(id, size);
-            memObj.setInitialValue(0, value);
-            ScopedPointerVariable pointer = expressions.makeScopedPointerVariable(id, pointerType.getScopeId(), type, memObj);
-            validateVariableStorageClass(pointer, ctx.storageClass().getText());
+            ScopedPointerVariable pointer = builder.allocateScopedPointerVariable(id, value, pointerType.getScopeId(), type);
             builder.addExpression(id, pointer);
             return null;
         }

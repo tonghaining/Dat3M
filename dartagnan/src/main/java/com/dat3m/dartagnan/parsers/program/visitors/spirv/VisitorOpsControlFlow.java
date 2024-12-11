@@ -166,6 +166,11 @@ public class VisitorOpsControlFlow extends SpirvBaseVisitor<Event> {
         if (!types.getVoidType().equals(returnType)) {
             String valueId = ctx.valueIdRef().getText();
             Expression expression = builder.getExpression(valueId);
+            if (expression instanceof ScopedPointerVariable) {
+                Register register = builder.addRegister(valueId + "_res", returnType);
+                builder.addEvent(EventFactory.newLocal(register, expression));
+                expression = register;
+            }
             Event event = newFunctionReturn(expression);
             builder.addEvent(event);
             return cfBuilder.endBlock(event);

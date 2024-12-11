@@ -8,7 +8,6 @@ public class ScopedPointerVariable extends ScopedPointer {
 
     public ScopedPointerVariable(String id, String scopeId, Type innerType, MemoryObject address) {
         super(id, scopeId, innerType, address);
-        address.addFeatureTag(scopeId);
     }
 
     @Override

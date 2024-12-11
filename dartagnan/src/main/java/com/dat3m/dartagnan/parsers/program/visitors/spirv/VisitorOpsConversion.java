@@ -41,10 +41,8 @@ public class VisitorOpsConversion extends SpirvBaseVisitor<Void> {
             if (!pointerType.getScopeId().equals(scopedPointerVariable.getScopeId())) {
                 throw new ParsingException("Storage class mismatch in OpBitcast between '%s' and '%s'", typeId, operand);
             }
-            MemoryObject memObj = builder.allocateVariable(id, types.getMemorySizeInBytes(pointerType.getPointedType()));
-            memObj.setInitialValue(0, scopedPointerVariable.getAddress());
-            ScopedPointerVariable pointer = expressions.makeScopedPointerVariable(
-                    id, pointerType.getScopeId(), pointerType.getPointedType(), memObj);
+            ScopedPointerVariable pointer = builder.allocateScopedPointerVariable(
+                    id, scopedPointerVariable.getAddress(), pointerType.getScopeId(), pointerType.getPointedType());
             builder.addExpression(id, pointer);
             return null;
         } else {
@@ -67,10 +65,7 @@ public class VisitorOpsConversion extends SpirvBaseVisitor<Void> {
             throw new ParsingException("Type '%s' is not a pointer type", pointerExpr);
         }
         Type type = builder.getType(typeId);
-        int size = types.getMemorySizeInBytes(type);
-        MemoryObject memObj = builder.allocateVariable(id, size);
-        memObj.setInitialValue(0, pointerExpr);
-        ScopedPointerVariable pointer = expressions.makeScopedPointerVariable(id, scopeId, type, memObj);
+        ScopedPointerVariable pointer = builder.allocateScopedPointerVariable(id, pointerExpr, scopeId, type);
         builder.addExpression(id, pointer);
         return null;
     }
