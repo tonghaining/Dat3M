@@ -139,7 +139,7 @@ public class HelperTags {
                 case Tag.Spirv.SC_GENERIC -> Tag.OpenCL.GENERIC_SPACE;
                 case Tag.Spirv.SC_FUNCTION,
                      Tag.Spirv.SC_INPUT,
-                     Tag.Spirv.SC_WORKGROUP -> Tag.OpenCL.LOCAL_SPACE;
+                     Tag.Spirv.SC_WORKGROUP  -> Tag.OpenCL.LOCAL_SPACE;
                 case Tag.Spirv.SC_UNIFORM_CONSTANT,
                      Tag.Spirv.SC_PHYS_STORAGE_BUFFER,
                      Tag.Spirv.SC_CROSS_WORKGROUP -> Tag.OpenCL.GLOBAL_SPACE;

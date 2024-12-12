@@ -181,10 +181,10 @@ public class VisitorSpirvOpenCL extends VisitorC11 {
 
             // Scope
             // TODO: OpenCL Kernel supports sub_group but it's not mentioned in the model
+            case Tag.Spirv.INVOCATION -> Tag.OpenCL.WORK_ITEM;
             case Tag.Spirv.SUBGROUP,
                     Tag.Spirv.WORKGROUP -> Tag.OpenCL.WORK_GROUP;
-            case Tag.Spirv.INVOCATION,
-                    Tag.Spirv.DEVICE -> Tag.OpenCL.DEVICE;
+            case Tag.Spirv.DEVICE -> Tag.OpenCL.DEVICE;
             case Tag.Spirv.CROSS_DEVICE -> Tag.OpenCL.ALL;
             case Tag.Spirv.QUEUE_FAMILY,
                     Tag.Spirv.SHADER_CALL -> throw new UnsupportedOperationException(
@@ -202,11 +202,11 @@ public class VisitorSpirvOpenCL extends VisitorC11 {
                             "is not supported by OpenCL memory model", tag));
 
             // Memory semantics
+            case Tag.Spirv.SEM_IMAGE -> null;
             case Tag.Spirv.SEM_SUBGROUP,
-                    Tag.Spirv.SEM_WORKGROUP,
-                    Tag.Spirv.SEM_CROSS_WORKGROUP,
-                    Tag.Spirv.SEM_ATOMIC_COUNTER,
-                    Tag.Spirv.SEM_IMAGE -> Tag.OpenCL.GLOBAL_SPACE;
+                    Tag.Spirv.SEM_WORKGROUP -> Tag.OpenCL.LOCAL_SPACE;
+            case Tag.Spirv.SEM_CROSS_WORKGROUP,
+                    Tag.Spirv.SEM_ATOMIC_COUNTER -> Tag.OpenCL.GLOBAL_SPACE;
             case Tag.Spirv.SEM_VOLATILE,
                     Tag.Spirv.SEM_UNIFORM,
                     Tag.Spirv.SEM_OUTPUT,
@@ -219,7 +219,7 @@ public class VisitorSpirvOpenCL extends VisitorC11 {
             case Tag.Spirv.SC_GENERIC -> Tag.OpenCL.GENERIC_SPACE;
             case Tag.Spirv.SC_FUNCTION,
                     Tag.Spirv.SC_INPUT,
-                    Tag.Spirv.SC_WORKGROUP -> Tag.OpenCL.LOCAL_SPACE;
+                    Tag.Spirv.SC_WORKGROUP  -> Tag.OpenCL.LOCAL_SPACE;
             case Tag.Spirv.SC_UNIFORM_CONSTANT,
                     Tag.Spirv.SC_PHYS_STORAGE_BUFFER,
                     Tag.Spirv.SC_CROSS_WORKGROUP -> Tag.OpenCL.GLOBAL_SPACE;

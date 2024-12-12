@@ -180,6 +180,7 @@ public class ProgramBuilder {
 
     public ScopedPointerVariable allocateScopedPointerVariable(String id, Expression initValue, String storageClass, Type type) {
         MemoryObject memObj = allocateVariable(id, TypeFactory.getInstance().getMemorySizeInBytes(type));
+        memObj.setIsThreadLocal(false);
         memObj.setInitialValue(0, initValue);
         memObj.addFeatureTag(storageClass);
         return ExpressionFactory.getInstance().makeScopedPointerVariable(
