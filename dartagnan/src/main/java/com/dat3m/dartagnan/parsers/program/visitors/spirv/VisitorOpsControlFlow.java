@@ -4,6 +4,8 @@ import com.dat3m.dartagnan.exception.ParsingException;
 import com.dat3m.dartagnan.expression.Expression;
 import com.dat3m.dartagnan.expression.ExpressionFactory;
 import com.dat3m.dartagnan.expression.Type;
+import com.dat3m.dartagnan.expression.integers.IntLiteral;
+import com.dat3m.dartagnan.expression.type.IntegerType;
 import com.dat3m.dartagnan.expression.type.TypeFactory;
 import com.dat3m.dartagnan.parsers.SpirvBaseVisitor;
 import com.dat3m.dartagnan.parsers.SpirvParser;
@@ -12,9 +14,15 @@ import com.dat3m.dartagnan.parsers.program.visitors.spirv.builders.ProgramBuilde
 import com.dat3m.dartagnan.program.Register;
 import com.dat3m.dartagnan.program.event.Event;
 import com.dat3m.dartagnan.program.event.EventFactory;
+import com.dat3m.dartagnan.program.event.Tag;
+import com.dat3m.dartagnan.program.event.core.Alloc;
+import com.dat3m.dartagnan.program.event.core.CondJump;
 import com.dat3m.dartagnan.program.event.core.Label;
 import com.dat3m.dartagnan.program.event.functions.Return;
+import com.dat3m.dartagnan.program.memory.ScopedPointerVariable;
+import com.dat3m.dartagnan.program.memory.VirtualMemoryObject;
 
+import java.math.BigInteger;
 import java.util.*;
 
 import static com.dat3m.dartagnan.program.event.EventFactory.newFunctionReturn;
@@ -22,6 +30,7 @@ import static com.dat3m.dartagnan.program.event.EventFactory.newFunctionReturn;
 public class VisitorOpsControlFlow extends SpirvBaseVisitor<Event> {
 
     private static final TypeFactory types = TypeFactory.getInstance();
+    private static final ExpressionFactory expressions = ExpressionFactory.getInstance();
     private final ProgramBuilder builder;
     private final ControlFlowBuilder cfBuilder;
     private String continueLabelId;
@@ -73,6 +82,29 @@ public class VisitorOpsControlFlow extends SpirvBaseVisitor<Event> {
             return null;
         }
         throw new ParsingException("End label must be null");
+    }
+
+    @Override
+    public Event visitOpSwitch(SpirvParser.OpSwitchContext ctx) {
+        Expression selector = builder.getExpression(ctx.selector().getText());
+        if (!(selector.getType() instanceof IntegerType integerType)) {
+            throw new ParsingException("Switch selector must be an integer type");
+        }
+        String defaultLabelId = ctx.defaultLabel().getText();
+        Label defaultLabel = cfBuilder.getOrCreateLabel(defaultLabelId);
+        Map<Expression, Label> cases = new HashMap<>();
+        for (SpirvParser.TargetPairLiteralIntegerIdRefContext tCtx : ctx.targetPairLiteralIntegerIdRef()) {
+            SpirvParser.PairLiteralIntegerIdRefContext pCtx = tCtx.pairLiteralIntegerIdRef();
+            Expression value =  expressions.makeValue(Integer.parseInt(pCtx.literalInteger().getText()), integerType);
+            String labelId = pCtx.idRef().getText();
+            Label label = cfBuilder.getOrCreateLabel(labelId);
+            cases.put(value, label);
+        }
+        List<CondJump> jumps = EventFactory.newSwitch(selector, defaultLabel, cases);
+        for (CondJump jump : jumps) {
+            builder.addEvent(jump);
+        }
+        return cfBuilder.endBlock(jumps.get(jumps.size() - 1));
     }
 
     @Override
@@ -134,12 +166,49 @@ public class VisitorOpsControlFlow extends SpirvBaseVisitor<Event> {
         if (!types.getVoidType().equals(returnType)) {
             String valueId = ctx.valueIdRef().getText();
             Expression expression = builder.getExpression(valueId);
+            if (expression instanceof ScopedPointerVariable) {
+                Register register = builder.addRegister(valueId + "_res", returnType);
+                builder.addEvent(EventFactory.newLocal(register, expression));
+                expression = register;
+            }
             Event event = newFunctionReturn(expression);
             builder.addEvent(event);
             return cfBuilder.endBlock(event);
         }
         throw new ParsingException("Illegal value return for a void function '%s'",
                 builder.getCurrentFunctionName());
+    }
+
+    @Override
+    public Event visitOpLifetimeStart(SpirvParser.OpLifetimeStartContext ctx) {
+        // Declare that an object was not defined before this instruction.
+        String pointerId = ctx.pointer().getText();
+        int size = Integer.parseInt(ctx.sizeLiteralInteger().getText());
+        Expression pointerExp = builder.getExpression(pointerId);
+        if (!(pointerExp instanceof ScopedPointerVariable pointerVariable)
+                || !pointerVariable.getScopeId().equals(Tag.Spirv.SC_FUNCTION) ) {
+            throw new ParsingException("Lifetime start can only be applied to a pointer with Function storage class: '%s'", pointerId);
+        }
+        Register register = builder.addRegister(pointerId + "_alloc", pointerVariable.getType());
+        IntegerType pointerIntegerType = TypeFactory.getInstance().getArchType();
+        Expression sizeExpression = new IntLiteral(pointerIntegerType, new BigInteger(Long.toString(size)));
+        Alloc alloc = EventFactory.newAlloc(register, pointerExp.getType(), sizeExpression, false, false);
+        builder.addEvent(alloc);
+        return null;
+    }
+
+    @Override
+    public Event visitOpLifetimeStop(SpirvParser.OpLifetimeStopContext ctx) {
+        // Declare that an object is not used after this instruction.
+        String pointerId = ctx.pointer().getText();
+        Integer size = Integer.parseInt(ctx.sizeLiteralInteger().getText());
+        Expression pointerExp = builder.getExpression(pointerId);
+        if (!(pointerExp instanceof ScopedPointerVariable pointerVariable)
+                || !pointerVariable.getScopeId().equals(Tag.Spirv.SC_FUNCTION)) {
+            throw new ParsingException("Lifetime stop can only be applied to a pointer with Function storage class: '%s'", pointerId);
+        }
+        // TODO: Remove the variable from the program?
+        return null;
     }
 
     private Event visitGoto(String labelId) {
@@ -173,10 +242,6 @@ public class VisitorOpsControlFlow extends SpirvBaseVisitor<Event> {
 
     private Event visitConditionalJump(Expression guard, String trueLabelId, String falseLabelId) {
         if (cfBuilder.isBlockStarted(trueLabelId)) {
-            if (cfBuilder.isBlockStarted(falseLabelId)) {
-                throw new ParsingException("Unsupported conditional branch " +
-                        "with two backward jumps to '%s' and '%s'", trueLabelId, falseLabelId);
-            }
             String labelId = trueLabelId;
             trueLabelId = falseLabelId;
             falseLabelId = labelId;
@@ -212,8 +277,11 @@ public class VisitorOpsControlFlow extends SpirvBaseVisitor<Event> {
                 "OpLabel",
                 "OpLoopMerge",
                 "OpSelectionMerge",
+                "OpSwitch",
                 "OpReturn",
-                "OpReturnValue"
+                "OpReturnValue",
+                "OpLifetimeStart",
+                "OpLifetimeStop"
         );
     }
 }

@@ -1,6 +1,7 @@
 package com.dat3m.dartagnan.parsers.program.visitors.spirv.utils;
 
 import com.dat3m.dartagnan.expression.type.FunctionType;
+import com.dat3m.dartagnan.expression.type.TypeFactory;
 import com.dat3m.dartagnan.parsers.program.visitors.spirv.decorations.BuiltIn;
 import com.dat3m.dartagnan.program.*;
 import com.dat3m.dartagnan.program.Thread;
@@ -20,12 +21,13 @@ public class ThreadCreator {
     private final Function function;
     private final Set<ScopedPointerVariable> variables;
     private final MemoryTransformer transformer;
+    private final TypeFactory types = TypeFactory.getInstance();
 
     public ThreadCreator(ThreadGrid grid, Function function, Set<ScopedPointerVariable> variables, BuiltIn builtIn) {
         this.grid = grid;
         this.function = function;
         this.variables = variables;
-        this.transformer = new MemoryTransformer(grid, function, builtIn, variables);
+        this.transformer = new MemoryTransformer(grid, function, builtIn);
     }
 
     public void create() {
