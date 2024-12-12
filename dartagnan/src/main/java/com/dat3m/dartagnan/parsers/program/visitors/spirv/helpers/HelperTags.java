@@ -139,10 +139,10 @@ public class HelperTags {
                 case Tag.Spirv.SC_GENERIC -> Tag.OpenCL.GENERIC_SPACE;
                 case Tag.Spirv.SC_FUNCTION,
                      Tag.Spirv.SC_INPUT,
-                     Tag.Spirv.SC_WORKGROUP -> Tag.OpenCL.LOCAL_SPACE;
-                case Tag.Spirv.SC_UNIFORM_CONSTANT,
+                     Tag.Spirv.SC_WORKGROUP,
+                     Tag.Spirv.SC_UNIFORM_CONSTANT,
                      Tag.Spirv.SC_PHYS_STORAGE_BUFFER,
-                     Tag.Spirv.SC_CROSS_WORKGROUP -> Tag.OpenCL.GLOBAL_SPACE;
+                     Tag.Spirv.SC_CROSS_WORKGROUP -> Tag.OpenCL.LOCAL_SPACE; // SPIR-V don't distinguish between local and global, so we use local for all
                 default -> throw new UnsupportedOperationException("Cannot convert " + storageClass + " to OpenCL space");
             };
             memObj.addFeatureTag(openCLSpace);
