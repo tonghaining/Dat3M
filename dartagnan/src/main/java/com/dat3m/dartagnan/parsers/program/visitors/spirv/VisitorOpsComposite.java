@@ -39,8 +39,8 @@ public class VisitorOpsComposite extends SpirvBaseVisitor<Event> {
                 .map(Integer::parseInt)
                 .toList();
         Expression element = compositeExpression;
-        for (int i = 0; i < indexes.size(); i++) {
-            element = element.getOperands().get(i);
+        for (Integer index : indexes) {
+            element = element.getOperands().get(index);
         }
         if (type != element.getType()) {
             throw new UnsupportedOperationException("Type mismatch in composite extraction");
