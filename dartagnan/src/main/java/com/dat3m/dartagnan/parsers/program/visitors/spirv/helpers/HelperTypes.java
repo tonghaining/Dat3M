@@ -67,9 +67,9 @@ public class HelperTypes {
     public static Expression getPointerOffset(Expression base, Type type, Expression offset) {
         int size = types.getMemorySizeInBytes(type);
         IntLiteral sizeExpr = expressions.makeValue(size, archType);
-        Expression formattedOffset = expressions.makeIntegerCast(offset, archType, true);
+        Expression formattedOffset = expressions.makeIntegerCast(offset, archType, false);
         Expression offsetExpr = expressions.makeBinary(sizeExpr, MUL, formattedOffset);
-        Expression formattedBase = expressions.makeIntegerCast(base, archType, true);
+        Expression formattedBase = expressions.makeIntegerCast(base, archType, false);
         return expressions.makeBinary(formattedBase, ADD, offsetExpr);
     }
 
