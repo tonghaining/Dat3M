@@ -69,6 +69,12 @@ public class MemoryTransformer extends ExprTransformer {
         nonDetMapping = new HashMap<>();
     }
 
+    public void setFunction(Function function) {
+        registerMapping = function.getRegisters().stream().collect(
+                toMap(r -> r, r -> function.getOrNewRegister(r.getName(), r.getType())));
+        nonDetMapping = new HashMap<>();
+    }
+
     @Override
     public Expression visitRegister(Register register) {
         return registerMapping.get(register);

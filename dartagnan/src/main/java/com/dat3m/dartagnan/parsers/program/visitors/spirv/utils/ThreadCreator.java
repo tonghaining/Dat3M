@@ -8,6 +8,7 @@ import com.dat3m.dartagnan.program.Thread;
 import com.dat3m.dartagnan.program.event.*;
 import com.dat3m.dartagnan.program.event.core.Label;
 import com.dat3m.dartagnan.program.event.core.threading.ThreadStart;
+import com.dat3m.dartagnan.program.event.functions.FunctionCall;
 import com.dat3m.dartagnan.program.event.functions.Return;
 import com.dat3m.dartagnan.program.memory.Memory;
 import com.dat3m.dartagnan.program.memory.ScopedPointerVariable;
@@ -21,7 +22,6 @@ public class ThreadCreator {
     private final Function function;
     private final Set<ScopedPointerVariable> variables;
     private final MemoryTransformer transformer;
-    private final TypeFactory types = TypeFactory.getInstance();
 
     public ThreadCreator(ThreadGrid grid, Function function, Set<ScopedPointerVariable> variables, BuiltIn builtIn) {
         this.grid = grid;
@@ -65,6 +65,9 @@ public class ThreadCreator {
             }
             if (copy instanceof RegWriter regWriter) {
                 regWriter.setResultRegister(transformer.getRegisterMapping(regWriter.getResultRegister()));
+            }
+            if (copy instanceof FunctionCall call) {
+                call.addExprTransformer(transformer);
             }
         }
         thread.getEntry().insertAfter(body);
