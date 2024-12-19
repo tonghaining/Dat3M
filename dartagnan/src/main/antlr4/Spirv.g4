@@ -917,7 +917,7 @@ opSelectionMerge : Op SelectionMerge mergeBlock selectionControl;
 opLabel : idResult Equals Op (Label  | SpecConstantOp  Label);
 opBranch : Op Branch targetLabel;
 opBranchConditional : Op BranchConditional condition trueLabel falseLabel branchWeights*;
-opSwitch : Op Switch selector default targetPairLiteralIntegerIdRef*;
+opSwitch : Op Switch selector defaultLabel targetPairLiteralIntegerIdRef*;
 opKill : Op Kill;
 opReturn : Op Return;
 opReturnValue : Op ReturnValue valueIdRef;
@@ -1739,6 +1739,8 @@ glsl
     |   unpackSnorm4x8
     |   unpackUnorm2x16
     |   unpackUnorm4x8
+    |   sAddSat
+    |   sSubSat
     ;
 
 round : ModeExt_Round x;
@@ -1822,6 +1824,8 @@ interpolateAtOffset : ModeExt_InterpolateAtOffset interpolant offsetIdRef;
 nMin : ModeExt_NMin x y;
 nMax : ModeExt_NMax x y;
 nClamp : ModeExt_NClamp x minVal maxVal;
+sAddSat : ModeExt_SAddSat x y;
+sSubSat : ModeExt_SSubSat x y;
 
 // Alias types
 a : idRef;
@@ -1918,7 +1922,7 @@ data : idRef;
 dataWidth : literalInteger;
 decl : idRef;
 decorationGroup : idRef;
-default : idRef;
+defaultLabel : idRef;
 degreesIdRef : idRef;
 delta : idRef;
 depthLiteralInteger : literalInteger;
