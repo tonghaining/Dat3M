@@ -1,12 +1,14 @@
 package com.dat3m.dartagnan.parsers.program.visitors.spirv.utils;
 
 import com.dat3m.dartagnan.expression.type.FunctionType;
+import com.dat3m.dartagnan.expression.type.TypeFactory;
 import com.dat3m.dartagnan.parsers.program.visitors.spirv.decorations.BuiltIn;
 import com.dat3m.dartagnan.program.*;
 import com.dat3m.dartagnan.program.Thread;
 import com.dat3m.dartagnan.program.event.*;
 import com.dat3m.dartagnan.program.event.core.Label;
 import com.dat3m.dartagnan.program.event.core.threading.ThreadStart;
+import com.dat3m.dartagnan.program.event.functions.FunctionCall;
 import com.dat3m.dartagnan.program.event.functions.Return;
 import com.dat3m.dartagnan.program.memory.Memory;
 import com.dat3m.dartagnan.program.memory.ScopedPointerVariable;
@@ -25,7 +27,7 @@ public class ThreadCreator {
         this.grid = grid;
         this.function = function;
         this.variables = variables;
-        this.transformer = new MemoryTransformer(grid, function, builtIn, variables);
+        this.transformer = new MemoryTransformer(grid, function, builtIn);
     }
 
     public void create() {
@@ -63,6 +65,9 @@ public class ThreadCreator {
             }
             if (copy instanceof RegWriter regWriter) {
                 regWriter.setResultRegister(transformer.getRegisterMapping(regWriter.getResultRegister()));
+            }
+            if (copy instanceof FunctionCall call) {
+                call.addExprTransformer(transformer);
             }
         }
         thread.getEntry().insertAfter(body);
