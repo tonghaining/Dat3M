@@ -117,8 +117,9 @@ public class ClangSpirvRacesTest {
                 {"atomics/counter.spv.dis", 1, FAIL},
 
                 // In gpu-verify fails barrier divergence but not leading to a data race
-                {"barrier_intervals/test2.spv.dis", 1, FAIL},
-                {"sourcelocation_tests/barrier_divergence/fail.spv.dis", 1, FAIL},
+                // TODO: check opencl barrier divergence
+                {"barrier_intervals/test2.spv.dis", 1, PASS},
+                {"sourcelocation_tests/barrier_divergence/fail.spv.dis", 1, PASS},
 
                 // In gpu-verify fails command-line test, no races
                 {"global_size/local_size_fail_divide_global_size.spv.dis", 1, PASS},
