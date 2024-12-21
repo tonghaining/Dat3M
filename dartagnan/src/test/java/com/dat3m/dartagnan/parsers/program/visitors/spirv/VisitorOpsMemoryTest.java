@@ -1,11 +1,13 @@
 package com.dat3m.dartagnan.parsers.program.visitors.spirv;
 
+import ap.parser.smtlib.Absyn.ConstantSExpr;
 import com.dat3m.dartagnan.exception.ParsingException;
 import com.dat3m.dartagnan.expression.Expression;
 import com.dat3m.dartagnan.expression.ExpressionFactory;
 import com.dat3m.dartagnan.expression.Type;
 import com.dat3m.dartagnan.expression.aggregates.ConstructExpr;
 import com.dat3m.dartagnan.expression.integers.IntBinaryExpr;
+import com.dat3m.dartagnan.expression.integers.IntBinaryOp;
 import com.dat3m.dartagnan.expression.type.*;
 import com.dat3m.dartagnan.parsers.SpirvParser;
 import com.dat3m.dartagnan.parsers.program.visitors.spirv.mocks.MockProgramBuilder;
@@ -14,6 +16,7 @@ import com.dat3m.dartagnan.program.Register;
 import com.dat3m.dartagnan.program.event.Event;
 import com.dat3m.dartagnan.program.event.Tag;
 import com.dat3m.dartagnan.program.event.core.Load;
+import com.dat3m.dartagnan.program.event.core.Local;
 import com.dat3m.dartagnan.program.event.core.Store;
 import com.dat3m.dartagnan.program.memory.ScopedPointer;
 import com.dat3m.dartagnan.program.memory.ScopedPointerVariable;
@@ -98,6 +101,27 @@ public class VisitorOpsMemoryTest {
             assertEquals(String.format("OpLoad cannot contain tag '%s'",
                     Tag.Spirv.MEM_AVAILABLE), e.getMessage());
         }
+    }
+
+    @Test
+    public void testLoadVector() {
+        // given
+        IntegerType integerType = builder.mockIntType("%int", 32);
+        builder.mockVectorType("%v4int4", "%int", 4);
+        builder.mockPtrType("%ptr_v4int4", "%int", "Uniform");
+        String input = """
+                %ptr = OpVariable %ptr_v4int4 Uniform
+                %result = OpLoad %v4int4 %ptr
+                """;
+
+        // when
+        parse(input);
+
+        // then
+        ConstructExpr pointerVariable = (ConstructExpr) builder.getExpression("%result");
+        assertNotNull(pointerVariable);
+        assertEquals(4, pointerVariable.getOperands().size());
+        assertEquals(integerType, pointerVariable.getOperands().get(0).getType());
     }
 
     @Test
@@ -699,6 +723,33 @@ public class VisitorOpsMemoryTest {
     }
 
     @Test
+    public void testPtrAccessChainArray() {
+        // given
+        String input = """
+                %13 = OpVariable %_ptr_Workgroup_uint Workgroup
+                %19 = OpPtrAccessChain %_ptr_Workgroup_uint %13 %18
+                """;
+
+        IntegerType iType = builder.mockIntType("%uint", 32);
+        builder.mockPtrType("%_ptr_Workgroup_uint", "%uint", "Workgroup");
+        builder.mockConstant("%18", "%_ptr_Workgroup_uint", 0);
+
+        // when
+        parse(input);
+
+        // then
+        ScopedPointer sp = (ScopedPointer) ((ScopedPointer) builder.getExpression("%19")).getAddress();
+        IntBinaryExpr addressExp = (IntBinaryExpr) sp.getAddress();
+        assertEquals(iType, sp.getInnerType());
+        assertEquals(builder.getExpression("%13"), addressExp.getLeft());
+        assertEquals(IntBinaryOp.ADD, addressExp.getKind());
+        assertEquals(IntBinaryOp.MUL, addressExp.getRight().getKind());
+        assertEquals(expressions.makeValue(4, types.getArchType()), ((IntBinaryExpr) addressExp.getRight()).getLeft());
+        assertEquals(expressions.makeCast(builder.getExpression("%18"), types.getArchType()),
+                ((IntBinaryExpr) addressExp.getRight()).getRight());
+    }
+
+    @Test
     public void testAccessChainStruct() {
         // given
         String input = """
@@ -904,6 +955,60 @@ public class VisitorOpsMemoryTest {
         }
     }
 
+    @Test
+    public void testCopyMemory() {
+        // given
+        String input = "OpCopyMemory %dst %src";
+
+        IntegerType iType = builder.mockIntType("%int", 32);
+        builder.mockPtrType("%int_ptr", "%int", "Uniform");
+        builder.mockVariable("%dst", "%int_ptr");
+        builder.mockVariable("%src", "%int_ptr");
+
+        // when
+        parse(input);
+
+        // then
+        Load load = (Load) getLastNEvent(1);
+        Store store = (Store) getLastEvent();
+        assertNotNull(load);
+        assertNotNull(store);
+        assertEquals(builder.getExpression("%src"), load.getAddress());
+        assertEquals(builder.getExpression("%dst"), store.getAddress());
+        assertEquals(iType, ((ScopedPointerVariable) load.getAddress()).getInnerType());
+        assertEquals(iType, ((ScopedPointerVariable) store.getAddress()).getInnerType());
+    }
+
+    @Test
+    public void testCopyMemorySized() {
+        // given
+        String input = "OpCopyMemorySized %dst %src %size";
+
+        IntegerType iType = builder.mockIntType("%int", 32);
+        builder.mockPtrType("%int_ptr", "%int", "Uniform");
+        builder.mockVariable("%dst", "%int_ptr");
+        builder.mockVariable("%src", "%int_ptr");
+        builder.mockConstant("%size", "%int", 4);
+
+        // when
+        parse(input);
+
+        // then
+        Load load = (Load) getLastNEvent(2);
+        Local local = (Local) getLastNEvent(1);
+        Store store = (Store) getLastEvent();
+        assertNotNull(load);
+        assertNotNull(local);
+        assertNotNull(store);
+        assertEquals(builder.getExpression("%src"), load.getAddress());
+        assertEquals(expressions.makeIntAnd(load.getResultRegister(), expressions.makeValue(15, iType)),
+                local.getExpr());
+        assertEquals(builder.getExpression("%dst"), store.getAddress());
+        assertEquals(iType, ((ScopedPointerVariable) load.getAddress()).getInnerType());
+        assertEquals(iType, local.getExpr().getType());
+        assertEquals(iType, ((ScopedPointerVariable) store.getAddress()).getInnerType());
+    }
+
     private Expression makeOffset(Expression stepExpr, int stepSize) {
         IntegerType archType = types.getArchType();
         Expression stepCastExpr = expressions.makeCast(stepExpr, archType);
@@ -911,9 +1016,13 @@ public class VisitorOpsMemoryTest {
     }
 
     private Event getLastEvent() {
+        return getLastNEvent(0);
+    }
+
+    private Event getLastNEvent(int n) {
         List<Event> events = builder.getCurrentFunction().getEvents();
-        if (!events.isEmpty()) {
-            return events.get(events.size() - 1);
+        if (!events.isEmpty() && events.size() > n) {
+            return events.get(events.size() - 1 - n);
         }
         return null;
     }

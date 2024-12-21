@@ -3,19 +3,20 @@ package com.dat3m.dartagnan.parsers.program.visitors.spirv.builders;
 import com.dat3m.dartagnan.configuration.Arch;
 import com.dat3m.dartagnan.exception.ParsingException;
 import com.dat3m.dartagnan.expression.Expression;
+import com.dat3m.dartagnan.expression.ExpressionFactory;
 import com.dat3m.dartagnan.expression.Type;
 import com.dat3m.dartagnan.expression.type.FunctionType;
+import com.dat3m.dartagnan.expression.type.TypeFactory;
 import com.dat3m.dartagnan.parsers.program.visitors.spirv.decorations.BuiltIn;
+import com.dat3m.dartagnan.parsers.program.visitors.spirv.helpers.HelperTags;
 import com.dat3m.dartagnan.parsers.program.visitors.spirv.utils.ThreadCreator;
 import com.dat3m.dartagnan.parsers.program.visitors.spirv.utils.ThreadGrid;
+import com.dat3m.dartagnan.program.event.core.AbstractMemoryCoreEvent;
 import com.dat3m.dartagnan.program.event.functions.FunctionCall;
-import com.dat3m.dartagnan.program.memory.ScopedPointer;
-import com.dat3m.dartagnan.program.memory.ScopedPointerVariable;
+import com.dat3m.dartagnan.program.memory.*;
 import com.dat3m.dartagnan.expression.type.ScopedPointerType;
 import com.dat3m.dartagnan.program.*;
 import com.dat3m.dartagnan.program.event.*;
-import com.dat3m.dartagnan.program.memory.Memory;
-import com.dat3m.dartagnan.program.memory.MemoryObject;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -26,6 +27,7 @@ public class ProgramBuilder {
 
     protected final Map<String, Type> types = new HashMap<>();
     protected final Map<String, Expression> expressions = new HashMap<>();
+    protected final Map<String, Expression> expressionsUndefined = new HashMap<>();
     protected final Map<String, Expression> inputs = new HashMap<>();
     protected final Map<String, String> debugInfos = new HashMap<>();
     protected final ThreadGrid grid;
@@ -146,6 +148,15 @@ public class ProgramBuilder {
         return expression;
     }
 
+    public Expression getPossibleExpression(String id, Type type) {
+        Expression expression = expressions.get(id);
+        if (expression == null) {
+            expression = makeUndefinedValue(type);
+            expressionsUndefined.put(id, expression);
+        }
+        return expression;
+    }
+
     public Expression addExpression(String id, Expression value) {
         if (types.containsKey(id) || expressions.containsKey(id)) {
             throw new ParsingException("Duplicated definition '%s'", id);
@@ -167,6 +178,15 @@ public class ProgramBuilder {
         return memObj;
     }
 
+    public ScopedPointerVariable allocateScopedPointerVariable(String id, Expression initValue, String storageClass, Type type) {
+        MemoryObject memObj = allocateVariable(id, TypeFactory.getInstance().getMemorySizeInBytes(type));
+        memObj.setIsThreadLocal(false);
+        memObj.setInitialValue(0, initValue);
+        memObj.addFeatureTag(storageClass);
+        return ExpressionFactory.getInstance().makeScopedPointerVariable(
+                id, storageClass, type, memObj);
+    }
+
     // TODO: Proper implementation of pointers
     //  where ScopedPointer uses ScopedPointerType
     public String getPointerStorageClass(String id) {
@@ -184,9 +204,20 @@ public class ProgramBuilder {
 
     public Register addRegister(String id, String typeId) {
         Type type = getType(typeId);
-        if (type instanceof ScopedPointerType) {
-            throw new ParsingException("Register cannot be a pointer");
+        Register register = getCurrentFunctionOrThrowError().newRegister(id, type);
+        Expression undefinedExpression = expressionsUndefined.get(id);
+        if (undefinedExpression != null) {
+            currentFunction.getEvents().stream()
+                    .filter(AbstractMemoryCoreEvent.class::isInstance)
+                    .map(AbstractMemoryCoreEvent.class::cast)
+                    .filter(coreEvent -> coreEvent.getAddress() == undefinedExpression)
+                    .forEach(coreEvent -> coreEvent.setAddress(register));
+            expressionsUndefined.remove(id);
         }
+        return register;
+    }
+
+    public Register addRegister(String id, Type type) {
         return getCurrentFunctionOrThrowError().newRegister(id, type);
     }
 
@@ -228,7 +259,17 @@ public class ProgramBuilder {
         }
         addExpression(function.getName(), function);
         for (Register register : function.getParameterRegisters()) {
-            addExpression(register.getName(), register);
+            if (register.getType() instanceof ScopedPointerType pointerType) {
+                String storageClass = pointerType.getScopeId();
+                MemoryObject memObj = allocateVariable(register.getName(),
+                        TypeFactory.getInstance().getMemorySizeInBytes(pointerType.getPointedType()));
+                memObj.setIsThreadLocal(false);
+                HelperTags.addFeatureTags(memObj, storageClass, arch);
+                ScopedPointerVariable pointer = new ScopedPointerVariable(register.getName(), storageClass, pointerType, memObj);
+                addExpression(register.getName(), pointer);
+            } else {
+                addExpression(register.getName(), register);
+            }
         }
         program.addFunction(function);
         currentFunction = function;
