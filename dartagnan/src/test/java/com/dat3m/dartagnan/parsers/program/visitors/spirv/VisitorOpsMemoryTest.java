@@ -1,5 +1,6 @@
 package com.dat3m.dartagnan.parsers.program.visitors.spirv;
 
+import ap.parser.smtlib.Absyn.ConstantSExpr;
 import com.dat3m.dartagnan.exception.ParsingException;
 import com.dat3m.dartagnan.expression.Expression;
 import com.dat3m.dartagnan.expression.ExpressionFactory;
@@ -105,8 +106,8 @@ public class VisitorOpsMemoryTest {
     @Test
     public void testLoadVector() {
         // given
-        builder.mockIntType("%int", 32);
-        ArrayType arrayType = builder.mockVectorType("%v4int4", "%int", 4);
+        IntegerType integerType = builder.mockIntType("%int", 32);
+        builder.mockVectorType("%v4int4", "%int", 4);
         builder.mockPtrType("%ptr_v4int4", "%int", "Uniform");
         String input = """
                 %ptr = OpVariable %ptr_v4int4 Uniform
@@ -117,9 +118,10 @@ public class VisitorOpsMemoryTest {
         parse(input);
 
         // then
-        ScopedPointerVariable pointerVariable = (ScopedPointerVariable) builder.getExpression("%result");
+        ConstructExpr pointerVariable = (ConstructExpr) builder.getExpression("%result");
         assertNotNull(pointerVariable);
-        assertEquals(arrayType, pointerVariable.getInnerType());
+        assertEquals(4, pointerVariable.getOperands().size());
+        assertEquals(integerType, pointerVariable.getOperands().get(0).getType());
     }
 
     @Test

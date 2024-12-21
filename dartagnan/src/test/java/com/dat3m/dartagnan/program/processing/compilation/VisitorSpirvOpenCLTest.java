@@ -39,7 +39,7 @@ public class VisitorSpirvOpenCLTest {
                 Set.of(Tag.OpenCL.GENERIC_SPACE)
         );
         doTestLoad(
-                Set.of(Tag.Spirv.SC_WORKGROUP),
+                Set.of(Tag.Spirv.SC_CROSS_WORKGROUP),
                 Set.of(Tag.OpenCL.GLOBAL_SPACE)
         );
         doTestLoad(
@@ -76,7 +76,7 @@ public class VisitorSpirvOpenCLTest {
                 Set.of(Tag.OpenCL.GENERIC_SPACE)
         );
         doTestStore(
-                Set.of(Tag.Spirv.SC_WORKGROUP),
+                Set.of(Tag.Spirv.SC_CROSS_WORKGROUP),
                 Set.of(Tag.OpenCL.GLOBAL_SPACE)
         );
         doTestStore(
@@ -109,20 +109,20 @@ public class VisitorSpirvOpenCLTest {
     @Test
     public void testSpirvLoad() {
         doTestSpirvLoad(
-                Set.of(Tag.Spirv.RELAXED, Tag.Spirv.WORKGROUP, Tag.Spirv.SC_WORKGROUP),
+                Set.of(Tag.Spirv.RELAXED, Tag.Spirv.WORKGROUP, Tag.Spirv.SC_CROSS_WORKGROUP),
                 Set.of(Tag.C11.MO_RELAXED, Tag.OpenCL.WORK_GROUP, Tag.OpenCL.GLOBAL_SPACE)
         );
         doTestSpirvLoad(
-                Set.of(Tag.Spirv.SEQ_CST, Tag.Spirv.WORKGROUP, Tag.Spirv.SC_WORKGROUP),
+                Set.of(Tag.Spirv.SEQ_CST, Tag.Spirv.WORKGROUP, Tag.Spirv.SC_CROSS_WORKGROUP),
                 Set.of(Tag.C11.MO_SC, Tag.OpenCL.WORK_GROUP, Tag.OpenCL.GLOBAL_SPACE)
         );
         doTestSpirvLoad(
                 Set.of(Tag.Spirv.ACQUIRE, Tag.Spirv.CROSS_DEVICE, Tag.Spirv.SC_WORKGROUP),
-                Set.of(Tag.C11.MO_ACQUIRE, Tag.OpenCL.ALL, Tag.OpenCL.GLOBAL_SPACE)
+                Set.of(Tag.C11.MO_ACQUIRE, Tag.OpenCL.ALL, Tag.OpenCL.LOCAL_SPACE)
         );
         doTestSpirvLoad(
                 Set.of(Tag.Spirv.ACQUIRE, Tag.Spirv.INVOCATION, Tag.Spirv.SEM_IMAGE, Tag.Spirv.SC_GENERIC),
-                Set.of(Tag.C11.MO_ACQUIRE, Tag.OpenCL.DEVICE, Tag.OpenCL.GENERIC_SPACE)
+                Set.of(Tag.C11.MO_ACQUIRE, Tag.OpenCL.WORK_ITEM, Tag.OpenCL.GENERIC_SPACE)
         );
         doTestSpirvLoad(
                 Set.of(Tag.Spirv.RELAXED, Tag.Spirv.DEVICE, Tag.Spirv.SC_FUNCTION),
@@ -151,20 +151,20 @@ public class VisitorSpirvOpenCLTest {
     @Test
     public void testSpirvStore() {
         doTestSpirvStore(
-                Set.of(Tag.Spirv.RELAXED, Tag.Spirv.WORKGROUP, Tag.Spirv.SC_WORKGROUP),
+                Set.of(Tag.Spirv.RELAXED, Tag.Spirv.WORKGROUP, Tag.Spirv.SC_CROSS_WORKGROUP),
                 Set.of(Tag.C11.MO_RELAXED, Tag.OpenCL.WORK_GROUP, Tag.OpenCL.GLOBAL_SPACE)
         );
         doTestSpirvStore(
-                Set.of(Tag.Spirv.SEQ_CST, Tag.Spirv.WORKGROUP, Tag.Spirv.SC_WORKGROUP),
+                Set.of(Tag.Spirv.SEQ_CST, Tag.Spirv.WORKGROUP, Tag.Spirv.SC_CROSS_WORKGROUP),
                 Set.of(Tag.C11.MO_SC, Tag.OpenCL.WORK_GROUP, Tag.OpenCL.GLOBAL_SPACE)
         );
         doTestSpirvStore(
-                Set.of(Tag.Spirv.RELEASE, Tag.Spirv.CROSS_DEVICE, Tag.Spirv.SC_WORKGROUP),
+                Set.of(Tag.Spirv.RELEASE, Tag.Spirv.CROSS_DEVICE, Tag.Spirv.SC_CROSS_WORKGROUP),
                 Set.of(Tag.C11.MO_RELEASE, Tag.OpenCL.ALL, Tag.OpenCL.GLOBAL_SPACE)
         );
         doTestSpirvStore(
                 Set.of(Tag.Spirv.RELEASE, Tag.Spirv.INVOCATION, Tag.Spirv.SEM_IMAGE, Tag.Spirv.SC_GENERIC),
-                Set.of(Tag.C11.MO_RELEASE, Tag.OpenCL.DEVICE, Tag.OpenCL.GENERIC_SPACE)
+                Set.of(Tag.C11.MO_RELEASE, Tag.OpenCL.WORK_ITEM, Tag.OpenCL.GENERIC_SPACE)
         );
         doTestSpirvStore(
                 Set.of(Tag.Spirv.RELAXED, Tag.Spirv.DEVICE, Tag.Spirv.SC_FUNCTION),
@@ -193,32 +193,32 @@ public class VisitorSpirvOpenCLTest {
     @Test
     public void testSpirvXchg() {
         doTestSpirvXchg(
-                Set.of(Tag.Spirv.RELAXED, Tag.Spirv.WORKGROUP, Tag.Spirv.SC_WORKGROUP),
+                Set.of(Tag.Spirv.RELAXED, Tag.Spirv.WORKGROUP, Tag.Spirv.SC_CROSS_WORKGROUP),
                 Set.of(Tag.C11.MO_RELAXED, Tag.OpenCL.WORK_GROUP, Tag.OpenCL.GLOBAL_SPACE),
                 Set.of(Tag.C11.MO_RELAXED, Tag.OpenCL.WORK_GROUP, Tag.OpenCL.GLOBAL_SPACE)
         );
         doTestSpirvXchg(
-                Set.of(Tag.Spirv.ACQUIRE, Tag.Spirv.WORKGROUP, Tag.Spirv.SC_WORKGROUP),
+                Set.of(Tag.Spirv.ACQUIRE, Tag.Spirv.WORKGROUP, Tag.Spirv.SC_CROSS_WORKGROUP),
                 Set.of(Tag.C11.MO_ACQUIRE, Tag.OpenCL.WORK_GROUP, Tag.OpenCL.GLOBAL_SPACE),
                 Set.of(Tag.C11.MO_RELAXED, Tag.OpenCL.WORK_GROUP, Tag.OpenCL.GLOBAL_SPACE)
         );
         doTestSpirvXchg(
-                Set.of(Tag.Spirv.RELEASE, Tag.Spirv.WORKGROUP, Tag.Spirv.SC_WORKGROUP),
+                Set.of(Tag.Spirv.RELEASE, Tag.Spirv.WORKGROUP, Tag.Spirv.SC_CROSS_WORKGROUP),
                 Set.of(Tag.C11.MO_RELAXED, Tag.OpenCL.WORK_GROUP, Tag.OpenCL.GLOBAL_SPACE),
                 Set.of(Tag.C11.MO_RELEASE, Tag.OpenCL.WORK_GROUP, Tag.OpenCL.GLOBAL_SPACE)
         );
         doTestSpirvXchg(
-                Set.of(Tag.Spirv.ACQ_REL, Tag.Spirv.WORKGROUP, Tag.Spirv.SC_WORKGROUP),
+                Set.of(Tag.Spirv.ACQ_REL, Tag.Spirv.WORKGROUP, Tag.Spirv.SC_CROSS_WORKGROUP),
                 Set.of(Tag.C11.MO_ACQUIRE, Tag.OpenCL.WORK_GROUP, Tag.OpenCL.GLOBAL_SPACE),
                 Set.of(Tag.C11.MO_RELEASE, Tag.OpenCL.WORK_GROUP, Tag.OpenCL.GLOBAL_SPACE)
         );
         doTestSpirvXchg(
-                Set.of(Tag.Spirv.SEQ_CST, Tag.Spirv.WORKGROUP, Tag.Spirv.SC_WORKGROUP),
+                Set.of(Tag.Spirv.SEQ_CST, Tag.Spirv.WORKGROUP, Tag.Spirv.SC_CROSS_WORKGROUP),
                 Set.of(Tag.C11.MO_SC, Tag.OpenCL.WORK_GROUP, Tag.OpenCL.GLOBAL_SPACE),
                 Set.of(Tag.C11.MO_SC, Tag.OpenCL.WORK_GROUP, Tag.OpenCL.GLOBAL_SPACE)
         );
         doTestSpirvXchg(
-                Set.of(Tag.Spirv.RELAXED, Tag.Spirv.DEVICE, Tag.Spirv.SC_WORKGROUP),
+                Set.of(Tag.Spirv.RELAXED, Tag.Spirv.DEVICE, Tag.Spirv.SC_CROSS_WORKGROUP),
                 Set.of(Tag.C11.MO_RELAXED, Tag.OpenCL.DEVICE, Tag.OpenCL.GLOBAL_SPACE),
                 Set.of(Tag.C11.MO_RELAXED, Tag.OpenCL.DEVICE, Tag.OpenCL.GLOBAL_SPACE)
         );
@@ -250,32 +250,32 @@ public class VisitorSpirvOpenCLTest {
     @Test
     public void testSpirvRmw() {
         doTestSpirvRmw(
-                Set.of(Tag.Spirv.RELAXED, Tag.Spirv.WORKGROUP, Tag.Spirv.SC_WORKGROUP),
+                Set.of(Tag.Spirv.RELAXED, Tag.Spirv.WORKGROUP, Tag.Spirv.SC_CROSS_WORKGROUP),
                 Set.of(Tag.C11.MO_RELAXED, Tag.OpenCL.WORK_GROUP, Tag.OpenCL.GLOBAL_SPACE),
                 Set.of(Tag.C11.MO_RELAXED, Tag.OpenCL.WORK_GROUP, Tag.OpenCL.GLOBAL_SPACE)
         );
         doTestSpirvRmw(
-                Set.of(Tag.Spirv.ACQUIRE, Tag.Spirv.WORKGROUP, Tag.Spirv.SC_WORKGROUP),
+                Set.of(Tag.Spirv.ACQUIRE, Tag.Spirv.WORKGROUP, Tag.Spirv.SC_CROSS_WORKGROUP),
                 Set.of(Tag.C11.MO_ACQUIRE, Tag.OpenCL.WORK_GROUP, Tag.OpenCL.GLOBAL_SPACE),
                 Set.of(Tag.C11.MO_RELAXED, Tag.OpenCL.WORK_GROUP, Tag.OpenCL.GLOBAL_SPACE)
         );
         doTestSpirvRmw(
-                Set.of(Tag.Spirv.RELEASE, Tag.Spirv.WORKGROUP, Tag.Spirv.SC_WORKGROUP),
+                Set.of(Tag.Spirv.RELEASE, Tag.Spirv.WORKGROUP, Tag.Spirv.SC_CROSS_WORKGROUP),
                 Set.of(Tag.C11.MO_RELAXED, Tag.OpenCL.WORK_GROUP, Tag.OpenCL.GLOBAL_SPACE),
                 Set.of(Tag.C11.MO_RELEASE, Tag.OpenCL.WORK_GROUP, Tag.OpenCL.GLOBAL_SPACE)
         );
         doTestSpirvRmw(
-                Set.of(Tag.Spirv.ACQ_REL, Tag.Spirv.WORKGROUP, Tag.Spirv.SC_WORKGROUP),
+                Set.of(Tag.Spirv.ACQ_REL, Tag.Spirv.WORKGROUP, Tag.Spirv.SC_CROSS_WORKGROUP),
                 Set.of(Tag.C11.MO_ACQUIRE, Tag.OpenCL.WORK_GROUP, Tag.OpenCL.GLOBAL_SPACE),
                 Set.of(Tag.C11.MO_RELEASE, Tag.OpenCL.WORK_GROUP, Tag.OpenCL.GLOBAL_SPACE)
         );
         doTestSpirvRmw(
-                Set.of(Tag.Spirv.SEQ_CST, Tag.Spirv.WORKGROUP, Tag.Spirv.SC_WORKGROUP),
+                Set.of(Tag.Spirv.SEQ_CST, Tag.Spirv.WORKGROUP, Tag.Spirv.SC_CROSS_WORKGROUP),
                 Set.of(Tag.C11.MO_SC, Tag.OpenCL.WORK_GROUP, Tag.OpenCL.GLOBAL_SPACE),
                 Set.of(Tag.C11.MO_SC, Tag.OpenCL.WORK_GROUP, Tag.OpenCL.GLOBAL_SPACE)
         );
         doTestSpirvRmw(
-                Set.of(Tag.Spirv.RELAXED, Tag.Spirv.DEVICE, Tag.Spirv.SC_WORKGROUP),
+                Set.of(Tag.Spirv.RELAXED, Tag.Spirv.DEVICE, Tag.Spirv.SC_CROSS_WORKGROUP),
                 Set.of(Tag.C11.MO_RELAXED, Tag.OpenCL.DEVICE, Tag.OpenCL.GLOBAL_SPACE),
                 Set.of(Tag.C11.MO_RELAXED, Tag.OpenCL.DEVICE, Tag.OpenCL.GLOBAL_SPACE)
         );
@@ -312,38 +312,38 @@ public class VisitorSpirvOpenCLTest {
                 Tag.Spirv.WORKGROUP,
                 Set.of(Tag.Spirv.RELAXED, Tag.Spirv.SC_WORKGROUP),
                 Set.of(Tag.Spirv.RELAXED, Tag.Spirv.SC_WORKGROUP),
-                Set.of(Tag.OpenCL.WORK_GROUP, Tag.C11.MO_RELAXED, Tag.OpenCL.GLOBAL_SPACE),
-                Set.of(Tag.OpenCL.WORK_GROUP, Tag.C11.MO_RELAXED, Tag.OpenCL.GLOBAL_SPACE));
+                Set.of(Tag.OpenCL.WORK_GROUP, Tag.C11.MO_RELAXED, Tag.OpenCL.LOCAL_SPACE),
+                Set.of(Tag.OpenCL.WORK_GROUP, Tag.C11.MO_RELAXED, Tag.OpenCL.LOCAL_SPACE));
         doTestSpirvCmpXchg(
                 Tag.Spirv.WORKGROUP,
                 Set.of(Tag.Spirv.ACQUIRE, Tag.Spirv.SC_WORKGROUP),
                 Set.of(Tag.Spirv.ACQUIRE, Tag.Spirv.SC_WORKGROUP),
-                Set.of(Tag.OpenCL.WORK_GROUP, Tag.C11.MO_ACQUIRE, Tag.OpenCL.GLOBAL_SPACE),
-                Set.of(Tag.OpenCL.WORK_GROUP, Tag.C11.MO_RELAXED, Tag.OpenCL.GLOBAL_SPACE));
+                Set.of(Tag.OpenCL.WORK_GROUP, Tag.C11.MO_ACQUIRE, Tag.OpenCL.LOCAL_SPACE),
+                Set.of(Tag.OpenCL.WORK_GROUP, Tag.C11.MO_RELAXED, Tag.OpenCL.LOCAL_SPACE));
         doTestSpirvCmpXchg(
                 Tag.Spirv.WORKGROUP,
                 Set.of(Tag.Spirv.RELEASE, Tag.Spirv.SC_WORKGROUP),
                 Set.of(Tag.Spirv.RELAXED, Tag.Spirv.SC_WORKGROUP),
-                Set.of(Tag.OpenCL.WORK_GROUP, Tag.C11.MO_RELAXED, Tag.OpenCL.GLOBAL_SPACE),
-                Set.of(Tag.OpenCL.WORK_GROUP, Tag.C11.MO_RELEASE, Tag.OpenCL.GLOBAL_SPACE));
+                Set.of(Tag.OpenCL.WORK_GROUP, Tag.C11.MO_RELAXED, Tag.OpenCL.LOCAL_SPACE),
+                Set.of(Tag.OpenCL.WORK_GROUP, Tag.C11.MO_RELEASE, Tag.OpenCL.LOCAL_SPACE));
         doTestSpirvCmpXchg(
                 Tag.Spirv.WORKGROUP,
                 Set.of(Tag.Spirv.ACQ_REL, Tag.Spirv.SC_WORKGROUP),
                 Set.of(Tag.Spirv.ACQUIRE, Tag.Spirv.SC_WORKGROUP),
-                Set.of(Tag.OpenCL.WORK_GROUP, Tag.C11.MO_ACQUIRE, Tag.OpenCL.GLOBAL_SPACE),
-                Set.of(Tag.OpenCL.WORK_GROUP, Tag.C11.MO_RELEASE, Tag.OpenCL.GLOBAL_SPACE));
+                Set.of(Tag.OpenCL.WORK_GROUP, Tag.C11.MO_ACQUIRE, Tag.OpenCL.LOCAL_SPACE),
+                Set.of(Tag.OpenCL.WORK_GROUP, Tag.C11.MO_RELEASE, Tag.OpenCL.LOCAL_SPACE));
         doTestSpirvCmpXchg(
                 Tag.Spirv.WORKGROUP,
                 Set.of(Tag.Spirv.SEQ_CST, Tag.Spirv.SC_WORKGROUP),
                 Set.of(Tag.Spirv.ACQUIRE, Tag.Spirv.SC_WORKGROUP),
-                Set.of(Tag.OpenCL.WORK_GROUP, Tag.C11.MO_SC, Tag.OpenCL.GLOBAL_SPACE),
-                Set.of(Tag.OpenCL.WORK_GROUP, Tag.C11.MO_SC, Tag.OpenCL.GLOBAL_SPACE));
+                Set.of(Tag.OpenCL.WORK_GROUP, Tag.C11.MO_SC, Tag.OpenCL.LOCAL_SPACE),
+                Set.of(Tag.OpenCL.WORK_GROUP, Tag.C11.MO_SC, Tag.OpenCL.LOCAL_SPACE));
         doTestSpirvCmpXchg(
                 Tag.Spirv.DEVICE,
                 Set.of(Tag.Spirv.RELAXED, Tag.Spirv.SC_WORKGROUP),
                 Set.of(Tag.Spirv.RELAXED, Tag.Spirv.SC_WORKGROUP),
-                Set.of(Tag.OpenCL.DEVICE, Tag.C11.MO_RELAXED, Tag.OpenCL.GLOBAL_SPACE),
-                Set.of(Tag.OpenCL.DEVICE, Tag.C11.MO_RELAXED, Tag.OpenCL.GLOBAL_SPACE));
+                Set.of(Tag.OpenCL.DEVICE, Tag.C11.MO_RELAXED, Tag.OpenCL.LOCAL_SPACE),
+                Set.of(Tag.OpenCL.DEVICE, Tag.C11.MO_RELAXED, Tag.OpenCL.LOCAL_SPACE));
     }
 
     private void doTestSpirvCmpXchg(String scope, Set<String> eqTags, Set<String> neqTags, Set<String> loadTags, Set<String> storeTags) {

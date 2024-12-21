@@ -1,5 +1,6 @@
 package com.dat3m.dartagnan.parsers.program.visitors.spirv;
 
+import com.dat3m.dartagnan.configuration.Arch;
 import com.dat3m.dartagnan.exception.ParsingException;
 import com.dat3m.dartagnan.expression.Expression;
 import com.dat3m.dartagnan.expression.Type;
@@ -82,9 +83,6 @@ public class VisitorOpsFunctionTest {
         assertEquals(builder.getType("%arr_ptr"), registers.get(2).getType());
 
         assertEquals(function, builder.getExpression("%func"));
-        assertEquals(registers.get(0), builder.getExpression("%param_bool"));
-        assertEquals(registers.get(1), builder.getExpression("%param_int"));
-        assertEquals(registers.get(2), builder.getExpression("%param_arr"));
     }
 
     @Test(expected = ParsingException.class)
@@ -485,6 +483,7 @@ public class VisitorOpsFunctionTest {
     private void visit(String text) {
         builder.getControlFlowBuilder().getOrCreateLabel("%mock_label");
         builder.getControlFlowBuilder().startBlock("%mock_label");
+        builder.setArch(Arch.VULKAN);
         new MockSpirvParser(text).spv().accept(visitor);
     }
 }
