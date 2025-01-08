@@ -181,7 +181,6 @@ public class VisitorOpsControlFlow extends SpirvBaseVisitor<Event> {
 
     @Override
     public Event visitOpLifetimeStart(SpirvParser.OpLifetimeStartContext ctx) {
-        // Declare that an object was not defined before this instruction.
         String pointerId = ctx.pointer().getText();
         int size = Integer.parseInt(ctx.sizeLiteralInteger().getText());
         Expression pointerExp = builder.getExpression(pointerId);
@@ -199,15 +198,18 @@ public class VisitorOpsControlFlow extends SpirvBaseVisitor<Event> {
 
     @Override
     public Event visitOpLifetimeStop(SpirvParser.OpLifetimeStopContext ctx) {
-        // Declare that an object is not used after this instruction.
         String pointerId = ctx.pointer().getText();
-        Integer size = Integer.parseInt(ctx.sizeLiteralInteger().getText());
+        int size = Integer.parseInt(ctx.sizeLiteralInteger().getText());
         Expression pointerExp = builder.getExpression(pointerId);
         if (!(pointerExp instanceof ScopedPointerVariable pointerVariable)
                 || !pointerVariable.getScopeId().equals(Tag.Spirv.SC_FUNCTION)) {
             throw new ParsingException("Lifetime stop can only be applied to a pointer with Function storage class: '%s'", pointerId);
         }
-        // TODO: Remove the variable from the program?
+        int pointerSize = pointerVariable.getAddress().getKnownSize();
+        if (pointerSize != size) {
+            throw new ParsingException("Lifetime stop size does not match the size of the pointer: '%s'", pointerId);
+        }
+        builder.removeExpression(pointerId);
         return null;
     }
 

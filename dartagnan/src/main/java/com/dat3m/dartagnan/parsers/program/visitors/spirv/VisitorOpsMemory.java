@@ -47,7 +47,7 @@ public class VisitorOpsMemory extends SpirvBaseVisitor<Event> {
     @Override
     public Event visitOpStore(SpirvParser.OpStoreContext ctx) {
         Expression pointer = builder.getExpression(ctx.pointer().getText());
-        Expression value = builder.getPossibleExpression(ctx.object().getText(), pointer.getType());
+        Expression value = builder.getExpression(ctx.object().getText());
         if (pointer instanceof ScopedPointerVariable pointerVariable
                 && value instanceof ScopedPointerVariable valueVariable) {
             pointerVariable.setAddress(valueVariable.getAddress());
