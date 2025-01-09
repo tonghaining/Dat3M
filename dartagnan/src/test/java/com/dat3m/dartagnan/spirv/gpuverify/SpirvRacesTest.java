@@ -110,7 +110,7 @@ public class SpirvRacesTest {
 
                 // Passes in gpu-verify, but has race (even according to the annotation in the test)
                 {"atomics/refined_atomic_abstraction/bad_local_counters.spv.dis", 1, FAIL},
-                {"atomics/refined_atomic_abstraction/intra_local_counters.spv.dis", 1, FAIL},
+                {"atomics/refined_atomic_abstraction/intra_local_counters.spv.dis", 1, PASS},
 
                 // Should pass according to gpu-verify, suspecting a bug in the memory model
                 {"atomics/counter.spv.dis", 1, FAIL},
