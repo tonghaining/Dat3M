@@ -12,6 +12,7 @@ import com.dat3m.dartagnan.parsers.SpirvParser;
 import com.dat3m.dartagnan.parsers.program.visitors.spirv.builders.ProgramBuilder;
 import com.dat3m.dartagnan.program.Register;
 import com.dat3m.dartagnan.program.event.Tag;
+import com.dat3m.dartagnan.program.event.core.Local;
 import com.dat3m.dartagnan.program.memory.MemoryObject;
 import com.dat3m.dartagnan.program.memory.ScopedPointerVariable;
 import scala.Int;
@@ -20,7 +21,6 @@ import java.util.Set;
 
 public class VisitorOpsConversion extends SpirvBaseVisitor<Void> {
 
-    private static final TypeFactory types = TypeFactory.getInstance();
     private static final ExpressionFactory expressions = ExpressionFactory.getInstance();
     private final ProgramBuilder builder;
 
@@ -41,9 +41,10 @@ public class VisitorOpsConversion extends SpirvBaseVisitor<Void> {
             if (!pointerType.getScopeId().equals(scopedPointerVariable.getScopeId())) {
                 throw new ParsingException("Storage class mismatch in OpBitcast between '%s' and '%s'", typeId, operand);
             }
-            ScopedPointerVariable pointer = expressions.makeScopedPointerVariable(
-                    id, pointerType.getScopeId(), pointerType.getPointedType(), scopedPointerVariable.getAddress());
-            builder.addExpression(id, pointer);
+            Expression convertedPointer = expressions.makeCast(operandExpr, pointerType.getPointedType());
+            Register reg = builder.addRegister(id, convertedPointer.getType());
+            Local local = new Local(reg, convertedPointer);
+            builder.addEvent(local);
             return null;
         } else {
             // TODO: Add support for scalar or vector of numerical-type bitcasts
@@ -55,18 +56,14 @@ public class VisitorOpsConversion extends SpirvBaseVisitor<Void> {
     public Void visitOpConvertPtrToU(SpirvParser.OpConvertPtrToUContext ctx) {
         String id = ctx.idResult().getText();
         String typeId = ctx.idResultType().getText();
-        Expression pointerExpr = builder.getExpression(ctx.pointer().getText());
-        String scopeId;
-        if (pointerExpr.getType() instanceof ScopedPointerType pointerType) {
-            scopeId = pointerType.getScopeId();
-        } else if (pointerExpr instanceof ScopedPointerVariable scopedPointerVariable) {
-            scopeId = scopedPointerVariable.getScopeId();
-        } else {
-            throw new ParsingException("Type '%s' is not a pointer type", pointerExpr);
+        if (!(builder.getType(typeId) instanceof IntegerType)) {
+            throw new ParsingException("Type '%s' is not an integer type", typeId);
         }
-        Type type = builder.getType(typeId);
-        ScopedPointerVariable pointer = builder.allocateScopedPointerVariable(id, pointerExpr, scopeId, type);
-        builder.addExpression(id, pointer);
+        Expression pointerExpr = builder.getExpression(ctx.pointer().getText());
+        Expression convertedPointer = expressions.makeCast(pointerExpr, builder.getType(typeId), false);
+        Register reg = builder.addRegister(id, convertedPointer.getType());
+        Local local = new Local(reg, convertedPointer);
+        builder.addEvent(local);
         return null;
     }
 

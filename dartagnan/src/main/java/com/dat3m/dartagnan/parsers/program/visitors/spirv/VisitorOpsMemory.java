@@ -187,11 +187,7 @@ public class VisitorOpsMemory extends SpirvBaseVisitor<Event> {
         Expression source = builder.getExpression(ctx.sourceIdRef().getText());
         Expression size = builder.getExpression(ctx.sizeIdRef().getText());
 
-        if (!(target instanceof ScopedPointerVariable) || !(source instanceof ScopedPointerVariable sourcePointer)) {
-            throw new ParsingException("Type '%s' is not a pointer type", ctx.targetIdRef().getText());
-        }
-
-        Register sourceRegister = builder.addRegister(ctx.sourceIdRef().getText() + "_copy_source", sourcePointer.getInnerType());
+        Register sourceRegister = builder.addRegister(ctx.sourceIdRef().getText() + "_copy_source", source.getType());
         Event load = EventFactory.newLoad(sourceRegister, source);
         builder.addEvent(load);
 
@@ -202,7 +198,7 @@ public class VisitorOpsMemory extends SpirvBaseVisitor<Event> {
                 throw new ParsingException("Size must be a positive integer value");
             }
             int sizeMask = (1 << sizeValue) - 1;
-            sourceMasked = expressions.makeIntAnd(sourceRegister, expressions.makeValue(sizeMask, (IntegerType) sourcePointer.getInnerType()));
+            sourceMasked = expressions.makeIntAnd(sourceRegister, expressions.makeValue(sizeMask, (IntegerType) source.getType()));
         } else if (size.getType() instanceof IntegerType sizeType) {
             Expression sizeMask = expressions.makeSub(expressions.makeLshift(size, expressions.makeValue(1, sizeType)), expressions.makeOne(sizeType));
             sourceMasked = expressions.makeIntAnd(sourceRegister, sizeMask);
@@ -210,7 +206,7 @@ public class VisitorOpsMemory extends SpirvBaseVisitor<Event> {
             throw new ParsingException("Size must be an integer value");
         }
 
-        Register targetRegister = builder.addRegister(ctx.sourceIdRef().getText() + "_copy_target", sourcePointer.getInnerType());
+        Register targetRegister = builder.addRegister(ctx.sourceIdRef().getText() + "_copy_target", source.getType());
         Event local = EventFactory.newLocal(targetRegister, sourceMasked);
         Event store = EventFactory.newStore(target, targetRegister);
 

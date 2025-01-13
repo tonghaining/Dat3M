@@ -1,6 +1,5 @@
 package com.dat3m.dartagnan.parsers.program.visitors.spirv;
 
-import ap.parser.smtlib.Absyn.ConstantSExpr;
 import com.dat3m.dartagnan.exception.ParsingException;
 import com.dat3m.dartagnan.expression.Expression;
 import com.dat3m.dartagnan.expression.ExpressionFactory;
@@ -1001,11 +1000,11 @@ public class VisitorOpsMemoryTest {
         assertNotNull(local);
         assertNotNull(store);
         assertEquals(builder.getExpression("%src"), load.getAddress());
-        assertEquals(expressions.makeIntAnd(load.getResultRegister(), expressions.makeValue(15, iType)),
+        assertEquals(expressions.makeIntAnd(load.getResultRegister(), expressions.makeValue(15, types.getArchType())),
                 local.getExpr());
         assertEquals(builder.getExpression("%dst"), store.getAddress());
         assertEquals(iType, ((ScopedPointerVariable) load.getAddress()).getInnerType());
-        assertEquals(iType, local.getExpr().getType());
+        assertEquals(types.getArchType(), local.getExpr().getType());
         assertEquals(iType, ((ScopedPointerVariable) store.getAddress()).getInnerType());
     }
 

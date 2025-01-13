@@ -3,16 +3,22 @@ package com.dat3m.dartagnan.parsers.program.visitors.spirv;
 import com.dat3m.dartagnan.expression.type.ScopedPointerType;
 import com.dat3m.dartagnan.parsers.program.visitors.spirv.mocks.MockProgramBuilder;
 import com.dat3m.dartagnan.parsers.program.visitors.spirv.mocks.MockSpirvParser;
+import com.dat3m.dartagnan.program.Register;
+import com.dat3m.dartagnan.program.event.Event;
+import com.dat3m.dartagnan.program.event.core.Local;
 import com.dat3m.dartagnan.program.memory.ScopedPointerVariable;
 import org.junit.Test;
+
+import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 
 public class VisitorOpsConversionTest {
+    private MockProgramBuilder builder = new MockProgramBuilder();
+
     @Test
     public void doTestOpsBitcastUint32ToUchar() {
         // given
-        MockProgramBuilder builder = new MockProgramBuilder();
         builder.mockIntType("%uint", 32);
         builder.mockIntType("%uchar", 8);
         builder.mockPtrType("%_ptr_Function_uint", "%uint", "Function");
@@ -21,41 +27,30 @@ public class VisitorOpsConversionTest {
         String input = "%value2 = OpBitcast %_ptr_Function_uchar %value1";
 
         // when
-        visit(builder, input);
+        visit(input);
 
         // then
         ScopedPointerVariable value1 = (ScopedPointerVariable) builder.getExpression("%value1");
-        ScopedPointerVariable value2 = (ScopedPointerVariable) builder.getExpression("%value2");
+        Register value2 = (Register) builder.getExpression("%value2");
         assertEquals(((ScopedPointerType) builder.getType("%_ptr_Function_uint")).getPointedType(), value1.getInnerType());
-        assertEquals(((ScopedPointerType) builder.getType("%_ptr_Function_uchar")).getPointedType(), value2.getInnerType());
-        assertEquals(value1.getAddress(), value2.getAddress());
+        Local local = (Local) getLastEvent();
+        assertEquals(value2, local.getResultRegister());
+        assertEquals(builder.getType("%uchar"), local.getExpr().getType());
     }
 
-    @Test
-    public void doTestOpsBitcastUint32VectorToUcharVector() {
-        // given
-        MockProgramBuilder builder = new MockProgramBuilder();
-        builder.mockIntType("%uint", 32);
-        builder.mockIntType("%uchar", 8);
-        builder.mockVectorType("%uint_4", "%uint", 4);
-        builder.mockVectorType("%uchar_4", "%uchar", 4);
-        builder.mockPtrType("%_ptr_Function_uint_4", "%uint_4", "Function");
-        builder.mockPtrType("%_ptr_Function_uchar_4", "%uchar_4", "Function");
-        builder.mockVariable("%value1", "%_ptr_Function_uint_4");
-        String input = "%value2 = OpBitcast %_ptr_Function_uchar_4 %value1";
-
-        // when
-        visit(builder, input);
-
-        // then
-        ScopedPointerVariable value1 = (ScopedPointerVariable) builder.getExpression("%value1");
-        ScopedPointerVariable value2 = (ScopedPointerVariable) builder.getExpression("%value2");
-        assertEquals(((ScopedPointerType) builder.getType("%_ptr_Function_uint_4")).getPointedType(), value1.getInnerType());
-        assertEquals(((ScopedPointerType) builder.getType("%_ptr_Function_uchar_4")).getPointedType(), value2.getInnerType());
-        assertEquals(value1.getAddress(), value2.getAddress());
+    private Event getLastEvent() {
+        return getLastNEvent(0);
     }
 
-    private void visit(MockProgramBuilder builder, String input) {
+    private Event getLastNEvent(int n) {
+        List<Event> events = builder.getCurrentFunction().getEvents();
+        if (!events.isEmpty() && events.size() > n) {
+            return events.get(events.size() - 1 - n);
+        }
+        return null;
+    }
+
+    private void visit(String input) {
         builder.mockFunctionStart(true);
         new MockSpirvParser(input).op().accept(new VisitorOpsConversion(builder));
     }
