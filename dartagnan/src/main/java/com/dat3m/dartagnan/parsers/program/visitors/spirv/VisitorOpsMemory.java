@@ -13,9 +13,6 @@ import com.dat3m.dartagnan.parsers.program.visitors.spirv.helpers.HelperTypes;
 import com.dat3m.dartagnan.parsers.program.visitors.spirv.helpers.HelperInputs;
 import com.dat3m.dartagnan.parsers.program.visitors.spirv.helpers.HelperTags;
 import com.dat3m.dartagnan.parsers.program.visitors.spirv.builders.ProgramBuilder;
-import com.dat3m.dartagnan.program.event.core.Alloc;
-import com.dat3m.dartagnan.program.memory.Memory;
-import com.dat3m.dartagnan.program.memory.MemoryObject;
 import com.dat3m.dartagnan.program.memory.ScopedPointer;
 import com.dat3m.dartagnan.program.memory.ScopedPointerVariable;
 import com.dat3m.dartagnan.expression.type.ScopedPointerType;
@@ -48,11 +45,6 @@ public class VisitorOpsMemory extends SpirvBaseVisitor<Event> {
     public Event visitOpStore(SpirvParser.OpStoreContext ctx) {
         Expression pointer = builder.getExpression(ctx.pointer().getText());
         Expression value = builder.getExpression(ctx.object().getText());
-        if (pointer instanceof ScopedPointerVariable pointerVariable
-                && value instanceof ScopedPointerVariable valueVariable) {
-            pointerVariable.setAddress(valueVariable.getAddress());
-            return null;
-        }
         Event event = EventFactory.newStore(pointer, value);
         Set<String> tags = parseMemoryAccessTags(ctx.memoryAccess());
         if (!tags.contains(Tag.Spirv.MEM_VISIBLE)) {
@@ -84,12 +76,6 @@ public class VisitorOpsMemory extends SpirvBaseVisitor<Event> {
             }
             Expression arrayRegister = expressions.makeArray(arrayType.getElementType(), registers, true);
             builder.addExpression(resultId, arrayRegister);
-        } else if (builder.getType(resultType) instanceof ScopedPointerType pointerType
-                && pointer instanceof ScopedPointerVariable scopedPointerVariable) {
-            ScopedPointerVariable pointerVariable = expressions.makeScopedPointerVariable(
-                    resultId, pointerType.getScopeId(), pointerType.getPointedType(), scopedPointerVariable.getAddress());
-            builder.addExpression(resultId, pointerVariable);
-            return null;
         } else {
             Register register = builder.addRegister(resultId, resultType);
             events.add(EventFactory.newLoad(register, pointer));
