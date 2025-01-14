@@ -38,6 +38,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import static com.dat3m.dartagnan.configuration.OptionNames.*;
 import static com.dat3m.dartagnan.program.event.Tag.INIT;
@@ -311,6 +312,13 @@ public final class EncodingContext {
         if (formula instanceof BitvectorFormula f) {
             BitvectorFormulaManager bvmgr = formulaManager.getBitvectorFormulaManager();
             return bvmgr.equal(f, bvmgr.makeBitvector(bvmgr.getLength(f), 0));
+        }
+        if (formula instanceof TupleFormula f) {
+            List<Formula> zeros = f.getElements().stream()
+                    .map(element -> formulaManager.getIntegerFormulaManager().makeNumber(0))
+                    .collect(Collectors.toList());
+            TupleFormula zeroTuple = tupleFormulaManager.makeTuple(zeros);
+            return tupleFormulaManager.equal(f, zeroTuple);
         }
         throw new UnsupportedOperationException(String.format("Unknown type for equalZero(%s).", formula));
     }
