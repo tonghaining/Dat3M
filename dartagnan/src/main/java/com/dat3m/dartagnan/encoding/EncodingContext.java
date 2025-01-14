@@ -6,10 +6,7 @@ import com.dat3m.dartagnan.encoding.formulas.TupleFormulaManager;
 import com.dat3m.dartagnan.expression.Expression;
 import com.dat3m.dartagnan.expression.Type;
 import com.dat3m.dartagnan.expression.integers.IntCmpOp;
-import com.dat3m.dartagnan.expression.type.AggregateType;
-import com.dat3m.dartagnan.expression.type.BooleanType;
-import com.dat3m.dartagnan.expression.type.IntegerType;
-import com.dat3m.dartagnan.expression.type.TypeFactory;
+import com.dat3m.dartagnan.expression.type.*;
 import com.dat3m.dartagnan.program.Register;
 import com.dat3m.dartagnan.program.analysis.BranchEquivalence;
 import com.dat3m.dartagnan.program.analysis.ExecutionAnalysis;
@@ -242,6 +239,9 @@ public final class EncodingContext {
         // For example, when encoding rf(w, r), we always want to convert the store value type to the read value type
         // for otherwise, we might get an under-constrained value for val(r) (e.g., its upper bits might be unconstrained,
         // if we truncate it to smaller size of the store value).
+        if ((left instanceof TupleFormula) != (right instanceof TupleFormula)) {
+            return booleanFormulaManager.makeFalse();
+        }
         if (left instanceof IntegerFormula l) {
             IntegerFormulaManager imgr = formulaManager.getIntegerFormulaManager();
             return imgr.equal(l, toInteger(right));
@@ -459,6 +459,15 @@ public final class EncodingContext {
             final List<Formula> elements = new ArrayList<>();
             for (Type eleType : primitives.values()) {
                 elements.add(makeVariable(name + "@" + elements.size(), eleType));
+            }
+            return tupleFormulaManager.makeTuple(elements);
+        }
+        if (type instanceof ArrayType arrayType) {
+            final Type elementType = arrayType.getElementType();
+            final int size = arrayType.getNumElements();
+            final List<Formula> elements = new ArrayList<>();
+            for (int i = 0; i < size; i++) {
+                elements.add(makeVariable(name + "@" + i, elementType));
             }
             return tupleFormulaManager.makeTuple(elements);
         }
