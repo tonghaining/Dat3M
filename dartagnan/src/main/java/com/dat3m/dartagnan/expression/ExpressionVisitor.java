@@ -63,7 +63,6 @@ public interface ExpressionVisitor<TRet> {
     default TRet visitRegister(Register reg) { return visitLeafExpression(reg); }
     default TRet visitFunction(Function function) { return visitLeafExpression(function); }
     default TRet visitMemoryObject(MemoryObject memObj) { return visitLeafExpression(memObj); }
-    default TRet visitScopedPointerVariable(ScopedPointerVariable pointer) { return visitLeafExpression(pointer); }
     default TRet visitFinalMemoryValue(FinalMemoryValue val) { return visitLeafExpression(val); }
     default TRet visitNonDetValue(NonDetValue nonDet) { return visitLeafExpression(nonDet); }
 

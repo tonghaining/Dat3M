@@ -53,11 +53,6 @@ public class RemoveUnusedMemory implements ProgramProcessor {
         }
 
         @Override
-        public Expression visitScopedPointerVariable(ScopedPointerVariable scopedPointerVariable) {
-            return scopedPointerVariable.getAddress().accept(this);
-        }
-
-        @Override
         public Expression visitFinalMemoryValue(FinalMemoryValue val) {
             memoryObjects.add(val.getMemoryObject());
             return val;

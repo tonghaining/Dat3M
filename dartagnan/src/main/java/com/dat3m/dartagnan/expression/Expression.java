@@ -41,11 +41,6 @@ public interface Expression {
             }
 
             @Override
-            public MemoryObject visitScopedPointerVariable(ScopedPointerVariable scopedPointerVariable) {
-                return visitMemoryObject(scopedPointerVariable.getAddress());
-            }
-
-            @Override
             public Expression visitFinalMemoryValue(FinalMemoryValue val) {
                 objects.add(val.getMemoryObject());
                 return val;

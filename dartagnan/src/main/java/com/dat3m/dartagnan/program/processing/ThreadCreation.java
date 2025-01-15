@@ -358,11 +358,6 @@ public class ThreadCreation implements ProgramProcessor {
                 }
                 return global2ThreadLocal.getOrDefault(memObj, memObj);
             }
-
-            @Override
-            public Expression visitScopedPointerVariable(ScopedPointerVariable pointer) {
-                return pointer.getAddress().accept(this);
-            }
         };
 
         thread.getEvents(RegReader.class).forEach(reader -> reader.transformExpressions(transformer));

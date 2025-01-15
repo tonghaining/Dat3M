@@ -386,11 +386,6 @@ public class FieldSensitiveAndersen implements AliasAnalysis {
         }
 
         @Override
-        public Result visitScopedPointerVariable(ScopedPointerVariable a) {
-            return a.getAddress().accept(this);
-        }
-
-        @Override
         public Result visitRegister(Register r) {
             register.add(r);
             return new Result(null, r, BigInteger.ZERO, 0);

@@ -146,11 +146,6 @@ public class RemoveDeadNullChecks implements FunctionProcessor {
         }
 
         @Override
-        public Sign visitScopedPointerVariable(ScopedPointerVariable scopedPointerVariable) {
-            return scopedPointerVariable.getAddress().accept(this);
-        }
-
-        @Override
         public Sign visitFunction(Function function) {
             return Sign.POS;
         }

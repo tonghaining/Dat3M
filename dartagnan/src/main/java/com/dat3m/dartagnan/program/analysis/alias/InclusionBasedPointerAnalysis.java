@@ -1027,11 +1027,6 @@ public class InclusionBasedPointerAnalysis implements AliasAnalysis {
         }
 
         @Override
-        public Result visitScopedPointerVariable(ScopedPointerVariable v) {
-            return v.getAddress().accept(this);
-        }
-
-        @Override
         public Result visitRegister(Register r) {
             register.add(r);
             return new Result(null, r, BigInteger.ZERO, List.of());

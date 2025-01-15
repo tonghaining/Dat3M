@@ -331,11 +331,6 @@ class ExpressionEncoder implements ExpressionVisitor<Formula> {
     }
 
     @Override
-    public Formula visitScopedPointerVariable(ScopedPointerVariable scopedPointerVariable) {
-        return scopedPointerVariable.getAddress().accept(this);
-    }
-
-    @Override
     public Formula visitFinalMemoryValue(FinalMemoryValue val) {
         checkState(event == null, "Cannot evaluate final memory value of %s at event %s.", val, event);
         int size = types.getMemorySizeInBits(val.getType());
