@@ -33,7 +33,7 @@ public class VisitorOpsAnnotation extends SpirvBaseVisitor<Void> {
             case BINDING, SPEC_ID -> {
                 // Skip, defines the order of pointers passed by the host
             }
-            case ARRAY_STRIDE, BLOCK, BUFFER_BLOCK, COHERENT, DESCRIPTOR_SET, OFFSET, NO_CONTRACTION, NO_PERSPECTIVE, NON_WRITABLE,
+            case ARRAY_STRIDE, BLOCK, BUFFER_BLOCK, COHERENT, DESCRIPTOR_SET, NO_CONTRACTION, NO_PERSPECTIVE, NON_WRITABLE,
                  ALIGNMENT, CONSTANT, FUNC_PARAM_ATTR, LINKAGE_ATTRIBUTES -> {
                 // TODO: Implementation
             }

@@ -166,11 +166,6 @@ public class VisitorOpsControlFlow extends SpirvBaseVisitor<Event> {
         if (!types.getVoidType().equals(returnType)) {
             String valueId = ctx.valueIdRef().getText();
             Expression expression = builder.getExpression(valueId);
-            if (expression instanceof ScopedPointerVariable) {
-                Register register = builder.addRegister(valueId + "_res", returnType);
-                builder.addEvent(EventFactory.newLocal(register, expression));
-                expression = register;
-            }
             Event event = newFunctionReturn(expression);
             builder.addEvent(event);
             return cfBuilder.endBlock(event);
@@ -189,8 +184,8 @@ public class VisitorOpsControlFlow extends SpirvBaseVisitor<Event> {
             throw new ParsingException("Lifetime start can only be applied to a pointer with Function storage class: '%s'", pointerId);
         }
         Register register = builder.addRegister(pointerId + "_alloc", pointerVariable.getType());
-        IntegerType pointerIntegerType = TypeFactory.getInstance().getArchType();
-        Expression sizeExpression = new IntLiteral(pointerIntegerType, new BigInteger(Long.toString(size)));
+        IntegerType pointerIntegerType = types.getArchType();
+        Expression sizeExpression = expressions.makeValue(new BigInteger(Long.toString(size)), pointerIntegerType);
         Alloc alloc = EventFactory.newAlloc(register, pointerExp.getType(), sizeExpression, false, false);
         builder.addEvent(alloc);
         return null;

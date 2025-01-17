@@ -1,12 +1,12 @@
 package com.dat3m.dartagnan.parsers.program.visitors.spirv;
 
 import com.dat3m.dartagnan.exception.ParsingException;
-import com.dat3m.dartagnan.expression.Expression;
 import com.dat3m.dartagnan.parsers.SpirvBaseVisitor;
 import com.dat3m.dartagnan.parsers.SpirvParser;
 import com.dat3m.dartagnan.parsers.program.visitors.spirv.extenstions.VisitorExtension;
 import com.dat3m.dartagnan.parsers.program.visitors.spirv.extenstions.VisitorExtensionClspvReflection;
 import com.dat3m.dartagnan.parsers.program.visitors.spirv.builders.ProgramBuilder;
+import com.dat3m.dartagnan.parsers.program.visitors.spirv.extenstions.VisitorExtensionOpenClStd;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.TerminalNode;
 
@@ -18,14 +18,13 @@ public class VisitorOpsExtension extends SpirvBaseVisitor<Void> {
 
     private final Map<String, VisitorExtension<?>> availableVisitors = new HashMap<>();
     private final Map<String, String> visitorIds = new HashMap<>();
-    private final ProgramBuilder builder;
 
     public VisitorOpsExtension(ProgramBuilder builder) {
-        this.builder = builder;
         VisitorExtensionClspvReflection clspv = new VisitorExtensionClspvReflection(builder);
+        VisitorExtensionOpenClStd opencl = new VisitorExtensionOpenClStd(builder);
         this.availableVisitors.put("NonSemantic.ClspvReflection.5", clspv);
         this.availableVisitors.put("NonSemantic.ClspvReflection.6", clspv);
-        this.availableVisitors.put("OpenCL.std", clspv); // TODO: add OpenCL Reflection?
+        this.availableVisitors.put("OpenCL.std", opencl);
     }
 
     @Override
@@ -43,18 +42,13 @@ public class VisitorOpsExtension extends SpirvBaseVisitor<Void> {
 
     @Override
     public Void visitOpExtInst(SpirvParser.OpExtInstContext ctx) {
-        String result = ctx.idResult().getText();
         String id = ctx.set().getText();
         String name = visitorIds.get(id);
         if (name != null) {
             VisitorExtension<?> visitor = availableVisitors.get(name);
             String instruction = getFirstTokenText(ctx.instruction());
             if (visitor.getSupportedInstructions().contains(instruction)) {
-                Object object = ctx.accept(visitor);
-                if (object != null) {
-                    Expression expr = (Expression) object;
-                    builder.addExpression(result, expr);
-                }
+                ctx.accept(visitor);
                 return null;
             }
             throw new ParsingException("External instruction '%s' is not implemented for '%s'", instruction, name);
