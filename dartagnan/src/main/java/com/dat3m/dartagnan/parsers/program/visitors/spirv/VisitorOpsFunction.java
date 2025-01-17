@@ -1,7 +1,9 @@
 package com.dat3m.dartagnan.parsers.program.visitors.spirv;
 
+import com.dat3m.dartagnan.configuration.Arch;
 import com.dat3m.dartagnan.exception.ParsingException;
 import com.dat3m.dartagnan.expression.Expression;
+import com.dat3m.dartagnan.expression.ExpressionFactory;
 import com.dat3m.dartagnan.expression.Type;
 import com.dat3m.dartagnan.expression.type.FunctionType;
 import com.dat3m.dartagnan.expression.type.ScopedPointerType;
@@ -10,10 +12,14 @@ import com.dat3m.dartagnan.expression.type.VoidType;
 import com.dat3m.dartagnan.parsers.SpirvBaseVisitor;
 import com.dat3m.dartagnan.parsers.SpirvParser;
 import com.dat3m.dartagnan.parsers.program.visitors.spirv.builders.ProgramBuilder;
+import com.dat3m.dartagnan.parsers.program.visitors.spirv.helpers.HelperInputs;
+import com.dat3m.dartagnan.parsers.program.visitors.spirv.helpers.HelperTags;
 import com.dat3m.dartagnan.program.event.functions.FunctionCall;
+import com.dat3m.dartagnan.program.memory.MemoryObject;
 import com.dat3m.dartagnan.program.memory.ScopedPointer;
 import com.dat3m.dartagnan.program.Function;
 import com.dat3m.dartagnan.program.Register;
+import com.dat3m.dartagnan.program.memory.ScopedPointerVariable;
 
 import java.util.*;
 import java.util.stream.IntStream;
@@ -23,6 +29,7 @@ import static com.dat3m.dartagnan.program.event.EventFactory.newVoidFunctionCall
 
 public class VisitorOpsFunction extends SpirvBaseVisitor<Void> {
 
+    private static final ExpressionFactory expressions = ExpressionFactory.getInstance();
     private static final TypeFactory types = TypeFactory.getInstance();
     private final ProgramBuilder builder;
     private String currentId;
@@ -30,8 +37,12 @@ public class VisitorOpsFunction extends SpirvBaseVisitor<Void> {
     private List<String> currentArgs;
     private int nextFunctionId = 0;
 
+    private boolean isEntryPoint = false;
+
     final Map<String, Function> forwardFunctions = new HashMap<>();
     final Map<String, Set<FunctionCall>> forwardCalls = new HashMap<>();
+
+
 
     public VisitorOpsFunction(ProgramBuilder builder) {
         this.builder = builder;
@@ -54,6 +65,9 @@ public class VisitorOpsFunction extends SpirvBaseVisitor<Void> {
             currentId = id;
             currentType = fType;
             currentArgs = new ArrayList<>();
+            if (id.equals(builder.getEntryPointId())) {
+                isEntryPoint = true;
+            }
             if (currentType.getParameterTypes().isEmpty()) {
                 createFunction();
             }
@@ -83,6 +97,24 @@ public class VisitorOpsFunction extends SpirvBaseVisitor<Void> {
             throw new ParsingException("Duplicated parameter id '%s' in function '%s'", id, currentId);
         }
         currentArgs.add(id);
+        if (type instanceof ScopedPointerType pointerType) {
+            String storageClass = pointerType.getScopeId();
+            Expression value;
+            if (builder.hasInput(id) && isEntryPoint) {
+                Type runTimeArrayType = builder.getInput(id).getType();
+                Expression arrayValue = HelperInputs.castInput(id, runTimeArrayType, builder.getInput(id));
+                ScopedPointerVariable arrayPointer = builder.allocateScopedPointerVariable(id + "_input", arrayValue, storageClass, runTimeArrayType);
+                value = expressions.makeGetElementPointer(type, arrayPointer, List.of(expressions.makeValue(0, types.getArchType())));
+            } else {
+                value = builder.makeUndefinedValue(type);
+            }
+            MemoryObject memObj = builder.allocateVariable(id, types.getMemorySizeInBytes(pointerType.getPointedType()));
+            memObj.setIsThreadLocal(false);
+            HelperTags.addFeatureTags(memObj, storageClass, Arch.OPENCL);
+            memObj.setInitialValue(0, value);
+            ScopedPointerVariable pointer = new ScopedPointerVariable(id, storageClass, pointerType, memObj);
+            builder.addExpression(id, pointer);
+        }
         if (currentArgs.size() == currentType.getParameterTypes().size()) {
             createFunction();
         }
@@ -91,6 +123,7 @@ public class VisitorOpsFunction extends SpirvBaseVisitor<Void> {
 
     @Override
     public Void visitOpFunctionEnd(SpirvParser.OpFunctionEndContext ctx) {
+        isEntryPoint = false;
         builder.endCurrentFunction();
         return null;
     }

@@ -8,6 +8,7 @@ import com.dat3m.dartagnan.expression.Type;
 import com.dat3m.dartagnan.expression.type.FunctionType;
 import com.dat3m.dartagnan.expression.type.TypeFactory;
 import com.dat3m.dartagnan.parsers.program.visitors.spirv.decorations.BuiltIn;
+import com.dat3m.dartagnan.parsers.program.visitors.spirv.helpers.HelperInputs;
 import com.dat3m.dartagnan.parsers.program.visitors.spirv.helpers.HelperTags;
 import com.dat3m.dartagnan.parsers.program.visitors.spirv.utils.ThreadCreator;
 import com.dat3m.dartagnan.parsers.program.visitors.spirv.utils.ThreadGrid;
@@ -85,6 +86,10 @@ public class ProgramBuilder {
             throw new ParsingException("Multiple entry points are not supported");
         }
         entryPointId = id;
+    }
+
+    public String getEntryPointId() {
+        return entryPointId;
     }
 
     public void setArch(Arch arch) {
@@ -244,15 +249,7 @@ public class ProgramBuilder {
         }
         addExpression(function.getName(), function);
         for (Register register : function.getParameterRegisters()) {
-            if (register.getType() instanceof ScopedPointerType pointerType) {
-                String storageClass = pointerType.getScopeId();
-                MemoryObject memObj = allocateVariable(register.getName(),
-                        TypeFactory.getInstance().getMemorySizeInBytes(pointerType.getPointedType()));
-                memObj.setIsThreadLocal(false);
-                HelperTags.addFeatureTags(memObj, storageClass, arch);
-                ScopedPointerVariable pointer = new ScopedPointerVariable(register.getName(), storageClass, pointerType, memObj);
-                addExpression(register.getName(), pointer);
-            } else {
+            if (!(register.getType() instanceof ScopedPointerType)) {
                 addExpression(register.getName(), register);
             }
         }
