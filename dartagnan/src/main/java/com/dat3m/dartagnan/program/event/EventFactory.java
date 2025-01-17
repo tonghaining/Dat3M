@@ -243,7 +243,7 @@ public class EventFactory {
             CondJump jump = newJump(cond, cases.get(caseExpr));
             jumps.add(jump);
         }
-        CondJump defaultJump = newJump(defaultCond, defaultTarget);
+        CondJump defaultJump = newJump(expressions.makeNot(defaultCond), defaultTarget);
         jumps.add(defaultJump);
         return jumps;
     }
