@@ -99,6 +99,10 @@ public class ProgramBuilder {
         this.arch = arch;
     }
 
+    public Arch getArch() {
+        return arch;
+    }
+
     public void setSpecification(Program.SpecificationType type, Expression condition) {
         if (program.getSpecification() != null) {
             throw new ParsingException("Attempt to override program specification");

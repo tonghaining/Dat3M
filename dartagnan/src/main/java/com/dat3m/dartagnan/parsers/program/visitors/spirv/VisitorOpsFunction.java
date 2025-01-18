@@ -110,7 +110,7 @@ public class VisitorOpsFunction extends SpirvBaseVisitor<Void> {
             }
             MemoryObject memObj = builder.allocateVariable(id, types.getMemorySizeInBytes(pointerType.getPointedType()));
             memObj.setIsThreadLocal(false);
-            HelperTags.addFeatureTags(memObj, storageClass, Arch.OPENCL);
+            HelperTags.addFeatureTags(memObj, storageClass, builder.getArch());
             memObj.setInitialValue(0, value);
             ScopedPointerVariable pointer = new ScopedPointerVariable(id, storageClass, pointerType, memObj);
             builder.addExpression(id, pointer);

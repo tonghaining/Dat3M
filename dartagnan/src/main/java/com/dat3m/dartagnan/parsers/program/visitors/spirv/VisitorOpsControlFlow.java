@@ -177,7 +177,7 @@ public class VisitorOpsControlFlow extends SpirvBaseVisitor<Event> {
     @Override
     public Event visitOpLifetimeStart(SpirvParser.OpLifetimeStartContext ctx) {
         String pointerId = ctx.pointer().getText();
-        int size = Integer.parseInt(ctx.sizeLiteralInteger().getText());
+        Integer size = Integer.getInteger(ctx.sizeLiteralInteger().getText());
         Expression pointerExp = builder.getExpression(pointerId);
         if (!(pointerExp instanceof ScopedPointerVariable pointerVariable)
                 || !pointerVariable.getScopeId().equals(Tag.Spirv.SC_FUNCTION) ) {
@@ -185,7 +185,7 @@ public class VisitorOpsControlFlow extends SpirvBaseVisitor<Event> {
         }
         Register register = builder.addRegister(pointerId + "_alloc", pointerVariable.getType());
         IntegerType pointerIntegerType = types.getArchType();
-        Expression sizeExpression = expressions.makeValue(new BigInteger(Long.toString(size)), pointerIntegerType);
+        Expression sizeExpression = expressions.makeValue(size, pointerIntegerType);
         Alloc alloc = EventFactory.newAlloc(register, pointerExp.getType(), sizeExpression, false, false);
         builder.addEvent(alloc);
         return null;
