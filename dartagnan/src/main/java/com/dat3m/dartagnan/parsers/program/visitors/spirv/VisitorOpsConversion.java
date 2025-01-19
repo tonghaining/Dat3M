@@ -12,6 +12,8 @@ import com.dat3m.dartagnan.parsers.SpirvParser;
 import com.dat3m.dartagnan.parsers.program.visitors.spirv.builders.ProgramBuilder;
 import com.dat3m.dartagnan.program.Register;
 import com.dat3m.dartagnan.program.event.Tag;
+import com.dat3m.dartagnan.program.event.core.Alloc;
+import com.dat3m.dartagnan.program.event.core.Load;
 import com.dat3m.dartagnan.program.event.core.Local;
 import com.dat3m.dartagnan.program.memory.MemoryObject;
 import com.dat3m.dartagnan.program.memory.ScopedPointerVariable;
@@ -67,10 +69,39 @@ public class VisitorOpsConversion extends SpirvBaseVisitor<Void> {
         return null;
     }
 
+    @Override
+    public Void visitOpPtrCastToGeneric(SpirvParser.OpPtrCastToGenericContext ctx) {
+        String id = ctx.idResult().getText();
+        String typeId = ctx.idResultType().getText();
+        if (!(builder.getType(typeId) instanceof ScopedPointerType targetPointerType)) {
+            throw new ParsingException("Type '%s' is not a pointer type", typeId);
+        }
+        String pointer = ctx.pointer().getText();
+        Expression originPointerExpr = builder.getExpression(pointer);
+        String originStorageClass;
+        if (originPointerExpr.getType() instanceof ScopedPointerType originPointerType) {
+            originStorageClass = originPointerType.getScopeId();
+        } else if (originPointerExpr instanceof ScopedPointerVariable scopedPointerVariable) {
+            originStorageClass = scopedPointerVariable.getScopeId();
+        } else {
+            throw new ParsingException("Type '%s' is not a pointer type", pointer);
+        }
+        if (!originStorageClass.equals(Tag.Spirv.SC_CROSS_WORKGROUP) &&
+                !originStorageClass.equals(Tag.Spirv.SC_WORKGROUP) &&
+                !originStorageClass.equals(Tag.Spirv.SC_FUNCTION)) {
+            throw new ParsingException("Invalid storage class '%s' for OpPtrCastToGeneric", originStorageClass);
+        }
+        Expression convertedExpr = expressions.makeCast(originPointerExpr, targetPointerType);
+        ScopedPointerVariable convertedPointer = builder.allocateScopedPointerVariable(id + "_converted", convertedExpr, targetPointerType.getScopeId(), targetPointerType.getPointedType());
+        builder.addExpression(id, convertedPointer);
+        return null;
+    }
+
     public Set<String> getSupportedOps() {
         return Set.of(
                 "OpBitcast",
-                "OpConvertPtrToU"
+                "OpConvertPtrToU",
+                "OpPtrCastToGeneric"
         );
     }
 }

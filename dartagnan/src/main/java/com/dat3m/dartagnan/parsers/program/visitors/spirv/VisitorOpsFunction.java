@@ -97,14 +97,15 @@ public class VisitorOpsFunction extends SpirvBaseVisitor<Void> {
             throw new ParsingException("Duplicated parameter id '%s' in function '%s'", id, currentId);
         }
         currentArgs.add(id);
+        ScopedPointerVariable aggregatePointer = null;
         if (type instanceof ScopedPointerType pointerType) {
             String storageClass = pointerType.getScopeId();
             Expression value;
             if (builder.hasInput(id) && isEntryPoint) {
-                Type runTimeArrayType = builder.getInput(id).getType();
-                Expression arrayValue = HelperInputs.castInput(id, runTimeArrayType, builder.getInput(id));
-                ScopedPointerVariable arrayPointer = builder.allocateScopedPointerVariable(id + "_input", arrayValue, storageClass, runTimeArrayType);
-                value = expressions.makeGetElementPointer(type, arrayPointer, List.of(expressions.makeValue(0, types.getArchType())));
+                Type runTimeAggregateType = builder.getInput(id).getType();
+                Expression aggregateValue = HelperInputs.castInput(id, runTimeAggregateType, builder.getInput(id));
+                aggregatePointer = builder.allocateScopedPointerVariable(id + "_input", aggregateValue, storageClass, runTimeAggregateType);
+                value = expressions.makeGetElementPointer(type, aggregatePointer, List.of(expressions.makeValue(0, types.getArchType())));
             } else {
                 value = builder.makeUndefinedValue(type);
             }
@@ -113,6 +114,9 @@ public class VisitorOpsFunction extends SpirvBaseVisitor<Void> {
             HelperTags.addFeatureTags(memObj, storageClass, builder.getArch());
             memObj.setInitialValue(0, value);
             ScopedPointerVariable pointer = new ScopedPointerVariable(id, storageClass, pointerType, memObj);
+            if (aggregatePointer != null) {
+                pointer.setAggregateSource(aggregatePointer);
+            }
             builder.addExpression(id, pointer);
         }
         if (currentArgs.size() == currentType.getParameterTypes().size()) {

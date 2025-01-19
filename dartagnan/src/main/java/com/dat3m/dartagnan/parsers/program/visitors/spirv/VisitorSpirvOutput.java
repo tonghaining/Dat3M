@@ -96,6 +96,9 @@ public class VisitorSpirvOutput extends SpirvBaseVisitor<Expression> {
         String name = ctx.varName().getText();
         ScopedPointerVariable base = (ScopedPointerVariable) builder.getExpression(name);
         if (base != null) {
+            if (base.getAggregateSource() != null) {
+                base = base.getAggregateSource();
+            }
             List<Integer> indexes = ctx.indexValue().stream()
                     .map(c -> Integer.parseInt(c.ModeHeader_PositiveInteger().getText()))
                     .toList();

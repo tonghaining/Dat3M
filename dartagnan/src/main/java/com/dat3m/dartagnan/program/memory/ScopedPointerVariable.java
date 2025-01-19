@@ -4,9 +4,18 @@ import com.dat3m.dartagnan.expression.Expression;
 import com.dat3m.dartagnan.expression.Type;
 
 public class ScopedPointerVariable extends ScopedPointer {
+    private ScopedPointerVariable aggregateSource = null;
 
     public ScopedPointerVariable(String id, String scopeId, Type innerType, MemoryObject address) {
         super(id, scopeId, innerType, address);
+    }
+
+    public void setAggregateSource(ScopedPointerVariable aggregateSource) {
+        this.aggregateSource = aggregateSource;
+    }
+
+    public ScopedPointerVariable getAggregateSource() {
+        return aggregateSource;
     }
 
     @Override
