@@ -85,6 +85,7 @@ public class BuiltIn implements Decoration {
             case "SubgroupSize" -> makeScalar(id, type, grid.sgSize());
             case "WorkgroupSize" -> makeArray(id, type, grid.wgSize(), 1, 1);
             case "GlobalSize" -> makeArray(id, type, grid.dvSize(), 1, 1);
+            case "NumWorkgroups" -> makeArray(id, type, grid.dvSize() / grid.wgSize(), 1, 1);
             default -> throw new ParsingException("Unsupported decoration '%s'", mapping.get(id));
         };
     }

@@ -3,21 +3,16 @@ package com.dat3m.dartagnan.parsers.program.visitors.spirv;
 import com.dat3m.dartagnan.exception.ParsingException;
 import com.dat3m.dartagnan.expression.Expression;
 import com.dat3m.dartagnan.expression.ExpressionFactory;
-import com.dat3m.dartagnan.expression.Type;
 import com.dat3m.dartagnan.expression.type.IntegerType;
 import com.dat3m.dartagnan.expression.type.ScopedPointerType;
-import com.dat3m.dartagnan.expression.type.TypeFactory;
 import com.dat3m.dartagnan.parsers.SpirvBaseVisitor;
 import com.dat3m.dartagnan.parsers.SpirvParser;
 import com.dat3m.dartagnan.parsers.program.visitors.spirv.builders.ProgramBuilder;
 import com.dat3m.dartagnan.program.Register;
 import com.dat3m.dartagnan.program.event.Tag;
-import com.dat3m.dartagnan.program.event.core.Alloc;
-import com.dat3m.dartagnan.program.event.core.Load;
 import com.dat3m.dartagnan.program.event.core.Local;
-import com.dat3m.dartagnan.program.memory.MemoryObject;
+import com.dat3m.dartagnan.program.memory.ScopedPointer;
 import com.dat3m.dartagnan.program.memory.ScopedPointerVariable;
-import scala.Int;
 
 import java.util.Set;
 
@@ -81,8 +76,8 @@ public class VisitorOpsConversion extends SpirvBaseVisitor<Void> {
         String originStorageClass;
         if (originPointerExpr.getType() instanceof ScopedPointerType originPointerType) {
             originStorageClass = originPointerType.getScopeId();
-        } else if (originPointerExpr instanceof ScopedPointerVariable scopedPointerVariable) {
-            originStorageClass = scopedPointerVariable.getScopeId();
+        } else if (originPointerExpr instanceof ScopedPointer scopedPointer) {
+            originStorageClass = scopedPointer.getScopeId();
         } else {
             throw new ParsingException("Type '%s' is not a pointer type", pointer);
         }
