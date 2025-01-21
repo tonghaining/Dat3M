@@ -1,6 +1,5 @@
 package com.dat3m.dartagnan.parsers.program.visitors.spirv;
 
-import com.dat3m.dartagnan.configuration.Arch;
 import com.dat3m.dartagnan.exception.ParsingException;
 import com.dat3m.dartagnan.expression.Expression;
 import com.dat3m.dartagnan.expression.ExpressionFactory;
@@ -117,7 +116,7 @@ public class VisitorOpsFunction extends SpirvBaseVisitor<Void> {
             if (aggregatePointer != null) {
                 pointer.setAggregateSource(aggregatePointer);
             }
-            builder.addExpression(id, pointer);
+            builder.addRegisterPointer(id, pointer);
         }
         if (currentArgs.size() == currentType.getParameterTypes().size()) {
             createFunction();

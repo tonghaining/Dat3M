@@ -8,10 +8,9 @@ import com.dat3m.dartagnan.expression.Type;
 import com.dat3m.dartagnan.expression.type.FunctionType;
 import com.dat3m.dartagnan.expression.type.TypeFactory;
 import com.dat3m.dartagnan.parsers.program.visitors.spirv.decorations.BuiltIn;
-import com.dat3m.dartagnan.parsers.program.visitors.spirv.helpers.HelperInputs;
-import com.dat3m.dartagnan.parsers.program.visitors.spirv.helpers.HelperTags;
 import com.dat3m.dartagnan.parsers.program.visitors.spirv.utils.ThreadCreator;
 import com.dat3m.dartagnan.parsers.program.visitors.spirv.utils.ThreadGrid;
+import com.dat3m.dartagnan.program.event.core.Local;
 import com.dat3m.dartagnan.program.event.functions.FunctionCall;
 import com.dat3m.dartagnan.program.memory.*;
 import com.dat3m.dartagnan.expression.type.ScopedPointerType;
@@ -28,6 +27,7 @@ public class ProgramBuilder {
     protected final Map<String, Type> types = new HashMap<>();
     protected final Map<String, Expression> expressions = new HashMap<>();
     protected final Map<String, Expression> expressionsDead = new HashMap<>();
+    protected final Map<String, ScopedPointerVariable> registerPointers = new HashMap<>();
     protected final Map<String, Expression> inputs = new HashMap<>();
     protected final Map<String, String> debugInfos = new HashMap<>();
     protected final ThreadGrid grid;
@@ -170,10 +170,16 @@ public class ProgramBuilder {
     }
 
     public Set<ScopedPointerVariable> getVariables() {
-        return expressions.values().stream()
+        Set<ScopedPointerVariable> res = expressions.values().stream()
                 .filter(ScopedPointerVariable.class::isInstance)
                 .map(v -> (ScopedPointerVariable) v)
                 .collect(Collectors.toSet());
+        for (ScopedPointer pointer : registerPointers.values()) {
+            if (pointer instanceof ScopedPointerVariable variable) {
+                res.add(variable);
+            }
+        }
+        return res;
     }
 
     public MemoryObject allocateVariable(String id, int bytes) {
@@ -203,12 +209,30 @@ public class ProgramBuilder {
         if (expression.getType() instanceof ScopedPointerType pointerType) {
             return pointerType.getScopeId();
         }
+        // Pointers to registers
+        if (expression instanceof Register register && registerPointers.containsKey(register.getName())) {
+            return registerPointers.get(register.getName()).getScopeId();
+        }
         throw new ParsingException("Reference to undefined pointer '%s'", id);
+    }
+
+    public void addRegisterPointer(String id, ScopedPointerVariable pointer) {
+        if (registerPointers.containsKey(id)) {
+            throw new ParsingException("Duplicated register pointer definition '%s'", id);
+        }
+        registerPointers.put(id, pointer);
+    }
+
+    public ScopedPointerVariable getRegisterPointer(String id) {
+        if (registerPointers.containsKey(id)) {
+            return registerPointers.get(id);
+        }
+        throw new ParsingException("Reference to undefined register pointer '%s'", id);
     }
 
     public Register addRegister(String id, String typeId) {
         Type type = getType(typeId);
-        return getCurrentFunctionOrThrowError().newRegister(id, type);
+        return addRegister(id, type);
     }
 
     public Register addRegister(String id, Type type) {
@@ -233,6 +257,14 @@ public class ProgramBuilder {
             Register register = regWriter.getResultRegister();
             addExpression(register.getName(), register);
         }
+        // add parameter -> register Local events if at the beginning of the function
+        if (currentFunction.getEvents().isEmpty()) {
+            for (Register register : currentFunction.getParameterRegisters()) {
+                if (register.getType() instanceof ScopedPointerType) {
+                    currentFunction.append(new Local(register, getRegisterPointer(register.getName())));
+                }
+            }
+        }
         currentFunction.append(event);
         return event;
     }
@@ -253,9 +285,7 @@ public class ProgramBuilder {
         }
         addExpression(function.getName(), function);
         for (Register register : function.getParameterRegisters()) {
-            if (!(register.getType() instanceof ScopedPointerType)) {
-                addExpression(register.getName(), register);
-            }
+            addExpression(register.getName(), register);
         }
         program.addFunction(function);
         currentFunction = function;

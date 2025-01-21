@@ -66,9 +66,6 @@ public class ThreadCreator {
             if (copy instanceof RegWriter regWriter) {
                 regWriter.setResultRegister(transformer.getRegisterMapping(regWriter.getResultRegister()));
             }
-            if (copy instanceof FunctionCall call) {
-                call.addExprTransformer(transformer);
-            }
         }
         thread.getEntry().insertAfter(body);
     }
