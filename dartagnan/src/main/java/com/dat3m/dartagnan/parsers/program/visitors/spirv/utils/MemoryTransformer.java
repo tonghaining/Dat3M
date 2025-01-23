@@ -73,10 +73,7 @@ public class MemoryTransformer extends ExprTransformer {
 
     @Override
     public Expression visitRegister(Register register) {
-        if (registerMapping == null) {
-            return register;
-        }
-        return registerMapping.get(register);
+        return registerMapping.getOrDefault(register, register);
     }
 
     @Override

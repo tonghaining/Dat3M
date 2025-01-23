@@ -260,7 +260,7 @@ public class ProgramBuilder {
         // add parameter -> register Local events if at the beginning of the function
         if (currentFunction.getEvents().isEmpty()) {
             for (Register register : currentFunction.getParameterRegisters()) {
-                if (register.getType() instanceof ScopedPointerType) {
+                if (register.getType() instanceof ScopedPointerType && registerPointers.containsKey(register.getName())) {
                     currentFunction.append(new Local(register, getRegisterPointer(register.getName())));
                 }
             }

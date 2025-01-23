@@ -36,7 +36,9 @@ public class ThreadCreator {
         for (int i = 0; i < grid.dvSize(); i++) {
             Thread thread = createThreadFromFunction(i);
             for (Function subFunction : subFunctions) {
-                thread.addTransformer(new MemoryTransformer(grid, subFunction, builtIn, variables));
+                MemoryTransformer threadTransformer = new MemoryTransformer(grid, subFunction, builtIn, variables);
+                threadTransformer.setThread(thread);
+                thread.addTransformer(threadTransformer);
             }
             program.addThread(thread);
         }

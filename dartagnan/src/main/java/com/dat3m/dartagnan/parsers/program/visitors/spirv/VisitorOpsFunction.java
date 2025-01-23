@@ -97,10 +97,10 @@ public class VisitorOpsFunction extends SpirvBaseVisitor<Void> {
         }
         currentArgs.add(id);
         ScopedPointerVariable aggregatePointer = null;
-        if (type instanceof ScopedPointerType pointerType) {
+        if (type instanceof ScopedPointerType pointerType && isEntryPoint) {
             String storageClass = pointerType.getScopeId();
             Expression value;
-            if (builder.hasInput(id) && isEntryPoint) {
+            if (builder.hasInput(id)) {
                 Type runTimeAggregateType = builder.getInput(id).getType();
                 Expression aggregateValue = HelperInputs.castInput(id, runTimeAggregateType, builder.getInput(id));
                 aggregatePointer = builder.allocateScopedPointerVariable(id + "_input", aggregateValue, storageClass, runTimeAggregateType);
@@ -170,6 +170,7 @@ public class VisitorOpsFunction extends SpirvBaseVisitor<Void> {
         currentId = null;
         currentType = null;
         currentArgs = null;
+        isEntryPoint = false;
     }
 
     private Function getCalledFunction(String id, FunctionType type) {
