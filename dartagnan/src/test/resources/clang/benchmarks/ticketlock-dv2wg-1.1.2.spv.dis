@@ -3,7 +3,7 @@
 ; @Input: %12 = {{0}}
 ; @Input: %13 = {{-1, -1}}
 ; @Output: forall (%13[0][0] == -1 or %13[0][1] == -1 or %13[0][0] != %13[0][1])
-; @Config: 2, 1, 1
+; @Config: 1, 1, 2
 ; SPIR-V
 ; Version: 1.0
 ; Generator: Khronos LLVM/SPIR-V Translator; 14
@@ -35,8 +35,8 @@
                OpDecorate %66 Alignment 4
        %uint = OpTypeInt 32 0
      %uint_1 = OpConstant %uint 1
-     %uint_0 = OpConstant %uint 0
      %uint_2 = OpConstant %uint 2
+     %uint_0 = OpConstant %uint 0
      %uint_4 = OpConstant %uint 4
      %v3uint = OpTypeVector %uint 3
 %_ptr_Input_v3uint = OpTypePointer Input %v3uint
@@ -96,13 +96,13 @@
                OpStore %50 %27 Aligned 4
          %52 = OpLoad %_ptr_CrossWorkgroup_uint %50 Aligned 4
          %54 = OpPtrCastToGeneric %_ptr_Generic_uint %52
-         %56 = OpAtomicIAdd %uint %54 %uint_1 %uint_0 %uint_1
-               OpStore %51 %56 Aligned 4
+         %57 = OpAtomicIAdd %uint %54 %uint_2 %uint_0 %uint_1
+               OpStore %51 %57 Aligned 4
                OpBranch %46
          %46 = OpLabel
-         %57 = OpLoad %_ptr_CrossWorkgroup_uint %49 Aligned 4
-         %58 = OpPtrCastToGeneric %_ptr_Generic_uint %57
-         %60 = OpAtomicLoad %uint %58 %uint_1 %uint_2
+         %58 = OpLoad %_ptr_CrossWorkgroup_uint %49 Aligned 4
+         %59 = OpPtrCastToGeneric %_ptr_Generic_uint %58
+         %60 = OpAtomicLoad %uint %59 %uint_2 %uint_2
          %61 = OpLoad %uint %51 Aligned 4
          %63 = OpINotEqual %bool %60 %61
                OpBranchConditional %63 %47 %48
@@ -119,12 +119,12 @@
                OpStore %65 %38 Aligned 4
          %67 = OpLoad %_ptr_CrossWorkgroup_uint %65 Aligned 4
          %68 = OpPtrCastToGeneric %_ptr_Generic_uint %67
-         %69 = OpAtomicLoad %uint %68 %uint_1 %uint_0
+         %69 = OpAtomicLoad %uint %68 %uint_2 %uint_0
                OpStore %66 %69 Aligned 4
          %70 = OpLoad %_ptr_CrossWorkgroup_uint %65 Aligned 4
          %71 = OpPtrCastToGeneric %_ptr_Generic_uint %70
          %72 = OpLoad %uint %66 Aligned 4
          %73 = OpIAdd %uint %72 %uint_1
-               OpAtomicStore %71 %uint_1 %uint_4 %73
+               OpAtomicStore %71 %uint_2 %uint_4 %73
                OpReturn
                OpFunctionEnd

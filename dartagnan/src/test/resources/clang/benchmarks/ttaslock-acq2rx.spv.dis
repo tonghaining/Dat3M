@@ -1,7 +1,12 @@
+; @Input: %10 = {{0}}
+; @Input: %11 = {{0}}
+; @Input: %12 = {{-1, -1}}
+; @Output: forall (%12[0][0] == -1 or %12[0][1] == -1 or %12[0][0] != %12[0][1])
+; @Config: 2, 1, 1
 ; SPIR-V
 ; Version: 1.0
 ; Generator: Khronos LLVM/SPIR-V Translator; 14
-; Bound: 65
+; Bound: 64
 ; Schema: 0
                OpCapability Addresses
                OpCapability Linkage
@@ -22,11 +27,10 @@
                OpDecorate %17 Alignment 4
                OpDecorate %19 Alignment 4
                OpDecorate %47 Alignment 4
-               OpDecorate %61 Alignment 4
+               OpDecorate %60 Alignment 4
        %uint = OpTypeInt 32 0
      %uint_1 = OpConstant %uint 1
      %uint_0 = OpConstant %uint 0
-     %uint_2 = OpConstant %uint 2
      %uint_4 = OpConstant %uint 4
      %v3uint = OpTypeVector %uint 3
 %_ptr_Input_v3uint = OpTypePointer Input %v3uint
@@ -89,9 +93,9 @@
          %44 = OpLabel
          %55 = OpLoad %_ptr_CrossWorkgroup_uint %47 Aligned 4
          %56 = OpPtrCastToGeneric %_ptr_Generic_uint %55
-         %58 = OpAtomicExchange %uint %56 %uint_1 %uint_2 %uint_1
-         %59 = OpINotEqual %bool %58 %uint_0
-               OpBranchConditional %59 %46 %45
+         %57 = OpAtomicExchange %uint %56 %uint_1 %uint_0 %uint_1
+         %58 = OpINotEqual %bool %57 %uint_0
+               OpBranchConditional %58 %46 %45
          %45 = OpLabel
                OpReturn
          %46 = OpLabel
@@ -99,11 +103,11 @@
                OpFunctionEnd
      %unlock = OpFunction %void DontInline %21
          %33 = OpFunctionParameter %_ptr_CrossWorkgroup_uint
-         %60 = OpLabel
-         %61 = OpVariable %_ptr_Function__ptr_CrossWorkgroup_uint Function
-               OpStore %61 %33 Aligned 4
-         %62 = OpLoad %_ptr_CrossWorkgroup_uint %61 Aligned 4
-         %63 = OpPtrCastToGeneric %_ptr_Generic_uint %62
-               OpAtomicStore %63 %uint_1 %uint_4 %uint_0
+         %59 = OpLabel
+         %60 = OpVariable %_ptr_Function__ptr_CrossWorkgroup_uint Function
+               OpStore %60 %33 Aligned 4
+         %61 = OpLoad %_ptr_CrossWorkgroup_uint %60 Aligned 4
+         %62 = OpPtrCastToGeneric %_ptr_Generic_uint %61
+               OpAtomicStore %62 %uint_1 %uint_4 %uint_0
                OpReturn
                OpFunctionEnd

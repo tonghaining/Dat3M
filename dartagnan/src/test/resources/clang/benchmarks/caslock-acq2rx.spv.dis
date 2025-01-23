@@ -1,12 +1,12 @@
 ; @Input: %10 = {0}
 ; @Input: %11 = {0}
-; @Input: %12 = {-1, -1}
-; @Output: forall (%12[0][0] == -1 or %12[0][1] == -1 or %19[0][0] != %12[0][1])
-; @Config: 1, 1, 2
+; @Input: %12 = {{-1, -1}}
+; @Output: forall (%12[0][0] == -1 or %12[0][1] == -1 or %12[0][0] != %12[0][1])
+; @Config: 2, 1, 1
 ; SPIR-V
 ; Version: 1.0
 ; Generator: Khronos LLVM/SPIR-V Translator; 14
-; Bound: 63
+; Bound: 62
 ; Schema: 0
                OpCapability Addresses
                OpCapability Linkage
@@ -29,11 +29,10 @@
                OpDecorate %19 Alignment 4
                OpDecorate %44 Alignment 4
                OpDecorate %45 Alignment 4
-               OpDecorate %59 Alignment 4
+               OpDecorate %58 Alignment 4
        %uint = OpTypeInt 32 0
      %uint_1 = OpConstant %uint 1
      %uint_0 = OpConstant %uint 0
-     %uint_2 = OpConstant %uint 2
      %uint_4 = OpConstant %uint 4
      %v3uint = OpTypeVector %uint 3
 %_ptr_Input_v3uint = OpTypePointer Input %v3uint
@@ -90,12 +89,12 @@
          %49 = OpPtrCastToGeneric %_ptr_Generic_uint %47
          %50 = OpPtrCastToGeneric %_ptr_Generic_uint %45
         %exp = OpLoad %uint %50 Aligned 4
-         %53 = OpAtomicCompareExchange %uint %49 %uint_1 %uint_2 %uint_2 %uint_1 %exp
-               OpStore %50 %53 Aligned 4
-         %55 = OpIEqual %bool %53 %exp
-         %56 = OpSelect %uint %55 %uint_1 %uint_0
-         %57 = OpIEqual %bool %56 %uint_0
-               OpBranchConditional %57 %42 %43
+         %52 = OpAtomicCompareExchange %uint %49 %uint_1 %uint_0 %uint_0 %uint_1 %exp
+               OpStore %50 %52 Aligned 4
+         %54 = OpIEqual %bool %52 %exp
+         %55 = OpSelect %uint %54 %uint_1 %uint_0
+         %56 = OpIEqual %bool %55 %uint_0
+               OpBranchConditional %56 %42 %43
          %42 = OpLabel
                OpStore %45 %uint_0 Aligned 4
                OpBranch %41
@@ -104,11 +103,11 @@
                OpFunctionEnd
      %unlock = OpFunction %void DontInline %21
          %33 = OpFunctionParameter %_ptr_CrossWorkgroup_uint
-         %58 = OpLabel
-         %59 = OpVariable %_ptr_Function__ptr_CrossWorkgroup_uint Function
-               OpStore %59 %33 Aligned 4
-         %60 = OpLoad %_ptr_CrossWorkgroup_uint %59 Aligned 4
-         %61 = OpPtrCastToGeneric %_ptr_Generic_uint %60
-               OpAtomicStore %61 %uint_1 %uint_4 %uint_0
+         %57 = OpLabel
+         %58 = OpVariable %_ptr_Function__ptr_CrossWorkgroup_uint Function
+               OpStore %58 %33 Aligned 4
+         %59 = OpLoad %_ptr_CrossWorkgroup_uint %58 Aligned 4
+         %60 = OpPtrCastToGeneric %_ptr_Generic_uint %59
+               OpAtomicStore %60 %uint_1 %uint_4 %uint_0
                OpReturn
                OpFunctionEnd

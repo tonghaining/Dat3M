@@ -1,3 +1,10 @@
+; flag
+; @Input: %14 = {{0, 0, 0, 0, 0, 0, 0, 0}}
+; data
+; @Input: %15 = {{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}}
+; @Input: %16 = {{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}}
+; @Output: forall (%16[0][0] == 4 and %16[0][1] == 4 and %16[0][2] == 4 and %16[0][3] == 4)
+; @Config: 2, 1, 2
 ; SPIR-V
 ; Version: 1.0
 ; Generator: Khronos LLVM/SPIR-V Translator; 14
@@ -147,7 +154,7 @@
          %93 = OpLoad %uint %42 Aligned 4
          %94 = OpInBoundsPtrAccessChain %_ptr_CrossWorkgroup_uint %92 %93
          %95 = OpPtrCastToGeneric %_ptr_Generic_uint %94
-               OpAtomicStore %95 %uint_1 %uint_4 %uint_1
+               OpAtomicStore %95 %uint_1 %uint_0 %uint_1
                OpBranch %28
          %28 = OpLabel
          %96 = OpLoad %_ptr_CrossWorkgroup_uint %38 Aligned 4
