@@ -1,5 +1,6 @@
 package com.dat3m.dartagnan.program;
 
+import com.dat3m.dartagnan.expression.processing.ExprTransformer;
 import com.dat3m.dartagnan.expression.type.FunctionType;
 import com.dat3m.dartagnan.program.event.Event;
 import com.dat3m.dartagnan.program.event.core.Load;
@@ -8,6 +9,7 @@ import com.dat3m.dartagnan.program.event.core.Store;
 import com.dat3m.dartagnan.program.event.core.threading.ThreadStart;
 import com.google.common.base.Preconditions;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -19,6 +21,9 @@ public class Thread extends Function {
 
     // Threads that are system-synchronized-with this thread
     private final Optional<Set<Thread>> syncSet;
+
+    // Transformer for the thread
+    private final Set<ExprTransformer> transformer = new HashSet<>();
 
     public Thread(String name, FunctionType funcType, List<String> parameterNames, int id, ThreadStart entry) {
         super(name, funcType, parameterNames, id, entry);
@@ -54,6 +59,14 @@ public class Thread extends Function {
 
     public Set<Thread> getSyncSet() {
         return syncSet.get();
+    }
+
+    public void addTransformer(ExprTransformer transformer) {
+        this.transformer.add(transformer);
+    }
+
+    public Set<ExprTransformer> getTransformers() {
+        return transformer;
     }
 
     @Override

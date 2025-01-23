@@ -1,14 +1,12 @@
 package com.dat3m.dartagnan.parsers.program.visitors.spirv.utils;
 
 import com.dat3m.dartagnan.expression.type.FunctionType;
-import com.dat3m.dartagnan.expression.type.TypeFactory;
 import com.dat3m.dartagnan.parsers.program.visitors.spirv.decorations.BuiltIn;
 import com.dat3m.dartagnan.program.*;
 import com.dat3m.dartagnan.program.Thread;
 import com.dat3m.dartagnan.program.event.*;
 import com.dat3m.dartagnan.program.event.core.Label;
 import com.dat3m.dartagnan.program.event.core.threading.ThreadStart;
-import com.dat3m.dartagnan.program.event.functions.FunctionCall;
 import com.dat3m.dartagnan.program.event.functions.Return;
 import com.dat3m.dartagnan.program.memory.Memory;
 import com.dat3m.dartagnan.program.memory.ScopedPointerVariable;
@@ -20,6 +18,7 @@ public class ThreadCreator {
 
     private final ThreadGrid grid;
     private final Function function;
+    private final BuiltIn builtIn;
     private final Set<ScopedPointerVariable> variables;
     private final MemoryTransformer transformer;
 
@@ -27,13 +26,19 @@ public class ThreadCreator {
         this.grid = grid;
         this.function = function;
         this.variables = variables;
+        this.builtIn = builtIn;
         this.transformer = new MemoryTransformer(grid, function, builtIn, variables);
     }
 
     public void create() {
         Program program = function.getProgram();
+        List<Function> subFunctions = program.getFunctions().stream().filter(f -> f != function).toList();
         for (int i = 0; i < grid.dvSize(); i++) {
-            program.addThread(createThreadFromFunction(i));
+            Thread thread = createThreadFromFunction(i);
+            for (Function subFunction : subFunctions) {
+                thread.addTransformer(new MemoryTransformer(grid, subFunction, builtIn, variables));
+            }
+            program.addThread(thread);
         }
         deleteLocalFunctionVariables();
     }
