@@ -87,7 +87,8 @@ public class VisitorOpsConversion extends SpirvBaseVisitor<Void> {
             throw new ParsingException("Invalid storage class '%s' for OpPtrCastToGeneric", originStorageClass);
         }
         Expression convertedExpr = expressions.makeCast(originPointerExpr, targetPointerType);
-        ScopedPointerVariable convertedPointer = builder.allocateScopedPointerVariable(id + "_converted", convertedExpr, targetPointerType.getScopeId(), targetPointerType.getPointedType());
+        ScopedPointerVariable convertedPointer = builder.allocateScopedPointerVariable(id,
+                convertedExpr, targetPointerType.getScopeId(), targetPointerType.getPointedType());
         builder.addExpression(id, convertedPointer);
         return null;
     }

@@ -109,7 +109,6 @@ public class MemoryTransformer extends ExprTransformer {
     }
 
     private Expression applyMapping(MemoryObject memObj, int scopeDepth) {
-        Program program = function.getProgram();
         Map<MemoryObject, MemoryObject> mapping = scopeMapping.get(scopeDepth);
         if (!mapping.containsKey(memObj)) {
             MemoryObject copy = memObj instanceof VirtualMemoryObject
