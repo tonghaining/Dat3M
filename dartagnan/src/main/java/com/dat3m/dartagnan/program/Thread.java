@@ -22,9 +22,6 @@ public class Thread extends Function {
     // Threads that are system-synchronized-with this thread
     private final Optional<Set<Thread>> syncSet;
 
-    // Transformer for the thread
-    private final Set<ExprTransformer> transformer = new HashSet<>();
-
     public Thread(String name, FunctionType funcType, List<String> parameterNames, int id, ThreadStart entry) {
         super(name, funcType, parameterNames, id, entry);
         Preconditions.checkArgument(id >= 0, "Invalid thread ID");
@@ -59,14 +56,6 @@ public class Thread extends Function {
 
     public Set<Thread> getSyncSet() {
         return syncSet.get();
-    }
-
-    public void addTransformer(ExprTransformer transformer) {
-        this.transformer.add(transformer);
-    }
-
-    public Set<ExprTransformer> getTransformers() {
-        return transformer;
     }
 
     @Override

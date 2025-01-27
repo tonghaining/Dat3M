@@ -89,7 +89,6 @@ public class ProcessingManager implements ProgramProcessor {
                 GEPToAddition.newInstance(),
                 NaiveDevirtualisation.newInstance(),
                 Inlining.fromConfig(config),
-                ThreadAccessTranslation.newInstance(),
                 ProgramProcessor.fromFunctionProcessor(
                         FunctionProcessor.chain(
                                 intrinsics.earlyInliningPass(),

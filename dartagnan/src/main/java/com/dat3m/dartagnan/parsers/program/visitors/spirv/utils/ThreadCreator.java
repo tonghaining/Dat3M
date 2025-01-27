@@ -7,6 +7,7 @@ import com.dat3m.dartagnan.program.Thread;
 import com.dat3m.dartagnan.program.event.*;
 import com.dat3m.dartagnan.program.event.core.Label;
 import com.dat3m.dartagnan.program.event.core.threading.ThreadStart;
+import com.dat3m.dartagnan.program.event.functions.FunctionCall;
 import com.dat3m.dartagnan.program.event.functions.Return;
 import com.dat3m.dartagnan.program.memory.Memory;
 import com.dat3m.dartagnan.program.memory.ScopedPointerVariable;
@@ -18,7 +19,6 @@ public class ThreadCreator {
 
     private final ThreadGrid grid;
     private final Function function;
-    private final BuiltIn builtIn;
     private final Set<ScopedPointerVariable> variables;
     private final MemoryTransformer transformer;
 
@@ -26,21 +26,13 @@ public class ThreadCreator {
         this.grid = grid;
         this.function = function;
         this.variables = variables;
-        this.builtIn = builtIn;
         this.transformer = new MemoryTransformer(grid, function, builtIn, variables);
     }
 
     public void create() {
         Program program = function.getProgram();
-        List<Function> subFunctions = program.getFunctions().stream().filter(f -> f != function).toList();
         for (int i = 0; i < grid.dvSize(); i++) {
-            Thread thread = createThreadFromFunction(i);
-            for (Function subFunction : subFunctions) {
-                MemoryTransformer threadTransformer = new MemoryTransformer(grid, subFunction, builtIn, variables);
-                threadTransformer.setThread(thread);
-                thread.addTransformer(threadTransformer);
-            }
-            program.addThread(thread);
+            program.addThread(createThreadFromFunction(i));
         }
         deleteLocalFunctionVariables();
     }
@@ -72,6 +64,9 @@ public class ThreadCreator {
             }
             if (copy instanceof RegWriter regWriter) {
                 regWriter.setResultRegister(transformer.getRegisterMapping(regWriter.getResultRegister()));
+            }
+            if (copy instanceof FunctionCall call) {
+                call.addExprTransformer(transformer);
             }
         }
         thread.getEntry().insertAfter(body);

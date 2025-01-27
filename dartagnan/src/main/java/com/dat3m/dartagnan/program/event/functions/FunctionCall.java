@@ -68,6 +68,14 @@ public abstract class FunctionCall extends AbstractEvent implements RegReader {
         this.callTarget = callTarget;
     }
 
+    public void addExprTransformer(ExprTransformer transformer) {
+        exprTransformers.add(transformer);
+    }
+
+    public List<ExprTransformer> getExprTransformers() {
+        return exprTransformers;
+    }
+
     @Override
     public abstract FunctionCall getCopy();
 

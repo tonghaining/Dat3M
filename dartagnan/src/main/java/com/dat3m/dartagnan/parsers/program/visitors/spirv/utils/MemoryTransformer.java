@@ -71,9 +71,15 @@ public class MemoryTransformer extends ExprTransformer {
         nonDetMapping = new HashMap<>();
     }
 
+    public void setFunction(Function function) {
+        registerMapping = function.getRegisters().stream().collect(
+                toMap(r -> r, r -> function.getOrNewRegister(r.getName(), r.getType())));
+        nonDetMapping = new HashMap<>();
+    }
+
     @Override
     public Expression visitRegister(Register register) {
-        return registerMapping.getOrDefault(register, register);
+        return registerMapping.get(register);
     }
 
     @Override
@@ -83,9 +89,6 @@ public class MemoryTransformer extends ExprTransformer {
 
     @Override
     public Expression visitMemoryObject(MemoryObject memObj) {
-        if (!pointerMapping.containsKey(memObj)) {
-            return memObj;
-        }
         String storageClass = pointerMapping.get(memObj).getScopeId();
         return switch (storageClass) {
             // Device-level memory (keep the same instance)
