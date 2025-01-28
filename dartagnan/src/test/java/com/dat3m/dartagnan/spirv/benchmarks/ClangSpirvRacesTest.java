@@ -108,7 +108,7 @@ public class ClangSpirvRacesTest {
                 cfg,
                 BasicLogManager.create(cfg),
                 ShutdownManager.create().getNotifier(),
-                SolverContextFactory.Solvers.Z3);
+                SolverContextFactory.Solvers.YICES2);
     }
 
     private ProverWithTracker mkProver(SolverContext ctx) {
