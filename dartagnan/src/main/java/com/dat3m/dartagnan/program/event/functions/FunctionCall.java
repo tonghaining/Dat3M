@@ -23,7 +23,6 @@ public abstract class FunctionCall extends AbstractEvent implements RegReader {
     protected FunctionType funcType;
     protected Expression callTarget;
     protected List<Expression> arguments;
-    protected List<ExprTransformer> exprTransformers = new ArrayList<>();
 
     protected FunctionCall(FunctionType funcType, Expression funcPtr, List<Expression> arguments) {
         final List<Type> paramTypes = funcType.getParameterTypes();
@@ -66,14 +65,6 @@ public abstract class FunctionCall extends AbstractEvent implements RegReader {
                     "Call target %s has mismatching function type: expected %s", callTarget, funcType);
         }
         this.callTarget = callTarget;
-    }
-
-    public void addExprTransformer(ExprTransformer transformer) {
-        exprTransformers.add(transformer);
-    }
-
-    public List<ExprTransformer> getExprTransformers() {
-        return exprTransformers;
     }
 
     @Override

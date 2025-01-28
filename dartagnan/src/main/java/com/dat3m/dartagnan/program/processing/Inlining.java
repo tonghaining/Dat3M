@@ -4,7 +4,6 @@ import com.dat3m.dartagnan.exception.MalformedProgramException;
 import com.dat3m.dartagnan.expression.Expression;
 import com.dat3m.dartagnan.expression.ExpressionFactory;
 import com.dat3m.dartagnan.expression.processing.ExprTransformer;
-import com.dat3m.dartagnan.parsers.program.visitors.spirv.utils.MemoryTransformer;
 import com.dat3m.dartagnan.program.Function;
 import com.dat3m.dartagnan.program.Program;
 import com.dat3m.dartagnan.program.Register;
@@ -74,7 +73,6 @@ public class Inlining implements ProgramProcessor {
     private void inlineAllCalls(Function function, Map<Function, Snapshot> snapshots) {
         int scopeCounter = 0;
         final Map<Event, List<Function>> exitToCallMap = new HashMap<>();
-        boolean isThread = function instanceof Thread;
         // Iteratively replace the first call.
         Event event = function.getEntry();
         while (event != null) {
@@ -98,13 +96,13 @@ public class Inlining implements ProgramProcessor {
                     throw new MalformedProgramException(
                             String.format("Cannot call thread %s directly.", callTarget));
                 }
-                event = inlineBody(call, snapshots.get(callTarget), ++scopeCounter, isThread);
+                event = inlineBody(call, snapshots.get(callTarget), ++scopeCounter);
             }
         }
     }
 
     // Returns the first event of the inlined code, from where to continue from
-    private static Event inlineBody(FunctionCall call, Snapshot callTarget, int scope, boolean isThread) {
+    private static Event inlineBody(FunctionCall call, Snapshot callTarget, int scope) {
         final Event callMarker = EventFactory.newFunctionCallMarker(callTarget.name);
         final Event returnMarker = EventFactory.newFunctionReturnMarker(callTarget.name);
         callMarker.copyAllMetadataFrom(call);
@@ -131,7 +129,7 @@ public class Inlining implements ProgramProcessor {
                 arguments.size() == callTarget.parameters.size(), "Parameter mismatch at %s", call);
         // All registers have to be replaced
         for (final Register register : callTarget.registers) {
-            final String newName = scope + ":" + register.getName() + (isThread ? "_t" : "");
+            final String newName = scope + ":" + register.getName();
             registerMap.put(register, call.getFunction().newRegister(newName, register.getType()));
         }
         var parameterAssignments = new ArrayList<Event>();
@@ -168,46 +166,36 @@ public class Inlining implements ProgramProcessor {
         }
 
         // Substitute registers in the copied body
-        List<ExprTransformer> exprTransformers = new ArrayList<>();
         var substitution = new ExprTransformer() {
             @Override
             public Expression visitRegister(Register register) {
+                if (!registerMap.containsKey(register)) {
+                    return register;
+                }
                 return checkNotNull(registerMap.get(register));
             }
         };
-        if (isThread) {
-            exprTransformers.addAll(call.getExprTransformers());
-        }
-        for (ExprTransformer exprTransformer : exprTransformers) {
-            if (exprTransformer instanceof MemoryTransformer transformer) {
-                transformer.setThread(call.getThread());
-                transformer.setFunction(call.getCalledFunction());
+        for (Event event : inlinedBody) {
+            if (event instanceof RegReader reader) {
+                reader.transformExpressions(substitution);
             }
-        }
-        exprTransformers.add(substitution);
-        for (ExprTransformer transformer : exprTransformers) {
-            for (Event event : inlinedBody) {
-                if (event instanceof RegReader reader) {
-                    reader.transformExpressions(transformer);
+            if (event instanceof RegWriter writer && !(writer instanceof LlvmCmpXchg) && !returnEvents.contains(event)) {
+                Register oldRegister = writer.getResultRegister();
+                Register newRegister = registerMap.get(oldRegister);
+                assert newRegister != null || writer.getResultRegister() == oldRegister;
+                if (newRegister != null) {
+                    writer.setResultRegister(newRegister);
                 }
-                if (event instanceof RegWriter writer && !(writer instanceof LlvmCmpXchg) && !returnEvents.contains(event)) {
-                    Register oldRegister = writer.getResultRegister();
-                    Register newRegister = registerMap.get(oldRegister);
-                    assert newRegister != null || writer.getResultRegister() == oldRegister;
-                    if (newRegister != null) {
-                        writer.setResultRegister(newRegister);
-                    }
-                }
-                if (event instanceof LlvmCmpXchg cmpXchg) {
-                    Register oldResultRegister = cmpXchg.getStructRegister(0);
-                    Register newResultRegister = registerMap.get(oldResultRegister);
-                    assert newResultRegister != null;
-                    cmpXchg.setStructRegister(0, newResultRegister);
-                    Register oldExpectationRegister = cmpXchg.getStructRegister(1);
-                    Register newExpectationRegister = registerMap.get(oldExpectationRegister);
-                    assert newExpectationRegister != null;
-                    cmpXchg.setStructRegister(1, newExpectationRegister);
-                }
+            }
+            if (event instanceof LlvmCmpXchg cmpXchg) {
+                Register oldResultRegister = cmpXchg.getStructRegister(0);
+                Register newResultRegister = registerMap.get(oldResultRegister);
+                assert newResultRegister != null;
+                cmpXchg.setStructRegister(0, newResultRegister);
+                Register oldExpectationRegister = cmpXchg.getStructRegister(1);
+                Register newExpectationRegister = registerMap.get(oldExpectationRegister);
+                assert newExpectationRegister != null;
+                cmpXchg.setStructRegister(1, newExpectationRegister);
             }
         }
 

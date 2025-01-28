@@ -29,8 +29,9 @@ public class MemoryTransformer extends ExprTransformer {
     private static final List<String> namePrefixes = List.of("T", "S", "W", "Q", "D");
 
     private final Program program;
-    private final Function function;
+    private final Function entryFunction;
     private final BuiltIn builtIn;
+    private final List<Function> subFunctions;
     private final List<? extends Map<MemoryObject, MemoryObject>> scopeMapping;
     private final Map<MemoryObject, ScopedPointerVariable> pointerMapping;
     private final List<IntUnaryOperator> scopeIdProvider;
@@ -39,10 +40,12 @@ public class MemoryTransformer extends ExprTransformer {
     private Map<NonDetValue, NonDetValue> nonDetMapping;
     private int tid;
 
-    public MemoryTransformer(ThreadGrid grid, Function function, BuiltIn builtIn, Set<ScopedPointerVariable> variables) {
-        this.program = function.getProgram();
-        this.function = function;
+    public MemoryTransformer(ThreadGrid grid, Function entryFunction, List<Function> subFunctions,
+                             BuiltIn builtIn, Set<ScopedPointerVariable> variables) {
+        this.program = entryFunction.getProgram();
+        this.entryFunction = entryFunction;
         this.builtIn = builtIn;
+        this.subFunctions = subFunctions;
         this.scopeMapping = Stream.generate(() -> new HashMap<MemoryObject, MemoryObject>()).limit(namePrefixes.size()).toList();
         this.pointerMapping = variables.stream().collect(Collectors.toMap((ScopedPointerVariable::getAddress), (v -> v)));
         this.scopeIdProvider = List.of(grid::thId, grid::sgId, grid::wgId, grid::qfId, grid::dvId);
@@ -66,14 +69,12 @@ public class MemoryTransformer extends ExprTransformer {
         }
         tid = newTid;
         builtIn.setThreadId(tid);
-        registerMapping = function.getRegisters().stream().collect(
+        registerMapping = entryFunction.getRegisters().stream().collect(
                 toMap(r -> r, r -> thread.getOrNewRegister(r.getName(), r.getType())));
-        nonDetMapping = new HashMap<>();
-    }
-
-    public void setFunction(Function function) {
-        registerMapping = function.getRegisters().stream().collect(
-                toMap(r -> r, r -> function.getOrNewRegister(r.getName(), r.getType())));
+        for (Function function : subFunctions) {
+            registerMapping.putAll(function.getRegisters().stream().collect(
+                    toMap(r -> r, r -> thread.getOrNewRegister(r.getName(), r.getType()))));
+        }
         nonDetMapping = new HashMap<>();
     }
 
