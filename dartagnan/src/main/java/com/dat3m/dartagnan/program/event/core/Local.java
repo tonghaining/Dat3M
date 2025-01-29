@@ -8,7 +8,6 @@ import com.dat3m.dartagnan.program.event.AbstractEvent;
 import com.dat3m.dartagnan.program.event.EventVisitor;
 import com.dat3m.dartagnan.program.event.RegReader;
 import com.dat3m.dartagnan.program.event.RegWriter;
-import com.dat3m.dartagnan.program.memory.ScopedPointerVariable;
 import com.google.common.base.Preconditions;
 import org.sosy_lab.java_smt.api.BooleanFormula;
 
@@ -21,11 +20,7 @@ public class Local extends AbstractEvent implements RegWriter, RegReader {
     protected Expression expr;
 
     public Local(Register register, Expression expr) {
-        if (expr instanceof ScopedPointerVariable scopedPointerVariable) {
-            Preconditions.checkArgument(register.getType().equals(scopedPointerVariable.getInnerType()));
-        } else {
-            Preconditions.checkArgument(register.getType().equals(expr.getType()));
-        }
+        Preconditions.checkArgument(register.getType().equals(expr.getType()));
         this.register = register;
         this.expr = expr;
     }

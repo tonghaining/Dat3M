@@ -3,6 +3,7 @@ package com.dat3m.dartagnan.program;
 import com.dat3m.dartagnan.exception.MalformedProgramException;
 import com.dat3m.dartagnan.expression.*;
 import com.dat3m.dartagnan.expression.type.FunctionType;
+import com.dat3m.dartagnan.expression.type.ScopedPointerType;
 import com.dat3m.dartagnan.expression.type.TypeFactory;
 import com.dat3m.dartagnan.expression.type.VoidType;
 import com.dat3m.dartagnan.program.event.Event;
@@ -123,7 +124,12 @@ public class Function implements LeafExpression {
             final String error = String.format("Register %s already exists in function %s", name, this);
             throw new MalformedProgramException(error);
         }
-        Register register = new Register(name, this, type);
+        Register register;
+        if (type instanceof ScopedPointerType scopedPointerType) {
+            register = new PointerRegister(name, this, scopedPointerType);
+        } else {
+            register = new Register(name, this, type);
+        }
         registers.put(name, register);
         return register;
     }

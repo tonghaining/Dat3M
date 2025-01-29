@@ -10,7 +10,6 @@ import com.dat3m.dartagnan.expression.type.TypeFactory;
 import com.dat3m.dartagnan.parsers.program.visitors.spirv.decorations.BuiltIn;
 import com.dat3m.dartagnan.parsers.program.visitors.spirv.utils.ThreadCreator;
 import com.dat3m.dartagnan.parsers.program.visitors.spirv.utils.ThreadGrid;
-import com.dat3m.dartagnan.program.event.core.Local;
 import com.dat3m.dartagnan.program.event.functions.FunctionCall;
 import com.dat3m.dartagnan.program.memory.*;
 import com.dat3m.dartagnan.expression.type.ScopedPointerType;
@@ -213,10 +212,6 @@ public class ProgramBuilder {
         if (expression.getType() instanceof ScopedPointerType pointerType) {
             return pointerType.getScopeId();
         }
-        // Pointers to registers
-        if (expression instanceof Register register && registerPointers.containsKey(register.getName())) {
-            return registerPointers.get(register.getName()).getScopeId();
-        }
         throw new ParsingException("Reference to undefined pointer '%s'", id);
     }
 
@@ -225,13 +220,6 @@ public class ProgramBuilder {
             throw new ParsingException("Duplicated register pointer definition '%s'", id);
         }
         registerPointers.put(id, pointer);
-    }
-
-    public ScopedPointerVariable getRegisterPointer(String id) {
-        if (registerPointers.containsKey(id)) {
-            return registerPointers.get(id);
-        }
-        throw new ParsingException("Reference to undefined register pointer '%s'", id);
     }
 
     public Register addRegister(String id, String typeId) {
@@ -261,14 +249,6 @@ public class ProgramBuilder {
             Register register = regWriter.getResultRegister();
             addExpression(register.getName(), register);
         }
-        // add parameter -> register Local events if at the beginning of the function
-        if (currentFunction.getEvents().isEmpty()) {
-            for (Register register : currentFunction.getParameterRegisters()) {
-                if (register.getType() instanceof ScopedPointerType && registerPointers.containsKey(register.getName())) {
-                    currentFunction.append(new Local(register, getRegisterPointer(register.getName())));
-                }
-            }
-        }
         currentFunction.append(event);
         return event;
     }
@@ -289,6 +269,10 @@ public class ProgramBuilder {
         }
         addExpression(function.getName(), function);
         for (Register register : function.getParameterRegisters()) {
+            if (register instanceof PointerRegister pointerRegister) {
+                ScopedPointerVariable pointer = registerPointers.get(register.getName());
+                pointerRegister.setPointer(pointer);
+            }
             addExpression(register.getName(), register);
         }
         program.addFunction(function);

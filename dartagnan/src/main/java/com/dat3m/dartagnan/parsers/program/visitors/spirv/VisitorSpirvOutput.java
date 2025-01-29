@@ -14,6 +14,7 @@ import com.dat3m.dartagnan.parsers.SpirvBaseVisitor;
 import com.dat3m.dartagnan.parsers.SpirvParser;
 import com.dat3m.dartagnan.parsers.program.visitors.spirv.builders.ProgramBuilder;
 import com.dat3m.dartagnan.parsers.program.visitors.spirv.helpers.HelperTypes;
+import com.dat3m.dartagnan.program.PointerRegister;
 import com.dat3m.dartagnan.program.Program;
 import com.dat3m.dartagnan.program.Register;
 import com.dat3m.dartagnan.program.memory.FinalMemoryValue;
@@ -98,8 +99,8 @@ public class VisitorSpirvOutput extends SpirvBaseVisitor<Expression> {
         ScopedPointerVariable base;
         if (builder.getExpression(name) instanceof ScopedPointerVariable pointerVariable) {
             base = pointerVariable;
-        } else if (builder.getExpression(name) instanceof Register && builder.getRegisterPointer(name) != null) {
-            base = builder.getRegisterPointer(name);
+        } else if (builder.getExpression(name) instanceof Register register && register instanceof PointerRegister pointerRegister) {
+            base = pointerRegister.getPointer();
         } else {
             throw new ParsingException("Uninitialized location %s", name);
         }
