@@ -10,6 +10,7 @@ import com.dat3m.dartagnan.expression.integers.*;
 import com.dat3m.dartagnan.expression.misc.GEPExpr;
 import com.dat3m.dartagnan.expression.misc.ITEExpr;
 import com.dat3m.dartagnan.expression.type.*;
+import com.dat3m.dartagnan.program.memory.ElementPointerVariable;
 import com.dat3m.dartagnan.program.memory.MemoryObject;
 import com.dat3m.dartagnan.program.memory.ScopedPointer;
 import com.dat3m.dartagnan.program.memory.ScopedPointerVariable;
@@ -293,6 +294,10 @@ public final class ExpressionFactory {
 
     public ScopedPointerVariable makeScopedPointerVariable(String id, String scopeId, Type type, MemoryObject address) {
         return new ScopedPointerVariable(id, scopeId, type, address);
+    }
+
+    public ElementPointerVariable makeElementPointerVariable(String id, MemoryObject address, ScopedPointerVariable pointer) {
+        return new ElementPointerVariable(id, address, pointer);
     }
 
     // -----------------------------------------------------------------------------------------------------------------

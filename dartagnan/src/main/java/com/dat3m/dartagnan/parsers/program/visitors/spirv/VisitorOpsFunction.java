@@ -14,6 +14,7 @@ import com.dat3m.dartagnan.parsers.program.visitors.spirv.builders.ProgramBuilde
 import com.dat3m.dartagnan.parsers.program.visitors.spirv.helpers.HelperInputs;
 import com.dat3m.dartagnan.parsers.program.visitors.spirv.helpers.HelperTags;
 import com.dat3m.dartagnan.program.event.functions.FunctionCall;
+import com.dat3m.dartagnan.program.memory.ElementPointerVariable;
 import com.dat3m.dartagnan.program.memory.MemoryObject;
 import com.dat3m.dartagnan.program.memory.ScopedPointer;
 import com.dat3m.dartagnan.program.Function;
@@ -28,7 +29,6 @@ import static com.dat3m.dartagnan.program.event.EventFactory.newVoidFunctionCall
 
 public class VisitorOpsFunction extends SpirvBaseVisitor<Void> {
 
-    private static final ExpressionFactory expressions = ExpressionFactory.getInstance();
     private static final TypeFactory types = TypeFactory.getInstance();
     private final ProgramBuilder builder;
     private String currentId;
@@ -96,27 +96,28 @@ public class VisitorOpsFunction extends SpirvBaseVisitor<Void> {
             throw new ParsingException("Duplicated parameter id '%s' in function '%s'", id, currentId);
         }
         currentArgs.add(id);
-        ScopedPointerVariable aggregatePointer = null;
         if (type instanceof ScopedPointerType pointerType && isEntryPoint) {
             String storageClass = pointerType.getScopeId();
-            Expression value;
             if (builder.hasInput(id)) {
-                Type runTimeAggregateType = builder.getInput(id).getType();
-                Expression aggregateValue = HelperInputs.castInput(id, runTimeAggregateType, builder.getInput(id));
-                aggregatePointer = builder.allocateScopedPointerVariable(id + "_input", aggregateValue, storageClass, runTimeAggregateType);
-                value = expressions.makeGetElementPointer(type, aggregatePointer, List.of(expressions.makeValue(0, types.getArchType())));
+                Type runTimeType = builder.getInput(id).getType();
+                if (!runTimeType.equals(pointerType.getPointedType())) {
+                    // Parameter is a pointer to an element of an aggregate
+                    Expression aggregateValue = HelperInputs.castInput(id, runTimeType, builder.getInput(id));
+                    ScopedPointerVariable aggregatePointer = builder.allocateScopedPointerVariable(id + "_input", aggregateValue, storageClass, runTimeType);
+                    ElementPointerVariable elementPointer = builder.allocateElementPointerVariable(id, aggregatePointer, 0);
+                    builder.addRegisterPointer(id, elementPointer);
+                } else {
+                    ScopedPointerVariable aggregatePointer = builder.allocateScopedPointerVariable(id, builder.getInput(id), storageClass, runTimeType);
+                    builder.addRegisterPointer(id, aggregatePointer);
+                }
             } else {
-                value = builder.makeUndefinedValue(type);
+                MemoryObject memObj = builder.allocateVariable(id, types.getMemorySizeInBytes(pointerType.getPointedType()));
+                memObj.setIsThreadLocal(false);
+                HelperTags.addFeatureTags(memObj, storageClass, builder.getArch());
+                memObj.setInitialValue(0, builder.makeUndefinedValue(type));
+                ScopedPointerVariable pointer = new ScopedPointerVariable(id, storageClass, pointerType, memObj);
+                builder.addRegisterPointer(id, pointer);
             }
-            MemoryObject memObj = builder.allocateVariable(id, types.getMemorySizeInBytes(pointerType.getPointedType()));
-            memObj.setIsThreadLocal(false);
-            HelperTags.addFeatureTags(memObj, storageClass, builder.getArch());
-            memObj.setInitialValue(0, value);
-            ScopedPointerVariable pointer = new ScopedPointerVariable(id, storageClass, pointerType, memObj);
-            if (aggregatePointer != null) {
-                pointer.setAggregateSource(aggregatePointer);
-            }
-            builder.addRegisterPointer(id, pointer);
         }
         if (currentArgs.size() == currentType.getParameterTypes().size()) {
             createFunction();

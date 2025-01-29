@@ -5,14 +5,12 @@ import com.dat3m.dartagnan.exception.ParsingException;
 import com.dat3m.dartagnan.expression.Expression;
 import com.dat3m.dartagnan.expression.ExpressionFactory;
 import com.dat3m.dartagnan.expression.Type;
-import com.dat3m.dartagnan.expression.type.FunctionType;
-import com.dat3m.dartagnan.expression.type.TypeFactory;
+import com.dat3m.dartagnan.expression.type.*;
 import com.dat3m.dartagnan.parsers.program.visitors.spirv.decorations.BuiltIn;
 import com.dat3m.dartagnan.parsers.program.visitors.spirv.utils.ThreadCreator;
 import com.dat3m.dartagnan.parsers.program.visitors.spirv.utils.ThreadGrid;
 import com.dat3m.dartagnan.program.event.functions.FunctionCall;
 import com.dat3m.dartagnan.program.memory.*;
-import com.dat3m.dartagnan.expression.type.ScopedPointerType;
 import com.dat3m.dartagnan.program.*;
 import com.dat3m.dartagnan.program.event.*;
 
@@ -198,6 +196,25 @@ public class ProgramBuilder {
         memObj.addFeatureTag(storageClass);
         return ExpressionFactory.getInstance().makeScopedPointerVariable(
                 id, storageClass, type, memObj);
+    }
+
+    public ElementPointerVariable allocateElementPointerVariable(String id, ScopedPointerVariable pointer, int offset) {
+        Type type;
+        if (pointer.getInnerType() instanceof AggregateType aggregateType) {
+            type = aggregateType.getTypeOffsets().get(0).type();
+        } else if (pointer.getInnerType() instanceof ArrayType arrayType) {
+            type = arrayType.getElementType();
+        } else {
+            throw new ParsingException("Unsupported pointer type '%s'", pointer.getInnerType());
+        }
+        MemoryObject memObj = allocateVariable(id, TypeFactory.getInstance().getMemorySizeInBytes(type));
+        memObj.setIsThreadLocal(false);
+        Expression value = ExpressionFactory.getInstance().makeGetElementPointer(type, pointer,
+                List.of(ExpressionFactory.getInstance().makeValue(offset, TypeFactory.getInstance().getArchType())));
+        memObj.setInitialValue(0, value);
+        memObj.addFeatureTag(pointer.getScopeId());
+        return ExpressionFactory.getInstance().makeElementPointerVariable(
+                id, memObj, pointer);
     }
 
     // TODO: Proper implementation of pointers

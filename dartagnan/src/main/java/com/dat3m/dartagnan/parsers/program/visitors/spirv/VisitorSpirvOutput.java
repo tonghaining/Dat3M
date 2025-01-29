@@ -17,6 +17,7 @@ import com.dat3m.dartagnan.parsers.program.visitors.spirv.helpers.HelperTypes;
 import com.dat3m.dartagnan.program.PointerRegister;
 import com.dat3m.dartagnan.program.Program;
 import com.dat3m.dartagnan.program.Register;
+import com.dat3m.dartagnan.program.memory.ElementPointerVariable;
 import com.dat3m.dartagnan.program.memory.FinalMemoryValue;
 import com.dat3m.dartagnan.program.memory.ScopedPointerVariable;
 
@@ -105,9 +106,6 @@ public class VisitorSpirvOutput extends SpirvBaseVisitor<Expression> {
             throw new ParsingException("Uninitialized location %s", name);
         }
         if (base != null) {
-            if (base.getAggregateSource() != null) {
-                base = base.getAggregateSource();
-            }
             List<Integer> indexes = ctx.indexValue().stream()
                     .map(c -> Integer.parseInt(c.ModeHeader_PositiveInteger().getText()))
                     .toList();
@@ -191,6 +189,9 @@ public class VisitorSpirvOutput extends SpirvBaseVisitor<Expression> {
                 base.getId() + "[" + String.join("][", indexes.stream().map(Object::toString).toArray(String[]::new)) + "]";
         Type elType = HelperTypes.getMemberType(base.getId(), base.getInnerType(), indexes);
         if (elType instanceof ArrayType || elType instanceof AggregateType) {
+            if (base instanceof ElementPointerVariable elementPointer) {
+                return createFinalMemoryValue(elementPointer.getAggregatePointer(), indexes);
+            }
             throw new ParsingException("Index is not deep enough for variable '%s'", name);
         }
         int offset = HelperTypes.getMemberOffset(base.getId(), 0, base.getInnerType(), indexes);
