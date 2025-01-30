@@ -138,20 +138,26 @@ public class HelperTags {
 
     public static void addFeatureTags(MemoryObject memObj, String storageClass, Arch arch) {
         if (arch.equals(Arch.OPENCL)) {
-            memObj.addFeatureTag(storageClass);
-            String openCLSpace = switch (storageClass) {
-                case Tag.Spirv.SC_GENERIC -> Tag.OpenCL.GENERIC_SPACE;
-                case Tag.Spirv.SC_FUNCTION,
-                     Tag.Spirv.SC_INPUT,
-                     Tag.Spirv.SC_WORKGROUP  -> Tag.OpenCL.LOCAL_SPACE;
-                case Tag.Spirv.SC_UNIFORM_CONSTANT,
-                     Tag.Spirv.SC_PHYS_STORAGE_BUFFER,
-                     Tag.Spirv.SC_CROSS_WORKGROUP -> Tag.OpenCL.GLOBAL_SPACE;
-                default -> throw new UnsupportedOperationException("Cannot convert " + storageClass + " to OpenCL space");
-            };
+            String openCLSpace = getOpenCLStorageClass(storageClass);
+            if (openCLSpace == null) {
+                throw new UnsupportedOperationException("Cannot convert " + storageClass + " to OpenCL space");
+            }
             memObj.addFeatureTag(openCLSpace);
-            memObj.addFeatureTag(Tag.C11.NON_ATOMIC_LOCATION); // OpenCL variables are non-atomic by default
+            // memObj.addFeatureTag(Tag.C11.NON_ATOMIC_LOCATION); // OpenCL variables are atomic by default
         }
+    }
+
+    public static String getOpenCLStorageClass(String storageClass) {
+        return switch (storageClass) {
+            case Tag.Spirv.SC_GENERIC -> Tag.OpenCL.GENERIC_SPACE;
+            case Tag.Spirv.SC_FUNCTION,
+                 Tag.Spirv.SC_INPUT,
+                 Tag.Spirv.SC_WORKGROUP  -> Tag.OpenCL.LOCAL_SPACE;
+            case Tag.Spirv.SC_UNIFORM_CONSTANT,
+                 Tag.Spirv.SC_PHYS_STORAGE_BUFFER,
+                 Tag.Spirv.SC_CROSS_WORKGROUP -> Tag.OpenCL.GLOBAL_SPACE;
+            default -> null;
+        };
     }
 
     private static void throwDuplicatesException(List<String> operands) {

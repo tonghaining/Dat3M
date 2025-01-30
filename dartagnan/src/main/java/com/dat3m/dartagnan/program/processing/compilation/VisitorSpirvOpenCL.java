@@ -1,5 +1,6 @@
 package com.dat3m.dartagnan.program.processing.compilation;
 
+import com.dat3m.dartagnan.parsers.program.visitors.spirv.helpers.HelperTags;
 import com.dat3m.dartagnan.program.event.Event;
 import com.dat3m.dartagnan.program.event.EventFactory;
 import com.dat3m.dartagnan.program.event.Tag;
@@ -168,6 +169,9 @@ public class VisitorSpirvOpenCL extends VisitorC11 {
     }
 
     private String toOpenCLTag(String tag) {
+        if (HelperTags.getOpenCLStorageClass(tag) != null) {
+            return HelperTags.getOpenCLStorageClass(tag);
+        }
         return switch (tag) {
             // Barriers
             case Tag.Spirv.CONTROL -> null;
@@ -216,13 +220,6 @@ public class VisitorSpirvOpenCL extends VisitorC11 {
                             "is not supported by OpenCL memory model", tag));
 
             // Storage class
-            case Tag.Spirv.SC_GENERIC -> Tag.OpenCL.GENERIC_SPACE;
-            case Tag.Spirv.SC_FUNCTION,
-                    Tag.Spirv.SC_INPUT,
-                    Tag.Spirv.SC_WORKGROUP  -> Tag.OpenCL.LOCAL_SPACE;
-            case Tag.Spirv.SC_UNIFORM_CONSTANT,
-                    Tag.Spirv.SC_PHYS_STORAGE_BUFFER,
-                    Tag.Spirv.SC_CROSS_WORKGROUP -> Tag.OpenCL.GLOBAL_SPACE;
             case Tag.Spirv.SC_PUSH_CONSTANT,
                     Tag.Spirv.SC_UNIFORM,
                     Tag.Spirv.SC_OUTPUT,

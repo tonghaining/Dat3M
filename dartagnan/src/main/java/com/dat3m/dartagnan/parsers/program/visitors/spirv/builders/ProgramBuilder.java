@@ -7,6 +7,7 @@ import com.dat3m.dartagnan.expression.ExpressionFactory;
 import com.dat3m.dartagnan.expression.Type;
 import com.dat3m.dartagnan.expression.type.*;
 import com.dat3m.dartagnan.parsers.program.visitors.spirv.decorations.BuiltIn;
+import com.dat3m.dartagnan.parsers.program.visitors.spirv.helpers.HelperTags;
 import com.dat3m.dartagnan.parsers.program.visitors.spirv.utils.ThreadCreator;
 import com.dat3m.dartagnan.parsers.program.visitors.spirv.utils.ThreadGrid;
 import com.dat3m.dartagnan.program.event.functions.FunctionCall;
@@ -193,7 +194,7 @@ public class ProgramBuilder {
         MemoryObject memObj = allocateVariable(id, TypeFactory.getInstance().getMemorySizeInBytes(type));
         memObj.setIsThreadLocal(false);
         memObj.setInitialValue(0, initValue);
-        memObj.addFeatureTag(storageClass);
+        HelperTags.addFeatureTags(memObj, storageClass, arch);
         return ExpressionFactory.getInstance().makeScopedPointerVariable(
                 id, storageClass, type, memObj);
     }
@@ -212,7 +213,7 @@ public class ProgramBuilder {
         Expression value = ExpressionFactory.getInstance().makeGetElementPointer(type, pointer,
                 List.of(ExpressionFactory.getInstance().makeValue(offset, TypeFactory.getInstance().getArchType())));
         memObj.setInitialValue(0, value);
-        memObj.addFeatureTag(pointer.getScopeId());
+        HelperTags.addFeatureTags(memObj, pointer.getScopeId(), arch);
         return ExpressionFactory.getInstance().makeElementPointerVariable(
                 id, memObj, pointer);
     }
