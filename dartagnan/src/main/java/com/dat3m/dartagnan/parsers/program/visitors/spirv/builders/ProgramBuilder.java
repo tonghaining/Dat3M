@@ -220,11 +220,6 @@ public class ProgramBuilder {
 
     public String getPointerStorageClass(String id) {
         Expression expression = getExpression(id);
-        // Pointers to variables and references from OpAccessChain
-        if (expression instanceof ScopedPointer pointer) {
-            return pointer.getScopeId();
-        }
-        // Pointers passed via function argument registers
         if (expression.getType() instanceof ScopedPointerType pointerType) {
             return pointerType.getScopeId();
         }

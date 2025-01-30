@@ -11,7 +11,6 @@ import com.dat3m.dartagnan.parsers.program.visitors.spirv.builders.ProgramBuilde
 import com.dat3m.dartagnan.program.Register;
 import com.dat3m.dartagnan.program.event.Tag;
 import com.dat3m.dartagnan.program.event.core.Local;
-import com.dat3m.dartagnan.program.memory.ScopedPointer;
 import com.dat3m.dartagnan.program.memory.ScopedPointerVariable;
 
 import java.util.Set;
@@ -40,8 +39,7 @@ public class VisitorOpsConversion extends SpirvBaseVisitor<Void> {
             }
             Expression convertedPointer = expressions.makeCast(operandExpr, pointerType.getPointedType());
             Register reg = builder.addRegister(id, convertedPointer.getType());
-            Local local = new Local(reg, convertedPointer);
-            builder.addEvent(local);
+            builder.addEvent(new Local(reg, convertedPointer));
             return null;
         } else {
             // TODO: Add support for scalar or vector of numerical-type bitcasts
@@ -59,8 +57,7 @@ public class VisitorOpsConversion extends SpirvBaseVisitor<Void> {
         Expression pointerExpr = builder.getExpression(ctx.pointer().getText());
         Expression convertedPointer = expressions.makeCast(pointerExpr, builder.getType(typeId), false);
         Register reg = builder.addRegister(id, convertedPointer.getType());
-        Local local = new Local(reg, convertedPointer);
-        builder.addEvent(local);
+        builder.addEvent(new Local(reg, convertedPointer));
         return null;
     }
 
@@ -68,28 +65,28 @@ public class VisitorOpsConversion extends SpirvBaseVisitor<Void> {
     public Void visitOpPtrCastToGeneric(SpirvParser.OpPtrCastToGenericContext ctx) {
         String id = ctx.idResult().getText();
         String typeId = ctx.idResultType().getText();
-        if (!(builder.getType(typeId) instanceof ScopedPointerType targetPointerType)) {
+        if (!(builder.getType(typeId) instanceof ScopedPointerType genericType)) {
             throw new ParsingException("Type '%s' is not a pointer type", typeId);
         }
-        String pointer = ctx.pointer().getText();
-        Expression originPointerExpr = builder.getExpression(pointer);
-        String originStorageClass;
-        if (originPointerExpr.getType() instanceof ScopedPointerType originPointerType) {
-            originStorageClass = originPointerType.getScopeId();
-        } else if (originPointerExpr instanceof ScopedPointer scopedPointer) {
-            originStorageClass = scopedPointer.getScopeId();
-        } else {
-            throw new ParsingException("Type '%s' is not a pointer type", pointer);
+        if (!genericType.getScopeId().equals(Tag.Spirv.SC_GENERIC)) {
+            throw new ParsingException("Invalid storage class '%s' for OpPtrCastToGeneric", genericType.getScopeId());
         }
-        if (!originStorageClass.equals(Tag.Spirv.SC_CROSS_WORKGROUP) &&
-                !originStorageClass.equals(Tag.Spirv.SC_WORKGROUP) &&
-                !originStorageClass.equals(Tag.Spirv.SC_FUNCTION)) {
-            throw new ParsingException("Invalid storage class '%s' for OpPtrCastToGeneric", originStorageClass);
+        String pointerId = ctx.pointer().getText();
+        Expression pointer = builder.getExpression(pointerId);
+        if (!(pointer.getType() instanceof ScopedPointerType pointerType)) {
+            throw new ParsingException("Type '%s' is not a pointer type", pointerId);
         }
-        Expression convertedExpr = expressions.makeCast(originPointerExpr, targetPointerType);
-        ScopedPointerVariable convertedPointer = builder.allocateScopedPointerVariable(id,
-                convertedExpr, targetPointerType.getScopeId(), targetPointerType.getPointedType());
-        builder.addExpression(id, convertedPointer);
+        String pointerSC = pointerType.getScopeId();
+        Set<String> supportedSC = Set.of(
+                Tag.Spirv.SC_CROSS_WORKGROUP,
+                Tag.Spirv.SC_WORKGROUP,
+                Tag.Spirv.SC_FUNCTION);
+        if (!supportedSC.contains(pointerSC)) {
+            throw new ParsingException("Invalid storage class '%s' for OpPtrCastToGeneric", pointerSC);
+        }
+        Expression convertedExpr = expressions.makeCast(pointer, genericType);
+        Register reg = builder.addRegister(id, genericType);
+        builder.addEvent(new Local(reg, convertedExpr));
         return null;
     }
 
