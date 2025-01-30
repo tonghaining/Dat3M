@@ -2,7 +2,6 @@ package com.dat3m.dartagnan.parsers.program.visitors.spirv;
 
 import com.dat3m.dartagnan.exception.ParsingException;
 import com.dat3m.dartagnan.expression.Expression;
-import com.dat3m.dartagnan.expression.ExpressionFactory;
 import com.dat3m.dartagnan.expression.Type;
 import com.dat3m.dartagnan.expression.type.FunctionType;
 import com.dat3m.dartagnan.expression.type.ScopedPointerType;
@@ -115,7 +114,8 @@ public class VisitorOpsFunction extends SpirvBaseVisitor<Void> {
                 memObj.setIsThreadLocal(false);
                 HelperTags.addFeatureTags(memObj, storageClass, builder.getArch());
                 memObj.setInitialValue(0, builder.makeUndefinedValue(type));
-                ScopedPointerVariable pointer = new ScopedPointerVariable(id, storageClass, pointerType, memObj);
+                ScopedPointerType scopedPointerType = types.getScopedPointerType(storageClass, type);
+                ScopedPointerVariable pointer = new ScopedPointerVariable(id, scopedPointerType, memObj);
                 builder.addRegisterPointer(id, pointer);
             }
         }

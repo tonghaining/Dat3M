@@ -217,8 +217,6 @@ public class ProgramBuilder {
                 id, memObj, pointer);
     }
 
-    // TODO: Proper implementation of pointers
-    //  where ScopedPointer uses ScopedPointerType
     public String getPointerStorageClass(String id) {
         Expression expression = getExpression(id);
         // Pointers to variables and references from OpAccessChain

@@ -4,7 +4,7 @@ public class ElementPointerVariable extends ScopedPointerVariable {
     private final ScopedPointerVariable aggregatePointer;
 
     public ElementPointerVariable(String id, MemoryObject address, ScopedPointerVariable aggregatePointer) {
-        super(id, aggregatePointer.getScopeId(), aggregatePointer.getInnerType(), address);
+        super(id, aggregatePointer.getType(), address);
         this.aggregatePointer = aggregatePointer;
     }
 
