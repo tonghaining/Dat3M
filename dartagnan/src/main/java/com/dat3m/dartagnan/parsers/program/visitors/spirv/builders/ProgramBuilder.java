@@ -25,7 +25,7 @@ public class ProgramBuilder {
     protected final Map<String, Type> types = new HashMap<>();
     protected final Map<String, Expression> expressions = new HashMap<>();
     protected final Map<String, Expression> expressionsDead = new HashMap<>();
-    protected final Map<String, ScopedPointerVariable> registerPointers = new HashMap<>();
+    protected final Map<String, Expression> registerPointers = new HashMap<>();
     protected final Map<String, Expression> inputs = new HashMap<>();
     protected final Map<String, String> debugInfos = new HashMap<>();
     protected final ThreadGrid grid;
@@ -172,16 +172,10 @@ public class ProgramBuilder {
     }
 
     public Set<ScopedPointerVariable> getVariables() {
-        Set<ScopedPointerVariable> res = expressions.values().stream()
+        return expressions.values().stream()
                 .filter(ScopedPointerVariable.class::isInstance)
                 .map(v -> (ScopedPointerVariable) v)
                 .collect(Collectors.toSet());
-        for (ScopedPointer pointer : registerPointers.values()) {
-            if (pointer instanceof ScopedPointerVariable variable) {
-                res.add(variable);
-            }
-        }
-        return res;
     }
 
     public MemoryObject allocateVariable(String id, int bytes) {
@@ -199,25 +193,6 @@ public class ProgramBuilder {
                 id, storageClass, type, memObj);
     }
 
-    public ElementPointerVariable allocateElementPointerVariable(String id, ScopedPointerVariable pointer, int offset) {
-        Type type;
-        if (pointer.getInnerType() instanceof AggregateType aggregateType) {
-            type = aggregateType.getTypeOffsets().get(0).type();
-        } else if (pointer.getInnerType() instanceof ArrayType arrayType) {
-            type = arrayType.getElementType();
-        } else {
-            throw new ParsingException("Unsupported pointer type '%s'", pointer.getInnerType());
-        }
-        MemoryObject memObj = allocateVariable(id, TypeFactory.getInstance().getMemorySizeInBytes(type));
-        memObj.setIsThreadLocal(false);
-        Expression value = ExpressionFactory.getInstance().makeGetElementPointer(type, pointer,
-                List.of(ExpressionFactory.getInstance().makeValue(offset, TypeFactory.getInstance().getArchType())));
-        memObj.setInitialValue(0, value);
-        HelperTags.addFeatureTags(memObj, pointer.getScopeId(), arch);
-        return ExpressionFactory.getInstance().makeElementPointerVariable(
-                id, memObj, pointer);
-    }
-
     public String getPointerStorageClass(String id) {
         Expression expression = getExpression(id);
         if (expression.getType() instanceof ScopedPointerType pointerType) {
@@ -226,7 +201,7 @@ public class ProgramBuilder {
         throw new ParsingException("Reference to undefined pointer '%s'", id);
     }
 
-    public void addRegisterPointer(String id, ScopedPointerVariable pointer) {
+    public void addRegisterPointer(String id, Expression pointer) {
         if (registerPointers.containsKey(id)) {
             throw new ParsingException("Duplicated register pointer definition '%s'", id);
         }
@@ -250,9 +225,11 @@ public class ProgramBuilder {
         if (currentFunction == null) {
             throw new ParsingException("Attempt to add an event outside a function definition");
         }
-        if (!controlFlowBuilder.isInsideBlock()) {
-            throw new ParsingException("Attempt to add an event outside a control flow block");
-        }
+        // TODO: Quick hack, disabled to add local event with entry point register values.
+        //  Proper implementation needed.
+        //if (!controlFlowBuilder.isInsideBlock()) {
+        //    throw new ParsingException("Attempt to add an event outside a control flow block");
+        //}
         if (controlFlowBuilder.hasCurrentLocation()) {
             event.setMetadata(controlFlowBuilder.getCurrentLocation());
         }
@@ -279,15 +256,17 @@ public class ProgramBuilder {
                     function.getName(), currentFunction.getName());
         }
         addExpression(function.getName(), function);
-        for (Register register : function.getParameterRegisters()) {
-            if (register instanceof PointerRegister pointerRegister) {
-                ScopedPointerVariable pointer = registerPointers.get(register.getName());
-                pointerRegister.setPointer(pointer);
-            }
-            addExpression(register.getName(), register);
-        }
         program.addFunction(function);
         currentFunction = function;
+        for (Register register : function.getParameterRegisters()) {
+            // TODO: Conflicts with controlFlowBlock check
+            if (registerPointers.containsKey(register.getName())) {
+                Event local = EventFactory.newLocal(register, registerPointers.get(register.getName()));
+                addEvent(local);
+            } else {
+                addExpression(register.getName(), register);
+            }
+        }
     }
 
     public void endCurrentFunction() {

@@ -480,6 +480,8 @@ public class VisitorOpsFunctionTest {
         assertTrue(visitor.forwardCalls.isEmpty());
     }
 
+    // TODO: Entry point tests (Resolving parameters for OpenCL)
+
     private void visit(String text) {
         builder.getControlFlowBuilder().getOrCreateLabel("%mock_label");
         builder.getControlFlowBuilder().startBlock("%mock_label");

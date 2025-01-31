@@ -2,19 +2,15 @@ package com.dat3m.dartagnan.parsers.program.visitors.spirv;
 
 import com.dat3m.dartagnan.exception.ParsingException;
 import com.dat3m.dartagnan.expression.Expression;
+import com.dat3m.dartagnan.expression.ExpressionFactory;
 import com.dat3m.dartagnan.expression.Type;
-import com.dat3m.dartagnan.expression.type.FunctionType;
-import com.dat3m.dartagnan.expression.type.ScopedPointerType;
-import com.dat3m.dartagnan.expression.type.TypeFactory;
-import com.dat3m.dartagnan.expression.type.VoidType;
+import com.dat3m.dartagnan.expression.type.*;
 import com.dat3m.dartagnan.parsers.SpirvBaseVisitor;
 import com.dat3m.dartagnan.parsers.SpirvParser;
 import com.dat3m.dartagnan.parsers.program.visitors.spirv.builders.ProgramBuilder;
 import com.dat3m.dartagnan.parsers.program.visitors.spirv.helpers.HelperInputs;
-import com.dat3m.dartagnan.parsers.program.visitors.spirv.helpers.HelperTags;
+import com.dat3m.dartagnan.parsers.program.visitors.spirv.helpers.HelperTypes;
 import com.dat3m.dartagnan.program.event.functions.FunctionCall;
-import com.dat3m.dartagnan.program.memory.ElementPointerVariable;
-import com.dat3m.dartagnan.program.memory.MemoryObject;
 import com.dat3m.dartagnan.program.memory.ScopedPointer;
 import com.dat3m.dartagnan.program.Function;
 import com.dat3m.dartagnan.program.Register;
@@ -34,13 +30,10 @@ public class VisitorOpsFunction extends SpirvBaseVisitor<Void> {
     private FunctionType currentType;
     private List<String> currentArgs;
     private int nextFunctionId = 0;
-
     private boolean isEntryPoint = false;
 
     final Map<String, Function> forwardFunctions = new HashMap<>();
     final Map<String, Set<FunctionCall>> forwardCalls = new HashMap<>();
-
-
 
     public VisitorOpsFunction(ProgramBuilder builder) {
         this.builder = builder;
@@ -95,29 +88,8 @@ public class VisitorOpsFunction extends SpirvBaseVisitor<Void> {
             throw new ParsingException("Duplicated parameter id '%s' in function '%s'", id, currentId);
         }
         currentArgs.add(id);
-        if (type instanceof ScopedPointerType pointerType && isEntryPoint) {
-            String storageClass = pointerType.getScopeId();
-            if (builder.hasInput(id)) {
-                Type runTimeType = builder.getInput(id).getType();
-                if (!runTimeType.equals(pointerType.getPointedType())) {
-                    // Parameter is a pointer to an element of an aggregate
-                    Expression aggregateValue = HelperInputs.castInput(id, runTimeType, builder.getInput(id));
-                    ScopedPointerVariable aggregatePointer = builder.allocateScopedPointerVariable(id + "_input", aggregateValue, storageClass, runTimeType);
-                    ElementPointerVariable elementPointer = builder.allocateElementPointerVariable(id, aggregatePointer, 0);
-                    builder.addRegisterPointer(id, elementPointer);
-                } else {
-                    ScopedPointerVariable aggregatePointer = builder.allocateScopedPointerVariable(id, builder.getInput(id), storageClass, runTimeType);
-                    builder.addRegisterPointer(id, aggregatePointer);
-                }
-            } else {
-                MemoryObject memObj = builder.allocateVariable(id, types.getMemorySizeInBytes(pointerType.getPointedType()));
-                memObj.setIsThreadLocal(false);
-                HelperTags.addFeatureTags(memObj, storageClass, builder.getArch());
-                memObj.setInitialValue(0, builder.makeUndefinedValue(type));
-                ScopedPointerType scopedPointerType = types.getScopedPointerType(storageClass, type);
-                ScopedPointerVariable pointer = new ScopedPointerVariable(id, scopedPointerType, memObj);
-                builder.addRegisterPointer(id, pointer);
-            }
+        if (isEntryPoint) {
+            createExternalVariable(id, type);
         }
         if (currentArgs.size() == currentType.getParameterTypes().size()) {
             createFunction();
@@ -125,10 +97,49 @@ public class VisitorOpsFunction extends SpirvBaseVisitor<Void> {
         return null;
     }
 
+    // TODO: Quick draft, proper refactoring needed
+    private void createExternalVariable(String id, Type type) {
+        if (type instanceof ScopedPointerType pType) {
+            Expression input = castInput(id, pType);
+            String storageClass = pType.getScopeId();
+            ScopedPointerVariable aggregatePointer = builder.allocateScopedPointerVariable(id + "_input", input, storageClass, input.getType());
+            Expression zero = ExpressionFactory.getInstance().makeZero(TypeFactory.getInstance().getArchType());
+            Expression ptr = HelperTypes.getMemberAddress(id, aggregatePointer.getAddress(), input.getType(), List.of(zero, zero));
+            builder.addExpression(id + "_input", aggregatePointer);
+            builder.addRegisterPointer(id, ptr);
+        } else {
+            if (builder.hasInput(id)) {
+                Expression input = builder.getInput(id);
+                Expression ptr = HelperInputs.castInput(id, type, input);
+                builder.addRegisterPointer(id, ptr);
+            } else {
+                // TODO: Implementation for default undefined scalar
+                throw new RuntimeException("Support for scalar parameters not implemented");
+            }
+        }
+    }
+
+    private Expression castInput(String id, ScopedPointerType pType) {
+        if (builder.hasInput(id)) {
+            Expression input = builder.getInput(id);
+            Type inputType = input.getType();
+            Type runtimeType = HelperInputs.castInputType(id, pType, inputType);
+            return HelperInputs.castInput(id, runtimeType, input);
+        }
+        // TODO: This is a quick default struct with 10 undefined elements.
+        //  We need a proper implementation in a more suitable place.
+        Type type = pType.getPointedType();
+        Type aType = TypeFactory.getInstance().getArrayType(type, 10);
+        Type agType = TypeFactory.getInstance().getAggregateType(List.of(aType));
+        List<Expression> members = IntStream.range(0, 10).boxed().map(i -> builder.makeUndefinedValue(type)).toList();
+        Expression array = ExpressionFactory.getInstance().makeConstruct(aType, members);
+        return ExpressionFactory.getInstance().makeConstruct(agType, List.of(array));
+    }
+
     @Override
     public Void visitOpFunctionEnd(SpirvParser.OpFunctionEndContext ctx) {
-        isEntryPoint = false;
         builder.endCurrentFunction();
+        isEntryPoint = false;
         return null;
     }
 
@@ -171,7 +182,6 @@ public class VisitorOpsFunction extends SpirvBaseVisitor<Void> {
         currentId = null;
         currentType = null;
         currentArgs = null;
-        isEntryPoint = false;
     }
 
     private Function getCalledFunction(String id, FunctionType type) {
