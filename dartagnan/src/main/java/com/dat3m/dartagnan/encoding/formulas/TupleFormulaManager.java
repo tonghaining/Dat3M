@@ -29,7 +29,7 @@ public final class TupleFormulaManager {
         final BooleanFormulaManager bmgr = context.getBooleanFormulaManager();
         final List<BooleanFormula> enc = new ArrayList<>();
         for (int i = 0; i < x.elements.size(); i++) {
-            enc.add(context.equal(x.elements.get(i), y.elements.get(i)));;
+            enc.add(context.equal(x.elements.get(i), y.elements.get(i)));
         }
         return bmgr.and(enc);
     }

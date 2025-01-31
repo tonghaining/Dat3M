@@ -25,6 +25,10 @@ public class TupleFormula implements Formula {
                 .collect(Collectors.joining(",", "{ ", " }"));
     }
 
+    public List<Formula> getElements() {
+        return elements;
+    }
+
     @Override
     public int hashCode() {
         return elements.hashCode();

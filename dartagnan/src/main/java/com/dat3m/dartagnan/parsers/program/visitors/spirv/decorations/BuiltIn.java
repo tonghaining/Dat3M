@@ -49,15 +49,7 @@ public class BuiltIn implements Decoration {
     public void decorate(String id, MemoryObject memObj, Type type) {
         if (mapping.containsKey(id)) {
             Expression expression = getDecoration(id, type);
-            if (expression instanceof ConstructExpr cExpr) {
-                Type elementType = getArrayElementType(id, type);
-                int size = types.getMemorySizeInBytes(elementType);
-                memObj.setInitialValue(0, cExpr.getOperands().get(0));
-                memObj.setInitialValue(size, cExpr.getOperands().get(1));
-                memObj.setInitialValue(size * 2, cExpr.getOperands().get(2));
-            } else {
-                memObj.setInitialValue(0, expression);
-            }
+            memObj.setInitialValue(0, expression);
         }
     }
 

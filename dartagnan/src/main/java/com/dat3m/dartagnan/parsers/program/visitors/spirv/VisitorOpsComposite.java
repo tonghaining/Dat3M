@@ -2,6 +2,7 @@ package com.dat3m.dartagnan.parsers.program.visitors.spirv;
 
 import com.dat3m.dartagnan.exception.ParsingException;
 import com.dat3m.dartagnan.expression.Expression;
+import com.dat3m.dartagnan.expression.ExpressionFactory;
 import com.dat3m.dartagnan.expression.Type;
 import com.dat3m.dartagnan.expression.aggregates.ConstructExpr;
 import com.dat3m.dartagnan.parsers.SpirvBaseVisitor;
@@ -30,9 +31,6 @@ public class VisitorOpsComposite extends SpirvBaseVisitor<Event> {
     private void extractCompositeElement(String id, String typeId, String compositeId,
                                     List<SpirvParser.IndexesLiteralIntegerContext> idxContexts) {
         Expression compositeExpression = builder.getExpression(compositeId);
-        if (!(compositeExpression instanceof ConstructExpr)) {
-            throw new ParsingException("Composite extraction is only supported for ConstructExpr");
-        }
         Type type = builder.getType(typeId);
         List<Integer> indexes = idxContexts.stream()
                 .map(SpirvParser.IndexesLiteralIntegerContext::getText)
@@ -40,7 +38,7 @@ public class VisitorOpsComposite extends SpirvBaseVisitor<Event> {
                 .toList();
         Expression element = compositeExpression;
         for (Integer index : indexes) {
-            element = element.getOperands().get(index);
+            element = ExpressionFactory.getInstance().makeExtract(index, element);
         }
         if (type != element.getType()) {
             throw new ParsingException("Type mismatch in composite extraction: %s", id);

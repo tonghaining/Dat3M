@@ -6,10 +6,7 @@ import com.dat3m.dartagnan.encoding.formulas.TupleFormulaManager;
 import com.dat3m.dartagnan.expression.Expression;
 import com.dat3m.dartagnan.expression.Type;
 import com.dat3m.dartagnan.expression.integers.IntCmpOp;
-import com.dat3m.dartagnan.expression.type.AggregateType;
-import com.dat3m.dartagnan.expression.type.BooleanType;
-import com.dat3m.dartagnan.expression.type.IntegerType;
-import com.dat3m.dartagnan.expression.type.TypeFactory;
+import com.dat3m.dartagnan.expression.type.*;
 import com.dat3m.dartagnan.program.Register;
 import com.dat3m.dartagnan.program.analysis.BranchEquivalence;
 import com.dat3m.dartagnan.program.analysis.ExecutionAnalysis;
@@ -37,10 +34,7 @@ import org.sosy_lab.java_smt.api.*;
 import org.sosy_lab.java_smt.api.NumeralFormula.IntegerFormula;
 
 import java.math.BigInteger;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static com.dat3m.dartagnan.configuration.OptionNames.*;
 import static com.dat3m.dartagnan.program.event.Tag.INIT;
@@ -312,6 +306,11 @@ public final class EncodingContext {
             BitvectorFormulaManager bvmgr = formulaManager.getBitvectorFormulaManager();
             return bvmgr.equal(f, bvmgr.makeBitvector(bvmgr.getLength(f), 0));
         }
+        if (formula instanceof TupleFormula f) {
+            List<Formula> zeros = new ArrayList<>(Collections.nCopies(
+                    f.getElements().size(), formulaManager.getIntegerFormulaManager().makeNumber(0)));
+            return tupleFormulaManager.equal(f, tupleFormulaManager.makeTuple(zeros));
+        }
         throw new UnsupportedOperationException(String.format("Unknown type for equalZero(%s).", formula));
     }
 
@@ -454,7 +453,7 @@ public final class EncodingContext {
                 return formulaManager.getBitvectorFormulaManager().makeVariable(integerType.getBitWidth(), name);
             }
         }
-        if (type instanceof AggregateType) {
+        if (type instanceof AggregateType || type instanceof ArrayType) {
             final Map<Integer, Type> primitives = TypeFactory.getInstance().decomposeIntoPrimitives(type);
             final List<Formula> elements = new ArrayList<>();
             for (Type eleType : primitives.values()) {
