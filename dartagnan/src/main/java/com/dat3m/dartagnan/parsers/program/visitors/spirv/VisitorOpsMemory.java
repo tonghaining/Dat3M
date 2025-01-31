@@ -23,7 +23,6 @@ import com.dat3m.dartagnan.program.event.EventFactory;
 import com.dat3m.dartagnan.program.event.Tag;
 import org.antlr.v4.runtime.RuleContext;
 
-import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -32,7 +31,6 @@ import static com.dat3m.dartagnan.parsers.program.visitors.spirv.decorations.Dec
 
 public class VisitorOpsMemory extends SpirvBaseVisitor<Event> {
 
-    private static final TypeFactory types = TypeFactory.getInstance();
     private static final ExpressionFactory expressions = ExpressionFactory.getInstance();
     private final ProgramBuilder builder;
     private final BuiltIn builtIn;
@@ -64,23 +62,8 @@ public class VisitorOpsMemory extends SpirvBaseVisitor<Event> {
         String resultType = ctx.idResultType().getText();
         Expression pointer = builder.getExpression(pointerId);
         List<Event> events = new ArrayList<>();
-        if (builder.getType(resultType) instanceof ArrayType arrayType) {
-            List<Expression> registers = new ArrayList<>();
-            for (int i = 0; i < arrayType.getNumElements(); i++) {
-                String elementId = resultId + "_" + i;
-                Register register = builder.addRegister(elementId, arrayType.getElementType());
-                registers.add(register);
-                List<Expression> index = List.of(new IntLiteral(types.getArchType(), new BigInteger(Long.toString(i))));
-                Expression elementPointer = HelperTypes.getMemberAddress(pointerId, pointer, arrayType, index);
-                Event load = EventFactory.newLoad(register, elementPointer);
-                events.add(load);
-            }
-            Expression arrayRegister = expressions.makeArray(arrayType.getElementType(), registers, true);
-            builder.addExpression(resultId, arrayRegister);
-        } else {
-            Register register = builder.addRegister(resultId, resultType);
-            events.add(EventFactory.newLoad(register, pointer));
-        }
+        Register register = builder.addRegister(resultId, resultType);
+        events.add(EventFactory.newLoad(register, pointer));
         Set<String> tags = parseMemoryAccessTags(ctx.memoryAccess());
         if (!tags.contains(Tag.Spirv.MEM_AVAILABLE)) {
             String storageClass = builder.getPointerStorageClass(ctx.pointer().getText());
@@ -264,8 +247,6 @@ public class VisitorOpsMemory extends SpirvBaseVisitor<Event> {
             Type basePointedType;
             if (basePointer.getType() instanceof ScopedPointerType basePointerType) {
                 basePointedType = basePointerType.getPointedType();
-            } else if (basePointer instanceof ScopedPointer scopedPointer) {
-                basePointedType = scopedPointer.getInnerType();
             } else if (basePointer instanceof PointerRegister pointerRegister) {
                 basePointedType = pointerRegister.getInnerType();
             } else {
