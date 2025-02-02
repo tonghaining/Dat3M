@@ -97,24 +97,34 @@ public class VisitorOpsFunction extends SpirvBaseVisitor<Void> {
         return null;
     }
 
-    // TODO: Quick draft, proper refactoring needed
+    private int getFirstElementDepth(String id, Type type) {
+        if (type instanceof ArrayType aType) {
+            Type elementType = HelperTypes.getMemberType(id, aType, List.of(0));
+            return 1 + getFirstElementDepth(id, elementType);
+        } else if (type instanceof AggregateType agType) {
+            Type elementType = HelperTypes.getMemberType(id, agType, List.of(0));
+            return 1 + getFirstElementDepth(id, elementType);
+        }
+        return 0;
+    }
+
     private void createExternalVariable(String id, Type type) {
         if (type instanceof ScopedPointerType pType) {
             Expression input = castInput(id, pType);
             String storageClass = pType.getScopeId();
             ScopedPointerVariable aggregatePointer = builder.allocateScopedPointerVariable(id + "_input", input, storageClass, input.getType());
             Expression zero = ExpressionFactory.getInstance().makeZero(TypeFactory.getInstance().getArchType());
-            Expression ptr = HelperTypes.getMemberAddress(id, aggregatePointer.getAddress(), input.getType(), List.of(zero, zero));
+            int depth = getFirstElementDepth(id, pType.getPointedType());
+            List<Expression> indexes = Collections.nCopies(depth, zero);
+            Expression ptr = HelperTypes.getMemberAddress(id, aggregatePointer.getAddress(), input.getType(), indexes);
             builder.addExpression(id + "_input", aggregatePointer);
-            builder.addRegisterPointer(id, ptr);
+            builder.addParameterValue(id, ptr);
+            builder.addParameterPointer(id, aggregatePointer);
         } else {
             if (builder.hasInput(id)) {
                 Expression input = builder.getInput(id);
                 Expression ptr = HelperInputs.castInput(id, type, input);
-                builder.addRegisterPointer(id, ptr);
-            } else {
-                // TODO: Implementation for default undefined scalar
-                throw new RuntimeException("Support for scalar parameters not implemented");
+                builder.addParameterValue(id, ptr);
             }
         }
     }

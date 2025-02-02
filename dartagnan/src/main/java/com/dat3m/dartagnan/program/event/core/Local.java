@@ -20,6 +20,9 @@ public class Local extends AbstractEvent implements RegWriter, RegReader {
     protected Expression expr;
 
     public Local(Register register, Expression expr) {
+        if (!register.getType().equals(expr.getType())) {
+            throw new IllegalArgumentException("Type mismatch between register and expression");
+        }
         Preconditions.checkArgument(register.getType().equals(expr.getType()));
         this.register = register;
         this.expr = expr;

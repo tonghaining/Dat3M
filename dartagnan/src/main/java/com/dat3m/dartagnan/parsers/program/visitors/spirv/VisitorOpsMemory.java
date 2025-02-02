@@ -13,7 +13,6 @@ import com.dat3m.dartagnan.parsers.program.visitors.spirv.helpers.HelperTypes;
 import com.dat3m.dartagnan.parsers.program.visitors.spirv.helpers.HelperInputs;
 import com.dat3m.dartagnan.parsers.program.visitors.spirv.helpers.HelperTags;
 import com.dat3m.dartagnan.parsers.program.visitors.spirv.builders.ProgramBuilder;
-import com.dat3m.dartagnan.program.PointerRegister;
 import com.dat3m.dartagnan.program.memory.ScopedPointer;
 import com.dat3m.dartagnan.program.memory.ScopedPointerVariable;
 import com.dat3m.dartagnan.expression.type.ScopedPointerType;
@@ -266,8 +265,6 @@ public class VisitorOpsMemory extends SpirvBaseVisitor<Event> {
                 basePointedType = basePointerType.getPointedType();
             } else if (basePointer instanceof ScopedPointer scopedPointer) {
                 basePointedType = scopedPointer.getInnerType();
-            } else if (basePointer instanceof PointerRegister pointerRegister) {
-                basePointedType = pointerRegister.getInnerType();
             } else {
                 throw new ParsingException("Invalid base pointer type '%s' in access chain '%s'", basePointer.getType(), id);
             }

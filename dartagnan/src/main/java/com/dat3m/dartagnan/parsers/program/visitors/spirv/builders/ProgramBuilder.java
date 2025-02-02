@@ -10,6 +10,7 @@ import com.dat3m.dartagnan.parsers.program.visitors.spirv.decorations.BuiltIn;
 import com.dat3m.dartagnan.parsers.program.visitors.spirv.helpers.HelperTags;
 import com.dat3m.dartagnan.parsers.program.visitors.spirv.utils.ThreadCreator;
 import com.dat3m.dartagnan.parsers.program.visitors.spirv.utils.ThreadGrid;
+import com.dat3m.dartagnan.program.event.core.Local;
 import com.dat3m.dartagnan.program.event.functions.FunctionCall;
 import com.dat3m.dartagnan.program.memory.*;
 import com.dat3m.dartagnan.program.*;
@@ -25,7 +26,8 @@ public class ProgramBuilder {
     protected final Map<String, Type> types = new HashMap<>();
     protected final Map<String, Expression> expressions = new HashMap<>();
     protected final Map<String, Expression> expressionsDead = new HashMap<>();
-    protected final Map<String, Expression> registerPointers = new HashMap<>();
+    protected final Map<String, Expression> parameterValues = new HashMap<>();
+    protected final Map<String, ScopedPointerVariable> parameterPointers = new HashMap<>();
     protected final Map<String, Expression> inputs = new HashMap<>();
     protected final Map<String, String> debugInfos = new HashMap<>();
     protected final ThreadGrid grid;
@@ -201,11 +203,25 @@ public class ProgramBuilder {
         throw new ParsingException("Reference to undefined pointer '%s'", id);
     }
 
-    public void addRegisterPointer(String id, Expression pointer) {
-        if (registerPointers.containsKey(id)) {
+    public void addParameterPointer(String id, ScopedPointerVariable pointer) {
+        if (parameterPointers.containsKey(id)) {
             throw new ParsingException("Duplicated register pointer definition '%s'", id);
         }
-        registerPointers.put(id, pointer);
+        parameterPointers.put(id, pointer);
+    }
+
+    public ScopedPointerVariable getParameterPointer(String id) {
+        if (parameterPointers.containsKey(id)) {
+            return parameterPointers.get(id);
+        }
+        throw new ParsingException("Reference to undefined parameter pointer '%s'", id);
+    }
+
+    public void addParameterValue(String id, Expression pointer) {
+        if (parameterValues.containsKey(id)) {
+            throw new ParsingException("Duplicated register pointer definition '%s'", id);
+        }
+        parameterValues.put(id, pointer);
     }
 
     public Register addRegister(String id, String typeId) {
@@ -225,11 +241,9 @@ public class ProgramBuilder {
         if (currentFunction == null) {
             throw new ParsingException("Attempt to add an event outside a function definition");
         }
-        // TODO: Quick hack, disabled to add local event with entry point register values.
-        //  Proper implementation needed.
-        //if (!controlFlowBuilder.isInsideBlock()) {
-        //    throw new ParsingException("Attempt to add an event outside a control flow block");
-        //}
+        if (!controlFlowBuilder.isInsideBlock()) {
+            throw new ParsingException("Attempt to add an event outside a control flow block");
+        }
         if (controlFlowBuilder.hasCurrentLocation()) {
             event.setMetadata(controlFlowBuilder.getCurrentLocation());
         }
@@ -259,10 +273,10 @@ public class ProgramBuilder {
         program.addFunction(function);
         currentFunction = function;
         for (Register register : function.getParameterRegisters()) {
-            // TODO: Conflicts with controlFlowBlock check
-            if (registerPointers.containsKey(register.getName())) {
-                Event local = EventFactory.newLocal(register, registerPointers.get(register.getName()));
-                addEvent(local);
+            if (parameterValues.containsKey(register.getName())) {
+                Local local = EventFactory.newLocal(register, parameterValues.get(register.getName()));
+                addExpression(register.getName(), register);
+                currentFunction.append(local);
             } else {
                 addExpression(register.getName(), register);
             }

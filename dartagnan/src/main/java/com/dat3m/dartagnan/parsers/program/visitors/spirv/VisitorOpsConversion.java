@@ -13,6 +13,7 @@ import com.dat3m.dartagnan.program.event.Event;
 import com.dat3m.dartagnan.program.event.EventFactory;
 import com.dat3m.dartagnan.program.event.Tag;
 import com.dat3m.dartagnan.program.event.core.Local;
+import com.dat3m.dartagnan.program.memory.ScopedPointer;
 import com.dat3m.dartagnan.program.memory.ScopedPointerVariable;
 
 import java.util.Set;
@@ -67,28 +68,28 @@ public class VisitorOpsConversion extends SpirvBaseVisitor<Void> {
     public Void visitOpPtrCastToGeneric(SpirvParser.OpPtrCastToGenericContext ctx) {
         String id = ctx.idResult().getText();
         String typeId = ctx.idResultType().getText();
-        if (!(builder.getType(typeId) instanceof ScopedPointerType genericType)) {
+        if (!(builder.getType(typeId) instanceof ScopedPointerType targetPointerType)) {
             throw new ParsingException("Type '%s' is not a pointer type", typeId);
         }
-        if (!genericType.getScopeId().equals(Tag.Spirv.SC_GENERIC)) {
-            throw new ParsingException("Invalid storage class '%s' for OpPtrCastToGeneric", genericType.getScopeId());
+        String pointer = ctx.pointer().getText();
+        Expression originPointerExpr = builder.getExpression(pointer);
+        String originStorageClass;
+        if (originPointerExpr.getType() instanceof ScopedPointerType originPointerType) {
+            originStorageClass = originPointerType.getScopeId();
+        } else if (originPointerExpr instanceof ScopedPointer scopedPointer) {
+            originStorageClass = scopedPointer.getScopeId();
+        } else {
+            throw new ParsingException("Type '%s' is not a pointer type", pointer);
         }
-        String pointerId = ctx.pointer().getText();
-        Expression pointer = builder.getExpression(pointerId);
-        if (!(pointer.getType() instanceof ScopedPointerType pointerType)) {
-            throw new ParsingException("Type '%s' is not a pointer type", pointerId);
+        if (!originStorageClass.equals(Tag.Spirv.SC_CROSS_WORKGROUP) &&
+                !originStorageClass.equals(Tag.Spirv.SC_WORKGROUP) &&
+                !originStorageClass.equals(Tag.Spirv.SC_FUNCTION)) {
+            throw new ParsingException("Invalid storage class '%s' for OpPtrCastToGeneric", originStorageClass);
         }
-        String pointerSC = pointerType.getScopeId();
-        Set<String> supportedSC = Set.of(
-                Tag.Spirv.SC_CROSS_WORKGROUP,
-                Tag.Spirv.SC_WORKGROUP,
-                Tag.Spirv.SC_FUNCTION);
-        if (!supportedSC.contains(pointerSC)) {
-            throw new ParsingException("Invalid storage class '%s' for OpPtrCastToGeneric", pointerSC);
-        }
-        Expression convertedExpr = expressions.makeCast(pointer, genericType);
-        Register reg = builder.addRegister(id, genericType);
-        builder.addEvent(new Local(reg, convertedExpr));
+        Expression convertedExpr = expressions.makeCast(originPointerExpr, targetPointerType);
+        Register register = builder.addRegister(id, typeId);
+        Event local = EventFactory.newLocal(register, convertedExpr);
+        builder.addEvent(local);
         return null;
     }
 
