@@ -37,6 +37,12 @@ public class VisitorSpirvInput extends SpirvBaseVisitor<Expression> {
         String id = ctx.varName().getText();
         Expression value = visit(ctx.initValue());
         builder.addInput(id, value);
+        if (ctx.indexValue() != null) {
+            List<Integer> indexes = ctx.indexValue().stream()
+                    .map(c -> Integer.parseInt(c.ModeHeader_PositiveInteger().getText()))
+                    .toList();
+            builder.addInputIndex(id, indexes);
+        }
         return null;
     }
 

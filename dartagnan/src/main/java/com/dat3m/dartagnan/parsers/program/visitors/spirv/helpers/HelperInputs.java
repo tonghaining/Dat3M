@@ -121,6 +121,10 @@ public class HelperInputs {
         throw new ParsingException(errorMismatchingType(id, type, value.getType()));
     }
 
+    public static String castPointerId(String id) {
+        return "&" + id;
+    }
+
     private static String errorUnexpectedInputType(String id) {
         return String.format("Unexpected input type for variable '%s'", id);
     }

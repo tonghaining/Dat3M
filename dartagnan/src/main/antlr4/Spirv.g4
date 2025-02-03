@@ -17,7 +17,7 @@ inputHeader : ModeHeader_Input ModeHeader_Colon initList;
 outputHeader : ModeHeader_Output ModeHeader_Colon assertionList;
 configHeader : ModeHeader_Config ModeHeader_Colon literanHeaderUnsignedInteger ModeHeader_Comma literanHeaderUnsignedInteger ModeHeader_Comma literanHeaderUnsignedInteger;
 initList : init (ModeHeader_Comma init)*;
-init : varName ModeHeader_Equal initValue;
+init : varName ModeHeader_Equal initValue indexValue*;
 initValue
     :   initCollectionValue
     |   initBaseValue
@@ -49,7 +49,7 @@ assertionCompare
     ;
 
 assertionValue
-    :   varName indexValue*
+    :   ModeHeader_And? varName indexValue*
     |   initBaseValue
     ;
 

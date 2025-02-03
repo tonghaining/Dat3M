@@ -1713,6 +1713,7 @@ ModeHeader_LBrace : '{';
 ModeHeader_RBrace : '}';
 ModeHeader_Colon : ':';
 ModeHeader_Comma : ',';
+ModeHeader_And : '&';
 ModeHeader_PositiveInteger : [0-9]+;
 ModeHeader_NegativeInteger : '-' [0-9]+;
 ModeHeader_Whitespace : [ \t\r]+ -> skip;
