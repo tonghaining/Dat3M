@@ -51,7 +51,10 @@ public class ProgramBuilder {
         controlFlowBuilder.build();
         BuiltIn builtIn = (BuiltIn) decorationsBuilder.getDecoration(BUILT_IN);
         Function entryFunction = getEntryPointFunction();
-        new ThreadCreator(grid, entryFunction, getVariables(), builtIn).create();
+        Set<Function> subFunctions = program.getFunctions().stream()
+                .filter(f -> !f.equals(entryFunction))
+                .collect(Collectors.toSet());
+        new ThreadCreator(grid, entryFunction, subFunctions, getVariables(), builtIn).create();
         return program;
     }
 
