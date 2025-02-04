@@ -5,16 +5,16 @@ import com.dat3m.dartagnan.expression.integers.IntCmpOp;
 import com.dat3m.dartagnan.program.Register;
 import com.dat3m.dartagnan.program.event.EventVisitor;
 import com.dat3m.dartagnan.program.event.Tag;
-import com.dat3m.dartagnan.program.event.common.RMWExtremum;
+import com.dat3m.dartagnan.program.event.common.RMWExtremumBase;
 
-public class OpenCLRMWExtremum extends RMWExtremum {
+public class OpenCLRMWExtremumBase extends RMWExtremumBase {
 
-    public OpenCLRMWExtremum(Register register, Expression address, IntCmpOp op, Expression value, String mo, String scope) {
+    public OpenCLRMWExtremumBase(Register register, Expression address, IntCmpOp op, Expression value, String mo, String scope) {
         super(register, address, op, value, mo);
         this.addTags(Tag.C11.ATOMIC, scope);
     }
 
-    private OpenCLRMWExtremum(OpenCLRMWExtremum other) {
+    private OpenCLRMWExtremumBase(OpenCLRMWExtremumBase other) {
         super(other);
     }
 
@@ -24,8 +24,8 @@ public class OpenCLRMWExtremum extends RMWExtremum {
     }
 
     @Override
-    public OpenCLRMWExtremum getCopy() {
-        return new OpenCLRMWExtremum(this);
+    public OpenCLRMWExtremumBase getCopy() {
+        return new OpenCLRMWExtremumBase(this);
     }
 
     @Override

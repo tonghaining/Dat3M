@@ -169,9 +169,6 @@ public class Inlining implements ProgramProcessor {
         var substitution = new ExprTransformer() {
             @Override
             public Expression visitRegister(Register register) {
-                if (!registerMap.containsKey(register)) {
-                    return register;
-                }
                 return checkNotNull(registerMap.get(register));
             }
         };
