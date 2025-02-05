@@ -51,10 +51,10 @@ public class ClangSpirvAssertionsTest {
         return Arrays.asList(new Object[][]{
                 {"caslock-1.1.2.spv.dis", 2, PASS},
                 {"caslock-2.1.1.spv.dis", 2, PASS},
-                {"caslock-acq2rx.spv.dis", 1, FAIL},
-                {"caslock-rel2rx.spv.dis", 1, FAIL},
+                {"caslock-acq2rx.spv.dis", 2, FAIL},
+                {"caslock-rel2rx.spv.dis", 2, FAIL},
                 {"caslock-dv2wg-2.1.1.spv.dis", 2, PASS},
-                {"caslock-dv2wg-1.1.2.spv.dis", 1, FAIL},
+                {"caslock-dv2wg-1.1.2.spv.dis", 2, FAIL},
                 {"CORR.spv.dis", 1, PASS},
                 {"IRIW.spv.dis", 1, PASS},
                 {"MP.spv.dis", 1, PASS},
@@ -74,15 +74,15 @@ public class ClangSpirvAssertionsTest {
                 {"ttaslock-dv2wg-2.1.1.spv.dis", 2, PASS},
                 {"ttaslock-dv2wg-1.1.2.spv.dis", 1, FAIL},
 
-                {"xf-barrier-2.1.2.spv.dis", 4, PASS},
+                {"xf-barrier-2.1.2.spv.dis", 9, PASS},
                 {"xf-barrier-3.1.3.spv.dis", 9, PASS},
                 {"xf-barrier-1.1.2.spv.dis", 2, PASS},
-                {"xf-barrier-2.1.1.spv.dis", 2, PASS},
-                {"xf-barrier-fail1.spv.dis", 4, FAIL},
-                {"xf-barrier-fail2.spv.dis", 4, FAIL},
-                {"xf-barrier-fail3.spv.dis", 4, FAIL},
-                {"xf-barrier-fail4.spv.dis", 4, FAIL},
-                {"xf-barrier-weakest.spv.dis", 4, FAIL},
+                {"xf-barrier-2.1.1.spv.dis", 9, PASS},
+                {"xf-barrier-fail1.spv.dis", 9, FAIL},
+                {"xf-barrier-fail2.spv.dis", 9, FAIL},
+                {"xf-barrier-fail3.spv.dis", 9, FAIL},
+                {"xf-barrier-fail4.spv.dis", 9, FAIL},
+                {"xf-barrier-weakest.spv.dis", 9, FAIL},
         });
     }
 
