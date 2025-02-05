@@ -6,7 +6,6 @@ import com.dat3m.dartagnan.parsers.program.visitors.spirv.decorations.BuiltIn;
 import com.dat3m.dartagnan.program.Function;
 import com.dat3m.dartagnan.program.Program;
 import com.dat3m.dartagnan.program.Register;
-import com.dat3m.dartagnan.program.Thread;
 import com.dat3m.dartagnan.program.event.Tag;
 import com.dat3m.dartagnan.program.memory.MemoryObject;
 import com.dat3m.dartagnan.program.memory.ScopedPointerVariable;
@@ -61,8 +60,8 @@ public class MemoryTransformer extends ExprTransformer {
         return registerMapping.get(register);
     }
 
-    public void setThread(Thread thread) {
-        int newTid = thread.getId();
+    public void setTransferFunction(Function function) {
+        int newTid = function.getId();
         int depth = getScopeIdx(newTid, scopeIdProvider);
         for (int i = 0; i <= depth; i++) {
             scopeMapping.get(i).clear();
@@ -70,10 +69,10 @@ public class MemoryTransformer extends ExprTransformer {
         tid = newTid;
         builtIn.setThreadId(tid);
         registerMapping = entryFunction.getRegisters().stream().collect(
-                toMap(r -> r, r -> thread.getOrNewRegister(r.getName(), r.getType())));
-        for (Function function : subFunctions) {
-            registerMapping.putAll(function.getRegisters().stream().collect(
-                    toMap(r -> r, r -> thread.getOrNewRegister(r.getName(), r.getType()))));
+                toMap(r -> r, r -> function.getOrNewRegister(r.getName(), r.getType())));
+        for (Function subfunction : subFunctions) {
+            registerMapping.putAll(subfunction.getRegisters().stream().collect(
+                    toMap(r -> r, r -> function.getOrNewRegister(r.getName(), r.getType()))));
         }
         nonDetMapping = new HashMap<>();
     }

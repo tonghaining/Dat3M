@@ -29,7 +29,6 @@ public class VisitorOpsFunction extends SpirvBaseVisitor<Void> {
     private String currentId;
     private FunctionType currentType;
     private List<String> currentArgs;
-    private int nextFunctionId = 0;
     private boolean isEntryPoint = false;
 
     final Map<String, Function> forwardFunctions = new HashMap<>();
@@ -168,7 +167,7 @@ public class VisitorOpsFunction extends SpirvBaseVisitor<Void> {
     }
 
     private void createFunction() {
-        Function function = new Function(currentId, currentType, currentArgs, nextFunctionId++, null);
+        Function function = new Function(currentId, currentType, currentArgs, builder.getNextFunctionId(), null);
         builder.startCurrentFunction(function);
         if (forwardFunctions.containsKey(currentId)) {
             Function forwardFunction = forwardFunctions.remove(currentId);
@@ -198,7 +197,7 @@ public class VisitorOpsFunction extends SpirvBaseVisitor<Void> {
         List<String> args = IntStream.range(0, type.getParameterTypes().size())
                 .boxed().map(i -> "param_" + i)
                 .toList();
-        Function function = new Function(id, type, args, nextFunctionId++, null);
+        Function function = new Function(id, type, args, builder.getNextFunctionId(), null);
         forwardFunctions.put(id, function);
         return function;
     }

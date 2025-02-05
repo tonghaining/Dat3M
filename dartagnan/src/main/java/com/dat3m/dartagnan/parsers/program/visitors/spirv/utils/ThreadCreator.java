@@ -24,9 +24,10 @@ public class ThreadCreator {
     private final Set<ScopedPointerVariable> variables;
     private final Map<Function, Map<Thread, Function>> localSubFunctions = new HashMap<>();
     private final MemoryTransformer transformer;
+    private int nextFunctionId;
 
     public ThreadCreator(ThreadGrid grid, Function function, Set<Function> subFunctions,
-                         Set<ScopedPointerVariable> variables, BuiltIn builtIn) {
+                         Set<ScopedPointerVariable> variables, BuiltIn builtIn, int nextFunctionId) {
         this.grid = grid;
         this.entryFunction = function;
         this.program = function.getProgram();
@@ -37,6 +38,7 @@ public class ThreadCreator {
             Map<Thread, Function> threadLocalSubFunctions = new HashMap<>();
             localSubFunctions.put(subFunction, threadLocalSubFunctions);
         }
+        this.nextFunctionId = nextFunctionId;
     }
 
     public void create() {
@@ -54,18 +56,18 @@ public class ThreadCreator {
         ScopeHierarchy scope = grid.getScoreHierarchy(tid);
         Thread thread = new Thread(name, type, args, tid, start, scope, Set.of());
         thread.copyDummyCountFrom(entryFunction);
-        transformer.setThread(thread);
+        transformer.setTransferFunction(thread);
         copyFunctionEvents(entryFunction, thread);
         transformReturnEvents(thread);
         // Create thread-local sub-functions
         for (Function subFunction : subFunctions) {
             String localSubFunctionName = subFunction.getName() + "@T" + tid;
             List<String> localSubFunctionArgs = Lists.transform(subFunction.getParameterRegisters(), Register::getName);
-            int localFunctionId = subFunction.getId() + tid * 31;
-            Label entryLabel = EventFactory.newLabel("ENTRY_OF_" + localSubFunctionName);
+            int localFunctionId = nextFunctionId++;
             Function localSubFunction = new Function(localSubFunctionName, subFunction.getFunctionType(),
-                    localSubFunctionArgs, localFunctionId, entryLabel);
+                    localSubFunctionArgs, localFunctionId, null);
             localSubFunction.copyDummyCountFrom(subFunction);
+            transformer.setTransferFunction(localSubFunction);
             copyFunctionEvents(subFunction, localSubFunction);
             program.addFunction(localSubFunction);
             localSubFunctions.get(subFunction).put(thread, localSubFunction);
@@ -96,7 +98,11 @@ public class ThreadCreator {
                 regWriter.setResultRegister(transformer.getRegisterMapping(regWriter.getResultRegister()));
             }
         }
-        target.getEntry().insertAfter(body);
+        if (!target.hasBody()) {
+            body.forEach(target::append);
+        } else {
+            target.getEntry().insertAfter(body);
+        }
     }
 
     private void transformReturnEvents(Thread thread) {

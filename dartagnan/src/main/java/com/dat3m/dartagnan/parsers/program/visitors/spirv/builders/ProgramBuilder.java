@@ -38,6 +38,7 @@ public class ProgramBuilder {
     protected String entryPointId;
     protected Arch arch;
     protected Set<String> nextOps;
+    private int nextFunctionId = 0;
 
     public ProgramBuilder(ThreadGrid grid) {
         this.grid = grid;
@@ -54,7 +55,7 @@ public class ProgramBuilder {
         Set<Function> subFunctions = program.getFunctions().stream()
                 .filter(f -> !f.equals(entryFunction))
                 .collect(Collectors.toSet());
-        new ThreadCreator(grid, entryFunction, subFunctions, getVariables(), builtIn).create();
+        new ThreadCreator(grid, entryFunction, subFunctions, getVariables(), builtIn, nextFunctionId).create();
         return program;
     }
 
@@ -305,6 +306,10 @@ public class ProgramBuilder {
             throw new ParsingException("No debug information with id '%s'", id);
         }
         return debugInfos.get(id);
+    }
+
+    public int getNextFunctionId() {
+        return nextFunctionId++;
     }
 
     private void validateBeforeBuild() {
