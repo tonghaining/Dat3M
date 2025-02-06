@@ -137,13 +137,13 @@ public class HelperTags {
     }
 
     public static void addFeatureTags(MemoryObject memObj, String storageClass, Arch arch) {
-        if (arch.equals(Arch.OPENCL)) {
+        if (arch != null && arch.equals(Arch.OPENCL)) {
             String openCLSpace = getOpenCLStorageClass(storageClass);
             if (openCLSpace == null) {
                 throw new UnsupportedOperationException("Cannot convert " + storageClass + " to OpenCL space");
             }
             memObj.addFeatureTag(openCLSpace);
-            // memObj.addFeatureTag(Tag.C11.NON_ATOMIC_LOCATION); // OpenCL variables are atomic by default
+            // memObj.addFeatureTag(Tag.C11.NON_ATOMIC_LOCATION); // SPIR-V does not distinguish between atomic and non-atomic locations
         }
     }
 

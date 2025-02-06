@@ -9,11 +9,8 @@ import com.dat3m.dartagnan.parsers.SpirvBaseVisitor;
 import com.dat3m.dartagnan.parsers.SpirvParser;
 import com.dat3m.dartagnan.parsers.program.visitors.spirv.builders.ProgramBuilder;
 import com.dat3m.dartagnan.program.Register;
-import com.dat3m.dartagnan.program.event.Event;
-import com.dat3m.dartagnan.program.event.EventFactory;
 import com.dat3m.dartagnan.program.event.Tag;
 import com.dat3m.dartagnan.program.event.core.Local;
-import com.dat3m.dartagnan.program.memory.ScopedPointer;
 import com.dat3m.dartagnan.program.memory.ScopedPointerVariable;
 
 import java.util.Set;
@@ -64,6 +61,7 @@ public class VisitorOpsConversion extends SpirvBaseVisitor<Void> {
         return null;
     }
 
+    @Override
     public Void visitOpPtrCastToGeneric(SpirvParser.OpPtrCastToGenericContext ctx) {
         String id = ctx.idResult().getText();
         String typeId = ctx.idResultType().getText();
