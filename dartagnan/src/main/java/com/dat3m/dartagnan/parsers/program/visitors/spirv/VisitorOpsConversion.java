@@ -11,9 +11,7 @@ import com.dat3m.dartagnan.parsers.program.visitors.spirv.builders.ProgramBuilde
 import com.dat3m.dartagnan.program.Register;
 import com.dat3m.dartagnan.program.event.EventFactory;
 import com.dat3m.dartagnan.program.event.Tag;
-import com.dat3m.dartagnan.program.event.core.Init;
 import com.dat3m.dartagnan.program.event.core.Local;
-import com.dat3m.dartagnan.program.event.core.Store;
 import com.dat3m.dartagnan.program.memory.ScopedPointerVariable;
 
 import java.util.Set;
@@ -88,11 +86,10 @@ public class VisitorOpsConversion extends SpirvBaseVisitor<Void> {
             throw new ParsingException("Invalid storage class '%s' for OpPtrCastToGeneric", pointerSC);
         }
         Expression convertedExpr = expressions.makeCast(pointer, genericType);
-        if (pointer instanceof ScopedPointerVariable scopedPointerVariable) {
+        if (pointer instanceof ScopedPointerVariable) {
             ScopedPointerVariable scopedPointerVariableCopy = builder.allocateScopedPointerVariable(
-                    id, convertedExpr, scopedPointerVariable.getScopeId(), scopedPointerVariable.getInnerType());
+                    id, convertedExpr, genericType.getScopeId(), genericType.getPointedType());
             builder.addEvent(EventFactory.newC11Init(scopedPointerVariableCopy.getAddress(), 0));
-            builder.addEvent(EventFactory.newStore(scopedPointerVariableCopy, convertedExpr));
             builder.addExpression(id, scopedPointerVariableCopy);
         } else {
             Register reg = builder.addRegister(id, genericType);

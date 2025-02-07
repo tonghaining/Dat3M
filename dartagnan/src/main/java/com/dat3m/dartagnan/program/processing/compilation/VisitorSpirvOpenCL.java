@@ -5,10 +5,7 @@ import com.dat3m.dartagnan.program.event.Event;
 import com.dat3m.dartagnan.program.event.EventFactory;
 import com.dat3m.dartagnan.program.event.Tag;
 import com.dat3m.dartagnan.program.event.arch.opencl.OpenCLRMWExtremumBase;
-import com.dat3m.dartagnan.program.event.core.ControlBarrier;
-import com.dat3m.dartagnan.program.event.core.GenericVisibleEvent;
-import com.dat3m.dartagnan.program.event.core.Load;
-import com.dat3m.dartagnan.program.event.core.Store;
+import com.dat3m.dartagnan.program.event.core.*;
 import com.dat3m.dartagnan.program.event.lang.catomic.AtomicCmpXchg;
 import com.dat3m.dartagnan.program.event.lang.catomic.AtomicFetchOp;
 import com.dat3m.dartagnan.program.event.lang.catomic.AtomicXchg;
@@ -21,6 +18,14 @@ import java.util.Set;
 import static com.dat3m.dartagnan.program.event.EventFactory.*;
 
 public class VisitorSpirvOpenCL extends VisitorC11 {
+
+    @Override
+    public List<Event> visitInit(Init e) {
+        Event init = EventFactory.newInit(e.getBase(), e.getOffset());
+        init.removeTags(init.getTags());
+        init.addTags(toOpenCLTags(e.getTags()));
+        return eventSequence(init);
+    }
 
     @Override
     public List<Event> visitLoad(Load e) {
