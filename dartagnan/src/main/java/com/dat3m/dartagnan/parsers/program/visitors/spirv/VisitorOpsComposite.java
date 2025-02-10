@@ -4,6 +4,8 @@ import com.dat3m.dartagnan.exception.ParsingException;
 import com.dat3m.dartagnan.expression.Expression;
 import com.dat3m.dartagnan.expression.Type;
 import com.dat3m.dartagnan.expression.aggregates.ConstructExpr;
+import com.dat3m.dartagnan.expression.type.ScopedPointerType;
+import com.dat3m.dartagnan.expression.type.TypeFactory;
 import com.dat3m.dartagnan.parsers.SpirvBaseVisitor;
 import com.dat3m.dartagnan.parsers.SpirvParser;
 import com.dat3m.dartagnan.parsers.program.visitors.spirv.builders.ProgramBuilder;
@@ -42,10 +44,18 @@ public class VisitorOpsComposite extends SpirvBaseVisitor<Event> {
         for (Integer index : indexes) {
             element = element.getOperands().get(index);
         }
-        if (type != element.getType()) {
-            throw new ParsingException("Type mismatch in composite extraction: %s", id);
+        if (type.equals(element.getType())) {
+            builder.addExpression(id, element);
+            return;
         }
-        builder.addExpression(id, element);
+        if (type instanceof ScopedPointerType scopedPointerType) {
+            Type pointedType = scopedPointerType.getPointedType();
+            if (pointedType == element.getType() || TypeFactory.isStaticTypeOf(element.getType(), pointedType)) {
+                builder.addExpression(id, element);
+                return;
+            }
+        }
+        throw new ParsingException("Type mismatch in composite extraction: %s", id);
     }
 
     public Set<String> getSupportedOps() {
