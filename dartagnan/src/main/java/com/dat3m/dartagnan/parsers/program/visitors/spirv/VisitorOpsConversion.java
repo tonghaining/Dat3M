@@ -3,18 +3,23 @@ package com.dat3m.dartagnan.parsers.program.visitors.spirv;
 import com.dat3m.dartagnan.exception.ParsingException;
 import com.dat3m.dartagnan.expression.Expression;
 import com.dat3m.dartagnan.expression.ExpressionFactory;
+import com.dat3m.dartagnan.expression.Type;
 import com.dat3m.dartagnan.expression.type.IntegerType;
 import com.dat3m.dartagnan.expression.type.ScopedPointerType;
 import com.dat3m.dartagnan.parsers.SpirvBaseVisitor;
 import com.dat3m.dartagnan.parsers.SpirvParser;
 import com.dat3m.dartagnan.parsers.program.visitors.spirv.builders.ProgramBuilder;
 import com.dat3m.dartagnan.program.Register;
+import com.dat3m.dartagnan.program.event.Event;
 import com.dat3m.dartagnan.program.event.EventFactory;
 import com.dat3m.dartagnan.program.event.Tag;
 import com.dat3m.dartagnan.program.event.core.Local;
+import com.dat3m.dartagnan.program.event.lang.spirv.SpirvStore;
 import com.dat3m.dartagnan.program.memory.ScopedPointerVariable;
 
 import java.util.Set;
+
+import static com.dat3m.dartagnan.program.event.EventFactory.Spirv.newSpirvStore;
 
 public class VisitorOpsConversion extends SpirvBaseVisitor<Void> {
 
@@ -87,9 +92,12 @@ public class VisitorOpsConversion extends SpirvBaseVisitor<Void> {
         }
         Expression convertedExpr = expressions.makeCast(pointer, genericType);
         if (pointer instanceof ScopedPointerVariable) {
+            Type pointedType = genericType.getPointedType();
+            Expression value = builder.makeUndefinedValue(pointedType);
             ScopedPointerVariable scopedPointerVariableCopy = builder.allocateScopedPointerVariable(
-                    id, convertedExpr, genericType.getScopeId(), genericType.getPointedType());
-            builder.addEvent(EventFactory.newC11Init(scopedPointerVariableCopy.getAddress(), 0));
+                    id, value, genericType.getScopeId(), pointedType);
+            Event event = EventFactory.newStore(scopedPointerVariableCopy, convertedExpr);
+            builder.addEvent(event);
             builder.addExpression(id, scopedPointerVariableCopy);
         } else {
             Register reg = builder.addRegister(id, genericType);
