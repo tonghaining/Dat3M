@@ -4,6 +4,7 @@ import com.dat3m.dartagnan.expression.processing.ExpressionInspector;
 import com.dat3m.dartagnan.program.Register;
 import com.dat3m.dartagnan.program.memory.FinalMemoryValue;
 import com.dat3m.dartagnan.program.memory.MemoryObject;
+import com.dat3m.dartagnan.program.memory.ScopedPointerVariable;
 import com.google.common.collect.ImmutableSet;
 
 import java.util.List;
@@ -33,6 +34,11 @@ public interface Expression {
     default ImmutableSet<MemoryObject> getMemoryObjects() {
         class MemoryObjectCollector implements ExpressionInspector {
             private final ImmutableSet.Builder<MemoryObject> objects = ImmutableSet.builder();
+            @Override
+            public MemoryObject visitScopedPointerVariable(ScopedPointerVariable pointer) {
+                return visitMemoryObject(pointer.getAddress());
+            }
+
             @Override
             public MemoryObject visitMemoryObject(MemoryObject memObj) {
                 objects.add(memObj);

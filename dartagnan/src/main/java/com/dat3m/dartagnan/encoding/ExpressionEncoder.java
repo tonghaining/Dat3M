@@ -17,6 +17,7 @@ import com.dat3m.dartagnan.program.Register;
 import com.dat3m.dartagnan.program.event.Event;
 import com.dat3m.dartagnan.program.memory.FinalMemoryValue;
 import com.dat3m.dartagnan.program.memory.MemoryObject;
+import com.dat3m.dartagnan.program.memory.ScopedPointerVariable;
 import com.dat3m.dartagnan.program.misc.NonDetValue;
 import org.sosy_lab.java_smt.api.*;
 import org.sosy_lab.java_smt.api.NumeralFormula.IntegerFormula;
@@ -322,6 +323,11 @@ class ExpressionEncoder implements ExpressionVisitor<Formula> {
                 reg.getName() + "(" + event.getGlobalId() + ")";
         Type type = reg.getType();
         return context.makeVariable(name, type);
+    }
+
+    @Override
+    public Formula visitScopedPointerVariable(ScopedPointerVariable pointer) {
+        return visitMemoryObject(pointer.getAddress());
     }
 
     @Override

@@ -25,6 +25,7 @@ import com.dat3m.dartagnan.program.event.functions.ValueFunctionCall;
 import com.dat3m.dartagnan.program.event.lang.llvm.LlvmCmpXchg;
 import com.dat3m.dartagnan.program.memory.Memory;
 import com.dat3m.dartagnan.program.memory.MemoryObject;
+import com.dat3m.dartagnan.program.memory.ScopedPointerVariable;
 import com.dat3m.dartagnan.program.processing.compilation.Compilation;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
@@ -342,6 +343,11 @@ public class ThreadCreation implements ProgramProcessor {
         final Memory memory = function.getProgram().getMemory();
         final Map<Expression, Expression> global2ThreadLocal = new HashMap<>();
         final ExprTransformer transformer = new ExprTransformer() {
+            @Override
+            public Expression visitScopedPointerVariable(ScopedPointerVariable pointer) {
+                return visitMemoryObject(pointer.getAddress());
+            }
+
             @Override
             public Expression visitMemoryObject(MemoryObject memObj) {
                 if (memObj.isThreadLocal() && !global2ThreadLocal.containsKey(memObj)) {

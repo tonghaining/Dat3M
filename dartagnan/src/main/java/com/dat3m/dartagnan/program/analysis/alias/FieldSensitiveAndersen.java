@@ -15,6 +15,7 @@ import com.dat3m.dartagnan.program.event.RegWriter;
 import com.dat3m.dartagnan.program.event.core.*;
 import com.dat3m.dartagnan.program.event.core.threading.ThreadArgument;
 import com.dat3m.dartagnan.program.memory.MemoryObject;
+import com.dat3m.dartagnan.program.memory.ScopedPointerVariable;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Sets;
 import org.sosy_lab.common.configuration.Configuration;
@@ -376,6 +377,11 @@ public class FieldSensitiveAndersen implements AliasAnalysis {
             x.getTrueCase().accept(this);
             x.getFalseCase().accept(this);
             return null;
+        }
+
+        @Override
+        public Result visitScopedPointerVariable(ScopedPointerVariable v) {
+            return visitMemoryObject(v.getAddress());
         }
 
         @Override

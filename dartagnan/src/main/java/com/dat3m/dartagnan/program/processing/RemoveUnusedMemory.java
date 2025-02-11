@@ -7,6 +7,7 @@ import com.dat3m.dartagnan.program.event.RegReader;
 import com.dat3m.dartagnan.program.memory.FinalMemoryValue;
 import com.dat3m.dartagnan.program.memory.Memory;
 import com.dat3m.dartagnan.program.memory.MemoryObject;
+import com.dat3m.dartagnan.program.memory.ScopedPointerVariable;
 import com.google.common.collect.Sets;
 
 import java.util.HashSet;
@@ -44,6 +45,11 @@ public class RemoveUnusedMemory implements ProgramProcessor {
     private static class MemoryObjectCollector implements ExpressionInspector {
 
         private final HashSet<MemoryObject> memoryObjects = new HashSet<>();
+
+        @Override
+        public Expression visitScopedPointerVariable(ScopedPointerVariable pointer) {
+            return visitMemoryObject(pointer.getAddress());
+        }
 
         @Override
         public Expression visitMemoryObject(MemoryObject address) {
