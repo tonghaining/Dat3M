@@ -211,13 +211,13 @@ public class ProgramBuilder {
         return memObj;
     }
 
-    public ScopedPointerVariable allocateScopedPointerVariable(String id, Expression initValue, String storageClass, Type type) {
-        MemoryObject memObj = allocateVariable(id, TypeFactory.getInstance().getMemorySizeInBytes(type));
+    public ScopedPointerVariable allocateScopedPointerVariable(String id, Expression initValue, String storageClass, Type pointedType) {
+        MemoryObject memObj = allocateVariable(id, TypeFactory.getInstance().getMemorySizeInBytes(pointedType));
         memObj.setIsThreadLocal(false);
         memObj.setInitialValue(0, initValue);
         HelperTags.addFeatureTags(memObj, storageClass, arch);
         return ExpressionFactory.getInstance().makeScopedPointerVariable(
-                id, storageClass, type, memObj);
+                id, storageClass, pointedType, memObj);
     }
 
     public String getPointerStorageClass(String id) {

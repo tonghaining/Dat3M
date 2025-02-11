@@ -94,11 +94,11 @@ public class VisitorOpsConversion extends SpirvBaseVisitor<Void> {
         if (pointer instanceof ScopedPointerVariable) {
             Type pointedType = genericType.getPointedType();
             Expression value = builder.makeUndefinedValue(pointedType);
-            ScopedPointerVariable scopedPointerVariableCopy = builder.allocateScopedPointerVariable(
+            ScopedPointerVariable castedPointer = builder.allocateScopedPointerVariable(
                     id, value, genericType.getScopeId(), pointedType);
-            Event event = EventFactory.newStore(scopedPointerVariableCopy, convertedExpr);
+            Event event = EventFactory.newStore(castedPointer, convertedExpr);
             builder.addEvent(event);
-            builder.addExpression(id, scopedPointerVariableCopy);
+            builder.addExpression(id, castedPointer);
         } else {
             Register reg = builder.addRegister(id, genericType);
             builder.addEvent(EventFactory.newLocal(reg, convertedExpr));
