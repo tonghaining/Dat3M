@@ -1,6 +1,7 @@
 package com.dat3m.dartagnan.program.memory;
 
 import com.dat3m.dartagnan.expression.Expression;
+import com.dat3m.dartagnan.expression.ExpressionVisitor;
 import com.dat3m.dartagnan.expression.type.ScopedPointerType;
 
 public class ScopedPointerVariable extends ScopedPointer {
@@ -15,5 +16,10 @@ public class ScopedPointerVariable extends ScopedPointer {
 
     public void setInitialValue(int offset, Expression value) {
         getAddress().setInitialValue(offset, value);
+    }
+
+    @Override
+    public<T> T accept(ExpressionVisitor<T> visitor) {
+        return visitor.visitScopedPointerVariable(this);
     }
 }

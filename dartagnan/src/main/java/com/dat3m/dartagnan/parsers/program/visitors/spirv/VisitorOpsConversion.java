@@ -10,16 +10,12 @@ import com.dat3m.dartagnan.parsers.SpirvBaseVisitor;
 import com.dat3m.dartagnan.parsers.SpirvParser;
 import com.dat3m.dartagnan.parsers.program.visitors.spirv.builders.ProgramBuilder;
 import com.dat3m.dartagnan.program.Register;
-import com.dat3m.dartagnan.program.event.Event;
 import com.dat3m.dartagnan.program.event.EventFactory;
 import com.dat3m.dartagnan.program.event.Tag;
 import com.dat3m.dartagnan.program.event.core.Local;
-import com.dat3m.dartagnan.program.event.lang.spirv.SpirvStore;
 import com.dat3m.dartagnan.program.memory.ScopedPointerVariable;
 
 import java.util.Set;
-
-import static com.dat3m.dartagnan.program.event.EventFactory.Spirv.newSpirvStore;
 
 public class VisitorOpsConversion extends SpirvBaseVisitor<Void> {
 
@@ -90,16 +86,13 @@ public class VisitorOpsConversion extends SpirvBaseVisitor<Void> {
         if (!supportedSC.contains(pointerSC)) {
             throw new ParsingException("Invalid storage class '%s' for OpPtrCastToGeneric", pointerSC);
         }
-        Expression convertedExpr = expressions.makeCast(pointer, genericType);
-        if (pointer instanceof ScopedPointerVariable) {
+        if (pointer instanceof ScopedPointerVariable scopedPointerVariable) {
             Type pointedType = genericType.getPointedType();
-            Expression value = builder.makeUndefinedValue(pointedType);
-            ScopedPointerVariable castedPointer = builder.allocateScopedPointerVariable(
-                    id, value, genericType.getScopeId(), pointedType);
-            Event event = EventFactory.newStore(castedPointer, convertedExpr);
-            builder.addEvent(event);
+            ScopedPointerVariable castedPointer = expressions.makeScopedPointerVariable(id, genericType.getScopeId(),
+                    pointedType, scopedPointerVariable.getAddress());
             builder.addExpression(id, castedPointer);
         } else {
+            Expression convertedExpr = expressions.makeCast(pointer, genericType);
             Register reg = builder.addRegister(id, genericType);
             builder.addEvent(EventFactory.newLocal(reg, convertedExpr));
         }

@@ -17,7 +17,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.IntUnaryOperator;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static java.util.stream.Collectors.toMap;
@@ -32,21 +31,18 @@ public class MemoryTransformer extends ExprTransformer {
     private final BuiltIn builtIn;
     private final Set<Function> subFunctions;
     private final List<? extends Map<MemoryObject, MemoryObject>> scopeMapping;
-    private final Map<MemoryObject, ScopedPointerVariable> pointerMapping;
     private final List<IntUnaryOperator> scopeIdProvider;
     private final List<IntUnaryOperator> namePrefixIdxProvider;
     private Map<Register, Register> registerMapping;
     private Map<NonDetValue, NonDetValue> nonDetMapping;
     private int tid;
 
-    public MemoryTransformer(ThreadGrid grid, Function entryFunction, Set<Function> subFunctions,
-                             BuiltIn builtIn, Set<ScopedPointerVariable> variables) {
+    public MemoryTransformer(ThreadGrid grid, Function entryFunction, Set<Function> subFunctions, BuiltIn builtIn) {
         this.program = entryFunction.getProgram();
         this.entryFunction = entryFunction;
         this.builtIn = builtIn;
         this.subFunctions = subFunctions;
         this.scopeMapping = Stream.generate(() -> new HashMap<MemoryObject, MemoryObject>()).limit(namePrefixes.size()).toList();
-        this.pointerMapping = variables.stream().collect(Collectors.toMap((ScopedPointerVariable::getAddress), (v -> v)));
         this.scopeIdProvider = List.of(grid::thId, grid::sgId, grid::wgId, grid::qfId, grid::dvId);
         this.namePrefixIdxProvider = List.of(
                 i -> i,
@@ -88,8 +84,8 @@ public class MemoryTransformer extends ExprTransformer {
     }
 
     @Override
-    public Expression visitMemoryObject(MemoryObject memObj) {
-        String storageClass = pointerMapping.get(memObj).getScopeId();
+    public Expression visitScopedPointerVariable(ScopedPointerVariable pointer) {
+        String storageClass = pointer.getScopeId();
         return switch (storageClass) {
             // Device-level memory (keep the same instance)
             case Tag.Spirv.SC_UNIFORM_CONSTANT,
@@ -99,19 +95,20 @@ public class MemoryTransformer extends ExprTransformer {
                  Tag.Spirv.SC_PUSH_CONSTANT,
                  Tag.Spirv.SC_STORAGE_BUFFER,
                  Tag.Spirv.SC_PHYS_STORAGE_BUFFER,
-                 Tag.Spirv.SC_CROSS_WORKGROUP -> memObj;
+                 Tag.Spirv.SC_CROSS_WORKGROUP -> pointer.getAddress();
             // Private memory (copy for each new thread)
             case Tag.Spirv.SC_PRIVATE,
                  Tag.Spirv.SC_FUNCTION,
-                 Tag.Spirv.SC_INPUT -> applyMapping(memObj, 0);
+                 Tag.Spirv.SC_INPUT -> applyMapping(pointer, 0);
             // Workgroup-level memory (copy for each new workgroup)
-            case Tag.Spirv.SC_WORKGROUP -> applyMapping(memObj, 2);
+            case Tag.Spirv.SC_WORKGROUP -> applyMapping(pointer, 2);
             default -> throw new UnsupportedOperationException(
                     "Unsupported storage class " + storageClass);
         };
     }
 
-    private Expression applyMapping(MemoryObject memObj, int scopeDepth) {
+    private Expression applyMapping(ScopedPointerVariable pointer, int scopeDepth) {
+        MemoryObject memObj = pointer.getAddress();
         Map<MemoryObject, MemoryObject> mapping = scopeMapping.get(scopeDepth);
         if (!mapping.containsKey(memObj)) {
             MemoryObject copy = memObj instanceof VirtualMemoryObject
@@ -125,7 +122,7 @@ public class MemoryTransformer extends ExprTransformer {
                 }
                 copy.setInitialValue(offset, value);
             }
-            builtIn.decorate(memObj.getName(), copy, pointerMapping.get(memObj).getInnerType());
+            builtIn.decorate(memObj.getName(), copy, pointer.getInnerType());
             mapping.put(memObj, copy);
         }
         return mapping.getOrDefault(memObj, memObj);

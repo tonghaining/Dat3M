@@ -33,7 +33,7 @@ public class ThreadCreator {
         this.program = function.getProgram();
         this.subFunctions = subFunctions;
         this.variables = variables;
-        this.transformer = new MemoryTransformer(grid, function, subFunctions, builtIn, variables);
+        this.transformer = new MemoryTransformer(grid, function, subFunctions, builtIn);
         for (Function subFunction : subFunctions) {
             Map<Thread, Function> threadLocalSubFunctions = new HashMap<>();
             localSubFunctions.put(subFunction, threadLocalSubFunctions);
