@@ -1,6 +1,5 @@
 OpenCL
 (* OpenCL Memory Model *)
-include "basic.cat"
 
 (*
 * This model is based on:

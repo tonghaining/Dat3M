@@ -80,7 +80,7 @@ public class ClangSpirvRacesTest {
                 {"ttaslock-dv2wg-2.2.2.spv.dis", 1, FAIL},
 
                 {"xf-barrier-2.1.2.spv.dis", 9, PASS},
-                {"xf-barrier-3.1.3.spv.dis", 9, PASS},
+                {"xf-barrier-3.1.3.spv.dis", 10, PASS},
                 {"xf-barrier-2.1.1.spv.dis", 9, PASS},
                 {"xf-barrier-1.1.2.spv.dis", 9, PASS},
                 {"xf-barrier-fail1.spv.dis", 4, FAIL},
