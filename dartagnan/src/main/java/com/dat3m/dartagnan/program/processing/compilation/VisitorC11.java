@@ -242,12 +242,12 @@ public class VisitorC11 extends VisitorBase {
         ));
     }
 
-    private List<Event> tagList(List<Event> in) {
+    public List<Event> tagList(List<Event> in) {
         in.forEach(e -> tagEvent(null, e));
         return in;
     }
 
-    private List<Event> tagList(Event originalEvent, List<Event> in) {
+    public List<Event> tagList(Event originalEvent, List<Event> in) {
         in.forEach(e -> tagEvent(originalEvent, e));
         return in;
     }

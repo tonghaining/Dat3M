@@ -360,11 +360,11 @@ public class VisitorSpirvOpenCLTest {
         List<Event> seq = visitor.visitSpirvCmpXchg(e);
 
         // then
-        assertEquals(10, seq.size());
-        Load load = (Load) seq.get(1);
+        assertEquals(5, seq.size());
+        Load load = (Load) seq.get(0);
         Set<String> baseLoadTags = Set.of(Tag.VISIBLE, Tag.MEMORY, Tag.READ, Tag.RMW, Tag.C11.ATOMIC);
         assertEquals(Sets.union(baseLoadTags, loadTags), load.getTags());
-        Store store = (Store) seq.get(4);
+        Store store = (Store) seq.get(3);
         Set<String> baseStoreTags = Set.of(Tag.VISIBLE, Tag.MEMORY, Tag.WRITE, Tag.RMW, Tag.C11.ATOMIC);
         assertEquals(Sets.union(baseStoreTags, storeTags), store.getTags());
     }

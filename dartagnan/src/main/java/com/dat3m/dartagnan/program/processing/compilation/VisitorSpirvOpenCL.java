@@ -1,12 +1,13 @@
 package com.dat3m.dartagnan.program.processing.compilation;
 
+import com.dat3m.dartagnan.expression.Expression;
 import com.dat3m.dartagnan.parsers.program.visitors.spirv.helpers.HelperTags;
+import com.dat3m.dartagnan.program.Register;
 import com.dat3m.dartagnan.program.event.Event;
 import com.dat3m.dartagnan.program.event.EventFactory;
 import com.dat3m.dartagnan.program.event.Tag;
 import com.dat3m.dartagnan.program.event.arch.opencl.OpenCLRMWExtremumBase;
 import com.dat3m.dartagnan.program.event.core.*;
-import com.dat3m.dartagnan.program.event.lang.catomic.AtomicCmpXchg;
 import com.dat3m.dartagnan.program.event.lang.catomic.AtomicFetchOp;
 import com.dat3m.dartagnan.program.event.lang.catomic.AtomicXchg;
 import com.dat3m.dartagnan.program.event.lang.spirv.*;
@@ -104,13 +105,30 @@ public class VisitorSpirvOpenCL extends VisitorC11 {
                     "Spir-V CmpXchg with unequal tag sets is not supported");
         }
         String scope = toOpenCLTag(Tag.Spirv.getScopeTag(e.getTags()));
-        AtomicCmpXchg cmpXchg = Atomic.newCompareExchange(e.getResultRegister(), e.getAddress(),
-                e.getExpectedValue(), e.getStoreValue(), moToOpenCLTag(spvMoEq));
-        cmpXchg.addTags(scope);
-        cmpXchg.setFunction(e.getFunction());
-        cmpXchg.addTags(toOpenCLTags(eqTags));
-
-        return visitAtomicCmpXchg(cmpXchg);
+        String storageClass = toOpenCLTag(Tag.Spirv.getStorageClassTag(e.getTags()));
+        String mo = toOpenCLTag(spvMoEq);
+        if (mo == null) {
+            mo = Tag.C11.MO_RELAXED;
+        }
+        Register resultRegister = e.getResultRegister();
+        Expression address = e.getAddress();
+        Expression expected = e.getExpectedValue();
+        Expression value = e.getStoreValue();
+        Register cmpResultRegister = e.getFunction().newRegister(types.getBooleanType());
+        Label casEnd = newLabel("CAS_end");
+        Load load = newRMWLoadWithMo(resultRegister, address, Tag.C11.loadMO(mo));
+        RMWStore store = newRMWStoreWithMo(load, address, value, Tag.C11.storeMO(mo));
+        Local local = newLocal(cmpResultRegister, expressions.makeEQ(resultRegister, expected));
+        CondJump condJump = newJumpUnless(cmpResultRegister, casEnd);
+        load.addTags(scope, storageClass);
+        store.addTags(scope, storageClass);
+        return tagList(e, eventSequence(
+                load,
+                local,
+                condJump,
+                store,
+                casEnd
+        ));
     }
 
     @Override
