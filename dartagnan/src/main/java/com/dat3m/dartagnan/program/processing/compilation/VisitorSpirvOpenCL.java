@@ -106,6 +106,7 @@ public class VisitorSpirvOpenCL extends VisitorC11 {
         }
         String scope = toOpenCLTag(Tag.Spirv.getScopeTag(e.getTags()));
         String storageClass = toOpenCLTag(Tag.Spirv.getStorageClassTag(e.getTags()));
+        e.addTags(scope, storageClass);
         String mo = toOpenCLTag(spvMoEq);
         if (mo == null) {
             mo = Tag.C11.MO_RELAXED;
@@ -120,8 +121,6 @@ public class VisitorSpirvOpenCL extends VisitorC11 {
         RMWStore store = newRMWStoreWithMo(load, address, value, Tag.C11.storeMO(mo));
         Local local = newLocal(cmpResultRegister, expressions.makeEQ(resultRegister, expected));
         CondJump condJump = newJumpUnless(cmpResultRegister, casEnd);
-        load.addTags(scope, storageClass);
-        store.addTags(scope, storageClass);
         return tagList(e, eventSequence(
                 load,
                 local,

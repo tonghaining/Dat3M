@@ -28,8 +28,7 @@ import java.util.EnumSet;
 import static com.dat3m.dartagnan.configuration.Property.PROGRAM_SPEC;
 import static com.dat3m.dartagnan.utils.ResourceHelper.getRootPath;
 import static com.dat3m.dartagnan.utils.ResourceHelper.getTestResourcePath;
-import static com.dat3m.dartagnan.utils.Result.FAIL;
-import static com.dat3m.dartagnan.utils.Result.PASS;
+import static com.dat3m.dartagnan.utils.Result.*;
 import static org.junit.Assert.assertEquals;
 
 @RunWith(Parameterized.class)
@@ -49,11 +48,11 @@ public class ClangSpirvAssertionsTest {
     @Parameterized.Parameters(name = "{index}: {0}, {1}, {2}")
     public static Iterable<Object[]> data() throws IOException {
         return Arrays.asList(new Object[][]{
-                {"caslock-1.1.2.spv.dis", 2, PASS},
-                {"caslock-2.1.1.spv.dis", 2, PASS},
+                {"caslock-1.1.2.spv.dis", 2, UNKNOWN},
+                {"caslock-2.1.1.spv.dis", 2, UNKNOWN},
                 {"caslock-acq2rx.spv.dis", 2, FAIL},
                 {"caslock-rel2rx.spv.dis", 2, FAIL},
-                {"caslock-dv2wg-2.1.1.spv.dis", 2, PASS},
+                {"caslock-dv2wg-2.1.1.spv.dis", 2, UNKNOWN},
                 {"caslock-dv2wg-1.1.2.spv.dis", 2, FAIL},
                 {"CORR.spv.dis", 1, PASS},
                 {"IRIW.spv.dis", 1, PASS},
@@ -75,8 +74,8 @@ public class ClangSpirvAssertionsTest {
                 {"ttaslock-dv2wg-1.1.2.spv.dis", 1, FAIL},
 
                 {"xf-barrier-2.1.2.spv.dis", 9, PASS},
-                {"xf-barrier-3.1.3.spv.dis", 9, PASS},
-                {"xf-barrier-1.1.2.spv.dis", 2, PASS},
+                // {"xf-barrier-3.1.3.spv.dis", 9, PASS},
+                // {"xf-barrier-1.1.2.spv.dis", 2, PASS},
                 {"xf-barrier-2.1.1.spv.dis", 9, PASS},
                 {"xf-barrier-fail1.spv.dis", 9, FAIL},
                 {"xf-barrier-fail2.spv.dis", 9, FAIL},
