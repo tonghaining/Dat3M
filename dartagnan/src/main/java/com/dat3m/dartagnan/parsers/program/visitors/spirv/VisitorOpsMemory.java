@@ -69,7 +69,7 @@ public class VisitorOpsMemory extends SpirvBaseVisitor<Event> {
                 String elementId = resultId + "_" + i;
                 Register register = builder.addRegister(elementId, arrayType.getElementType());
                 registers.add(register);
-                List<Expression> index = List.of(new IntLiteral(types.getArchType(), new BigInteger(Long.toString(i))));
+                List<Expression> index = List.of(expressions.makeValue(new BigInteger(Long.toString(i)), types.getArchType()));
                 Expression elementPointer = HelperTypes.getMemberAddress(pointerId, pointer, arrayType, index);
                 Event load = EventFactory.newLoad(register, elementPointer);
                 events.add(load);
@@ -152,80 +152,6 @@ public class VisitorOpsMemory extends SpirvBaseVisitor<Event> {
             throw new ParsingException("Variable '%s' has illegal storage class '%s'",
                     pointer.getId(), classToken);
         }
-    }
-
-    @Override
-    public Event visitOpCopyMemory(SpirvParser.OpCopyMemoryContext ctx) {
-        Expression target = builder.getExpression(ctx.targetIdRef().getText());
-        Expression source = builder.getExpression(ctx.sourceIdRef().getText());
-        if (!(target instanceof ScopedPointerVariable) || !(source instanceof ScopedPointerVariable sourcePointer)) {
-            throw new ParsingException("Type '%s' is not a pointer type", ctx.targetIdRef().getText());
-        }
-        Register sourceRegister = builder.addRegister(ctx.sourceIdRef().getText() + "_copy", sourcePointer.getInnerType());
-        Event load = EventFactory.newLoad(sourceRegister, source);
-        builder.addEvent(load);
-        Event store = EventFactory.newStore(target, sourceRegister);
-        if (ctx.memoryAccess() != null) {
-            Set<String> tags = parseMemoryAccessTags(ctx.memoryAccess(0));
-            load.addTags(tags);
-            store.addTags(tags);
-            if (ctx.memoryAccess().size() == 2) {
-                Set<String> sourceTags = parseMemoryAccessTags(ctx.memoryAccess(1));
-                if (tags.contains(Tag.Spirv.MEM_VISIBLE) || sourceTags.contains(Tag.Spirv.MEM_AVAILABLE)) {
-                    throw new ParsingException("OpCopyMemorySized cannot contain tags '%s' and '%s'", Tag.Spirv.MEM_VISIBLE, Tag.Spirv.MEM_AVAILABLE);
-                }
-                store.addTags(sourceTags);
-            }
-        }
-        builder.addEvent(store);
-        return null;
-    }
-
-    @Override
-    public Event visitOpCopyMemorySized(SpirvParser.OpCopyMemorySizedContext ctx) {
-        Expression target = builder.getExpression(ctx.targetIdRef().getText());
-        Expression source = builder.getExpression(ctx.sourceIdRef().getText());
-        Expression size = builder.getExpression(ctx.sizeIdRef().getText());
-
-        Register sourceRegister = builder.addRegister(ctx.sourceIdRef().getText() + "_copy_source", source.getType());
-        Event load = EventFactory.newLoad(sourceRegister, source);
-        builder.addEvent(load);
-
-        Expression sourceMasked;
-        if (size instanceof IntLiteral sizeLiteral) {
-            int sizeValue = sizeLiteral.getValueAsInt();
-            if (sizeValue <= 0) {
-                throw new ParsingException("Size must be a positive integer value");
-            }
-            int sizeMask = (1 << sizeValue) - 1;
-            sourceMasked = expressions.makeIntAnd(sourceRegister, expressions.makeValue(sizeMask, (IntegerType) source.getType()));
-        } else if (size.getType() instanceof IntegerType sizeType) {
-            Expression sizeMask = expressions.makeSub(expressions.makeLshift(size, expressions.makeValue(1, sizeType)), expressions.makeOne(sizeType));
-            sourceMasked = expressions.makeIntAnd(sourceRegister, sizeMask);
-        } else {
-            throw new ParsingException("Size must be an integer value");
-        }
-
-        Register targetRegister = builder.addRegister(ctx.sourceIdRef().getText() + "_copy_target", source.getType());
-        Event local = EventFactory.newLocal(targetRegister, sourceMasked);
-        Event store = EventFactory.newStore(target, targetRegister);
-
-        if (ctx.memoryAccess() != null) {
-            Set<String> tags = parseMemoryAccessTags(ctx.memoryAccess(0));
-            load.addTags(tags);
-            store.addTags(tags);
-            if (ctx.memoryAccess().size() == 2) {
-                Set<String> sourceTags = parseMemoryAccessTags(ctx.memoryAccess(1));
-                if (tags.contains(Tag.Spirv.MEM_VISIBLE) || sourceTags.contains(Tag.Spirv.MEM_AVAILABLE)) {
-                    throw new ParsingException("OpCopyMemorySized cannot contain tags '%s' and '%s'", Tag.Spirv.MEM_VISIBLE, Tag.Spirv.MEM_AVAILABLE);
-                }
-                store.addTags(sourceTags);
-            }
-        }
-
-        builder.addEvent(local);
-        builder.addEvent(store);
-        return null;
     }
 
     @Override
@@ -325,8 +251,6 @@ public class VisitorOpsMemory extends SpirvBaseVisitor<Event> {
                 "OpVariable",
                 "OpLoad",
                 "OpStore",
-                "OpCopyMemory",
-                "OpCopyMemorySized",
                 "OpAccessChain",
                 "OpInBoundsAccessChain",
                 "OpPtrAccessChain",

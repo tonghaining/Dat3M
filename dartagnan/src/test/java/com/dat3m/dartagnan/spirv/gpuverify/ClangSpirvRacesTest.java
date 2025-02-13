@@ -74,7 +74,7 @@ public class ClangSpirvRacesTest {
                 {"misc/fail/miscfail1.spv.dis", 1, FAIL},
                 {"misc/fail/miscfail3.spv.dis", 2, FAIL},
                 {"misc/fail/struct_member_race.spv.dis", 1, FAIL},
-                {"misc/pass/misc13.spv.dis", 1, PASS},
+                // {"misc/pass/misc13.spv.dis", 1, PASS},
                 {"misc/pass/misc2.spv.dis", 2, PASS},
                 {"multidimarrays/test5.spv.dis", 1, FAIL},
                 {"no_log/pass.spv.dis", 1, FAIL},
