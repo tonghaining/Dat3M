@@ -40,7 +40,7 @@ public class ClangSpirvAssertionsTest {
     private final Result expected;
 
     public ClangSpirvAssertionsTest(String file, int bound, Result expected) {
-        this.programPath = getTestResourcePath("clang/benchmarks/" + file);
+        this.programPath = getTestResourcePath("spirv/opencl/benchmarks/" + file);
         this.bound = bound;
         this.expected = expected;
     }

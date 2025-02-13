@@ -39,7 +39,7 @@ public class ClangSpirvRacesTest {
     private final Result expected;
 
     public ClangSpirvRacesTest(String file, int bound, Result expected) {
-        this.programPath = getTestResourcePath("clang/benchmarks/" + file);
+        this.programPath = getTestResourcePath("spirv/opencl/benchmarks/" + file);
         this.bound = bound;
         this.expected = expected;
     }

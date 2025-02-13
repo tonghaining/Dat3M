@@ -40,7 +40,7 @@ public class SpirvChecksTest {
     private final Result expected;
 
     public SpirvChecksTest(String file, int bound, Result expected) {
-        this.programPath = getTestResourcePath("spirv/gpuverify/" + file);
+        this.programPath = getTestResourcePath("spirv/vulkan/gpuverify/" + file);
         this.bound = bound;
         this.expected = expected;
     }
