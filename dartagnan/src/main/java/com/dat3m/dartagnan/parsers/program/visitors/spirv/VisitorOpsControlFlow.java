@@ -4,8 +4,6 @@ import com.dat3m.dartagnan.exception.ParsingException;
 import com.dat3m.dartagnan.expression.Expression;
 import com.dat3m.dartagnan.expression.ExpressionFactory;
 import com.dat3m.dartagnan.expression.Type;
-import com.dat3m.dartagnan.expression.integers.IntLiteral;
-import com.dat3m.dartagnan.expression.type.IntegerType;
 import com.dat3m.dartagnan.expression.type.TypeFactory;
 import com.dat3m.dartagnan.parsers.SpirvBaseVisitor;
 import com.dat3m.dartagnan.parsers.SpirvParser;
@@ -14,15 +12,9 @@ import com.dat3m.dartagnan.parsers.program.visitors.spirv.builders.ProgramBuilde
 import com.dat3m.dartagnan.program.Register;
 import com.dat3m.dartagnan.program.event.Event;
 import com.dat3m.dartagnan.program.event.EventFactory;
-import com.dat3m.dartagnan.program.event.Tag;
-import com.dat3m.dartagnan.program.event.core.Alloc;
-import com.dat3m.dartagnan.program.event.core.CondJump;
 import com.dat3m.dartagnan.program.event.core.Label;
 import com.dat3m.dartagnan.program.event.functions.Return;
-import com.dat3m.dartagnan.program.memory.ScopedPointerVariable;
-import com.dat3m.dartagnan.program.memory.VirtualMemoryObject;
 
-import java.math.BigInteger;
 import java.util.*;
 
 import static com.dat3m.dartagnan.program.event.EventFactory.newFunctionReturn;
@@ -30,7 +22,6 @@ import static com.dat3m.dartagnan.program.event.EventFactory.newFunctionReturn;
 public class VisitorOpsControlFlow extends SpirvBaseVisitor<Event> {
 
     private static final TypeFactory types = TypeFactory.getInstance();
-    private static final ExpressionFactory expressions = ExpressionFactory.getInstance();
     private final ProgramBuilder builder;
     private final ControlFlowBuilder cfBuilder;
     private String continueLabelId;
@@ -82,29 +73,6 @@ public class VisitorOpsControlFlow extends SpirvBaseVisitor<Event> {
             return null;
         }
         throw new ParsingException("End label must be null");
-    }
-
-    @Override
-    public Event visitOpSwitch(SpirvParser.OpSwitchContext ctx) {
-        Expression selector = builder.getExpression(ctx.selector().getText());
-        if (!(selector.getType() instanceof IntegerType integerType)) {
-            throw new ParsingException("Switch selector must be an integer type");
-        }
-        String defaultLabelId = ctx.defaultLabel().getText();
-        Label defaultLabel = cfBuilder.getOrCreateLabel(defaultLabelId);
-        Map<Expression, Label> cases = new HashMap<>();
-        for (SpirvParser.TargetPairLiteralIntegerIdRefContext tCtx : ctx.targetPairLiteralIntegerIdRef()) {
-            SpirvParser.PairLiteralIntegerIdRefContext pCtx = tCtx.pairLiteralIntegerIdRef();
-            Expression value =  expressions.makeValue(Integer.parseInt(pCtx.literalInteger().getText()), integerType);
-            String labelId = pCtx.idRef().getText();
-            Label label = cfBuilder.getOrCreateLabel(labelId);
-            cases.put(value, label);
-        }
-        List<CondJump> jumps = EventFactory.newSwitch(selector, defaultLabel, cases);
-        for (CondJump jump : jumps) {
-            builder.addEvent(jump);
-        }
-        return cfBuilder.endBlock(jumps.get(jumps.size() - 1));
     }
 
     @Override
@@ -174,40 +142,6 @@ public class VisitorOpsControlFlow extends SpirvBaseVisitor<Event> {
                 builder.getCurrentFunctionName());
     }
 
-    @Override
-    public Event visitOpLifetimeStart(SpirvParser.OpLifetimeStartContext ctx) {
-        String pointerId = ctx.pointer().getText();
-        Integer size = Integer.getInteger(ctx.sizeLiteralInteger().getText());
-        Expression pointerExp = builder.getExpression(pointerId);
-        if (!(pointerExp instanceof ScopedPointerVariable pointerVariable)
-                || !pointerVariable.getScopeId().equals(Tag.Spirv.SC_FUNCTION) ) {
-            throw new ParsingException("Lifetime start can only be applied to a pointer with Function storage class: '%s'", pointerId);
-        }
-        Register register = builder.addRegister(pointerId + "_alloc", pointerVariable.getType());
-        IntegerType pointerIntegerType = types.getArchType();
-        Expression sizeExpression = expressions.makeValue(size, pointerIntegerType);
-        Alloc alloc = EventFactory.newAlloc(register, pointerExp.getType(), sizeExpression, false, false);
-        builder.addEvent(alloc);
-        return null;
-    }
-
-    @Override
-    public Event visitOpLifetimeStop(SpirvParser.OpLifetimeStopContext ctx) {
-        String pointerId = ctx.pointer().getText();
-        int size = Integer.parseInt(ctx.sizeLiteralInteger().getText());
-        Expression pointerExp = builder.getExpression(pointerId);
-        if (!(pointerExp instanceof ScopedPointerVariable pointerVariable)
-                || !pointerVariable.getScopeId().equals(Tag.Spirv.SC_FUNCTION)) {
-            throw new ParsingException("Lifetime stop can only be applied to a pointer with Function storage class: '%s'", pointerId);
-        }
-        int pointerSize = pointerVariable.getAddress().getKnownSize();
-        if (pointerSize != size) {
-            throw new ParsingException("Lifetime stop size does not match the size of the pointer: '%s'", pointerId);
-        }
-        builder.removeExpression(pointerId);
-        return null;
-    }
-
     private Event visitGoto(String labelId) {
         Label label = cfBuilder.getOrCreateLabel(labelId);
         Event event = EventFactory.newGoto(label);
@@ -274,11 +208,8 @@ public class VisitorOpsControlFlow extends SpirvBaseVisitor<Event> {
                 "OpLabel",
                 "OpLoopMerge",
                 "OpSelectionMerge",
-                "OpSwitch",
                 "OpReturn",
-                "OpReturnValue",
-                "OpLifetimeStart",
-                "OpLifetimeStop"
+                "OpReturnValue"
         );
     }
 }

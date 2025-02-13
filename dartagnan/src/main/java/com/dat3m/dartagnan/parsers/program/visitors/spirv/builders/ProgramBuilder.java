@@ -25,7 +25,6 @@ public class ProgramBuilder {
 
     protected final Map<String, Type> types = new HashMap<>();
     protected final Map<String, Expression> expressions = new HashMap<>();
-    protected final Map<String, Expression> expressionsDead = new HashMap<>();
     protected final Map<String, Expression> parameterValues = new HashMap<>();
     protected final Map<String, Expression> inputs = new HashMap<>();
     protected final Map<String, List<Expression>> inputIndexes = new HashMap<>();
@@ -179,15 +178,10 @@ public class ProgramBuilder {
 
     public Expression getExpression(String id) {
         Expression expression = expressions.get(id);
-        Expression expressionDead = expressionsDead.get(id);
-        if (expression == null || expressionDead != null) {
+        if (expression == null) {
             throw new ParsingException("Reference to undefined expression '%s'", id);
         }
         return expression;
-    }
-
-    public void removeExpression(String id) {
-        expressionsDead.put(id, expressions.get(id));
     }
 
     public Expression addExpression(String id, Expression value) {
