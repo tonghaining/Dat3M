@@ -76,8 +76,6 @@ public class HelperInputsTest {
         assertEquals(exp64, castInputType("test", ptr64, types.getArrayType(arr, 1)));
     }
 
-
-    // TODO: Cleanup, test other variations ..
     @Test
     public void testInvalidPointerConversion() {
         IntegerType int32 = types.getIntegerType(32);
@@ -91,25 +89,48 @@ public class HelperInputsTest {
         Type arr2 = types.getArrayType(int64, 2);
         Type arr3 = types.getArrayType(int64, 3);
 
-        doTestInvalidInput(int32, types.getAggregateType(List.of(agg1, agg1, agg1)), "");
-        doTestInvalidInput(int32, types.getAggregateType(List.of(agg1, agg2)), "");
-        doTestInvalidInput(int32, types.getAggregateType(List.of(agg3, agg3)), "");
+        doTestInvalidInput(int32, types.getAggregateType(List.of(agg1, agg1, agg1)),
+                getUnexpectedNumberElementsError("test", 1, 3));
+        doTestInvalidInput(int32, types.getAggregateType(List.of(agg1, agg2)),
+                getMismatchingValueTypeError("test"));
+        doTestInvalidInput(int32, types.getAggregateType(List.of(agg3, agg3)),
+                getUnexpectedNumberElementsError("test", 1, 2));
 
-        doTestInvalidInput(int32, types.getAggregateType(List.of(arr1, arr1, arr1)), "");
-        doTestInvalidInput(int32, types.getAggregateType(List.of(arr1, arr2)), "");
-        doTestInvalidInput(int32, types.getAggregateType(List.of(arr3, arr3)), "");
+        doTestInvalidInput(int32, types.getAggregateType(List.of(arr1, arr1, arr1)),
+                getUnexpectedNumberElementsError("test", 1, 3));
+        doTestInvalidInput(int32, types.getAggregateType(List.of(arr1, arr2)),
+                getMismatchingValueTypeError("test"));
+        doTestInvalidInput(int32, types.getAggregateType(List.of(arr3, arr3)),
+                getUnexpectedNumberElementsError("test", 1, 2));
 
-        doTestInvalidInput(int32, types.getAggregateType(List.of(arr1, agg1)), "");
-        doTestInvalidInput(int32, types.getAggregateType(List.of(types.getAggregateType(List.of(int64, int64, agg1)))), "");
+        doTestInvalidInput(int32, types.getAggregateType(List.of(arr1, agg1)),
+                getMismatchingValueTypeError("test"));
+        doTestInvalidInput(int32, types.getAggregateType(List.of(types.getAggregateType(List.of(int64, int64, agg1)))),
+                getMismatchingValueTypeError("test[0]"));
 
-        doTestInvalidInput(int32, types.getArrayType(agg1, 3), "");
-        doTestInvalidInput(int32, types.getArrayType(agg3, 2), "");
-        doTestInvalidInput(int32, types.getArrayType(arr1, 3), "");
-        doTestInvalidInput(int32, types.getArrayType(arr3, 2), "");
+        doTestInvalidInput(int32, types.getArrayType(agg1, 3),
+                getUnexpectedNumberElementsError("test", 1, 3));
+        doTestInvalidInput(int32, types.getArrayType(agg3, 2),
+                getUnexpectedNumberElementsError("test", 1, 2));
+        doTestInvalidInput(int32, types.getArrayType(arr1, 3),
+                getUnexpectedNumberElementsError("test", 1, 3));
+        doTestInvalidInput(int32, types.getArrayType(arr3, 2),
+                getUnexpectedNumberElementsError("test", 1, 2));
 
-        doTestInvalidInput(int32, types.getArrayType(arr3, 0), "");
-        doTestInvalidInput(int32, types.getArrayType(arr3), "");
-        doTestInvalidInput(int32, types.getAggregateType(List.of()), "");
+        doTestInvalidInput(int32, types.getArrayType(arr3, 0),
+                getUnexpectedNumberElementsError("test", 1, 0));
+        doTestInvalidInput(int32, types.getArrayType(arr3),
+                getUnexpectedNumberElementsError("test", 1, -1));
+        doTestInvalidInput(int32, types.getAggregateType(List.of()),
+                getMismatchingValueTypeError("test"));
+    }
+
+    private String getUnexpectedNumberElementsError(String name, int expected, int received) {
+        return "Unexpected number of elements in variable '" + name + "', expected " + expected + " but received " + received;
+    }
+
+    private String getMismatchingValueTypeError(String name) {
+        return "Mismatching value type for variable '" + name + "', expected same-type elements but received elements of different types";
     }
 
     private void doTestInvalidInput(Type inner, Type outer, String error) {
@@ -118,7 +139,7 @@ public class HelperInputsTest {
             castInputType("test", pointer, outer);
             fail("Should throw exception");
         } catch (ParsingException e) {
-            // TODO: Verify error message
+            assertEquals(error, e.getMessage());
         }
     }
 }
