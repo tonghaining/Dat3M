@@ -31,7 +31,7 @@ public class VisitorExtensionOpenClStd extends VisitorExtension<Expression> {
     }
 
     @Override
-    public Expression visitSAddSat(SpirvParser.SAddSatContext ctx) {
+    public Expression visitOpencl_s_add_sat(SpirvParser.Opencl_s_add_satContext ctx) {
         Expression x = getExpression(ctx.x().getText());
         Expression y = getExpression(ctx.y().getText());
         if (x.getType() instanceof IntegerType && y.getType() instanceof IntegerType) {
@@ -53,7 +53,7 @@ public class VisitorExtensionOpenClStd extends VisitorExtension<Expression> {
     }
 
     @Override
-    public Expression visitSSubSat(SpirvParser.SSubSatContext ctx) {
+    public Expression visitOpencl_s_sub_sat(SpirvParser.Opencl_s_sub_satContext ctx) {
         Expression x = getExpression(ctx.x().getText());
         Expression y = getExpression(ctx.y().getText());
         if (x.getType() instanceof IntegerType && y.getType() instanceof IntegerType) {

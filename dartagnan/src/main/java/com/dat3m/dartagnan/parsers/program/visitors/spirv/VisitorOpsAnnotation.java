@@ -49,7 +49,7 @@ public class VisitorOpsAnnotation extends SpirvBaseVisitor<Void> {
         DecorationType type = fromString(ctx.decoration().getChild(0).getText());
         switch (type) {
             case OFFSET -> {
-                String value = ctx.decoration().byteOffset().getText();
+                String value = ctx.decoration().byteOffsetLiteralInteger().getText();
                 offset.addDecoration(id, index, value);
             }
             default -> throw new ParsingException("Unsupported member decoration '%s'", type);
