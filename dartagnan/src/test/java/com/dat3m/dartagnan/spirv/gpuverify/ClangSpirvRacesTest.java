@@ -29,7 +29,6 @@ import static com.dat3m.dartagnan.configuration.Property.CAT_SPEC;
 import static com.dat3m.dartagnan.utils.ResourceHelper.getRootPath;
 import static com.dat3m.dartagnan.utils.ResourceHelper.getTestResourcePath;
 import static com.dat3m.dartagnan.utils.Result.*;
-import static com.dat3m.dartagnan.utils.Result.FAIL;
 import static org.junit.Assert.assertEquals;
 
 @RunWith(Parameterized.class)
