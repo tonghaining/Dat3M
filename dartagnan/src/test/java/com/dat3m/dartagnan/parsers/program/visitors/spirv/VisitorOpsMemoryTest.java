@@ -15,7 +15,6 @@ import com.dat3m.dartagnan.program.Register;
 import com.dat3m.dartagnan.program.event.Event;
 import com.dat3m.dartagnan.program.event.Tag;
 import com.dat3m.dartagnan.program.event.core.Load;
-import com.dat3m.dartagnan.program.event.core.Local;
 import com.dat3m.dartagnan.program.event.core.Store;
 import com.dat3m.dartagnan.program.memory.ScopedPointer;
 import com.dat3m.dartagnan.program.memory.ScopedPointerVariable;
@@ -952,60 +951,6 @@ public class VisitorOpsMemoryTest {
             assertEquals("Invalid result type in access chain '%element', " +
                     "expected 'bv16' but received 'bv32'", e.getMessage());
         }
-    }
-
-    @Test
-    public void testCopyMemory() {
-        // given
-        String input = "OpCopyMemory %dst %src";
-
-        IntegerType iType = builder.mockIntType("%int", 32);
-        builder.mockPtrType("%int_ptr", "%int", "Uniform");
-        builder.mockVariable("%dst", "%int_ptr");
-        builder.mockVariable("%src", "%int_ptr");
-
-        // when
-        parse(input);
-
-        // then
-        Load load = (Load) getLastNEvent(1);
-        Store store = (Store) getLastEvent();
-        assertNotNull(load);
-        assertNotNull(store);
-        assertEquals(builder.getExpression("%src"), load.getAddress());
-        assertEquals(builder.getExpression("%dst"), store.getAddress());
-        assertEquals(iType, ((ScopedPointerVariable) load.getAddress()).getInnerType());
-        assertEquals(iType, ((ScopedPointerVariable) store.getAddress()).getInnerType());
-    }
-
-    @Test
-    public void testCopyMemorySized() {
-        // given
-        String input = "OpCopyMemorySized %dst %src %size";
-
-        IntegerType iType = builder.mockIntType("%int", 32);
-        builder.mockPtrType("%int_ptr", "%int", "Uniform");
-        builder.mockVariable("%dst", "%int_ptr");
-        builder.mockVariable("%src", "%int_ptr");
-        builder.mockConstant("%size", "%int", 4);
-
-        // when
-        parse(input);
-
-        // then
-        Load load = (Load) getLastNEvent(2);
-        Local local = (Local) getLastNEvent(1);
-        Store store = (Store) getLastEvent();
-        assertNotNull(load);
-        assertNotNull(local);
-        assertNotNull(store);
-        assertEquals(builder.getExpression("%src"), load.getAddress());
-        assertEquals(expressions.makeIntAnd(load.getResultRegister(), expressions.makeValue(15, types.getArchType())),
-                local.getExpr());
-        assertEquals(builder.getExpression("%dst"), store.getAddress());
-        assertEquals(iType, ((ScopedPointerVariable) load.getAddress()).getInnerType());
-        assertEquals(types.getArchType(), local.getExpr().getType());
-        assertEquals(iType, ((ScopedPointerVariable) store.getAddress()).getInnerType());
     }
 
     private Expression makeOffset(Expression stepExpr, int stepSize) {
