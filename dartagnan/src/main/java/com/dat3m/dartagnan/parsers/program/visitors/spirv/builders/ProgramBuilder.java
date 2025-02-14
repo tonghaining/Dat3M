@@ -27,7 +27,6 @@ public class ProgramBuilder {
     protected final Map<String, Expression> expressions = new HashMap<>();
     protected final Map<String, Expression> parameterValues = new HashMap<>();
     protected final Map<String, Expression> inputs = new HashMap<>();
-    protected final Map<String, List<Expression>> inputIndexes = new HashMap<>();
     protected final Map<String, String> debugInfos = new HashMap<>();
     protected final ThreadGrid grid;
     protected final Program program;
@@ -141,23 +140,6 @@ public class ProgramBuilder {
             throw new ParsingException("Duplicated input definition '%s'", id);
         }
         inputs.put(id, value);
-    }
-
-    public void addInputIndex(String id, List<Integer> indexes) {
-        if (inputIndexes.containsKey(id)) {
-            throw new ParsingException("Duplicated input index definition '%s'", id);
-        }
-        List<Expression> indexExprs = indexes.stream()
-                .map(i -> (Expression) ExpressionFactory.getInstance().makeValue(i, TypeFactory.getInstance().getArchType()))
-                .toList();
-        inputIndexes.put(id, indexExprs);
-    }
-
-    public List<Expression> getInputIndexes(String id) {
-        if (inputIndexes.containsKey(id)) {
-            return inputIndexes.get(id);
-        }
-        return List.of();
     }
 
     public Type getType(String id) {
