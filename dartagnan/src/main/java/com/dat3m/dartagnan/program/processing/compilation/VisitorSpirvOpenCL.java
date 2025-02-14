@@ -6,7 +6,7 @@ import com.dat3m.dartagnan.program.Register;
 import com.dat3m.dartagnan.program.event.Event;
 import com.dat3m.dartagnan.program.event.EventFactory;
 import com.dat3m.dartagnan.program.event.Tag;
-import com.dat3m.dartagnan.program.event.arch.opencl.OpenCLRMWExtremumBase;
+import com.dat3m.dartagnan.program.event.arch.opencl.OpenCLRMWExtremum;
 import com.dat3m.dartagnan.program.event.core.*;
 import com.dat3m.dartagnan.program.event.lang.catomic.AtomicFetchOp;
 import com.dat3m.dartagnan.program.event.lang.catomic.AtomicXchg;
@@ -134,7 +134,7 @@ public class VisitorSpirvOpenCL extends VisitorC11 {
     public List<Event> visitSpirvRmwExtremum(SpirvRmwExtremum e) {
         String mo = moToOpenCLTag(Tag.Spirv.getMoTag(e.getTags()));
         String scope = toOpenCLTag(Tag.Spirv.getScopeTag(e.getTags()));
-        OpenCLRMWExtremumBase rmw = Atomic.newRMWExtremum(e.getResultRegister(), e.getAddress(),
+        OpenCLRMWExtremum rmw = Atomic.newRMWExtremum(e.getResultRegister(), e.getAddress(),
                 e.getOperator(), e.getValue(), mo, scope);
         rmw.setFunction(e.getFunction());
         rmw.addTags(toOpenCLTags(e.getTags()));

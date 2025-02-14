@@ -10,7 +10,7 @@ import com.dat3m.dartagnan.program.event.EventFactory;
 import com.dat3m.dartagnan.program.event.MemoryEvent;
 import com.dat3m.dartagnan.program.event.Tag;
 import com.dat3m.dartagnan.program.event.Tag.C11;
-import com.dat3m.dartagnan.program.event.arch.opencl.OpenCLRMWExtremumBase;
+import com.dat3m.dartagnan.program.event.arch.opencl.OpenCLRMWExtremum;
 import com.dat3m.dartagnan.program.event.core.*;
 import com.dat3m.dartagnan.program.event.lang.catomic.*;
 import com.dat3m.dartagnan.program.event.lang.llvm.*;
@@ -140,7 +140,7 @@ public class VisitorC11 extends VisitorBase {
     }
 
     @Override
-    public List<Event> visitOpenCLRMWExtremum(OpenCLRMWExtremumBase e) {
+    public List<Event> visitOpenCLRMWExtremum(OpenCLRMWExtremum e) {
         Register resultRegister = e.getResultRegister();
         Expression address = e.getAddress();
         String mo = e.getMo();

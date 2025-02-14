@@ -7,14 +7,14 @@ import com.dat3m.dartagnan.program.event.EventVisitor;
 import com.dat3m.dartagnan.program.event.Tag;
 import com.dat3m.dartagnan.program.event.common.RMWExtremumBase;
 
-public class VulkanRMWExtremumBase extends RMWExtremumBase {
+public class VulkanRMWExtremum extends RMWExtremumBase {
 
-    public VulkanRMWExtremumBase(Register register, Expression address, IntCmpOp op, Expression value, String mo, String scope) {
+    public VulkanRMWExtremum(Register register, Expression address, IntCmpOp op, Expression value, String mo, String scope) {
         super(register, address, op, value, mo);
         this.addTags(Tag.Vulkan.ATOM, scope);
     }
 
-    private VulkanRMWExtremumBase(VulkanRMWExtremumBase other) {
+    private VulkanRMWExtremum(VulkanRMWExtremum other) {
         super(other);
     }
 
@@ -24,8 +24,8 @@ public class VulkanRMWExtremumBase extends RMWExtremumBase {
     }
 
     @Override
-    public VulkanRMWExtremumBase getCopy() {
-        return new VulkanRMWExtremumBase(this);
+    public VulkanRMWExtremum getCopy() {
+        return new VulkanRMWExtremum(this);
     }
 
     @Override

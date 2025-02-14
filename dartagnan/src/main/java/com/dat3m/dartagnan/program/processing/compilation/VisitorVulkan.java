@@ -6,7 +6,7 @@ import com.dat3m.dartagnan.program.event.Event;
 import com.dat3m.dartagnan.program.event.Tag;
 import com.dat3m.dartagnan.program.event.arch.vulkan.VulkanCmpXchg;
 import com.dat3m.dartagnan.program.event.arch.vulkan.VulkanRMW;
-import com.dat3m.dartagnan.program.event.arch.vulkan.VulkanRMWExtremumBase;
+import com.dat3m.dartagnan.program.event.arch.vulkan.VulkanRMWExtremum;
 import com.dat3m.dartagnan.program.event.arch.vulkan.VulkanRMWOp;
 import com.dat3m.dartagnan.program.event.core.*;
 
@@ -80,7 +80,7 @@ public class VisitorVulkan extends VisitorBase {
     }
 
     @Override
-    public List<Event> visitVulkanRMWExtremum(VulkanRMWExtremumBase e) {
+    public List<Event> visitVulkanRMWExtremum(VulkanRMWExtremum e) {
         replaceAcqRelMemoryOrder(e);
         Register resultRegister = e.getResultRegister();
         Expression address = e.getAddress();

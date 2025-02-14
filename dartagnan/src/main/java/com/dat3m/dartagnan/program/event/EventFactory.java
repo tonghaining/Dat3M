@@ -12,7 +12,7 @@ import com.dat3m.dartagnan.expression.type.TypeFactory;
 import com.dat3m.dartagnan.program.Function;
 import com.dat3m.dartagnan.program.Register;
 import com.dat3m.dartagnan.program.event.arch.StoreExclusive;
-import com.dat3m.dartagnan.program.event.arch.opencl.OpenCLRMWExtremumBase;
+import com.dat3m.dartagnan.program.event.arch.opencl.OpenCLRMWExtremum;
 import com.dat3m.dartagnan.program.event.arch.ptx.PTXAtomCAS;
 import com.dat3m.dartagnan.program.event.arch.ptx.PTXAtomExch;
 import com.dat3m.dartagnan.program.event.arch.ptx.PTXAtomOp;
@@ -20,7 +20,7 @@ import com.dat3m.dartagnan.program.event.arch.ptx.PTXRedOp;
 import com.dat3m.dartagnan.program.event.arch.tso.TSOXchg;
 import com.dat3m.dartagnan.program.event.arch.vulkan.VulkanCmpXchg;
 import com.dat3m.dartagnan.program.event.arch.vulkan.VulkanRMW;
-import com.dat3m.dartagnan.program.event.arch.vulkan.VulkanRMWExtremumBase;
+import com.dat3m.dartagnan.program.event.arch.vulkan.VulkanRMWExtremum;
 import com.dat3m.dartagnan.program.event.arch.vulkan.VulkanRMWOp;
 import com.dat3m.dartagnan.program.event.core.*;
 import com.dat3m.dartagnan.program.event.core.annotations.FunCallMarker;
@@ -410,8 +410,8 @@ public class EventFactory {
             return new AtomicXchg(register, address, value, mo);
         }
 
-        public static OpenCLRMWExtremumBase newRMWExtremum(Register register, Expression address, IntCmpOp op, Expression value, String mo, String scope) {
-            return new OpenCLRMWExtremumBase(register, address, op, value, mo, scope);
+        public static OpenCLRMWExtremum newRMWExtremum(Register register, Expression address, IntCmpOp op, Expression value, String mo, String scope) {
+            return new OpenCLRMWExtremum(register, address, op, value, mo, scope);
         }
     }
     // =============================================================================================
@@ -779,9 +779,9 @@ public class EventFactory {
             return new VulkanRMWOp(register, address, op, value, mo, scope);
         }
 
-        public static VulkanRMWExtremumBase newRMWExtremum(Expression address, Register register, IntCmpOp op,
-                                                           Expression value, String mo, String scope) {
-            return new VulkanRMWExtremumBase(register, address, op, value, mo, scope);
+        public static VulkanRMWExtremum newRMWExtremum(Expression address, Register register, IntCmpOp op,
+                                                       Expression value, String mo, String scope) {
+            return new VulkanRMWExtremum(register, address, op, value, mo, scope);
         }
 
         public static VulkanCmpXchg newVulkanCmpXchg(Expression address, Register register, Expression expected,
