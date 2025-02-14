@@ -1847,6 +1847,10 @@ ModeExt_NMax : 'NMax';
 ModeExt_NClamp : 'NClamp';
 ModeExt_SAddSat : 's_add_sat';
 ModeExt_SSubSat : 's_sub_sat';
+ModeExt_UAddSat : 'u_add_sat';
+ModeExt_USubSat : 'u_sub_sat';
+ModeExt_Shuffle : 'shuffle';
+ModeExt_Shuffle2 : 'shuffle2';
 
 ModeExt_Id : '%' [A-Za-z0-9_]+ -> type(Id);
 ModeExt_LineComment : ';' ~[\n]* -> skip;

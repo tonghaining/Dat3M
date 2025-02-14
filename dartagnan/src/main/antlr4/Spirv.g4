@@ -1743,6 +1743,10 @@ glsl
     |   unpackUnorm4x8
     |   sAddSat
     |   sSubSat
+    |   uAddSat
+    |   uSubSat
+    |   shuffle
+    |   shuffle2
     ;
 
 round : ModeExt_Round x;
@@ -1828,6 +1832,10 @@ nMax : ModeExt_NMax x y;
 nClamp : ModeExt_NClamp x minVal maxVal;
 sAddSat : ModeExt_SAddSat x y;
 sSubSat : ModeExt_SSubSat x y;
+uAddSat : ModeExt_UAddSat x y;
+uSubSat : ModeExt_USubSat x y;
+shuffle : ModeExt_Shuffle x mask;
+shuffle2 : ModeExt_Shuffle2 x y mask;
 
 // Alias types
 a : idRef;
