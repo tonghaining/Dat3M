@@ -9,12 +9,11 @@ import com.dat3m.dartagnan.expression.type.TypeFactory;
 import com.dat3m.dartagnan.parsers.SpirvBaseVisitor;
 import com.dat3m.dartagnan.parsers.SpirvParser;
 import com.dat3m.dartagnan.parsers.program.visitors.spirv.builders.ProgramBuilder;
-import com.dat3m.dartagnan.program.event.Event;
 
 import java.util.List;
 import java.util.Set;
 
-public class VisitorOpsComposite extends SpirvBaseVisitor<Event> {
+public class VisitorOpsComposite extends SpirvBaseVisitor<Void> {
 
     private final ProgramBuilder builder;
 
@@ -23,36 +22,37 @@ public class VisitorOpsComposite extends SpirvBaseVisitor<Event> {
     }
 
     @Override
-    public Event visitOpCompositeExtract(SpirvParser.OpCompositeExtractContext ctx) {
-        extractCompositeElement(ctx.idResult().getText(), ctx.idResultType().getText(),
-                ctx.composite().getText(), ctx.indexesLiteralInteger());
-        return null;
-    }
-
-    private void extractCompositeElement(String id, String typeId, String compositeId,
-                                    List<SpirvParser.IndexesLiteralIntegerContext> idxContexts) {
-        Expression compositeExpression = builder.getExpression(compositeId);
+    public Void visitOpCompositeExtract(SpirvParser.OpCompositeExtractContext ctx) {
+        String id = ctx.idResult().getText();
+        Expression compositeExpression = builder.getExpression(ctx.composite().getText());
         if (!(compositeExpression instanceof ConstructExpr)) {
             throw new ParsingException("Composite extraction is only supported for ConstructExpr");
         }
-        Type type = builder.getType(typeId);
-        List<Integer> indexes = idxContexts.stream()
+        Type type = builder.getType(ctx.idResultType().getText());
+        List<Integer> indexes = ctx.indexesLiteralInteger().stream()
                 .map(SpirvParser.IndexesLiteralIntegerContext::getText)
                 .map(Integer::parseInt)
                 .toList();
         Expression element = compositeExpression;
         for (Integer index : indexes) {
-            element = element.getOperands().get(index);
+            if (!(element instanceof ConstructExpr)) {
+                throw new ParsingException("Element is not a ConstructExpr at index: " + index);
+            }
+            List<Expression> operands = element.getOperands();
+            if (index >= operands.size()) {
+                throw new ParsingException("Index out of bounds: " + index);
+            }
+            element = operands.get(index);
         }
         if (type.equals(element.getType())) {
             builder.addExpression(id, element);
-            return;
+            return null;
         }
         if (type instanceof ScopedPointerType scopedPointerType) {
             Type pointedType = scopedPointerType.getPointedType();
             if (pointedType == element.getType() || TypeFactory.isStaticTypeOf(element.getType(), pointedType)) {
                 builder.addExpression(id, element);
-                return;
+                return null;
             }
         }
         throw new ParsingException("Type mismatch in composite extraction: %s", id);

@@ -1,5 +1,6 @@
 package com.dat3m.dartagnan.parsers.program.visitors.spirv;
 
+import com.dat3m.dartagnan.exception.ParsingException;
 import com.dat3m.dartagnan.expression.Expression;
 import com.dat3m.dartagnan.expression.ExpressionFactory;
 import com.dat3m.dartagnan.expression.integers.IntLiteral;
@@ -167,6 +168,69 @@ public class VisitorOpsCompositeTest {
 
         assertEquals(i1, compositeExtract0);
         assertEquals(array, compositeExtract1);
+    }
+
+    @Test
+    public void compositeExtractElementNotConstructExpr() {
+        String input = "%extract_value = OpCompositeExtract %uint %composite_value 0";
+
+        builder.mockFunctionStart(true);
+        builder.mockIntType("%uint", 32);
+        Expression nonConstructExpr = expressions.makeValue(1, (IntegerType) builder.getType("%uint"));
+        builder.addExpression("%composite_value", nonConstructExpr);
+
+        try {
+            visit(input);
+            fail("Should throw exception");
+        } catch (ParsingException e) {
+            assertEquals("Composite extraction is only supported for ConstructExpr", e.getMessage());
+        }
+    }
+
+    @Test
+    public void compositeExtractIndexOutOfBounds() {
+        String input = "%extract_value = OpCompositeExtract %uint %composite_value 5";
+
+        builder.mockFunctionStart(true);
+        builder.mockIntType("%uint", 32);
+        List<Expression> elements = List.of(
+                expressions.makeValue(1, (IntegerType) builder.getType("%uint")),
+                expressions.makeValue(2, (IntegerType) builder.getType("%uint")),
+                expressions.makeValue(3, (IntegerType) builder.getType("%uint")),
+                expressions.makeValue(4, (IntegerType) builder.getType("%uint"))
+        );
+        Expression array = expressions.makeArray(builder.getType("%uint"), elements, true);
+        builder.addExpression("%composite_value", array);
+
+        try {
+            visit(input);
+            fail("Should throw exception");
+        } catch (ParsingException e) {
+            assertEquals("Index out of bounds: 5", e.getMessage());
+        }
+    }
+
+    @Test
+    public void compositeExtractIndexTooDeep() {
+        String input = "%extract_value = OpCompositeExtract %uint %composite_value 0 0";
+
+        builder.mockFunctionStart(true);
+        builder.mockIntType("%uint", 32);
+        List<Expression> elements = List.of(
+                expressions.makeValue(1, (IntegerType) builder.getType("%uint")),
+                expressions.makeValue(2, (IntegerType) builder.getType("%uint")),
+                expressions.makeValue(3, (IntegerType) builder.getType("%uint")),
+                expressions.makeValue(4, (IntegerType) builder.getType("%uint"))
+        );
+        Expression array = expressions.makeArray(builder.getType("%uint"), elements, true);
+        builder.addExpression("%composite_value", array);
+
+        try {
+            visit(input);
+            fail("Should throw exception");
+        } catch (ParsingException e) {
+            assertEquals("Element is not a ConstructExpr at index: 0", e.getMessage());
+        }
     }
 
     private void visit(String input) {
