@@ -248,7 +248,6 @@ op
     |   opExpectKHR
     |   opExtInst
     |   opExtInstImport
-    |   opExtInstWithForwardRefsKHR
     |   opExtension
     |   opFAdd
     |   opFConvert
@@ -1052,7 +1051,6 @@ opGetKernelMaxNumSubgroups : idResult Equals Op (GetKernelMaxNumSubgroups idResu
 opExtension : Op Extension nameLiteralString;
 opExtInstImport : idResult Equals Op (ExtInstImport  | SpecConstantOp  ExtInstImport) nameLiteralString;
 opExtInst : idResult Equals Op (ExtInst idResultType | SpecConstantOp idResultType ExtInst) set instruction;
-opExtInstWithForwardRefsKHR : idResult Equals Op (ExtInstWithForwardRefsKHR idResultType | SpecConstantOp idResultType ExtInstWithForwardRefsKHR) set instruction operand*;
 
 // Function Operations
 opFunction : idResult Equals Op (Function idResultType | SpecConstantOp idResultType Function) functionControl (Pipe functionControl)* functionType;
