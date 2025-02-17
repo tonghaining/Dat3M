@@ -474,8 +474,8 @@ public class VisitorOpsControlFlowTest {
                         %label1 = OpLabel
                         OpReturn
                         """,
-                "Illegal label, expected " +
-                        "'%label2' but received '%label1'");
+                "Unsupported conditional branch " +
+                        "with two backward jumps to '%label2' and '%label0'");
     }
 
     @Test

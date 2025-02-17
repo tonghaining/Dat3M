@@ -152,13 +152,9 @@ public class VisitorSpirvOpenCL extends VisitorC11 {
 
     @Override
     public List<Event> visitControlBarrier(ControlBarrier e) {
-        Event entryFence = EventFactory.newControlBarrier(e.getName() + "_entry", e.getId());
-        entryFence.addTags(Tag.OpenCL.ENTRY_FENCE, Tag.C11.MO_RELEASE);
-        Event exitFence = EventFactory.newControlBarrier(e.getName() + "_exit", e.getId());
-        exitFence.addTags(Tag.OpenCL.EXIT_FENCE, Tag.C11.MO_ACQUIRE);
-        entryFence.addTags(toOpenCLTags(e.getTags()));
-        exitFence.addTags(toOpenCLTags(e.getTags()));
-        return eventSequence(entryFence, exitFence);
+        ControlBarrier barrier = new ControlBarrier(e.getName(), e.getId());
+        barrier.addTags(toOpenCLTags(e.getTags()));
+        return super.visitControlBarrier(barrier);
     }
 
     private Set<String> toOpenCLTags(Set<String> tags) {
