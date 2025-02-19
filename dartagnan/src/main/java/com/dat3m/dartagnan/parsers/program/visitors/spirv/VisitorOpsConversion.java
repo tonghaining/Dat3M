@@ -47,7 +47,7 @@ public class VisitorOpsConversion extends SpirvBaseVisitor<Void> {
         }
 
         Expression convertedExpr = expressions.makeCast(operandExpr, resultType);
-        Register reg = builder.addRegister(id, convertedExpr.getType());
+        Register reg = builder.addRegister(id, typeId);
         builder.addEvent(new Local(reg, convertedExpr));
         return null;
     }
@@ -61,7 +61,7 @@ public class VisitorOpsConversion extends SpirvBaseVisitor<Void> {
         }
         Expression pointerExpr = builder.getExpression(ctx.pointer().getText());
         Expression convertedPointer = expressions.makeCast(pointerExpr, builder.getType(typeId), false);
-        Register reg = builder.addRegister(id, convertedPointer.getType());
+        Register reg = builder.addRegister(id, typeId);
         builder.addEvent(new Local(reg, convertedPointer));
         return null;
     }
@@ -90,7 +90,7 @@ public class VisitorOpsConversion extends SpirvBaseVisitor<Void> {
             throw new ParsingException("Invalid storage class '%s' for OpPtrCastToGeneric for id '%s'", pointerSC, id);
         }
         Expression convertedExpr = expressions.makeCast(pointer, genericType);
-        Register reg = builder.addRegister(id, genericType);
+        Register reg = builder.addRegister(id, typeId);
         builder.addEvent(EventFactory.newLocal(reg, convertedExpr));
         return null;
     }

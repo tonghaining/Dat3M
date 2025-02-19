@@ -26,7 +26,7 @@ public class VisitorOpsComposite extends SpirvBaseVisitor<Void> {
         String id = ctx.idResult().getText();
         Expression compositeExpression = builder.getExpression(ctx.composite().getText());
         if (!(compositeExpression instanceof ConstructExpr)) {
-            throw new ParsingException("Composite extraction is only supported for ConstructExpr");
+            throw new ParsingException(String.format("Composite extraction is only supported for ConstructExpr: %s", id));
         }
         Type type = builder.getType(ctx.idResultType().getText());
         List<Integer> indexes = ctx.indexesLiteralInteger().stream()
@@ -36,11 +36,11 @@ public class VisitorOpsComposite extends SpirvBaseVisitor<Void> {
         Expression element = compositeExpression;
         for (Integer index : indexes) {
             if (!(element instanceof ConstructExpr)) {
-                throw new ParsingException("Element is not a ConstructExpr at index: " + index);
+                throw new ParsingException(String.format("Element is not a ConstructExpr at index: %d for: %s", index, id));
             }
             List<Expression> operands = element.getOperands();
             if (index >= operands.size()) {
-                throw new ParsingException("Index out of bounds: " + index);
+                throw new ParsingException(String.format("Index out of bounds: %d for: %s", index, id));
             }
             element = operands.get(index);
         }
@@ -55,7 +55,7 @@ public class VisitorOpsComposite extends SpirvBaseVisitor<Void> {
                 return null;
             }
         }
-        throw new ParsingException("Type mismatch in composite extraction: %s", id);
+        throw new ParsingException(String.format("Type mismatch in composite extraction for: %s", id));
     }
 
     public Set<String> getSupportedOps() {

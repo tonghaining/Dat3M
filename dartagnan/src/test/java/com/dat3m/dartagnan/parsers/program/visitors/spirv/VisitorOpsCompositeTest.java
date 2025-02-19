@@ -125,7 +125,7 @@ public class VisitorOpsCompositeTest {
             fail("Should throw exception");
         } catch (Exception e) {
             // then
-            assertEquals("Type mismatch in composite extraction: %extract_value", e.getMessage());
+            assertEquals("Type mismatch in composite extraction for: %extract_value", e.getMessage());
         }
     }
 
@@ -183,7 +183,7 @@ public class VisitorOpsCompositeTest {
             visit(input);
             fail("Should throw exception");
         } catch (ParsingException e) {
-            assertEquals("Composite extraction is only supported for ConstructExpr", e.getMessage());
+            assertEquals("Composite extraction is only supported for ConstructExpr: %extract_value", e.getMessage());
         }
     }
 
@@ -206,7 +206,7 @@ public class VisitorOpsCompositeTest {
             visit(input);
             fail("Should throw exception");
         } catch (ParsingException e) {
-            assertEquals("Index out of bounds: 5", e.getMessage());
+            assertEquals("Index out of bounds: 5 for: %extract_value", e.getMessage());
         }
     }
 
@@ -229,7 +229,7 @@ public class VisitorOpsCompositeTest {
             visit(input);
             fail("Should throw exception");
         } catch (ParsingException e) {
-            assertEquals("Element is not a ConstructExpr at index: 0", e.getMessage());
+            assertEquals("Element is not a ConstructExpr at index: 0 for: %extract_value", e.getMessage());
         }
     }
 

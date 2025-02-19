@@ -53,8 +53,7 @@ public class VisitorOpsLogical extends SpirvBaseVisitor<Event> {
         Expression op1 = builder.getExpression(ctx.object1().getText());
         Expression op2 = builder.getExpression(ctx.object2().getText());
         Type type = builder.getType(ctx.idResultType().getText());
-        Type resultType = builder.getType(ctx.idResultType().getText());
-        Register register = builder.addRegister(id, resultType);
+        Register register = builder.addRegister(id, ctx.idResultType().getText());
         if (!op1.getType().equals(type) || !op2.getType().equals(type)) {
             throw new ParsingException("Illegal definition for '%s', " +
                     "expected two operands type '%s but received '%s' and '%s'",

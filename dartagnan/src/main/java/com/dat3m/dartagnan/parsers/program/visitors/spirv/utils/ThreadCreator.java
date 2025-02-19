@@ -27,7 +27,7 @@ public class ThreadCreator {
     private int nextFunctionId;
 
     public ThreadCreator(ThreadGrid grid, Function function, Set<Function> subFunctions,
-                         Set<ScopedPointerVariable> variables, BuiltIn builtIn, int nextFunctionId) {
+                         Set<ScopedPointerVariable> variables, BuiltIn builtIn) {
         this.grid = grid;
         this.entryFunction = function;
         this.program = function.getProgram();
@@ -38,7 +38,7 @@ public class ThreadCreator {
             Map<Thread, Function> threadLocalSubFunctions = new HashMap<>();
             localSubFunctions.put(subFunction, threadLocalSubFunctions);
         }
-        this.nextFunctionId = nextFunctionId;
+        this.nextFunctionId = program.getFunctions().size();
     }
 
     public void create() {
