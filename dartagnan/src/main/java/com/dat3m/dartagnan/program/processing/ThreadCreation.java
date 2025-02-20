@@ -41,6 +41,7 @@ import static com.dat3m.dartagnan.configuration.OptionNames.THREAD_CREATE_ALWAYS
 import static com.dat3m.dartagnan.program.event.EventFactory.*;
 
 /*
+ * LLVM:
  * This pass handles (reachable) pthread-related function calls.
  * - each pthread_create call spawns a new Thread object.
  * - pthread_join calls are lowered to appropriate synchronization primitives.
@@ -53,6 +54,13 @@ import static com.dat3m.dartagnan.program.event.EventFactory.*;
  *  (2) Make this pass able to run after compilation.
  *  (3) Make sure that metadata is copied correctly.
  */
+
+/*
+ * SPIR-V:
+ * This pass creates a new thread from the entry function of the program.
+ * The thread number is determined by the thread grid.
+ */
+
 @Options
 public class ThreadCreation implements ProgramProcessor {
 
