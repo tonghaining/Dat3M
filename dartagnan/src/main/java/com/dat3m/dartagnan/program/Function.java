@@ -149,6 +149,18 @@ public class Function implements LeafExpression {
         }
     }
 
+    public void updateEntry(Event event){
+        if (entry == null) {
+            append(event);
+        } else {
+            Event originalEntry = entry;
+            entry = event;
+            entry.setFunction(this);
+            event.setSuccessor(originalEntry);
+            originalEntry.setPredecessor(event);
+        }
+    }
+
     public void updateExit(Event event){
         exit = event;
         Event next;

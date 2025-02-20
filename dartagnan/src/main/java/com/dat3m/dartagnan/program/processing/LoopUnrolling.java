@@ -198,7 +198,13 @@ public class LoopUnrolling implements ProgramProcessor {
                 final List<Event> copies = copyPath(loopBegin, loopBackJump, copyCtx, loopId);
 
                 // Insert copy of the loop
-                loopBegin.getPredecessor().insertAfter(copies);
+                if (loopBegin.getPredecessor() == null) {
+                    Event newEntry = copies.get(0);
+                    loopBegin.getFunction().updateEntry(newEntry);
+                    newEntry.insertAfter(copies.subList(1, copies.size()));
+                } else {
+                    loopBegin.getPredecessor().insertAfter(copies);
+                }
                 if (iterCounter == 1) {
                     // This is the first unrolling; every outside jump to the loop header
                     // gets updated to jump to the first iteration instead.
