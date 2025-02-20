@@ -1,33 +1,42 @@
-; @Input: %10 = {{0}}
 ; @Input: %11 = {{0}}
-; @Input: %12 = {{-1, -1}}
-; @Output: forall (%12[0][0] == -1 or %12[0][1] == -1 or %12[0][0] != %12[0][1])
+; @Input: %12 = {{0}}
+; @Input: %13 = {{-1, -1}}
+; @Output: forall (%13[0][0] == -1 or %13[0][1] == -1 or %13[0][0] != %13[0][1])
 ; @Config: 2, 2, 1
 ; SPIR-V
-; Version: 1.0
+; Version: 1.1
 ; Generator: Khronos LLVM/SPIR-V Translator; 14
-; Bound: 65
+; Bound: 90
 ; Schema: 0
                OpCapability Addresses
                OpCapability Linkage
                OpCapability Kernel
                OpCapability GenericPointer
           %1 = OpExtInstImport "OpenCL.std"
+          %2 = OpExtInstImport "OpenCL.DebugInfo.100"
                OpMemoryModel Physical32 OpenCL
-               OpEntryPoint Kernel %9 "mutex_test" %__spirv_BuiltInGlobalInvocationId
+               OpEntryPoint Kernel %10 "mutex_test" %__spirv_BuiltInGlobalInvocationId
+         %66 = OpString "/home/haintong/Documents/workspace/playground/clang/opencl/cl-semantic/ttaslock-dv2wg.cl"
+         %67 = OpString "//__CSK_MD5:3f3ca439d71896396bd2a750aba86607"
+         %71 = OpString "mutex_test"
+         %72 = OpString "/home/haintong/Documents/workspace/playground/clang/opencl/./cl-semantic/ttaslock-dv2wg.cl"
+         %74 = OpString ""
+         %77 = OpString "lock"
+         %79 = OpString "unlock"
                OpSource OpenCL_C 200000
                OpName %__spirv_BuiltInGlobalInvocationId "__spirv_BuiltInGlobalInvocationId"
                OpName %lock "lock"
                OpName %unlock "unlock"
+               OpModuleProcessed "Debug info producer: Ubuntu clang version 14.0.0-1ubuntu1.1"
                OpDecorate %__spirv_BuiltInGlobalInvocationId BuiltIn GlobalInvocationId
                OpDecorate %__spirv_BuiltInGlobalInvocationId Constant
                OpDecorate %__spirv_BuiltInGlobalInvocationId LinkageAttributes "__spirv_BuiltInGlobalInvocationId" Import
-               OpDecorate %15 Alignment 4
                OpDecorate %16 Alignment 4
                OpDecorate %17 Alignment 4
-               OpDecorate %19 Alignment 4
-               OpDecorate %47 Alignment 4
-               OpDecorate %61 Alignment 4
+               OpDecorate %18 Alignment 4
+               OpDecorate %20 Alignment 4
+               OpDecorate %48 Alignment 4
+               OpDecorate %62 Alignment 4
        %uint = OpTypeInt 32 0
      %uint_1 = OpConstant %uint 1
      %uint_2 = OpConstant %uint 2
@@ -37,78 +46,127 @@
 %_ptr_Input_v3uint = OpTypePointer Input %v3uint
        %void = OpTypeVoid
 %_ptr_CrossWorkgroup_uint = OpTypePointer CrossWorkgroup %uint
-          %8 = OpTypeFunction %void %_ptr_CrossWorkgroup_uint %_ptr_CrossWorkgroup_uint %_ptr_CrossWorkgroup_uint
+          %9 = OpTypeFunction %void %_ptr_CrossWorkgroup_uint %_ptr_CrossWorkgroup_uint %_ptr_CrossWorkgroup_uint
 %_ptr_Function__ptr_CrossWorkgroup_uint = OpTypePointer Function %_ptr_CrossWorkgroup_uint
 %_ptr_Function_uint = OpTypePointer Function %uint
-         %21 = OpTypeFunction %void %_ptr_CrossWorkgroup_uint
+         %22 = OpTypeFunction %void %_ptr_CrossWorkgroup_uint
 %_ptr_Generic_uint = OpTypePointer Generic %uint
        %bool = OpTypeBool
 %__spirv_BuiltInGlobalInvocationId = OpVariable %_ptr_Input_v3uint Input
-          %9 = OpFunction %void DontInline %8
-         %10 = OpFunctionParameter %_ptr_CrossWorkgroup_uint
+         %68 = OpExtInst %void %2 DebugSource %66 %67
+         %69 = OpExtInst %void %2 DebugCompilationUnit 65536 5 %68 OpenCL_C
+         %70 = OpExtInst %void %2 DebugTypeFunction None %void
+         %73 = OpExtInst %void %2 DebugSource %72 %67
+         %75 = OpExtInst %void %2 DebugInfoNone
+         %76 = OpExtInst %void %2 DebugFunction %71 %70 %73 17 0 %69 %74 FlagIsDefinition|FlagPrototyped 17 %10 %75
+         %78 = OpExtInst %void %2 DebugFunction %77 %70 %73 4 0 %69 %74 FlagIsLocal|FlagIsDefinition|FlagPrototyped 4 %lock %75
+         %80 = OpExtInst %void %2 DebugFunction %79 %70 %73 13 0 %69 %74 FlagIsLocal|FlagIsDefinition|FlagPrototyped 13 %unlock %75
+         %10 = OpFunction %void DontInline %9
          %11 = OpFunctionParameter %_ptr_CrossWorkgroup_uint
          %12 = OpFunctionParameter %_ptr_CrossWorkgroup_uint
-         %13 = OpLabel
-         %15 = OpVariable %_ptr_Function__ptr_CrossWorkgroup_uint Function
+         %13 = OpFunctionParameter %_ptr_CrossWorkgroup_uint
+         %14 = OpLabel
          %16 = OpVariable %_ptr_Function__ptr_CrossWorkgroup_uint Function
          %17 = OpVariable %_ptr_Function__ptr_CrossWorkgroup_uint Function
-         %19 = OpVariable %_ptr_Function_uint Function
-               OpStore %15 %10 Aligned 4
+         %18 = OpVariable %_ptr_Function__ptr_CrossWorkgroup_uint Function
+         %20 = OpVariable %_ptr_Function_uint Function
                OpStore %16 %11 Aligned 4
                OpStore %17 %12 Aligned 4
-         %20 = OpLoad %_ptr_CrossWorkgroup_uint %15 Aligned 4
-         %24 = OpFunctionCall %void %lock %20
-         %25 = OpLoad %_ptr_CrossWorkgroup_uint %16 Aligned 4
-         %26 = OpLoad %uint %25 Aligned 4
-               OpStore %19 %26 Aligned 4
-         %27 = OpLoad %uint %19 Aligned 4
-         %29 = OpIAdd %uint %27 %uint_1
-         %30 = OpLoad %_ptr_CrossWorkgroup_uint %16 Aligned 4
-               OpStore %30 %29 Aligned 4
-         %31 = OpLoad %_ptr_CrossWorkgroup_uint %15 Aligned 4
-         %34 = OpFunctionCall %void %unlock %31
-         %35 = OpLoad %uint %19 Aligned 4
-         %36 = OpLoad %_ptr_CrossWorkgroup_uint %17 Aligned 4
-         %37 = OpLoad %v3uint %__spirv_BuiltInGlobalInvocationId Aligned 16
-         %38 = OpCompositeExtract %uint %37 0
-         %39 = OpInBoundsPtrAccessChain %_ptr_CrossWorkgroup_uint %36 %38
-               OpStore %39 %35 Aligned 4
+               OpStore %18 %13 Aligned 4
+         %81 = OpExtInst %void %2 DebugScope %76
+               OpLine %72 19 10
+         %21 = OpLoad %_ptr_CrossWorkgroup_uint %16 Aligned 4
+               OpLine %72 19 5
+         %25 = OpFunctionCall %void %lock %21
+               OpLine %72 20 10
+         %26 = OpLoad %_ptr_CrossWorkgroup_uint %17 Aligned 4
+               OpLine %72 20 9
+         %27 = OpLoad %uint %26 Aligned 4
+               OpLine %72 20 7
+               OpStore %20 %27 Aligned 4
+               OpLine %72 21 10
+         %28 = OpLoad %uint %20 Aligned 4
+               OpLine %72 21 12
+         %30 = OpIAdd %uint %28 %uint_1
+               OpLine %72 21 6
+         %31 = OpLoad %_ptr_CrossWorkgroup_uint %17 Aligned 4
+               OpLine %72 21 8
+               OpStore %31 %30 Aligned 4
+               OpLine %72 22 12
+         %32 = OpLoad %_ptr_CrossWorkgroup_uint %16 Aligned 4
+               OpLine %72 22 5
+         %35 = OpFunctionCall %void %unlock %32
+               OpLine %72 23 27
+         %36 = OpLoad %uint %20 Aligned 4
+               OpLine %72 23 5
+         %37 = OpLoad %_ptr_CrossWorkgroup_uint %18 Aligned 4
+               OpLine %72 23 7
+         %38 = OpLoad %v3uint %__spirv_BuiltInGlobalInvocationId Aligned 16
+         %39 = OpCompositeExtract %uint %38 0
+               OpLine %72 23 5
+         %40 = OpInBoundsPtrAccessChain %_ptr_CrossWorkgroup_uint %37 %39
+               OpLine %72 23 25
+               OpStore %40 %36 Aligned 4
+               OpLine %72 24 1
                OpReturn
                OpFunctionEnd
-       %lock = OpFunction %void DontInline %21
-         %23 = OpFunctionParameter %_ptr_CrossWorkgroup_uint
-         %40 = OpLabel
-         %47 = OpVariable %_ptr_Function__ptr_CrossWorkgroup_uint Function
-               OpStore %47 %23 Aligned 4
-               OpBranch %41
+       %lock = OpFunction %void DontInline %22
+         %24 = OpFunctionParameter %_ptr_CrossWorkgroup_uint
          %41 = OpLabel
+         %48 = OpVariable %_ptr_Function__ptr_CrossWorkgroup_uint Function
+               OpStore %48 %24 Aligned 4
+         %82 = OpExtInst %void %2 DebugScope %78
+               OpLine %72 5 5
                OpBranch %42
          %42 = OpLabel
-         %48 = OpLoad %_ptr_CrossWorkgroup_uint %47 Aligned 4
-         %50 = OpPtrCastToGeneric %_ptr_Generic_uint %48
-         %53 = OpAtomicLoad %uint %50 %uint_2 %uint_0
-         %55 = OpINotEqual %bool %53 %uint_0
-               OpBranchConditional %55 %43 %44
+         %83 = OpExtInst %void %2 DebugScope %78
+               OpLine %72 6 9
+               OpBranch %43
          %43 = OpLabel
-               OpBranch %42
+         %84 = OpExtInst %void %2 DebugScope %78
+               OpLine %72 6 37
+         %49 = OpLoad %_ptr_CrossWorkgroup_uint %48 Aligned 4
+         %51 = OpPtrCastToGeneric %_ptr_Generic_uint %49
+               OpLine %72 6 16
+         %54 = OpAtomicLoad %uint %51 %uint_2 %uint_0
+               OpLine %72 6 87
+         %56 = OpINotEqual %bool %54 %uint_0
+               OpLine %72 6 9
+               OpBranchConditional %56 %44 %45
          %44 = OpLabel
-         %56 = OpLoad %_ptr_CrossWorkgroup_uint %47 Aligned 4
-         %57 = OpPtrCastToGeneric %_ptr_Generic_uint %56
-         %58 = OpAtomicExchange %uint %57 %uint_2 %uint_2 %uint_1
-         %59 = OpINotEqual %bool %58 %uint_0
-               OpBranchConditional %59 %46 %45
+         %85 = OpExtInst %void %2 DebugScope %78
+               OpLine %72 6 9
+               OpBranch %43
          %45 = OpLabel
-               OpReturn
+         %86 = OpExtInst %void %2 DebugScope %78
+               OpLine %72 7 38
+         %57 = OpLoad %_ptr_CrossWorkgroup_uint %48 Aligned 4
+         %58 = OpPtrCastToGeneric %_ptr_Generic_uint %57
+               OpLine %72 7 13
+         %59 = OpAtomicExchange %uint %58 %uint_2 %uint_2 %uint_1
+         %60 = OpINotEqual %bool %59 %uint_0
+               OpLine %72 7 12
+               OpBranchConditional %60 %47 %46
          %46 = OpLabel
-               OpBranch %41
+         %87 = OpExtInst %void %2 DebugScope %78
+               OpLine %72 8 13
+               OpReturn
+         %47 = OpLabel
+         %88 = OpExtInst %void %2 DebugScope %78
+               OpLine %72 5 5
+               OpBranch %42
                OpFunctionEnd
-     %unlock = OpFunction %void DontInline %21
-         %33 = OpFunctionParameter %_ptr_CrossWorkgroup_uint
-         %60 = OpLabel
-         %61 = OpVariable %_ptr_Function__ptr_CrossWorkgroup_uint Function
-               OpStore %61 %33 Aligned 4
-         %62 = OpLoad %_ptr_CrossWorkgroup_uint %61 Aligned 4
-         %63 = OpPtrCastToGeneric %_ptr_Generic_uint %62
-               OpAtomicStore %63 %uint_2 %uint_4 %uint_0
+     %unlock = OpFunction %void DontInline %22
+         %34 = OpFunctionParameter %_ptr_CrossWorkgroup_uint
+         %61 = OpLabel
+         %62 = OpVariable %_ptr_Function__ptr_CrossWorkgroup_uint Function
+               OpStore %62 %34 Aligned 4
+         %89 = OpExtInst %void %2 DebugScope %80
+               OpLine %72 14 27
+         %63 = OpLoad %_ptr_CrossWorkgroup_uint %62 Aligned 4
+         %64 = OpPtrCastToGeneric %_ptr_Generic_uint %63
+               OpLine %72 14 5
+               OpAtomicStore %64 %uint_2 %uint_4 %uint_0
+               OpLine %72 15 1
                OpReturn
                OpFunctionEnd

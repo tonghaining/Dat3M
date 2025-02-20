@@ -969,7 +969,7 @@ opConstantCompositeContinuedINTEL : Op ConstantCompositeContinuedINTEL constitue
 opSpecConstantCompositeContinuedINTEL : Op SpecConstantCompositeContinuedINTEL constituents*;
 
 // Control-Flow Operations
-opPhi : idResult Equals Op (Phi idResultType | SpecConstantOp idResultType Phi) variable*;
+opPhi : idResult Equals Op (Phi idResultType | SpecConstantOp idResultType Phi) variablePairIdRefIdRef*;
 opLoopMerge : Op LoopMerge mergeBlock continueTarget loopControl;
 opSelectionMerge : Op SelectionMerge mergeBlock selectionControl;
 opLabel : idResult Equals Op (Label  | SpecConstantOp  Label);
@@ -1031,7 +1031,7 @@ opFwidthCoarse : idResult Equals Op (FwidthCoarse idResultType | SpecConstantOp 
 
 // Device-Side_Enqueue Operations
 opEnqueueMarker : idResult Equals Op (EnqueueMarker idResultType | SpecConstantOp idResultType EnqueueMarker) queue numEvents waitEvents retEvent;
-opEnqueueKernel : idResult Equals Op (EnqueueKernel idResultType | SpecConstantOp idResultType EnqueueKernel) queue flags nDRange numEvents waitEvents retEvent invoke paramIdRef paramSize paramAlign localSize*;
+opEnqueueKernel : idResult Equals Op (EnqueueKernel idResultType | SpecConstantOp idResultType EnqueueKernel) queue flagsIdRef nDRange numEvents waitEvents retEvent invoke paramIdRef paramSize paramAlign localSize*;
 opGetKernelNDrangeSubGroupCount : idResult Equals Op (GetKernelNDrangeSubGroupCount idResultType | SpecConstantOp idResultType GetKernelNDrangeSubGroupCount) nDRange invoke paramIdRef paramSize paramAlign;
 opGetKernelNDrangeMaxSubGroupSize : idResult Equals Op (GetKernelNDrangeMaxSubGroupSize idResultType | SpecConstantOp idResultType GetKernelNDrangeMaxSubGroupSize) nDRange invoke paramIdRef paramSize paramAlign;
 opGetKernelWorkGroupSize : idResult Equals Op (GetKernelWorkGroupSize idResultType | SpecConstantOp idResultType GetKernelWorkGroupSize) invoke paramIdRef paramSize paramAlign;
@@ -1057,7 +1057,7 @@ opFunction : idResult Equals Op (Function idResultType | SpecConstantOp idResult
 opFunctionParameter : idResult Equals Op (FunctionParameter idResultType | SpecConstantOp idResultType FunctionParameter);
 opFunctionEnd : Op FunctionEnd;
 opFunctionCall : idResult Equals Op (FunctionCall idResultType | SpecConstantOp idResultType FunctionCall) function argument*;
-opCooperativeMatrixPerElementOpNV : idResult Equals Op (CooperativeMatrixPerElementOpNV idResultType | SpecConstantOp idResultType CooperativeMatrixPerElementOpNV) matrix func operands*;
+opCooperativeMatrixPerElementOpNV : idResult Equals Op (CooperativeMatrixPerElementOpNV idResultType | SpecConstantOp idResultType CooperativeMatrixPerElementOpNV) matrix func operandsIdRef*;
 
 // Group Operations
 opGroupAsyncCopy : idResult Equals Op (GroupAsyncCopy idResultType | SpecConstantOp idResultType GroupAsyncCopy) execution destination sourceIdRef numElements stride event;
@@ -1401,7 +1401,7 @@ opEndInvocationInterlockEXT : Op EndInvocationInterlockEXT;
 opCreateTensorLayoutNV : idResult Equals Op (CreateTensorLayoutNV idResultType | SpecConstantOp idResultType CreateTensorLayoutNV);
 opTensorLayoutSetDimensionNV : idResult Equals Op (TensorLayoutSetDimensionNV idResultType | SpecConstantOp idResultType TensorLayoutSetDimensionNV) tensorLayout dimIdRef*;
 opTensorLayoutSetStrideNV : idResult Equals Op (TensorLayoutSetStrideNV idResultType | SpecConstantOp idResultType TensorLayoutSetStrideNV) tensorLayout stride*;
-opTensorLayoutSliceNV : idResult Equals Op (TensorLayoutSliceNV idResultType | SpecConstantOp idResultType TensorLayoutSliceNV) tensorLayout operands*;
+opTensorLayoutSliceNV : idResult Equals Op (TensorLayoutSliceNV idResultType | SpecConstantOp idResultType TensorLayoutSliceNV) tensorLayout operandsIdRef*;
 opTensorLayoutSetClampValueNV : idResult Equals Op (TensorLayoutSetClampValueNV idResultType | SpecConstantOp idResultType TensorLayoutSetClampValueNV) tensorLayout valueIdRef;
 opCreateTensorViewNV : idResult Equals Op (CreateTensorViewNV idResultType | SpecConstantOp idResultType CreateTensorViewNV);
 opTensorViewSetDimensionNV : idResult Equals Op (TensorViewSetDimensionNV idResultType | SpecConstantOp idResultType TensorViewSetDimensionNV) tensorView dimIdRef*;
@@ -1689,6 +1689,7 @@ literalExtInstInteger
     :   clspvReflection
     |   glsl
     |   opencl
+    |   openclDebugInfo
     ;
 
 
@@ -1737,8 +1738,8 @@ clspvReflection
     |   clspvReflection_specConstantWorkgroupSize
     ;
 
-clspvReflection_kernel : ModeExt_Kernel kernelIdRef nameIdRef (numArguments (flags attributes?)?)?;
-clspvReflection_argumentInfo : ModeExt_ArgumentInfo nameIdRef (typeName (addressQualifier (accessQualifierIdRef typeQualifier?)?)?)?;
+clspvReflection_kernel : ModeExt_Kernel kernelIdRef nameIdRef (numArguments (flagsIdRef attributes?)?)?;
+clspvReflection_argumentInfo : ModeExt_ArgumentInfo nameIdRef (typeName (addressQualifier (accessQualifierIdRef typeQualifierIdRef?)?)?)?;
 clspvReflection_argumentStorageBuffer : ModeExt_ArgumentStorageBuffer decl ordinal descriptorSetIdRef binding argInfo?;
 clspvReflection_argumentUniform : ModeExt_ArgumentUniform decl ordinal descriptorSetIdRef binding argInfo?;
 clspvReflection_argumentPodStorageBuffer : ModeExt_ArgumentPodStorageBuffer decl ordinal descriptorSetIdRef binding offsetIdRef sizeIdRef argInfo?;
@@ -2275,14 +2276,95 @@ opencl_shuffle2 : ModeExt_shuffle2 x y shuffleMask;
 opencl_printf : ModeExt_printf format additionalArguments*;
 opencl_prefetch : ModeExt_prefetch ptr numElements;
 
+// Extension openclDebugInfo
+openclDebugInfo
+    :   openclDebugInfo_debugCompilationUnit
+    |   openclDebugInfo_debugDeclare
+    |   openclDebugInfo_debugExpression
+    |   openclDebugInfo_debugFunction
+    |   openclDebugInfo_debugFunctionDeclaration
+    |   openclDebugInfo_debugGlobalVariable
+    |   openclDebugInfo_debugImportedEntity
+    |   openclDebugInfo_debugInfoNone
+    |   openclDebugInfo_debugInlinedAt
+    |   openclDebugInfo_debugInlinedVariable
+    |   openclDebugInfo_debugLexicalBlock
+    |   openclDebugInfo_debugLexicalBlockDiscriminator
+    |   openclDebugInfo_debugLocalVariable
+    |   openclDebugInfo_debugMacroDef
+    |   openclDebugInfo_debugMacroUndef
+    |   openclDebugInfo_debugModuleINTEL
+    |   openclDebugInfo_debugNoScope
+    |   openclDebugInfo_debugOperation
+    |   openclDebugInfo_debugScope
+    |   openclDebugInfo_debugSource
+    |   openclDebugInfo_debugTypeArray
+    |   openclDebugInfo_debugTypeBasic
+    |   openclDebugInfo_debugTypeComposite
+    |   openclDebugInfo_debugTypeEnum
+    |   openclDebugInfo_debugTypeFunction
+    |   openclDebugInfo_debugTypeInheritance
+    |   openclDebugInfo_debugTypeMember
+    |   openclDebugInfo_debugTypePointer
+    |   openclDebugInfo_debugTypePtrToMember
+    |   openclDebugInfo_debugTypeQualifier
+    |   openclDebugInfo_debugTypeTemplate
+    |   openclDebugInfo_debugTypeTemplateParameter
+    |   openclDebugInfo_debugTypeTemplateParameterPack
+    |   openclDebugInfo_debugTypeTemplateTemplateParameter
+    |   openclDebugInfo_debugTypeVector
+    |   openclDebugInfo_debugTypedef
+    |   openclDebugInfo_debugValue
+    ;
+
+openclDebugInfo_debugInfoNone : ModeExt_DebugInfoNone;
+openclDebugInfo_debugCompilationUnit : ModeExt_DebugCompilationUnit version dWARFVersion sourceIdRef language;
+openclDebugInfo_debugTypeBasic : ModeExt_DebugTypeBasic nameIdRef sizeIdRef encoding;
+openclDebugInfo_debugTypePointer : ModeExt_DebugTypePointer baseType storageClass flagsDebugInfoFlags;
+openclDebugInfo_debugTypeQualifier : ModeExt_DebugTypeQualifier baseType typeQualifierDebugTypeQualifier;
+openclDebugInfo_debugTypeArray : ModeExt_DebugTypeArray baseType componentCounts*;
+openclDebugInfo_debugTypeVector : ModeExt_DebugTypeVector baseType componentCountLiteralInteger;
+openclDebugInfo_debugTypedef : ModeExt_DebugTypedef nameIdRef baseType sourceIdRef line column parent;
+openclDebugInfo_debugTypeFunction : ModeExt_DebugTypeFunction flagsDebugInfoFlags returnType parameterTypes*;
+openclDebugInfo_debugTypeEnum : ModeExt_DebugTypeEnum nameIdRef underlyingType sourceIdRef line column parent sizeIdRef flagsDebugInfoFlags valuePairIdRefIdRef*;
+openclDebugInfo_debugTypeComposite : ModeExt_DebugTypeComposite nameIdRef tagDebugCompositeType sourceIdRef line column parent linkageName sizeIdRef flagsDebugInfoFlags members*;
+openclDebugInfo_debugTypeMember : ModeExt_DebugTypeMember nameIdRef type sourceIdRef line column parent offsetIdRef sizeIdRef flagsDebugInfoFlags valueIdRef?;
+openclDebugInfo_debugTypeInheritance : ModeExt_DebugTypeInheritance child parent offsetIdRef sizeIdRef flagsDebugInfoFlags;
+openclDebugInfo_debugTypePtrToMember : ModeExt_DebugTypePtrToMember memberType parent;
+openclDebugInfo_debugTypeTemplate : ModeExt_DebugTypeTemplate targetIdRef parameters*;
+openclDebugInfo_debugTypeTemplateParameter : ModeExt_DebugTypeTemplateParameter nameIdRef actualType valueIdRef sourceIdRef line column;
+openclDebugInfo_debugTypeTemplateTemplateParameter : ModeExt_DebugTypeTemplateTemplateParameter nameIdRef templateName sourceIdRef line column;
+openclDebugInfo_debugTypeTemplateParameterPack : ModeExt_DebugTypeTemplateParameterPack nameIdRef sourceIdRef line column templateParameters*;
+openclDebugInfo_debugGlobalVariable : ModeExt_DebugGlobalVariable nameIdRef type sourceIdRef line column parent linkageName variableIdRef flagsDebugInfoFlags staticMemberDeclaration?;
+openclDebugInfo_debugFunctionDeclaration : ModeExt_DebugFunctionDeclaration nameIdRef type sourceIdRef line column parent linkageName flagsDebugInfoFlags;
+openclDebugInfo_debugFunction : ModeExt_DebugFunction nameIdRef type sourceIdRef line column parent linkageName flagsDebugInfoFlags scopeLine function declaration?;
+openclDebugInfo_debugLexicalBlock : ModeExt_DebugLexicalBlock sourceIdRef line column parent nameIdRef?;
+openclDebugInfo_debugLexicalBlockDiscriminator : ModeExt_DebugLexicalBlockDiscriminator sourceIdRef discriminator parent;
+openclDebugInfo_debugScope : ModeExt_DebugScope scopeIdRef inlinedAt?;
+openclDebugInfo_debugNoScope : ModeExt_DebugNoScope;
+openclDebugInfo_debugInlinedAt : ModeExt_DebugInlinedAt line scopeIdRef inlined?;
+openclDebugInfo_debugLocalVariable : ModeExt_DebugLocalVariable nameIdRef type sourceIdRef line column parent flagsDebugInfoFlags argNumber?;
+openclDebugInfo_debugInlinedVariable : ModeExt_DebugInlinedVariable variableIdRef inlined;
+openclDebugInfo_debugDeclare : ModeExt_DebugDeclare localVariable variableIdRef expression;
+openclDebugInfo_debugValue : ModeExt_DebugValue localVariable valueIdRef expression indexesIdRef*;
+openclDebugInfo_debugOperation : ModeExt_DebugOperation opCode operandsLiteralInteger*;
+openclDebugInfo_debugExpression : ModeExt_DebugExpression operandsIdRef*;
+openclDebugInfo_debugMacroDef : ModeExt_DebugMacroDef sourceIdRef line nameIdRef valueIdRef?;
+openclDebugInfo_debugMacroUndef : ModeExt_DebugMacroUndef sourceIdRef line macro;
+openclDebugInfo_debugImportedEntity : ModeExt_DebugImportedEntity nameIdRef tagDebugImportedEntity sourceIdRef entity line column parent;
+openclDebugInfo_debugSource : ModeExt_DebugSource file text?;
+openclDebugInfo_debugModuleINTEL : ModeExt_DebugModuleINTEL nameIdRef sourceIdRef parent line configurationMacros includePath aPINotesFile isDeclaration;
+
 // Alias types
 a : idRef;
+aPINotesFile : idRef;
 accel : idRef;
 accelerationStructure : idRef;
 access : hostAccessQualifier;
 accessQualifierAccessQualifier : accessQualifier;
 accessQualifierIdRef : idRef;
 accumulator : idRef;
+actualType : idRef;
 additionalArguments : idRef;
 addressQualifier : idRef;
 addressWidth : literalInteger;
@@ -2292,6 +2374,7 @@ aliasingScopesList : idRef;
 alignmentIdRef : idRef;
 alignmentLiteralInteger : literalInteger;
 argInfo : idRef;
+argNumber : literalInteger;
 argument : idRef;
 argument0 : idRef;
 argumentSizes : idRef;
@@ -2348,6 +2431,7 @@ cacheType : idRef;
 callableData : idRef;
 callableDataId : idRef;
 capacity : literalInteger;
+child : idRef;
 chromaModeBasePenalty : idRef;
 clampMode : idRef;
 clipColOffset : idRef;
@@ -2365,12 +2449,14 @@ combineFunc : idRef;
 comparator : idRef;
 componentCountIdRef : idRef;
 componentCountLiteralInteger : literalInteger;
+componentCounts : idRef;
 componentIdRef : idRef;
 componentLiteralInteger : literalInteger;
 componentTypeIdRef : idRef;
 components : literalInteger;
 composite : idRef;
 condition : idRef;
+configurationMacros : idRef;
 constituents : idRef;
 constraints : literalString;
 continueTarget : idRef;
@@ -2387,10 +2473,12 @@ current : idRef;
 currentTime : idRef;
 cycles : literalInteger;
 d : idRef;
+dWARFVersion : literalInteger;
 data : idRef;
 dataType : idRef;
 dataWidth : literalInteger;
 decl : idRef;
+declaration : idRef;
 decorationGroup : idRef;
 default : idRef;
 degreesIdRef : idRef;
@@ -2402,6 +2490,7 @@ destination : idRef;
 dimIdRef : idRef;
 direction : idRef;
 directionCost : idRef;
+discriminator : literalInteger;
 dstBasePointer : idRef;
 dstPointer : idRef;
 dualRef : idRef;
@@ -2415,6 +2504,8 @@ elementSize : idRef;
 elementType : idRef;
 enable : literalInteger;
 enableSubnormals : literalInteger;
+encoding : debugBaseTypeAttributeEncoding;
+entity : idRef;
 entryPoint : idRef;
 equal : idMemorySemantics;
 eta : idRef;
@@ -2423,13 +2514,15 @@ eventsList : idRef;
 execution : idScope;
 expIdRef : idRef;
 expectedValue : idRef;
+expression : idRef;
 extension : literalString;
 falseLabel : idRef;
 fastFPFastMathMode : fPFastMathMode;
 fastIdRef : idRef;
 file : idRef;
 fillEmpty : idRef;
-flags : idRef;
+flagsDebugInfoFlags : debugInfoFlags;
+flagsIdRef : idRef;
 floatValue : idRef;
 floating : fPRoundingMode;
 forceKey : literalInteger;
@@ -2468,12 +2561,15 @@ image : idRef;
 imageSelect : idRef;
 imageSize : idRef;
 imageType : idRef;
+includePath : idRef;
 indexIdRef : idRef;
 indexLiteralInteger : literalInteger;
 indexOffset : idRef;
 indexesIdRef : idRef;
 indexesLiteralInteger : literalInteger;
 initializer : idRef;
+inlined : idRef;
+inlinedAt : idRef;
 input : idRef;
 inputInterpretation : idRef;
 inputType : idRef;
@@ -2490,11 +2586,13 @@ invocationId : idRef;
 invocations : literalInteger;
 invoke : idRef;
 iptr : idRef;
+isDeclaration : literalInteger;
 isEntry : idRef;
 k : idRef;
 kDim : idRef;
 kernelIdRef : idRef;
 kind : literalInteger;
+language : sourceLanguage;
 latency : literalInteger;
 latencyLabel : literalInteger;
 leftEdgeChromaPixels : idRef;
@@ -2504,10 +2602,12 @@ lenght : idRef;
 lengthIdRef : idRef;
 levelOfDetail : idRef;
 line : literalInteger;
+linkageName : idRef;
 literalStringLiteralString : literalString;
 lo : idRef;
 localId : idRef;
 localSize : idRef;
+localVariable : idRef;
 localWorkSize : idRef;
 locality : idRef;
 location : literalInteger;
@@ -2520,6 +2620,7 @@ m : idRef;
 m1 : literalInteger;
 m2 : literalInteger;
 mS : literalInteger;
+macro : idRef;
 majorShape : idRef;
 majorShapes : idRef;
 mask : idRef;
@@ -2543,6 +2644,7 @@ maximumCopies : literalInteger;
 maximumReplicates : literalInteger;
 member : literalInteger;
 memberType : idRef;
+members : idRef;
 memory : idScope;
 memoryHeight : idRef;
 memoryLayout : idRef;
@@ -2588,10 +2690,12 @@ object2 : idRef;
 objectOffset : idRef;
 offsetIdRef : idRef;
 offsetLiteralInteger : literalInteger;
+opCode : openclDebugInfo_debugOperation;
 operand : idRef;
 operand1 : idRef;
 operand2 : idRef;
-operands : idRef;
+operandsIdRef : idRef;
+operandsLiteralInteger : literalInteger;
 operation : groupOperation;
 ordinal : idRef;
 origin : idRef;
@@ -2616,6 +2720,9 @@ paramIdRef : idRef;
 paramLiteralInteger : literalInteger;
 paramSize : idRef;
 parameterType : idRef;
+parameterTypes : idRef;
+parameters : idRef;
+parent : idRef;
 partitionMask : idRef;
 payload : idRef;
 payloadArray : idRef;
@@ -2692,7 +2799,9 @@ sampledImage : idRef;
 sampledType : idRef;
 sampler : idRef;
 scalar : idRef;
+scopeIdRef : idRef;
 scopeIdScope : idScope;
+scopeLine : literalInteger;
 searchWindowConfig : idRef;
 selector : idRef;
 semantic : literalString;
@@ -2719,6 +2828,7 @@ srcCoord : idRef;
 srcImage : idRef;
 srcPointer : idRef;
 stallFreeReturn : literalInteger;
+staticMemberDeclaration : idRef;
 status : idRef;
 storage : storageClass;
 stream : idRef;
@@ -2736,6 +2846,8 @@ subgroupsPerWorkgroupIdRef : idRef;
 subgroupsPerWorkgroupLiteralInteger : literalInteger;
 tMax : idRef;
 tMin : idRef;
+tagDebugCompositeType : openclDebugInfo_debugTypeComposite;
+tagDebugImportedEntity : openclDebugInfo_debugImportedEntity;
 targetCoordinates : idRef;
 targetIdRef : idRef;
 targetLabel : idRef;
@@ -2746,9 +2858,12 @@ targetType : idRef;
 targetWidth : literalInteger;
 targetsIdRef : idRef;
 targetsPairIdRefLiteralInteger : pairIdRefLiteralInteger;
+templateName : idRef;
+templateParameters : idRef;
 tensorLayout : idRef;
 tensorView : idRef;
 texel : idRef;
+text : idRef;
 texture : idRef;
 theNameOfTheOpaqueType : literalString;
 threshold : idRef;
@@ -2758,7 +2873,9 @@ trigger : initializationModeQualifier;
 trueLabel : idRef;
 type : idRef;
 typeName : idRef;
-typeQualifier : idRef;
+typeQualifierDebugTypeQualifier : openclDebugInfo_debugTypeQualifier;
+typeQualifierIdRef : idRef;
+underlyingType : idRef;
 unequal : idMemorySemantics;
 unsignedValue : idRef;
 upperEdgeChromaPixels : idRef;
@@ -2772,7 +2889,9 @@ v : idRef;
 valueIdRef : idRef;
 valueLiteralContextDependentNumber : literalContextDependentNumber;
 valueLiteralInteger : literalInteger;
-variable : pairIdRefIdRef;
+valuePairIdRefIdRef : pairIdRefIdRef;
+variableIdRef : idRef;
+variablePairIdRefIdRef : pairIdRefIdRef;
 vector1 : idRef;
 vector2 : idRef;
 vectorIdRef : idRef;
