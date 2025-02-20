@@ -426,7 +426,7 @@ public class VisitorSpirvOpenCLTest {
         );
         doTestSpirvMemoryBarrier(
                 Set.of(Tag.Spirv.ACQ_REL, Tag.Spirv.WORKGROUP),
-                Set.of(Tag.C11.MO_ACQUIRE, Tag.C11.MO_RELEASE, Tag.OpenCL.WORK_GROUP)
+                Set.of(Tag.C11.MO_ACQUIRE_RELEASE, Tag.OpenCL.WORK_GROUP)
         );
         doTestSpirvMemoryBarrier(
                 Set.of(Tag.Spirv.SEQ_CST, Tag.Spirv.WORKGROUP),

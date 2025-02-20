@@ -35,6 +35,8 @@ public class VisitorOpsFunction extends SpirvBaseVisitor<Void> {
     final Map<String, Function> forwardFunctions = new HashMap<>();
     final Map<String, Set<FunctionCall>> forwardCalls = new HashMap<>();
 
+    private static final int DEFAULT_SIZE = 10;
+
     public VisitorOpsFunction(ProgramBuilder builder) {
         this.builder = builder;
     }
@@ -135,14 +137,11 @@ public class VisitorOpsFunction extends SpirvBaseVisitor<Void> {
             Type runtimeType = HelperInputs.castInputType(id, pType, inputType);
             return HelperInputs.castInput(id, runtimeType, input);
         }
-        // TODO: This is a quick default struct with 10 undefined elements.
-        //  We need a proper implementation in a more suitable place.
+        // For pointers without input, create an array of undefined values with a default size
         Type type = pType.getPointedType();
-        Type aType = TypeFactory.getInstance().getArrayType(type, 10);
-        Type agType = TypeFactory.getInstance().getAggregateType(List.of(aType));
-        List<Expression> members = IntStream.range(0, 10).boxed().map(i -> builder.makeUndefinedValue(type)).toList();
-        Expression array = ExpressionFactory.getInstance().makeConstruct(aType, members);
-        return ExpressionFactory.getInstance().makeConstruct(agType, List.of(array));
+        Type aType = TypeFactory.getInstance().getArrayType(type, DEFAULT_SIZE);
+        List<Expression> members = IntStream.range(0, DEFAULT_SIZE).boxed().map(i -> builder.makeUndefinedValue(type)).toList();
+        return ExpressionFactory.getInstance().makeConstruct(aType, members);
     }
 
     @Override

@@ -109,10 +109,9 @@ public class VisitorOpsType extends SpirvBaseVisitor<Type> {
                 return builder.addType(id, type);
             }
             throw new ParsingException("Illegal member offset decorations for struct '%s'", id);
-        } else {
-            Type type = types.getAggregateType(memberTypes);
-            return builder.addType(id, type);
         }
+        Type type = types.getAggregateType(memberTypes);
+        return builder.addType(id, type);
     }
 
     @Override

@@ -7,9 +7,9 @@ import com.dat3m.dartagnan.expression.ExpressionFactory;
 import com.dat3m.dartagnan.expression.Type;
 import com.dat3m.dartagnan.expression.type.*;
 import com.dat3m.dartagnan.parsers.program.visitors.spirv.decorations.BuiltIn;
-import com.dat3m.dartagnan.parsers.program.visitors.spirv.helpers.HelperTags;
 import com.dat3m.dartagnan.parsers.program.visitors.spirv.utils.ThreadCreator;
 import com.dat3m.dartagnan.parsers.program.visitors.spirv.utils.ThreadGrid;
+
 import com.dat3m.dartagnan.program.event.core.Local;
 import com.dat3m.dartagnan.program.event.functions.FunctionCall;
 import com.dat3m.dartagnan.program.memory.*;
@@ -182,11 +182,27 @@ public class ProgramBuilder {
         return memObj;
     }
 
+    private void addTagToMemObj(MemoryObject memoryObject, String storageClass) {
+        String tag = switch (storageClass) {
+            case Tag.Spirv.SC_GENERIC -> Tag.OpenCL.GENERIC_SPACE;
+            case Tag.Spirv.SC_FUNCTION,
+                 Tag.Spirv.SC_INPUT,
+                 Tag.Spirv.SC_WORKGROUP  -> Tag.OpenCL.LOCAL_SPACE;
+            case Tag.Spirv.SC_UNIFORM_CONSTANT,
+                 Tag.Spirv.SC_PHYS_STORAGE_BUFFER,
+                 Tag.Spirv.SC_CROSS_WORKGROUP -> Tag.OpenCL.GLOBAL_SPACE;
+            default -> throw new ParsingException("Unsupported storage class '%s'", storageClass);
+        };
+        memoryObject.addFeatureTag(tag);
+    }
+
     public ScopedPointerVariable allocateScopedPointerVariable(String id, Expression initValue, String storageClass, Type pointedType) {
         MemoryObject memObj = allocateVariable(id, TypeFactory.getInstance().getMemorySizeInBytes(pointedType));
         memObj.setIsThreadLocal(false);
         memObj.setInitialValue(0, initValue);
-        HelperTags.addFeatureTags(memObj, storageClass, arch);
+        if (arch == Arch.OPENCL) {
+            addTagToMemObj(memObj, storageClass);
+        }
         return ExpressionFactory.getInstance().makeScopedPointerVariable(
                 id, storageClass, pointedType, memObj);
     }

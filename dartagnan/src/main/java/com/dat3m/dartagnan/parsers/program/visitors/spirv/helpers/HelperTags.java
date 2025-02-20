@@ -1,11 +1,9 @@
 package com.dat3m.dartagnan.parsers.program.visitors.spirv.helpers;
 
-import com.dat3m.dartagnan.configuration.Arch;
 import com.dat3m.dartagnan.exception.ParsingException;
 import com.dat3m.dartagnan.expression.Expression;
 import com.dat3m.dartagnan.expression.integers.IntLiteral;
 import com.dat3m.dartagnan.program.event.Tag;
-import com.dat3m.dartagnan.program.memory.MemoryObject;
 import com.google.common.collect.Sets;
 
 import java.util.*;
@@ -133,30 +131,6 @@ public class HelperTags {
             case "StorageBuffer" -> SC_STORAGE_BUFFER;
             case "PhysicalStorageBuffer" -> SC_PHYS_STORAGE_BUFFER;
             default -> throw new ParsingException("Unsupported storage class '%s'", cls);
-        };
-    }
-
-    public static void addFeatureTags(MemoryObject memObj, String storageClass, Arch arch) {
-        if (arch != null && arch.equals(Arch.OPENCL)) {
-            String openCLSpace = getOpenCLStorageClass(storageClass);
-            if (openCLSpace == null) {
-                throw new UnsupportedOperationException("Cannot convert " + storageClass + " to OpenCL space");
-            }
-            memObj.addFeatureTag(openCLSpace);
-            // memObj.addFeatureTag(Tag.C11.NON_ATOMIC_LOCATION); // SPIR-V does not distinguish between atomic and non-atomic locations
-        }
-    }
-
-    public static String getOpenCLStorageClass(String storageClass) {
-        return switch (storageClass) {
-            case Tag.Spirv.SC_GENERIC -> Tag.OpenCL.GENERIC_SPACE;
-            case Tag.Spirv.SC_FUNCTION,
-                 Tag.Spirv.SC_INPUT,
-                 Tag.Spirv.SC_WORKGROUP  -> Tag.OpenCL.LOCAL_SPACE;
-            case Tag.Spirv.SC_UNIFORM_CONSTANT,
-                 Tag.Spirv.SC_PHYS_STORAGE_BUFFER,
-                 Tag.Spirv.SC_CROSS_WORKGROUP -> Tag.OpenCL.GLOBAL_SPACE;
-            default -> null;
         };
     }
 

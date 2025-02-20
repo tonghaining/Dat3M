@@ -1,7 +1,6 @@
 package com.dat3m.dartagnan.program.processing.compilation;
 
 import com.dat3m.dartagnan.expression.Expression;
-import com.dat3m.dartagnan.parsers.program.visitors.spirv.helpers.HelperTags;
 import com.dat3m.dartagnan.program.Register;
 import com.dat3m.dartagnan.program.event.Event;
 import com.dat3m.dartagnan.program.event.EventFactory;
@@ -19,14 +18,6 @@ import java.util.Set;
 import static com.dat3m.dartagnan.program.event.EventFactory.*;
 
 public class VisitorSpirvOpenCL extends VisitorC11 {
-
-    @Override
-    public List<Event> visitInit(Init e) {
-        Event init = EventFactory.newInit(e.getBase(), e.getOffset());
-        init.removeTags(init.getTags());
-        init.addTags(toOpenCLTags(e.getTags()));
-        return eventSequence(init);
-    }
 
     @Override
     public List<Event> visitLoad(Load e) {
@@ -51,7 +42,6 @@ public class VisitorSpirvOpenCL extends VisitorC11 {
         load.setFunction(e.getFunction());
         load.addTags(Tag.C11.ATOMIC);
         load.addTags(toOpenCLTags(e.getTags()));
-        replaceAcqRelTag(load, Tag.C11.MO_ACQUIRE);
         return eventSequence(load);
     }
 
@@ -62,17 +52,14 @@ public class VisitorSpirvOpenCL extends VisitorC11 {
         store.setFunction(e.getFunction());
         store.addTags(Tag.C11.ATOMIC);
         store.addTags(toOpenCLTags(e.getTags()));
-        replaceAcqRelTag(store, Tag.C11.MO_RELEASE);
         return eventSequence(store);
     }
 
     @Override
     public List<Event> visitSpirvXchg(SpirvXchg e) {
         String mo = moToOpenCLTag(Tag.Spirv.getMoTag(e.getTags()));
-        String scope = toOpenCLTag(Tag.Spirv.getScopeTag(e.getTags()));
         AtomicXchg rmw = Atomic.newExchange(e.getResultRegister(), e.getAddress(),
                 e.getValue(), mo);
-        rmw.addTags(scope);
         rmw.addTags(toOpenCLTags(e.getTags()));
         rmw.setFunction(e.getFunction());
         return visitAtomicXchg(rmw);
@@ -81,10 +68,8 @@ public class VisitorSpirvOpenCL extends VisitorC11 {
     @Override
     public List<Event> visitSpirvRMW(SpirvRmw e) {
         String mo = moToOpenCLTag(Tag.Spirv.getMoTag(e.getTags()));
-        String scope = toOpenCLTag(Tag.Spirv.getScopeTag(e.getTags()));
         AtomicFetchOp rmwOp = Atomic.newFetchOp(e.getResultRegister(), e.getAddress(),
                 e.getOperand(), e.getOperator(), mo);
-        rmwOp.addTags(scope);
         rmwOp.setFunction(e.getFunction());
         rmwOp.addTags(toOpenCLTags(e.getTags()));
         return visitAtomicFetchOp(rmwOp);
@@ -146,7 +131,6 @@ public class VisitorSpirvOpenCL extends VisitorC11 {
         Event fence = new GenericVisibleEvent(e.getName(), Tag.FENCE);
         fence.removeTags(fence.getTags());
         fence.addTags(toOpenCLTags(e.getTags()));
-        replaceAcqRelTag(fence, Tag.C11.MO_ACQUIRE, Tag.C11.MO_RELEASE);
         return eventSequence(fence);
     }
 
@@ -172,13 +156,6 @@ public class VisitorSpirvOpenCL extends VisitorC11 {
         return openclTags;
     }
 
-    private void replaceAcqRelTag(Event e, String... tags) {
-        if (e.getTags().contains(Tag.C11.MO_ACQUIRE_RELEASE)) {
-            e.addTags(tags);
-            e.removeTags(Tag.C11.MO_ACQUIRE_RELEASE);
-        }
-    }
-
     private String moToOpenCLTag(String moSpv) {
         if (Tag.Spirv.RELAXED.equals(moSpv)) {
             return Tag.C11.ATOMIC;
@@ -187,9 +164,6 @@ public class VisitorSpirvOpenCL extends VisitorC11 {
     }
 
     private String toOpenCLTag(String tag) {
-        if (HelperTags.getOpenCLStorageClass(tag) != null) {
-            return HelperTags.getOpenCLStorageClass(tag);
-        }
         return switch (tag) {
             // Barriers
             case Tag.Spirv.CONTROL -> null;
@@ -238,11 +212,18 @@ public class VisitorSpirvOpenCL extends VisitorC11 {
                             "is not supported by OpenCL memory model", tag));
 
             // Storage class
+            case Tag.Spirv.SC_GENERIC -> Tag.OpenCL.GENERIC_SPACE;
+            case Tag.Spirv.SC_FUNCTION,
+                 Tag.Spirv.SC_INPUT,
+                 Tag.Spirv.SC_WORKGROUP  -> Tag.OpenCL.LOCAL_SPACE;
+            case Tag.Spirv.SC_UNIFORM_CONSTANT,
+                 Tag.Spirv.SC_PHYS_STORAGE_BUFFER,
+                 Tag.Spirv.SC_CROSS_WORKGROUP -> Tag.OpenCL.GLOBAL_SPACE;
             case Tag.Spirv.SC_PUSH_CONSTANT,
-                    Tag.Spirv.SC_UNIFORM,
-                    Tag.Spirv.SC_OUTPUT,
-                    Tag.Spirv.SC_STORAGE_BUFFER,
-                    Tag.Spirv.SC_PRIVATE-> throw new UnsupportedOperationException(
+                 Tag.Spirv.SC_UNIFORM,
+                 Tag.Spirv.SC_OUTPUT,
+                 Tag.Spirv.SC_STORAGE_BUFFER,
+                 Tag.Spirv.SC_PRIVATE-> throw new UnsupportedOperationException(
                     String.format("Spir-V storage class '%s' " +
                             "is not supported by OpenCL memory model", tag));
 
