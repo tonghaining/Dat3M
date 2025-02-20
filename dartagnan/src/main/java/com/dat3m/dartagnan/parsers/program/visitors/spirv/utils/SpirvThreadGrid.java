@@ -2,17 +2,18 @@ package com.dat3m.dartagnan.parsers.program.visitors.spirv.utils;
 
 import com.dat3m.dartagnan.exception.ParsingException;
 import com.dat3m.dartagnan.program.ScopeHierarchy;
+import com.dat3m.dartagnan.program.ThreadGrid;
 
 import java.util.List;
 
-public class ThreadGrid {
+public class SpirvThreadGrid implements ThreadGrid {
 
     private final int sg;
     private final int wg;
     private final int qf;
     private final int dv;
 
-    public ThreadGrid(int sg, int wg, int qf, int dv) {
+    public SpirvThreadGrid(int sg, int wg, int qf, int dv) {
         List<Integer> elements = List.of(sg, wg, qf, dv);
         if (elements.stream().anyMatch(i -> i <= 0)) {
             throw new ParsingException("Thread grid dimensions must be positive");
@@ -35,7 +36,8 @@ public class ThreadGrid {
         return sg * wg * qf;
     }
 
-    public int dvSize() {
+    @Override
+    public int threadPoolSize() {
         return sg * wg * qf * dv;
     }
 
@@ -52,15 +54,15 @@ public class ThreadGrid {
     }
 
     public int qfId(int tid) {
-        return (tid % dvSize()) / qfSize();
+        return (tid % threadPoolSize()) / qfSize();
     }
 
     public int dvId(int tid) {
-        return tid / dvSize();
+        return tid / threadPoolSize();
     }
 
+    @Override
     public ScopeHierarchy getScoreHierarchy(int tid) {
         return ScopeHierarchy.ScopeHierarchyForVulkan(qfId(tid), wgId(tid), sgId(tid));
-
     }
 }

@@ -5,7 +5,7 @@ import com.dat3m.dartagnan.parsers.SpirvBaseVisitor;
 import com.dat3m.dartagnan.parsers.SpirvParser;
 import com.dat3m.dartagnan.parsers.program.visitors.spirv.*;
 import com.dat3m.dartagnan.parsers.program.visitors.spirv.builders.ProgramBuilder;
-import com.dat3m.dartagnan.parsers.program.visitors.spirv.utils.ThreadGrid;
+import com.dat3m.dartagnan.parsers.program.visitors.spirv.utils.SpirvThreadGrid;
 import com.dat3m.dartagnan.program.Program;
 import com.dat3m.dartagnan.program.Register;
 import org.antlr.v4.runtime.tree.ParseTree;
@@ -61,7 +61,7 @@ public class VisitorSpirv extends SpirvBaseVisitor<Program> {
     }
 
     private ProgramBuilder createBuilder(SpirvParser.SpvContext ctx) {
-        ThreadGrid grid = new ThreadGrid(1, 1, 1, 1);
+        SpirvThreadGrid grid = new SpirvThreadGrid(1, 1, 1, 1);
         boolean hasConfig = false;
         for (SpirvParser.SpvHeaderContext header : ctx.spvHeaders().spvHeader()) {
             SpirvParser.ConfigHeaderContext cfgCtx = header.configHeader();
@@ -74,7 +74,7 @@ public class VisitorSpirv extends SpirvBaseVisitor<Program> {
                 int sg = Integer.parseInt(literals.get(0).getText());
                 int wg = Integer.parseInt(literals.get(1).getText());
                 int qf = Integer.parseInt(literals.get(2).getText());
-                grid = new ThreadGrid(sg, wg, qf, 1);
+                grid = new SpirvThreadGrid(sg, wg, qf, 1);
             }
         }
         return new ProgramBuilder(grid);

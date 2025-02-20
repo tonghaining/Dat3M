@@ -11,7 +11,7 @@ import com.dat3m.dartagnan.parsers.program.visitors.spirv.decorations.Decoration
 import com.dat3m.dartagnan.parsers.program.visitors.spirv.decorations.Offset;
 import com.dat3m.dartagnan.parsers.program.visitors.spirv.helpers.HelperTags;
 import com.dat3m.dartagnan.parsers.program.visitors.spirv.builders.ProgramBuilder;
-import com.dat3m.dartagnan.parsers.program.visitors.spirv.utils.ThreadGrid;
+import com.dat3m.dartagnan.parsers.program.visitors.spirv.utils.SpirvThreadGrid;
 import com.dat3m.dartagnan.program.memory.ScopedPointerVariable;
 import com.dat3m.dartagnan.program.Function;
 import com.dat3m.dartagnan.program.event.core.Label;
@@ -26,10 +26,10 @@ public class MockProgramBuilder extends ProgramBuilder {
     private static final ExpressionFactory exprFactory = ExpressionFactory.getInstance();
 
     public MockProgramBuilder() {
-        this(new ThreadGrid(1, 1, 1, 1));
+        this(new SpirvThreadGrid(1, 1, 1, 1));
     }
 
-    public MockProgramBuilder(ThreadGrid grid) {
+    public MockProgramBuilder(SpirvThreadGrid grid) {
         super(grid);
         controlFlowBuilder = new MockControlFlowBuilder(expressions);
     }

@@ -3,7 +3,7 @@ package com.dat3m.dartagnan.parsers.program.visitors.spirv.builders;
 import com.dat3m.dartagnan.exception.ParsingException;
 import com.dat3m.dartagnan.expression.type.FunctionType;
 import com.dat3m.dartagnan.expression.type.TypeFactory;
-import com.dat3m.dartagnan.parsers.program.visitors.spirv.utils.ThreadGrid;
+import com.dat3m.dartagnan.parsers.program.visitors.spirv.utils.SpirvThreadGrid;
 import com.dat3m.dartagnan.program.Function;
 import com.dat3m.dartagnan.program.event.Event;
 import com.dat3m.dartagnan.program.event.core.Skip;
@@ -19,7 +19,7 @@ public class ProgramBuilderTest {
 
     private static final TypeFactory types = TypeFactory.getInstance();
 
-    private final ProgramBuilder builder = new ProgramBuilder(new ThreadGrid(1, 1, 1, 1));
+    private final ProgramBuilder builder = new ProgramBuilder(new SpirvThreadGrid(1, 1, 1, 1));
     private final ControlFlowBuilder cfBuilder = builder.getControlFlowBuilder();
 
     @Test

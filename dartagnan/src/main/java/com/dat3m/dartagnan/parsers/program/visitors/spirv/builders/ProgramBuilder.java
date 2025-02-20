@@ -7,9 +7,8 @@ import com.dat3m.dartagnan.expression.ExpressionFactory;
 import com.dat3m.dartagnan.expression.Type;
 import com.dat3m.dartagnan.expression.type.*;
 import com.dat3m.dartagnan.parsers.program.visitors.spirv.decorations.BuiltIn;
-import com.dat3m.dartagnan.parsers.program.visitors.spirv.utils.ThreadCreator;
-import com.dat3m.dartagnan.parsers.program.visitors.spirv.utils.ThreadGrid;
-
+import com.dat3m.dartagnan.parsers.program.visitors.spirv.utils.MemoryTransformer;
+import com.dat3m.dartagnan.parsers.program.visitors.spirv.utils.SpirvThreadGrid;
 import com.dat3m.dartagnan.program.event.core.Local;
 import com.dat3m.dartagnan.program.event.functions.FunctionCall;
 import com.dat3m.dartagnan.program.memory.*;
@@ -28,7 +27,7 @@ public class ProgramBuilder {
     protected final Map<String, Expression> parameterValues = new HashMap<>();
     protected final Map<String, Expression> inputs = new HashMap<>();
     protected final Map<String, String> debugInfos = new HashMap<>();
-    protected final ThreadGrid grid;
+    protected final SpirvThreadGrid grid;
     protected final Program program;
     protected ControlFlowBuilder controlFlowBuilder;
     protected DecorationsBuilder decorationsBuilder;
@@ -37,9 +36,9 @@ public class ProgramBuilder {
     protected Arch arch;
     protected Set<String> nextOps;
 
-    public ProgramBuilder(ThreadGrid grid) {
+    public ProgramBuilder(SpirvThreadGrid grid) {
         this.grid = grid;
-        this.program = new Program(new Memory(), Program.SourceLanguage.SPV);
+        this.program = new Program(new Memory(), Program.SourceLanguage.SPV, grid);
         this.controlFlowBuilder = new ControlFlowBuilder(expressions);
         this.decorationsBuilder = new DecorationsBuilder(grid);
     }
@@ -48,15 +47,12 @@ public class ProgramBuilder {
         validateBeforeBuild();
         controlFlowBuilder.build();
         BuiltIn builtIn = (BuiltIn) decorationsBuilder.getDecoration(BUILT_IN);
-        Function entryFunction = getEntryPointFunction();
-        Set<Function> subFunctions = program.getFunctions().stream()
-                .filter(f -> !f.equals(entryFunction))
-                .collect(Collectors.toSet());
-        new ThreadCreator(grid, entryFunction, subFunctions, getVariables(), builtIn).create();
+        MemoryTransformer transformer = new MemoryTransformer(grid, getEntryPointFunction(), builtIn, getVariables());
+        program.addTransformer(transformer);
         return program;
     }
 
-    public ThreadGrid getThreadGrid() {
+    public SpirvThreadGrid getThreadGrid() {
         return grid;
     }
 
@@ -88,6 +84,7 @@ public class ProgramBuilder {
             throw new ParsingException("Multiple entry points are not supported");
         }
         entryPointId = id;
+        program.setEntryPoint(id);
     }
 
     public String getEntryPointId() {
@@ -274,6 +271,7 @@ public class ProgramBuilder {
             if (parameterValues.containsKey(register.getName())) {
                 Local local = EventFactory.newLocal(register, parameterValues.get(register.getName()));
                 addExpression(register.getName(), register);
+                local.addTags(Tag.NOOPT);
                 currentFunction.append(local);
             } else {
                 addExpression(register.getName(), register);

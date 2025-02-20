@@ -6,16 +6,14 @@ import com.dat3m.dartagnan.parsers.program.visitors.spirv.decorations.BuiltIn;
 import com.dat3m.dartagnan.program.Function;
 import com.dat3m.dartagnan.program.Program;
 import com.dat3m.dartagnan.program.Register;
+import com.dat3m.dartagnan.program.Thread;
 import com.dat3m.dartagnan.program.event.Tag;
 import com.dat3m.dartagnan.program.memory.MemoryObject;
 import com.dat3m.dartagnan.program.memory.ScopedPointerVariable;
 import com.dat3m.dartagnan.program.memory.VirtualMemoryObject;
 import com.dat3m.dartagnan.program.misc.NonDetValue;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.function.IntUnaryOperator;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -28,9 +26,8 @@ public class MemoryTransformer extends ExprTransformer {
     private static final List<String> namePrefixes = List.of("T", "S", "W", "Q", "D");
 
     private final Program program;
-    private final Function entryFunction;
+    private final Function function;
     private final BuiltIn builtIn;
-    private final Set<Function> subFunctions;
     private final List<? extends Map<MemoryObject, MemoryObject>> scopeMapping;
     private final Map<MemoryObject, ScopedPointerVariable> pointerMapping;
     private final List<IntUnaryOperator> scopeIdProvider;
@@ -39,12 +36,10 @@ public class MemoryTransformer extends ExprTransformer {
     private Map<NonDetValue, NonDetValue> nonDetMapping;
     private int tid;
 
-    public MemoryTransformer(ThreadGrid grid, Function entryFunction, Set<Function> subFunctions,
-                             BuiltIn builtIn, Set<ScopedPointerVariable> variables) {
-        this.program = entryFunction.getProgram();
-        this.entryFunction = entryFunction;
+    public MemoryTransformer(SpirvThreadGrid grid, Function function, BuiltIn builtIn, Set<ScopedPointerVariable> variables) {
+        this.program = function.getProgram();
+        this.function = function;
         this.builtIn = builtIn;
-        this.subFunctions = subFunctions;
         this.scopeMapping = Stream.generate(() -> new HashMap<MemoryObject, MemoryObject>()).limit(namePrefixes.size()).toList();
         this.pointerMapping = variables.stream().collect(Collectors.toMap((ScopedPointerVariable::getAddress), (v -> v)));
         this.scopeIdProvider = List.of(grid::thId, grid::sgId, grid::wgId, grid::qfId, grid::dvId);
@@ -53,28 +48,34 @@ public class MemoryTransformer extends ExprTransformer {
                 i -> i / grid.sgSize(),
                 i -> i / grid.wgSize(),
                 i -> i / grid.qfSize(),
-                i -> i / grid.dvSize());
+                i -> i / grid.threadPoolSize());
     }
 
     public Register getRegisterMapping(Register register) {
         return registerMapping.get(register);
     }
 
-    public void setTransferFunction(Function function) {
-        int newTid = function.getId();
+    public void setThread(Thread thread) {
+        int newTid = thread.getId();
         int depth = getScopeIdx(newTid, scopeIdProvider);
         for (int i = 0; i <= depth; i++) {
             scopeMapping.get(i).clear();
         }
         tid = newTid;
         builtIn.setThreadId(tid);
-        registerMapping = entryFunction.getRegisters().stream().collect(
-                toMap(r -> r, r -> function.getOrNewRegister(r.getName(), r.getType())));
-        for (Function subfunction : subFunctions) {
-            registerMapping.putAll(subfunction.getRegisters().stream().collect(
-                    toMap(r -> r, r -> function.getOrNewRegister(r.getName(), r.getType()))));
-        }
+        registerMapping = function.getRegisters().stream().collect(
+                toMap(r -> r, r -> thread.getOrNewRegister(r.getName(), r.getType())));
         nonDetMapping = new HashMap<>();
+    }
+
+    public List<MemoryObject> getThreadLocalMemoryObjects() {
+        List<MemoryObject> threadLocalMemoryObjects = new ArrayList<>();
+        for (MemoryObject memoryObject : pointerMapping.keySet()) {
+            if (memoryObject.isThreadLocal()) {
+                threadLocalMemoryObjects.add(memoryObject);
+            }
+        }
+        return threadLocalMemoryObjects;
     }
 
     @Override
