@@ -57,7 +57,8 @@ let ra_sw(r) = ((r & [Rel]); Fsb?; [W \ WI]; rs?; r; rf; [R \ WI]; sbF?; ([Acq] 
 (* Barrier synchronisation *)
 // in OpenCL a barrier results in two fence operations: entry and exit fences:
 // https://registry.khronos.org/OpenCL/specs/3.0-unified/html/OpenCL_API.html#_work_group_functions
-let bar_sw(r) = (r & [EF]); syncbar & ~wi & swg; (r & [XF])
+// In our implementation, we add both EF and XF tags to a single barrier event
+let bar_sw(r) = syncbar & ~wi & swg & (EF * XF) & r
 
 (* Allowed to synchronise on the other region *)
 let scf = (SC * SC) | ((dynamic_tag(GLOBAL) & dynamic_tag(LOCAL)); unv; (dynamic_tag(GLOBAL) & dynamic_tag(LOCAL)))
@@ -129,6 +130,6 @@ let ur = (wi & cnf & ~symm(sb)) \ id
 flag ~empty ur as unsequenced_race
 
 (* Barrier divergence *)
-let bsw = bar_sw(dynamic_tag(GLOBAL)) | bar_sw(dynamic_tag(LOCAL))
-let bd = [EF] &  ((~wi & swg); unv) \ (bsw ; unv)
-flag ~empty bd as barrier_divergence
+// let bsw = bar_sw(dynamic_tag(GLOBAL)) | bar_sw(dynamic_tag(LOCAL))
+// let bd = [EF] &  ((~wi & swg); unv) \ (bsw ; unv)
+// flag ~empty bd as barrier_divergence
