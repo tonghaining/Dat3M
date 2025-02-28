@@ -10,9 +10,9 @@ concurrency:
 
 on:
   push:
-    branches: [ master, development ]
+    branches: [ master, development, opencl ]
   pull_request:
-    branches: [ master, development ]
+    branches: [ master, development, opencl ]
   schedule:
     - cron: '0 0 * * 0'  # Run weekly every Sunday at midnight
   workflow_dispatch:
