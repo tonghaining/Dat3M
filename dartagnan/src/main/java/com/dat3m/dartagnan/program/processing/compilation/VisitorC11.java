@@ -130,7 +130,7 @@ public class VisitorC11 extends VisitorBase {
     @Override
     public List<Event> visitControlBarrier(ControlBarrier e) {
         Event barrier = EventFactory.newControlBarrier(e.getName(), e.getInstanceId());
-        barrier.addTags(Tag.OpenCL.ENTRY_FENCE, Tag.OpenCL.EXIT_FENCE, C11.MO_RELEASE, C11.MO_ACQUIRE);
+        barrier.addTags(C11.MO_RELEASE, C11.MO_ACQUIRE);
         return tagList(e, eventSequence(barrier));
     }
 

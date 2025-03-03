@@ -454,13 +454,13 @@ public class VisitorSpirvOpenCLTest {
     public void testSpirvControlBarrier() {
         doTestSpirvControlBarrier(
                 Set.of(),
-                Set.of(Tag.FENCE, Tag.OpenCL.ENTRY_FENCE, Tag.C11.MO_RELEASE),
-                Set.of(Tag.FENCE, Tag.OpenCL.EXIT_FENCE, Tag.C11.MO_ACQUIRE)
+                Set.of(Tag.FENCE, Tag.C11.MO_RELEASE),
+                Set.of(Tag.FENCE, Tag.C11.MO_ACQUIRE)
         );
         doTestSpirvControlBarrier(
                 Set.of(Tag.Spirv.SC_CROSS_WORKGROUP, Tag.Spirv.DEVICE),
-                Set.of(Tag.FENCE, Tag.OpenCL.ENTRY_FENCE, Tag.C11.MO_RELEASE, Tag.OpenCL.GLOBAL_SPACE, Tag.OpenCL.DEVICE),
-                Set.of(Tag.FENCE, Tag.OpenCL.EXIT_FENCE, Tag.C11.MO_ACQUIRE, Tag.OpenCL.GLOBAL_SPACE, Tag.OpenCL.DEVICE)
+                Set.of(Tag.FENCE, Tag.C11.MO_RELEASE, Tag.OpenCL.GLOBAL_SPACE, Tag.OpenCL.DEVICE),
+                Set.of(Tag.FENCE, Tag.C11.MO_ACQUIRE, Tag.OpenCL.GLOBAL_SPACE, Tag.OpenCL.DEVICE)
         );
     }
 
