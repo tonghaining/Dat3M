@@ -21,9 +21,13 @@ public class Memory {
 
     // Generates a new, statically allocated memory object.
     public MemoryObject allocate(int size) {
+        final Expression defaultAlignment = ExpressionFactory.getInstance().getDefaultAlignment();
+        return allocate(size, defaultAlignment);
+    }
+
+    public MemoryObject allocate(int size, Expression defaultAlignment) {
         Preconditions.checkArgument(size > 0, "Illegal allocation. Size must be positive");
         final Expression sizeExpr = ExpressionFactory.getInstance().makeValue(size, archType);
-        final Expression defaultAlignment = ExpressionFactory.getInstance().getDefaultAlignment();
         final MemoryObject memoryObject = new MemoryObject(nextIndex++, sizeExpr, defaultAlignment, null, ptrType);
         objects.add(memoryObject);
         return memoryObject;
