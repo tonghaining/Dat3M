@@ -269,6 +269,23 @@ public final class EncodingContext {
         // For example, when encoding rf(w, r), we always want to convert the store value type to the read value type
         // for otherwise, we might get an under-constrained value for val(r) (e.g., its upper bits might be unconstrained,
         // if we truncate it to smaller size of the store value).
+        if (left instanceof TupleFormula l && right instanceof TupleFormula r) {
+            return tupleFormulaManager.equal(l, r);
+        }
+        if (left instanceof TupleFormula l) {
+            ArrayList<BooleanFormula> equalities = new ArrayList<>();
+            for (Formula f : l.getElements()) {
+                equalities.add(equal(f, right));
+            }
+            return booleanFormulaManager.or(equalities);
+        }
+        if (right instanceof TupleFormula r) {
+            ArrayList<BooleanFormula> equalities = new ArrayList<>();
+            for (Formula f : r.getElements()) {
+                equalities.add(equal(left, f));
+            }
+            return booleanFormulaManager.or(equalities);
+        }
         if (left instanceof IntegerFormula l) {
             IntegerFormulaManager imgr = formulaManager.getIntegerFormulaManager();
             return imgr.equal(l, toInteger(right));
@@ -287,9 +304,6 @@ public final class EncodingContext {
         }
         if (left instanceof BooleanFormula l && right instanceof BooleanFormula r) {
             return booleanFormulaManager.equivalence(l, r);
-        }
-        if (left instanceof TupleFormula l && right instanceof TupleFormula r) {
-            return tupleFormulaManager.equal(l, r);
         }
         throw new UnsupportedOperationException(String.format("Unknown types for equal(%s,%s)", left, right));
     }
