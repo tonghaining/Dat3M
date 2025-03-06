@@ -56,7 +56,7 @@ let ra_sw(r) = ((r & [Rel]); Fsb?; [W \ WI]; rs?; r; rf; [R \ WI]; sbF?; ([Acq] 
 // in OpenCL a barrier results in two fence operations: entry and exit fences:
 // https://registry.khronos.org/OpenCL/specs/3.0-unified/html/OpenCL_API.html#_work_group_functions
 // In our implementation, we use a single barrier event and omit the special EF and XF tags
-let bar_sw(r) = syncbar & ~wi & swg & r
+let bar_sw(r) = r; syncbar & ~wi & swg; r
 
 (* Allowed to synchronise on the other region *)
 let scf = (SC * SC) | ((dynamic_tag(GLOBAL) & dynamic_tag(LOCAL)); unv; (dynamic_tag(GLOBAL) & dynamic_tag(LOCAL)))
@@ -70,8 +70,9 @@ let lsw = ra_sw(dynamic_tag(LOCAL)) | bar_sw(dynamic_tag(LOCAL)) | (scf & ra_sw(
 (******************)
 
 (* Global and local happens-before *)
-let ghb = ((dynamic_tag(GLOBAL); sb; dynamic_tag(GLOBAL)) | (dynamic_tag(GLOBAL); IW * ~IW; dynamic_tag(GLOBAL)) | gsw)+
-let lhb = ((dynamic_tag(LOCAL); sb; dynamic_tag(LOCAL)) | (dynamic_tag(LOCAL); IW * ~IW; dynamic_tag(LOCAL)) | lsw)+
+// Since we use single barrier events, we exclude the identity relation from the happens-before relation
+let ghb = ((dynamic_tag(GLOBAL); sb; dynamic_tag(GLOBAL)) | (dynamic_tag(GLOBAL); IW * ~IW; dynamic_tag(GLOBAL)) | gsw)+ \ id
+let lhb = ((dynamic_tag(LOCAL); sb; dynamic_tag(LOCAL)) | (dynamic_tag(LOCAL); IW * ~IW; dynamic_tag(LOCAL)) | lsw)+ \ id
 
 irreflexive ghb as O-HbG
 irreflexive lhb as O-HbL
