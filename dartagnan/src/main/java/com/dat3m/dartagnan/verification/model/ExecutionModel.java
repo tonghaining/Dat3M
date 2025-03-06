@@ -13,6 +13,7 @@ import java.util.Set;
 import java.util.Stack;
 import java.util.stream.Collectors;
 
+import com.dat3m.dartagnan.encoding.formulas.TupleFormula;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.sosy_lab.common.configuration.InvalidConfigurationException;
@@ -363,6 +364,10 @@ public class ExecutionModel {
             if (data.isRead() || data.isWrite()) {
                 Formula valueFormula = encodingContext.value((MemoryCoreEvent)e);
                 assert valueFormula != null;
+                if (valueFormula instanceof TupleFormula tupleFormula) {
+                    // FIXME
+                    valueFormula = tupleFormula.getElements().get(0);
+                }
                 String valueString = String.valueOf(model.evaluate(valueFormula));
                 BigInteger value = switch(valueString) {
                     // NULL case can happen if the solver optimized away a variable.

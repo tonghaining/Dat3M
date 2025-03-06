@@ -210,10 +210,6 @@ public class ProgramBuilder {
 
     public Register addRegister(String id, String typeId) {
         Type type = getType(typeId);
-        // TODO: Remove this when we use single memory event for array
-        if (type instanceof ArrayType arrayType) {
-            type = arrayType.getElementType();
-        }
         return getCurrentFunctionOrThrowError().newRegister(id, type);
     }
 

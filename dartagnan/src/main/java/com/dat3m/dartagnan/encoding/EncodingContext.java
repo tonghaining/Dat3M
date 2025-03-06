@@ -1,11 +1,10 @@
 package com.dat3m.dartagnan.encoding;
 
 import java.math.BigInteger;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
 
+import com.dat3m.dartagnan.expression.type.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.sosy_lab.common.configuration.InvalidConfigurationException;
@@ -29,10 +28,6 @@ import com.dat3m.dartagnan.encoding.formulas.TupleFormulaManager;
 import com.dat3m.dartagnan.expression.Expression;
 import com.dat3m.dartagnan.expression.Type;
 import com.dat3m.dartagnan.expression.integers.IntCmpOp;
-import com.dat3m.dartagnan.expression.type.AggregateType;
-import com.dat3m.dartagnan.expression.type.BooleanType;
-import com.dat3m.dartagnan.expression.type.IntegerType;
-import com.dat3m.dartagnan.expression.type.TypeFactory;
 import com.dat3m.dartagnan.program.Register;
 import com.dat3m.dartagnan.program.analysis.BranchEquivalence;
 import com.dat3m.dartagnan.program.analysis.ExecutionAnalysis;
@@ -269,6 +264,16 @@ public final class EncodingContext {
         // For example, when encoding rf(w, r), we always want to convert the store value type to the read value type
         // for otherwise, we might get an under-constrained value for val(r) (e.g., its upper bits might be unconstrained,
         // if we truncate it to smaller size of the store value).
+        if (left instanceof TupleFormula l && right instanceof TupleFormula r) {
+            return tupleFormulaManager.equal(l, r);
+        }
+        // If AliasAnalysis reports that two events must alias, they must have the same offset
+        if (left instanceof TupleFormula l) {
+            left = tupleFormulaManager.extract(l, 0);
+        }
+        if (right instanceof TupleFormula r) {
+            right = tupleFormulaManager.extract(r, 0);
+        }
         if (left instanceof IntegerFormula l) {
             IntegerFormulaManager imgr = formulaManager.getIntegerFormulaManager();
             return imgr.equal(l, toInteger(right));
@@ -287,9 +292,6 @@ public final class EncodingContext {
         }
         if (left instanceof BooleanFormula l && right instanceof BooleanFormula r) {
             return booleanFormulaManager.equivalence(l, r);
-        }
-        if (left instanceof TupleFormula l && right instanceof TupleFormula r) {
-            return tupleFormulaManager.equal(l, r);
         }
         throw new UnsupportedOperationException(String.format("Unknown types for equal(%s,%s)", left, right));
     }
@@ -338,6 +340,12 @@ public final class EncodingContext {
         if (formula instanceof BitvectorFormula f) {
             BitvectorFormulaManager bvmgr = formulaManager.getBitvectorFormulaManager();
             return bvmgr.equal(f, bvmgr.makeBitvector(bvmgr.getLength(f), 0));
+        }
+        if (formula instanceof TupleFormula f) {
+            List<Formula> zeros = f.getElements().stream()
+                    .map(this::equalZero)
+                    .collect(Collectors.toList());
+            return tupleFormulaManager.equal(f, tupleFormulaManager.makeTuple(zeros));
         }
         throw new UnsupportedOperationException(String.format("Unknown type for equalZero(%s).", formula));
     }
@@ -484,7 +492,7 @@ public final class EncodingContext {
                 return formulaManager.getBitvectorFormulaManager().makeVariable(integerType.getBitWidth(), name);
             }
         }
-        if (type instanceof AggregateType) {
+        if (type instanceof AggregateType || type instanceof ArrayType) {
             final Map<Integer, Type> primitives = TypeFactory.getInstance().decomposeIntoPrimitives(type);
             final List<Formula> elements = new ArrayList<>();
             for (Type eleType : primitives.values()) {

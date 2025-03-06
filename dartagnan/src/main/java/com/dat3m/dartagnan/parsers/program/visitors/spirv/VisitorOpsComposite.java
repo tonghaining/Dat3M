@@ -11,6 +11,7 @@ import com.dat3m.dartagnan.expression.type.TypeFactory;
 import com.dat3m.dartagnan.parsers.SpirvBaseVisitor;
 import com.dat3m.dartagnan.parsers.SpirvParser;
 import com.dat3m.dartagnan.parsers.program.visitors.spirv.builders.ProgramBuilder;
+import com.dat3m.dartagnan.program.Register;
 
 import java.util.List;
 import java.util.Set;
@@ -50,6 +51,10 @@ public class VisitorOpsComposite extends SpirvBaseVisitor<Void> {
     private Expression getElement(Expression base, List<Integer> indexes, String id) {
         Expression result = base;
         for (Integer index : indexes) {
+            if (result instanceof Register) {
+                result = ExpressionFactory.getInstance().makeExtract(index, result);
+                continue;
+            }
             Type type = result.getType();
             if (type instanceof AggregateType aType) {
                 if (index >= aType.getTypeOffsets().size()) {

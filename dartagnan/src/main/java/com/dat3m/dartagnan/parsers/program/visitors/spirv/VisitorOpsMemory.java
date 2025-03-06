@@ -62,23 +62,8 @@ public class VisitorOpsMemory extends SpirvBaseVisitor<Event> {
         String resultType = ctx.idResultType().getText();
         Expression pointer = builder.getExpression(pointerId);
         List<Event> events = new ArrayList<>();
-        if (builder.getType(resultType) instanceof ArrayType arrayType) {
-            List<Expression> registers = new ArrayList<>();
-            for (int i = 0; i < arrayType.getNumElements(); i++) {
-                String elementId = resultId + "_" + i;
-                Register register = builder.addRegister(elementId, resultType);
-                registers.add(register);
-                List<Expression> index = List.of(expressions.makeValue(new BigInteger(Long.toString(i)), types.getArchType()));
-                Expression elementPointer = HelperTypes.getMemberAddress(pointerId, pointer, arrayType, index);
-                Event load = EventFactory.newLoad(register, elementPointer);
-                events.add(load);
-            }
-            Expression arrayRegister = expressions.makeArray(arrayType.getElementType(), registers, true);
-            builder.addExpression(resultId, arrayRegister);
-        } else {
-            Register register = builder.addRegister(resultId, resultType);
-            events.add(EventFactory.newLoad(register, pointer));
-        }
+        Register register = builder.addRegister(resultId, resultType);
+        events.add(EventFactory.newLoad(register, pointer));
         Set<String> tags = parseMemoryAccessTags(ctx.memoryAccess());
         if (!tags.contains(Tag.Spirv.MEM_AVAILABLE)) {
             String storageClass = builder.getPointerStorageClass(ctx.pointer().getText());
