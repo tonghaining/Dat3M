@@ -329,6 +329,7 @@ public final class Tag {
         public static final String AVDEVICE = "AVDEVICE";
         public static final String VISDEVICE = "VISDEVICE";
         // Scopes
+        public static final String INVOCATION = "INV";
         public static final String SUB_GROUP = "SG";
         public static final String WORK_GROUP = "WG";
         public static final String QUEUE_FAMILY = "QF";
@@ -375,6 +376,7 @@ public final class Tag {
     public static final class OpenCL {
         // Scopes
         public static final String WORK_ITEM = "WI";
+        public static final String SUB_GROUP = "SG";
         public static final String WORK_GROUP = "WG";
         public static final String DEVICE = "DV";
         public static final String ALL = "ALL";

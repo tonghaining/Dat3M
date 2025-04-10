@@ -1,5 +1,6 @@
 package com.dat3m.dartagnan.parsers.program.visitors.spirv;
 
+import com.dat3m.dartagnan.configuration.Arch;
 import com.dat3m.dartagnan.exception.ParsingException;
 import com.dat3m.dartagnan.expression.BinaryExpression;
 import com.dat3m.dartagnan.expression.aggregates.ConstructExpr;
@@ -30,7 +31,7 @@ public class VisitorOpsBitsTest {
 
     private void doTestScalarOps(String name, IntBinaryOp op) {
         // given
-        MockProgramBuilder builder = new MockProgramBuilder();
+        MockProgramBuilder builder = new MockProgramBuilder(Arch.VULKAN);
         builder.mockIntType("%int", 64);
         builder.mockConstant("%value1", "%int", 4);
         builder.mockConstant("%value2", "%int", 7);
@@ -59,7 +60,7 @@ public class VisitorOpsBitsTest {
 
     private void doTestVectorOperations(String name, IntBinaryOp op) {
         // given
-        MockProgramBuilder builder = new MockProgramBuilder();
+        MockProgramBuilder builder = new MockProgramBuilder(Arch.VULKAN);
         builder.mockIntType("%int", 64);
         builder.mockVectorType("%array", "%int", 3);
         ConstructExpr op1 = (ConstructExpr) builder.mockConstant("%value1", "%array", List.of(0, 1, 2));
@@ -83,7 +84,7 @@ public class VisitorOpsBitsTest {
     @Test
     public void testMismatchingTypes() {
         // given
-        MockProgramBuilder builder = new MockProgramBuilder();
+        MockProgramBuilder builder = new MockProgramBuilder(Arch.VULKAN);
         builder.mockIntType("%int", 64);
         builder.mockVectorType("%vector", "%int", 3);
         builder.mockConstant("%value1", "%int", 1);

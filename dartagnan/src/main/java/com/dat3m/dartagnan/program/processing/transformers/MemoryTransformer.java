@@ -40,13 +40,18 @@ public class MemoryTransformer extends ExprTransformer {
         this.builtIn = builtIn;
         this.scopeMapping = Stream.generate(() -> new HashMap<MemoryObject, MemoryObject>()).limit(namePrefixes.size()).toList();
         this.pointerMapping = variables.stream().collect(Collectors.toMap((ScopedPointerVariable::getAddress), (v -> v)));
-        this.scopeIdProvider = List.of(grid::thId, grid::sgId, grid::wgId, grid::qfId, grid::dvId);
+        this.scopeIdProvider = List.of(
+                tid1 -> grid.getId(Tag.Vulkan.INVOCATION, tid1),
+                tid2 -> grid.getId(Tag.Vulkan.SUB_GROUP, tid2),
+                tid3 -> grid.getId(Tag.Vulkan.WORK_GROUP, tid3),
+                tid4 -> grid.getId(Tag.Vulkan.QUEUE_FAMILY, tid4),
+                tid5 -> grid.getId(Tag.Vulkan.DEVICE, tid5));
         this.namePrefixIdxProvider = List.of(
                 i -> i,
-                i -> i / grid.sgSize(),
-                i -> i / grid.wgSize(),
-                i -> i / grid.qfSize(),
-                i -> i / grid.dvSize());
+                i -> i / grid.getSize(Tag.Vulkan.SUB_GROUP),
+                i -> i / grid.getSize(Tag.Vulkan.WORK_GROUP),
+                i -> i / grid.getSize(Tag.Vulkan.QUEUE_FAMILY),
+                i -> i / grid.getSize(Tag.Vulkan.DEVICE));
     }
 
     public Register getRegisterMapping(Register register) {

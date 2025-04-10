@@ -394,7 +394,7 @@ public class ThreadCreation implements ProgramProcessor {
         ThreadGrid grid = program.getGrid();
         List<ExprTransformer> transformers = program.getTransformers();
         program.getFunctionByName(program.getEntryPoint()).ifPresent(entryFunction -> {
-            for (int tid = 0; tid < grid.dvSize(); tid++) {
+            for (int tid = 0; tid < grid.getSize(Tag.Vulkan.DEVICE); tid++) {
                 final Thread thread = createSPVThreadFromFunction(entryFunction, tid, grid, transformers);
                 program.addThread(thread);
             }

@@ -1,5 +1,6 @@
 package com.dat3m.dartagnan.parsers.program.visitors.spirv;
 
+import com.dat3m.dartagnan.configuration.Arch;
 import com.dat3m.dartagnan.exception.ParsingException;
 import com.dat3m.dartagnan.expression.Expression;
 import com.dat3m.dartagnan.expression.ExpressionFactory;
@@ -30,7 +31,7 @@ public class VisitorOpsMemoryTest {
 
     private static final TypeFactory types = TypeFactory.getInstance();
     private static final ExpressionFactory expressions = ExpressionFactory.getInstance();
-    private MockProgramBuilder builder = new MockProgramBuilder();
+    private MockProgramBuilder builder = new MockProgramBuilder(Arch.VULKAN);
 
     @Test
     public void testLoad() {
@@ -261,7 +262,7 @@ public class VisitorOpsMemoryTest {
         AggregateType aType = types.getAggregateType(List.of(i1.getType(), i2.getType(), i3.getType()));
         Expression i4 = expressions.makeConstruct(aType, List.of(i1, i2, i3));
 
-        builder = new MockProgramBuilder();
+        builder = new MockProgramBuilder(Arch.VULKAN);
         builder.addInput("%v1", i1);
         builder.addInput("%v2", i2);
         builder.addInput("%v3", i3);
@@ -350,7 +351,7 @@ public class VisitorOpsMemoryTest {
         Expression a3a = expressions.makeArray(arrType, List.of(a1, a2, a3), true);
         Expression s = expressions.makeConstruct(aggType, List.of(i1, a1));
 
-        builder = new MockProgramBuilder();
+        builder = new MockProgramBuilder(Arch.VULKAN);
         builder.addInput("%v1", a1);
         builder.addInput("%v2", a3a);
         builder.addInput("%v3", s);
@@ -439,7 +440,7 @@ public class VisitorOpsMemoryTest {
         Expression a1 = expressions.makeArray(archType, List.of(i1, i2), true);
         Expression a2 = expressions.makeArray(archType, List.of(i1, i2, i3), true);
 
-        builder = new MockProgramBuilder();
+        builder = new MockProgramBuilder(Arch.VULKAN);
         builder.addInput("%v1", a1);
         builder.addInput("%v2", a2);
 
@@ -568,7 +569,7 @@ public class VisitorOpsMemoryTest {
         Expression i2 = expressions.makeValue(2, archType);
         Expression a = expressions.makeArray(archType, List.of(i1, i2), true);
 
-        builder = new MockProgramBuilder();
+        builder = new MockProgramBuilder(Arch.VULKAN);
         builder.addInput("%v", a);
 
         builder.mockIntType("%int", 32);
@@ -662,7 +663,7 @@ public class VisitorOpsMemoryTest {
         IntegerType archType = types.getArchType();
         Expression v = expressions.makeValue(2, archType);
 
-        builder = new MockProgramBuilder();
+        builder = new MockProgramBuilder(Arch.VULKAN);
         builder.addInput("%v", v);
         builder.mockIntType("%int", 32);
         builder.mockPtrType("%i_ptr", "%int", "Uniform");

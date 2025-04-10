@@ -1,5 +1,6 @@
 package com.dat3m.dartagnan.parsers.program.visitors.spirv;
 
+import com.dat3m.dartagnan.configuration.Arch;
 import com.dat3m.dartagnan.exception.ParsingException;
 import com.dat3m.dartagnan.expression.integers.IntBinaryExpr;
 import com.dat3m.dartagnan.expression.integers.IntBinaryOp;
@@ -28,7 +29,7 @@ public class VisitorOpsArithmeticTest {
 
     private void doTestOpsIntegerUn(String name, IntUnaryOp op, int value) {
         // given
-        MockProgramBuilder builder = new MockProgramBuilder();
+        MockProgramBuilder builder = new MockProgramBuilder(Arch.VULKAN);
         builder.mockIntType("%int", 64);
         builder.mockConstant("%value", "%int", value);
         String input = String.format("%%reg = %s %%int %%value", name);
@@ -54,7 +55,7 @@ public class VisitorOpsArithmeticTest {
 
     private void doTestOpsIntegerBin(String name, IntBinaryOp op, int v1, int v2) {
         // given
-        MockProgramBuilder builder = new MockProgramBuilder();
+        MockProgramBuilder builder = new MockProgramBuilder(Arch.VULKAN);
         builder.mockIntType("%int", 64);
         builder.mockConstant("%v1", "%int", v1);
         builder.mockConstant("%v2", "%int", v2);
@@ -74,7 +75,7 @@ public class VisitorOpsArithmeticTest {
     @Test
     public void testOnUnMismatchingResultType() {
         // given
-        MockProgramBuilder builder = new MockProgramBuilder();
+        MockProgramBuilder builder = new MockProgramBuilder(Arch.VULKAN);
         builder.mockIntType("%int32", 32);
         builder.mockIntType("%int64", 64);
         builder.mockConstant("%value", "%int32", -1);
@@ -95,7 +96,7 @@ public class VisitorOpsArithmeticTest {
     @Test
     public void testOnBinMismatchingResultType() {
         // given
-        MockProgramBuilder builder = new MockProgramBuilder();
+        MockProgramBuilder builder = new MockProgramBuilder(Arch.VULKAN);
         builder.mockIntType("%int32", 32);
         builder.mockIntType("%int64", 64);
         builder.mockConstant("%v1", "%int32", 1);
@@ -117,7 +118,7 @@ public class VisitorOpsArithmeticTest {
     @Test
     public void testMismatchingOperandTypes() {
         // given
-        MockProgramBuilder builder = new MockProgramBuilder();
+        MockProgramBuilder builder = new MockProgramBuilder(Arch.VULKAN);
         builder.mockIntType("%int32", 32);
         builder.mockIntType("%int64", 64);
         builder.mockConstant("%v1", "%int32", 1);
@@ -139,7 +140,7 @@ public class VisitorOpsArithmeticTest {
     @Test
     public void testUnsupportedResultType() {
         // given
-        MockProgramBuilder builder = new MockProgramBuilder();
+        MockProgramBuilder builder = new MockProgramBuilder(Arch.VULKAN);
         builder.mockIntType("%int", 64);
         builder.mockVectorType("%vector", "%int", 4);
         builder.mockConstant("%v1", "%vector", List.of(1, 2, 3, 4));
@@ -160,7 +161,7 @@ public class VisitorOpsArithmeticTest {
     @Test
     public void testIllegalResultType() {
         // given
-        MockProgramBuilder builder = new MockProgramBuilder();
+        MockProgramBuilder builder = new MockProgramBuilder(Arch.VULKAN);
         builder.mockBoolType("%bool");
         builder.mockIntType("%int", 64);
         builder.mockConstant("%v1", "%int", 1);

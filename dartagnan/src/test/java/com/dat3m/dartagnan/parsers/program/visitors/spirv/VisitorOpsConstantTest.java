@@ -1,5 +1,6 @@
 package com.dat3m.dartagnan.parsers.program.visitors.spirv;
 
+import com.dat3m.dartagnan.configuration.Arch;
 import com.dat3m.dartagnan.exception.ParsingException;
 import com.dat3m.dartagnan.expression.Expression;
 import com.dat3m.dartagnan.expression.ExpressionFactory;
@@ -21,7 +22,7 @@ public class VisitorOpsConstantTest {
 
     private static final ExpressionFactory expressions = ExpressionFactory.getInstance();
     private static final IntegerType archType = TypeFactory.getInstance().getArchType();
-    private final MockProgramBuilder builder = new MockProgramBuilder();
+    private final MockProgramBuilder builder = new MockProgramBuilder(Arch.VULKAN);
 
     @Test
     public void testOpConstantBool() {

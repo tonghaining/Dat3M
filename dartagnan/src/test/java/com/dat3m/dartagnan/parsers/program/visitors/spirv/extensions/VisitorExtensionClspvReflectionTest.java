@@ -17,7 +17,8 @@ import static org.junit.Assert.fail;
 
 public class VisitorExtensionClspvReflectionTest {
 
-    private final MockProgramBuilder builder = new MockProgramBuilder(new ThreadGrid(2, 3, 4, 1));
+    private final MockProgramBuilder builder = new MockProgramBuilder(
+            ThreadGrid.ThreadGridForVulkan(2, 3, 4, 1));
 
     @Before
     public void before() {

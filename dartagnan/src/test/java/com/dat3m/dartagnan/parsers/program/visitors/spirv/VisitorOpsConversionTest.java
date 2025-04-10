@@ -1,5 +1,6 @@
 package com.dat3m.dartagnan.parsers.program.visitors.spirv;
 
+import com.dat3m.dartagnan.configuration.Arch;
 import com.dat3m.dartagnan.exception.ParsingException;
 import com.dat3m.dartagnan.expression.Expression;
 import com.dat3m.dartagnan.parsers.program.visitors.spirv.mocks.MockProgramBuilder;
@@ -10,7 +11,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
 public class VisitorOpsConversionTest {
-    private MockProgramBuilder builder = new MockProgramBuilder();
+    private MockProgramBuilder builder = new MockProgramBuilder(Arch.VULKAN);
 
     @Test
     public void opBitcastValidPointerToPointer() {

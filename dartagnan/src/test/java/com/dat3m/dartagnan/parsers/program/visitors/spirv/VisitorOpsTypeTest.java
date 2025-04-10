@@ -1,5 +1,6 @@
 package com.dat3m.dartagnan.parsers.program.visitors.spirv;
 
+import com.dat3m.dartagnan.configuration.Arch;
 import com.dat3m.dartagnan.exception.ParsingException;
 import com.dat3m.dartagnan.expression.Type;
 import com.dat3m.dartagnan.expression.integers.IntLiteral;
@@ -22,7 +23,7 @@ import static org.junit.Assert.assertNotEquals;
 public class VisitorOpsTypeTest {
 
     private static final TypeFactory types = TypeFactory.getInstance();
-    private final MockProgramBuilder builder = new MockProgramBuilder();
+    private final MockProgramBuilder builder = new MockProgramBuilder(Arch.VULKAN);
 
     @Test
     public void testSupportedTypes() {

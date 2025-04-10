@@ -1,5 +1,6 @@
 package com.dat3m.dartagnan.parsers.program.visitors.spirv;
 
+import com.dat3m.dartagnan.configuration.Arch;
 import com.dat3m.dartagnan.expression.integers.IntBinaryOp;
 import com.dat3m.dartagnan.expression.integers.IntCmpOp;
 import com.dat3m.dartagnan.parsers.program.visitors.spirv.mocks.MockProgramBuilder;
@@ -20,7 +21,7 @@ public class VisitorOpsAtomicTest {
     @Test
     public void testLoad() {
         // given
-        MockProgramBuilder builder = new MockProgramBuilder();
+        MockProgramBuilder builder = new MockProgramBuilder(Arch.VULKAN);
         builder.mockIntType("%int", 64);
         builder.mockPtrType("%int_ptr", "%int", "Uniform");
         builder.mockVariable("%ptr", "%int_ptr");
@@ -42,7 +43,7 @@ public class VisitorOpsAtomicTest {
     @Test
     public void testStore() {
         // given
-        MockProgramBuilder builder = new MockProgramBuilder();
+        MockProgramBuilder builder = new MockProgramBuilder(Arch.VULKAN);
         builder.mockIntType("%int", 64);
         builder.mockPtrType("%int_ptr", "%int", "Uniform");
         builder.mockVariable("%ptr", "%int_ptr");
@@ -64,7 +65,7 @@ public class VisitorOpsAtomicTest {
     @Test
     public void testXchg() {
         // given
-        MockProgramBuilder builder = new MockProgramBuilder();
+        MockProgramBuilder builder = new MockProgramBuilder(Arch.VULKAN);
         builder.mockIntType("%int", 64);
         builder.mockPtrType("%int_ptr", "%int", "Uniform");
         builder.mockVariable("%ptr", "%int_ptr");
@@ -88,7 +89,7 @@ public class VisitorOpsAtomicTest {
     @Test
     public void testCmpXchg() {
         // given
-        MockProgramBuilder builder = new MockProgramBuilder();
+        MockProgramBuilder builder = new MockProgramBuilder(Arch.VULKAN);
         builder.mockIntType("%int", 64);
         builder.mockPtrType("%int_ptr", "%int", "Uniform");
         builder.mockVariable("%ptr", "%int_ptr");
@@ -116,7 +117,7 @@ public class VisitorOpsAtomicTest {
     @Test
     public void testRmw() {
         // given
-        MockProgramBuilder builder = new MockProgramBuilder();
+        MockProgramBuilder builder = new MockProgramBuilder(Arch.VULKAN);
         builder.mockIntType("%int", 64);
         builder.mockPtrType("%int_ptr", "%int", "Uniform");
         builder.mockVariable("%ptr", "%int_ptr");
@@ -141,7 +142,7 @@ public class VisitorOpsAtomicTest {
     @Test
     public void testOpAtomicSMax() {
         // given
-        MockProgramBuilder builder = new MockProgramBuilder();
+        MockProgramBuilder builder = new MockProgramBuilder(Arch.VULKAN);
         builder.mockIntType("%int", 64);
         builder.mockPtrType("%int_ptr", "%int", "Uniform");
         builder.mockVariable("%ptr", "%int_ptr");
@@ -190,7 +191,7 @@ public class VisitorOpsAtomicTest {
 
     private void doTestIllegalMemoryOrder(int eq, int neq, String input, String error) {
         // given
-        MockProgramBuilder builder = new MockProgramBuilder();
+        MockProgramBuilder builder = new MockProgramBuilder(Arch.VULKAN);
         builder.mockIntType("%int", 64);
         builder.mockPtrType("%int_ptr", "%int", "Uniform");
         builder.mockVariable("%ptr", "%int_ptr");

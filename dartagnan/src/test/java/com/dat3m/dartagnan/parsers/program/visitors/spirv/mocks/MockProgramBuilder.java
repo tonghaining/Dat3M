@@ -1,5 +1,6 @@
 package com.dat3m.dartagnan.parsers.program.visitors.spirv.mocks;
 
+import com.dat3m.dartagnan.configuration.Arch;
 import com.dat3m.dartagnan.expression.Expression;
 import com.dat3m.dartagnan.expression.ExpressionFactory;
 import com.dat3m.dartagnan.expression.Type;
@@ -25,8 +26,18 @@ public class MockProgramBuilder extends ProgramBuilder {
     private static final TypeFactory typeFactory = TypeFactory.getInstance();
     private static final ExpressionFactory exprFactory = ExpressionFactory.getInstance();
 
-    public MockProgramBuilder() {
-        this(new ThreadGrid(1, 1, 1, 1));
+    public MockProgramBuilder(Arch arch) {
+        this(getThreadGridForArch(arch));
+    }
+
+    private static ThreadGrid getThreadGridForArch(Arch arch) {
+        if (arch.equals(Arch.VULKAN)) {
+            return ThreadGrid.ThreadGridForVulkan(1, 1, 1, 1);
+        } else if (arch.equals(Arch.OPENCL)) {
+            return ThreadGrid.ThreadGridForOpenCL(1, 1, 1);
+        } else {
+            throw new UnsupportedOperationException("Unsupported architecture " + arch);
+        }
     }
 
     public MockProgramBuilder(ThreadGrid grid) {
