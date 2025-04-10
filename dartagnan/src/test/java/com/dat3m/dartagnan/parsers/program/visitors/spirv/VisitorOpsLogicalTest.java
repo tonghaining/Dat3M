@@ -1,6 +1,5 @@
 package com.dat3m.dartagnan.parsers.program.visitors.spirv;
 
-import com.dat3m.dartagnan.configuration.Arch;
 import com.dat3m.dartagnan.exception.ParsingException;
 import com.dat3m.dartagnan.expression.booleans.BoolBinaryExpr;
 import com.dat3m.dartagnan.expression.booleans.BoolBinaryOp;
@@ -32,7 +31,7 @@ public class VisitorOpsLogicalTest {
 
     private void doTestOpsLogicalUn(boolean value) {
         // given
-        MockProgramBuilder builder = new MockProgramBuilder(Arch.VULKAN);
+        MockProgramBuilder builder = new MockProgramBuilder();
         builder.mockBoolType("%bool");
         builder.mockConstant("%value", "%bool", value);
         String input = "%reg = OpLogicalNot %bool %value";
@@ -50,7 +49,7 @@ public class VisitorOpsLogicalTest {
     @Test
     public void testOpSelect() {
         // given
-        MockProgramBuilder builder = new MockProgramBuilder(Arch.VULKAN);
+        MockProgramBuilder builder = new MockProgramBuilder();
         builder.mockBoolType("%bool");
         builder.mockIntType("%int", 64);
         builder.mockConstant("%cond", "%bool", true);
@@ -72,7 +71,7 @@ public class VisitorOpsLogicalTest {
     @Test
     public void testOpSelectMismatchingOperandType() {
         // given
-        MockProgramBuilder builder = new MockProgramBuilder(Arch.VULKAN);
+        MockProgramBuilder builder = new MockProgramBuilder();
         builder.mockBoolType("%bool");
         builder.mockIntType("%int", 64);
         builder.mockConstant("%cond", "%bool", true);
@@ -101,7 +100,7 @@ public class VisitorOpsLogicalTest {
 
     private void doTestOpsLogicalBin(String name, BoolBinaryOp op, boolean v1, boolean v2) {
         // given
-        MockProgramBuilder builder = new MockProgramBuilder(Arch.VULKAN);
+        MockProgramBuilder builder = new MockProgramBuilder();
         builder.mockBoolType("%bool");
         builder.mockConstant("%v1", "%bool", v1);
         builder.mockConstant("%v2", "%bool", v2);
@@ -134,7 +133,7 @@ public class VisitorOpsLogicalTest {
 
     private void doTestOpsIntegerBin(String name, IntCmpOp op, int v1, int v2) {
         // given
-        MockProgramBuilder builder = new MockProgramBuilder(Arch.VULKAN);
+        MockProgramBuilder builder = new MockProgramBuilder();
         builder.mockBoolType("%bool");
         builder.mockIntType("%int", 64);
         builder.mockConstant("%v1", "%int", v1);
@@ -155,7 +154,7 @@ public class VisitorOpsLogicalTest {
     @Test
     public void testOpsLogicalUnIllegalOperandType() {
         // given
-        MockProgramBuilder builder = new MockProgramBuilder(Arch.VULKAN);
+        MockProgramBuilder builder = new MockProgramBuilder();
         builder.mockBoolType("%bool");
         builder.mockIntType("%int", 64);
         builder.mockConstant("%value", "%int", 123);
@@ -175,7 +174,7 @@ public class VisitorOpsLogicalTest {
     @Test
     public void testOpsLogicalBinIllegalOperandType() {
         // given
-        MockProgramBuilder builder = new MockProgramBuilder(Arch.VULKAN);
+        MockProgramBuilder builder = new MockProgramBuilder();
         builder.mockBoolType("%bool");
         builder.mockIntType("%int", 64);
         builder.mockConstant("%v1", "%int", 123);
@@ -196,7 +195,7 @@ public class VisitorOpsLogicalTest {
     @Test
     public void testOpsIntegerBinIllegalOperandType() {
         // given
-        MockProgramBuilder builder = new MockProgramBuilder(Arch.VULKAN);
+        MockProgramBuilder builder = new MockProgramBuilder();
         builder.mockBoolType("%bool");
         builder.mockIntType("%int", 64);
         builder.mockConstant("%v1", "%int", 123);
@@ -217,7 +216,7 @@ public class VisitorOpsLogicalTest {
     @Test
     public void testOpsIntegerBinMismatchingOperandTypes() {
         // given
-        MockProgramBuilder builder = new MockProgramBuilder(Arch.VULKAN);
+        MockProgramBuilder builder = new MockProgramBuilder();
         builder.mockBoolType("%bool");
         builder.mockIntType("%int32", 32);
         builder.mockIntType("%int64", 64);
@@ -240,7 +239,7 @@ public class VisitorOpsLogicalTest {
     @Test
     public void testUnsupportedResultType() {
         // given
-        MockProgramBuilder builder = new MockProgramBuilder(Arch.VULKAN);
+        MockProgramBuilder builder = new MockProgramBuilder();
         builder.mockBoolType("%bool");
         builder.mockVectorType("%vector", "%bool", 4);
         builder.mockConstant("%value", "%vector", List.of(true, false, true, false));
@@ -260,7 +259,7 @@ public class VisitorOpsLogicalTest {
     @Test
     public void testIllegalResultType() {
         // given
-        MockProgramBuilder builder = new MockProgramBuilder(Arch.VULKAN);
+        MockProgramBuilder builder = new MockProgramBuilder();
         builder.mockBoolType("%bool");
         builder.mockIntType("%int", 64);
         builder.mockConstant("%value", "%bool", true);

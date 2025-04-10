@@ -29,7 +29,7 @@ import static org.junit.Assert.*;
 public class VisitorOpsFunctionTest {
 
     private static final ExpressionFactory expressions = ExpressionFactory.getInstance();
-    private final MockProgramBuilder builder = new MockProgramBuilder(Arch.VULKAN);
+    private final MockProgramBuilder builder = new MockProgramBuilder();
     private final VisitorOpsFunction visitor = new VisitorOpsFunction(builder);
 
     @Before

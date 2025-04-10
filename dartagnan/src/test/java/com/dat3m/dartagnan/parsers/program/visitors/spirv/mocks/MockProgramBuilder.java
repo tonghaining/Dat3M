@@ -25,10 +25,8 @@ public class MockProgramBuilder extends ProgramBuilder {
     private static final TypeFactory typeFactory = TypeFactory.getInstance();
     private static final ExpressionFactory exprFactory = ExpressionFactory.getInstance();
 
-    public MockProgramBuilder(Arch arch) {
-        super(List.of(1, 1, 1));
-        super.setArch(arch);
-        controlFlowBuilder = new MockControlFlowBuilder(expressions);
+    public MockProgramBuilder() {
+        this(Arch.VULKAN, List.of(1, 1, 1)); // Default to Vulkan
     }
 
     public MockProgramBuilder(Arch arch, List<Integer> scopeSizes) {

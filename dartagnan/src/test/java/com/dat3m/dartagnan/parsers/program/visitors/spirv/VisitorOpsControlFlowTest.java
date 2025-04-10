@@ -1,6 +1,5 @@
 package com.dat3m.dartagnan.parsers.program.visitors.spirv;
 
-import com.dat3m.dartagnan.configuration.Arch;
 import com.dat3m.dartagnan.exception.ParsingException;
 import com.dat3m.dartagnan.expression.booleans.BoolLiteral;
 import com.dat3m.dartagnan.expression.type.FunctionType;
@@ -23,7 +22,7 @@ import static org.junit.Assert.*;
 
 public class VisitorOpsControlFlowTest {
 
-    private final MockProgramBuilder builder = new MockProgramBuilder(Arch.VULKAN);
+    private final MockProgramBuilder builder = new MockProgramBuilder();
     private final MockControlFlowBuilder cfBuilder = (MockControlFlowBuilder) builder.getControlFlowBuilder();
 
     @Test

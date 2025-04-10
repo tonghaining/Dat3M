@@ -48,7 +48,7 @@ public class ConfigTest extends AbstractTest {
         doTestIllegalConfig("; @Config: 1, 1",
                 "Line 2:16 mismatched input 'Op' expecting ','");
         doTestIllegalConfig("; @Config: 1, 1, 0",
-                "Thread grid dimensions must be positive");
+                "Thread grid of Vulkan dimensions must be of length 3 and positive");
         doTestIllegalConfig("""
                         ; @Output: forall (1 == 1)
                         ; @Config: 1, 1, 1

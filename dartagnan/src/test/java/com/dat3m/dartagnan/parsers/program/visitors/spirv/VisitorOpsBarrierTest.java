@@ -1,6 +1,5 @@
 package com.dat3m.dartagnan.parsers.program.visitors.spirv;
 
-import com.dat3m.dartagnan.configuration.Arch;
 import com.dat3m.dartagnan.exception.ParsingException;
 import com.dat3m.dartagnan.parsers.program.visitors.spirv.mocks.MockProgramBuilder;
 import com.dat3m.dartagnan.parsers.program.visitors.spirv.mocks.MockSpirvParser;
@@ -17,7 +16,7 @@ import static org.junit.Assert.fail;
 
 public class VisitorOpsBarrierTest {
 
-    private final MockProgramBuilder builder = new MockProgramBuilder(Arch.VULKAN);
+    private final MockProgramBuilder builder = new MockProgramBuilder();
 
     @Test
     public void testControlBarrier() {

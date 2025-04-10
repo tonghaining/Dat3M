@@ -1,6 +1,5 @@
 package com.dat3m.dartagnan.parsers.program.visitors.spirv;
 
-import com.dat3m.dartagnan.configuration.Arch;
 import com.dat3m.dartagnan.exception.ParsingException;
 import com.dat3m.dartagnan.expression.integers.IntLiteral;
 import com.dat3m.dartagnan.parsers.program.visitors.spirv.mocks.MockProgramBuilder;
@@ -13,7 +12,7 @@ import static org.junit.Assert.fail;
 
 public class VisitorOpsExtensionTest {
 
-    private final MockProgramBuilder builder = new MockProgramBuilder(Arch.VULKAN);
+    private final MockProgramBuilder builder = new MockProgramBuilder();
 
     @Test
     public void testSupportedInstruction() {
