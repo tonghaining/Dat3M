@@ -13,7 +13,6 @@ import com.dat3m.dartagnan.parsers.program.visitors.spirv.decorations.Decoration
 import com.dat3m.dartagnan.parsers.program.visitors.spirv.decorations.Offset;
 import com.dat3m.dartagnan.parsers.program.visitors.spirv.helpers.HelperTags;
 import com.dat3m.dartagnan.program.Function;
-import com.dat3m.dartagnan.program.ThreadGrid;
 import com.dat3m.dartagnan.program.event.core.Label;
 import com.dat3m.dartagnan.program.memory.MemoryObject;
 import com.dat3m.dartagnan.program.memory.ScopedPointerVariable;
@@ -27,21 +26,14 @@ public class MockProgramBuilder extends ProgramBuilder {
     private static final ExpressionFactory exprFactory = ExpressionFactory.getInstance();
 
     public MockProgramBuilder(Arch arch) {
-        this(getThreadGridForArch(arch));
+        super(List.of(1, 1, 1));
+        super.setArch(arch);
+        controlFlowBuilder = new MockControlFlowBuilder(expressions);
     }
 
-    private static ThreadGrid getThreadGridForArch(Arch arch) {
-        if (arch.equals(Arch.VULKAN)) {
-            return ThreadGrid.ThreadGridForVulkan(1, 1, 1, 1);
-        } else if (arch.equals(Arch.OPENCL)) {
-            return ThreadGrid.ThreadGridForOpenCL(1, 1, 1);
-        } else {
-            throw new UnsupportedOperationException("Unsupported architecture " + arch);
-        }
-    }
-
-    public MockProgramBuilder(ThreadGrid grid) {
-        super(grid);
+    public MockProgramBuilder(Arch arch, List<Integer> scopeSizes) {
+        super(scopeSizes);
+        super.setArch(arch);
         controlFlowBuilder = new MockControlFlowBuilder(expressions);
     }
 

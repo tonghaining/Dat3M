@@ -51,7 +51,7 @@ public class ProgramBuilder {
     // ----------------------------------------------------------------------------------------------------------------
     // Construction
     private ProgramBuilder(SourceLanguage format) {
-        this.program = new Program(new Memory(), format, null);
+        this.program = new Program(new Memory(), format);
     }
 
     public static ProgramBuilder forArch(SourceLanguage format, Arch arch) {

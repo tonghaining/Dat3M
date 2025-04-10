@@ -22,13 +22,16 @@ public class BuiltIn implements Decoration {
 
     private static final TypeFactory types = TypeFactory.getInstance();
     private static final ExpressionFactory expressions = ExpressionFactory.getInstance();
-    private final ThreadGrid grid;
+    private ThreadGrid grid;
     private final Map<String, String> mapping;
     private int tid;
 
-    public BuiltIn(ThreadGrid grid) {
-        this.grid = grid;
+    public BuiltIn() {
         this.mapping = new HashMap<>();
+    }
+
+    public void setThreadGrid(ThreadGrid grid) {
+        this.grid = grid;
     }
 
     public void setThreadId(int tid) {
@@ -96,19 +99,15 @@ public class BuiltIn implements Decoration {
         }
         if (grid.getArch() == Arch.OPENCL) {
             return switch (mapping.get(id)) {
-                // TODO: check
                 // BuiltIn decorations according to the OpenCL API
-                case "SubgroupLocalInvocationId" -> makeScalar(id, type, tid % grid.getSize(Tag.OpenCL.SUB_GROUP));
-                case "LocalInvocationId" -> makeArray(id, type, tid % grid.getSize(Tag.OpenCL.WORK_GROUP), 0, 0);
-                case "LocalInvocationIndex" ->
-                        makeScalar(id, type, tid % grid.getSize(Tag.OpenCL.WORK_GROUP)); // scalar of LocalInvocationId
                 case "GlobalInvocationId" -> makeArray(id, type, tid % grid.getSize(Tag.OpenCL.DEVICE), 0, 0);
-                case "DeviceIndex" -> makeScalar(id, type, grid.getId(Tag.OpenCL.DEVICE, tid));
+                case "SubgroupLocalInvocationId" -> makeScalar(id, type, tid % grid.getSize(Tag.OpenCL.SUB_GROUP));
                 case "SubgroupId" -> makeScalar(id, type, grid.getId(Tag.OpenCL.SUB_GROUP, tid));
-                case "WorkgroupId" -> makeArray(id, type, grid.getId(Tag.OpenCL.WORK_GROUP, tid), 0, 0);
                 case "SubgroupSize" -> makeScalar(id, type, grid.getSize(Tag.OpenCL.SUB_GROUP));
-                case "WorkgroupSize" -> makeArray(id, type, grid.getSize(Tag.OpenCL.WORK_GROUP), 1, 1);
                 case "GlobalSize" -> makeArray(id, type, grid.getSize(Tag.OpenCL.DEVICE), 1, 1);
+                case "LocalInvocationId" -> makeArray(id, type, tid % grid.getSize(Tag.OpenCL.WORK_GROUP), 0, 0);
+                case "WorkgroupId" -> makeArray(id, type, grid.getId(Tag.OpenCL.WORK_GROUP, tid), 0, 0);
+                case "WorkgroupSize" -> makeArray(id, type, grid.getSize(Tag.OpenCL.WORK_GROUP), 1, 1);
                 case "NumWorkgroups" ->
                         makeArray(id, type, grid.getSize(Tag.OpenCL.DEVICE) / grid.getSize(Tag.OpenCL.WORK_GROUP), 1, 1);
                 default -> throw new ParsingException("Unsupported decoration '%s'", mapping.get(id));

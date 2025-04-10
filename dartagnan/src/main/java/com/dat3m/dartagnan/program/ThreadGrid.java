@@ -5,6 +5,7 @@ import com.dat3m.dartagnan.exception.ParsingException;
 import com.dat3m.dartagnan.program.event.Tag;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class ThreadGrid {
@@ -16,26 +17,26 @@ public class ThreadGrid {
         this.arch = arch;
     }
 
-    public static ThreadGrid ThreadGridForVulkan(int sg, int wg, int qf, int dv) {
-        if (sg <= 0 || wg <= 0 || qf <= 0 || dv <= 0) {
-            throw new ParsingException("Thread grid dimensions must be positive");
+    public static ThreadGrid ThreadGridForVulkan(List<Integer> sizes) {
+        if (sizes.size() != 3 || sizes.stream().anyMatch(size -> size <= 0)) {
+            throw new ParsingException("Thread grid of Vulkan dimensions must be of length 3 and positive");
         }
         ThreadGrid tg = new ThreadGrid(Arch.VULKAN);
-        tg.scopeSizes.put(Tag.Vulkan.DEVICE, dv);
-        tg.scopeSizes.put(Tag.Vulkan.QUEUE_FAMILY, qf);
-        tg.scopeSizes.put(Tag.Vulkan.WORK_GROUP, wg);
-        tg.scopeSizes.put(Tag.Vulkan.SUB_GROUP, sg);
+        tg.scopeSizes.put(Tag.Vulkan.SUB_GROUP, sizes.get(0));
+        tg.scopeSizes.put(Tag.Vulkan.WORK_GROUP, sizes.get(1));
+        tg.scopeSizes.put(Tag.Vulkan.QUEUE_FAMILY, sizes.get(2));
+        tg.scopeSizes.put(Tag.Vulkan.DEVICE, 1);
         return tg;
     }
 
-    public static ThreadGrid ThreadGridForOpenCL(int sg, int wg, int dv) {
-        if (sg <= 0 || wg <= 0 || dv <= 0) {
-            throw new ParsingException("Thread grid dimensions must be positive");
+    public static ThreadGrid ThreadGridForOpenCL(List<Integer> sizes) {
+        if (sizes.size() != 3 || sizes.stream().anyMatch(size -> size <= 0)) {
+            throw new ParsingException("Thread grid of OpenCL dimensions must be of length 3 and positive");
         }
         ThreadGrid tg = new ThreadGrid(Arch.OPENCL);
-        tg.scopeSizes.put(Tag.OpenCL.DEVICE, dv);
-        tg.scopeSizes.put(Tag.OpenCL.WORK_GROUP, wg);
-        tg.scopeSizes.put(Tag.OpenCL.SUB_GROUP, sg);
+        tg.scopeSizes.put(Tag.OpenCL.SUB_GROUP, sizes.get(0));
+        tg.scopeSizes.put(Tag.OpenCL.WORK_GROUP, sizes.get(1));
+        tg.scopeSizes.put(Tag.OpenCL.DEVICE, sizes.get(2));
         return tg;
     }
 
@@ -136,6 +137,9 @@ public class ThreadGrid {
             }
             case Tag.OpenCL.SUB_GROUP -> {
                 return (tid % getSize(Tag.OpenCL.WORK_GROUP)) / getSize(Tag.OpenCL.SUB_GROUP);
+            }
+            case Tag.OpenCL.WORK_ITEM -> {
+                return tid % getSize(Tag.OpenCL.SUB_GROUP);
             }
             default -> throw new ParsingException("Thread grid not supported for scope: " + scope);
         }
