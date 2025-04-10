@@ -531,10 +531,9 @@ public final class Tag {
                 case SEQ_CST -> C11.MO_SC;
 
                 // Scope
-                // TODO: OpenCL Kernel supports sub_group, but it's not mentioned in the model
                 case INVOCATION -> OpenCL.WORK_ITEM;
-                case SUBGROUP,
-                     WORKGROUP -> OpenCL.WORK_GROUP;
+                case SUBGROUP -> OpenCL.SUB_GROUP;
+                case WORKGROUP -> OpenCL.WORK_GROUP;
                 case DEVICE -> OpenCL.DEVICE;
                 case CROSS_DEVICE -> OpenCL.ALL;
                 case QUEUE_FAMILY,

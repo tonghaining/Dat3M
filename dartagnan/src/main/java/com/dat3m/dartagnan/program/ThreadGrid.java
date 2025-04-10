@@ -155,7 +155,8 @@ public class ThreadGrid {
         if (arch.equals(Arch.OPENCL)) {
             return ScopeHierarchy.ScopeHierarchyForOpenCL(
                     getId(Tag.OpenCL.DEVICE, tid),
-                    getId(Tag.OpenCL.WORK_GROUP, tid));
+                    getId(Tag.OpenCL.WORK_GROUP, tid),
+                    getId(Tag.OpenCL.SUB_GROUP, tid));
         }
         throw new ParsingException("Thread grid not supported for architecture: " + arch);
     }
