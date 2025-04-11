@@ -123,7 +123,7 @@ public class SpirvAssertionsTest {
     @Test
     public void testAllSolvers() throws Exception {
         try (SolverContext ctx = mkCtx(); ProverWithTracker prover = mkProver(ctx)) {
-             assertEquals(expected, RefinementSolver.run(ctx, prover, mkTask()).getResult());
+            assertEquals(expected, RefinementSolver.run(ctx, prover, mkTask()).getResult());
         }
         try (SolverContext ctx = mkCtx(); ProverWithTracker prover = mkProver(ctx)) {
             assertEquals(expected, AssumeSolver.run(ctx, prover, mkTask()).getResult());
