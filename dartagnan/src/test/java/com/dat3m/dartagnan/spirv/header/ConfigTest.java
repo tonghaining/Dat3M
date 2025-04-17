@@ -2,8 +2,8 @@ package com.dat3m.dartagnan.spirv.header;
 
 import com.dat3m.dartagnan.exception.ParsingException;
 import com.dat3m.dartagnan.program.Program;
-import com.dat3m.dartagnan.program.ScopeHierarchy;
-import com.dat3m.dartagnan.program.ThreadGrid;
+import com.dat3m.dartagnan.program.ScopeNames;
+import com.dat3m.dartagnan.program.ThreadGridHelper;
 import com.dat3m.dartagnan.program.event.Tag;
 import org.junit.Test;
 
@@ -28,18 +28,18 @@ public class ConfigTest extends AbstractTest {
 
         // then
         int size = scopes.stream().reduce(1, (a, b) -> a * b);
-        ThreadGrid grid = program.getGrid();
-        assertEquals(size, grid.getSize(Tag.Vulkan.DEVICE));
+        List<Integer> grid = program.getGrid();
+        ScopeNames scopeNames = ScopeNames.getByArch(program.getArch());
+        assertEquals(size, ThreadGridHelper.getSize(scopeNames, Tag.Vulkan.DEVICE, grid));
 
         int sg_size = scopes.get(0);
         int wg_size = scopes.get(1) * sg_size;
         int qf_size = scopes.get(2) * wg_size;
         for (int i = 0; i < size; i++) {
-            ScopeHierarchy hierarchy = grid.getScoreHierarchy(i);
-            assertEquals(((i % qf_size) % wg_size) / sg_size, hierarchy.getScopeId(Tag.Vulkan.SUB_GROUP));
-            assertEquals((i % qf_size) / wg_size, hierarchy.getScopeId(Tag.Vulkan.WORK_GROUP));
-            assertEquals(i / qf_size, hierarchy.getScopeId(Tag.Vulkan.QUEUE_FAMILY));
-            assertEquals(0, hierarchy.getScopeId(Tag.Vulkan.DEVICE));
+            assertEquals(((i % qf_size) % wg_size) / sg_size, ThreadGridHelper.getIndex(scopeNames, Tag.Vulkan.SUB_GROUP, grid));
+            assertEquals((i % qf_size) / wg_size, ThreadGridHelper.getIndex(scopeNames, Tag.Vulkan.WORK_GROUP, grid));
+            assertEquals(i / qf_size, ThreadGridHelper.getIndex(scopeNames, Tag.Vulkan.QUEUE_FAMILY, grid));
+            assertEquals(0, ThreadGridHelper.getIndex(scopeNames, Tag.Vulkan.DEVICE, grid));
         }
     }
 

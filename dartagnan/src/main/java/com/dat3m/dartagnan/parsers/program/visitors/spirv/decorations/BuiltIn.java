@@ -1,6 +1,5 @@
 package com.dat3m.dartagnan.parsers.program.visitors.spirv.decorations;
 
-import com.dat3m.dartagnan.configuration.Arch;
 import com.dat3m.dartagnan.exception.ParsingException;
 import com.dat3m.dartagnan.expression.Expression;
 import com.dat3m.dartagnan.expression.ExpressionFactory;
@@ -9,7 +8,8 @@ import com.dat3m.dartagnan.expression.aggregates.ConstructExpr;
 import com.dat3m.dartagnan.expression.type.ArrayType;
 import com.dat3m.dartagnan.expression.type.IntegerType;
 import com.dat3m.dartagnan.expression.type.TypeFactory;
-import com.dat3m.dartagnan.program.ThreadGrid;
+import com.dat3m.dartagnan.program.ScopeNames;
+import com.dat3m.dartagnan.program.ThreadGridHelper;
 import com.dat3m.dartagnan.program.event.Tag;
 import com.dat3m.dartagnan.program.memory.MemoryObject;
 
@@ -22,16 +22,19 @@ public class BuiltIn implements Decoration {
 
     private static final TypeFactory types = TypeFactory.getInstance();
     private static final ExpressionFactory expressions = ExpressionFactory.getInstance();
-    private ThreadGrid grid;
     private final Map<String, String> mapping;
+    private List<Integer> grid;
     private int tid;
+    private ScopeNames scopeNames;
 
     public BuiltIn() {
         this.mapping = new HashMap<>();
     }
-
-    public void setThreadGrid(ThreadGrid grid) {
+    public void setGrid(List<Integer> grid) {
         this.grid = grid;
+    }
+    public void setScopeNames(ScopeNames scopeNames) {
+        this.scopeNames = scopeNames;
     }
 
     public void setThreadId(int tid) {
@@ -78,42 +81,59 @@ public class BuiltIn implements Decoration {
     }
 
     private Expression getDecorationExpressions(String id, Type type) {
-        if (grid.getArch() == Arch.VULKAN) {
+        if (scopeNames == ScopeNames.VULKAN) {
             return switch (mapping.get(id)) {
                 // BuiltIn decorations according to the Vulkan API
-                case "SubgroupLocalInvocationId" -> makeScalar(id, type, tid % grid.getSize(Tag.Vulkan.SUB_GROUP));
-                case "LocalInvocationId" -> makeArray(id, type, tid % grid.getSize(Tag.Vulkan.WORK_GROUP), 0, 0);
+                case "SubgroupLocalInvocationId" ->
+                        makeScalar(id, type, tid % ThreadGridHelper.getSize(scopeNames, Tag.Vulkan.SUB_GROUP, grid));
+                case "LocalInvocationId" ->
+                        makeArray(id, type, tid % ThreadGridHelper.getSize(scopeNames, Tag.Vulkan.WORK_GROUP, grid), 0, 0);
                 case "LocalInvocationIndex" ->
-                        makeScalar(id, type, tid % grid.getSize(Tag.Vulkan.WORK_GROUP)); // scalar of LocalInvocationId
-                case "GlobalInvocationId" -> makeArray(id, type, tid % grid.getSize(Tag.Vulkan.DEVICE), 0, 0);
-                case "DeviceIndex" -> makeScalar(id, type, grid.getId(Tag.Vulkan.DEVICE, tid));
-                case "SubgroupId" -> makeScalar(id, type, grid.getId(Tag.Vulkan.SUB_GROUP, tid));
-                case "WorkgroupId" -> makeArray(id, type, grid.getId(Tag.Vulkan.WORK_GROUP, tid), 0, 0);
-                case "SubgroupSize" -> makeScalar(id, type, grid.getSize(Tag.Vulkan.SUB_GROUP));
-                case "WorkgroupSize" -> makeArray(id, type, grid.getSize(Tag.Vulkan.WORK_GROUP), 1, 1);
-                case "GlobalSize" -> makeArray(id, type, grid.getSize(Tag.Vulkan.DEVICE), 1, 1);
+                        makeScalar(id, type, tid % ThreadGridHelper.getSize(scopeNames, Tag.Vulkan.WORK_GROUP, grid)); // scalar of LocalInvocationId
+                case "GlobalInvocationId" ->
+                        makeArray(id, type, tid % ThreadGridHelper.getSize(scopeNames, Tag.Vulkan.DEVICE, grid), 0, 0);
+                case "DeviceIndex" ->
+                        makeScalar(id, type, ThreadGridHelper.getIndex(scopeNames, Tag.Vulkan.DEVICE, grid));
+                case "SubgroupId" ->
+                        makeScalar(id, type, ThreadGridHelper.getIndex(scopeNames, Tag.Vulkan.SUB_GROUP, grid));
+                case "WorkgroupId" ->
+                        makeArray(id, type, ThreadGridHelper.getIndex(scopeNames, Tag.Vulkan.WORK_GROUP, grid), 0, 0);
+                case "SubgroupSize" ->
+                        makeScalar(id, type, ThreadGridHelper.getSize(scopeNames, Tag.Vulkan.SUB_GROUP, grid));
+                case "WorkgroupSize" ->
+                        makeArray(id, type, ThreadGridHelper.getSize(scopeNames, Tag.Vulkan.WORK_GROUP, grid), 1, 1);
+                case "GlobalSize" ->
+                        makeArray(id, type, ThreadGridHelper.getSize(scopeNames, Tag.Vulkan.DEVICE, grid), 1, 1);
                 case "NumWorkgroups" ->
-                        makeArray(id, type, grid.getSize(Tag.Vulkan.DEVICE) / grid.getSize(Tag.Vulkan.WORK_GROUP), 1, 1);
+                        makeArray(id, type, ThreadGridHelper.getSize(scopeNames, Tag.Vulkan.DEVICE, grid) / ThreadGridHelper.getSize(scopeNames, Tag.Vulkan.WORK_GROUP, grid), 1, 1);
                 default -> throw new ParsingException("Unsupported decoration '%s'", mapping.get(id));
             };
         }
-        if (grid.getArch() == Arch.OPENCL) {
+        if (scopeNames == ScopeNames.OPENCL) {
             return switch (mapping.get(id)) {
                 // BuiltIn decorations according to the OpenCL API
-                case "GlobalInvocationId" -> makeArray(id, type, tid % grid.getSize(Tag.OpenCL.ALL), 0, 0);
-                case "SubgroupLocalInvocationId" -> makeScalar(id, type, tid % grid.getSize(Tag.OpenCL.SUB_GROUP));
-                case "SubgroupId" -> makeScalar(id, type, grid.getId(Tag.OpenCL.SUB_GROUP, tid));
-                case "SubgroupSize" -> makeScalar(id, type, grid.getSize(Tag.OpenCL.SUB_GROUP));
-                case "GlobalSize" -> makeArray(id, type, grid.getSize(Tag.OpenCL.ALL), 1, 1);
-                case "LocalInvocationId" -> makeArray(id, type, tid % grid.getSize(Tag.OpenCL.WORK_GROUP), 0, 0);
-                case "WorkgroupId" -> makeArray(id, type, grid.getId(Tag.OpenCL.WORK_GROUP, tid), 0, 0);
-                case "WorkgroupSize" -> makeArray(id, type, grid.getSize(Tag.OpenCL.WORK_GROUP), 1, 1);
+                case "GlobalInvocationId" ->
+                        makeArray(id, type, tid % ThreadGridHelper.getSize(scopeNames, Tag.OpenCL.ALL, grid), 0, 0);
+                case "SubgroupLocalInvocationId" ->
+                        makeScalar(id, type, tid % ThreadGridHelper.getSize(scopeNames, Tag.OpenCL.SUB_GROUP, grid));
+                case "SubgroupId" ->
+                        makeScalar(id, type, ThreadGridHelper.getIndex(scopeNames, Tag.OpenCL.SUB_GROUP, grid));
+                case "SubgroupSize" ->
+                        makeScalar(id, type, ThreadGridHelper.getSize(scopeNames, Tag.OpenCL.SUB_GROUP, grid));
+                case "GlobalSize" ->
+                        makeArray(id, type, ThreadGridHelper.getSize(scopeNames, Tag.OpenCL.ALL, grid), 1, 1);
+                case "LocalInvocationId" ->
+                        makeArray(id, type, tid % ThreadGridHelper.getSize(scopeNames, Tag.OpenCL.WORK_GROUP, grid), 0, 0);
+                case "WorkgroupId" ->
+                        makeArray(id, type, ThreadGridHelper.getIndex(scopeNames, Tag.OpenCL.WORK_GROUP, grid), 0, 0);
+                case "WorkgroupSize" ->
+                        makeArray(id, type, ThreadGridHelper.getSize(scopeNames, Tag.OpenCL.WORK_GROUP, grid), 1, 1);
                 case "NumWorkgroups" ->
-                        makeArray(id, type, grid.getSize(Tag.OpenCL.DEVICE) / grid.getSize(Tag.OpenCL.WORK_GROUP), 1, 1);
+                        makeArray(id, type, ThreadGridHelper.getSize(scopeNames, Tag.OpenCL.DEVICE, grid) / ThreadGridHelper.getSize(scopeNames, Tag.OpenCL.WORK_GROUP, grid), 1, 1);
                 default -> throw new ParsingException("Unsupported decoration '%s'", mapping.get(id));
             };
         }
-        throw new ParsingException("Unsupported architecture '%s'", grid.getArch());
+        throw new ParsingException("Unsupported scope '%s'", scopeNames);
     }
 
     private Expression makeArray(String id, Type type, int x, int y, int z) {

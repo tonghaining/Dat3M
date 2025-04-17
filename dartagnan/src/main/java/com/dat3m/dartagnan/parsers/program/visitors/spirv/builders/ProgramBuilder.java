@@ -12,7 +12,7 @@ import com.dat3m.dartagnan.parsers.program.visitors.spirv.decorations.BuiltIn;
 import com.dat3m.dartagnan.program.Function;
 import com.dat3m.dartagnan.program.Program;
 import com.dat3m.dartagnan.program.Register;
-import com.dat3m.dartagnan.program.ThreadGrid;
+import com.dat3m.dartagnan.program.ThreadGridHelper;
 import com.dat3m.dartagnan.program.event.Event;
 import com.dat3m.dartagnan.program.event.RegWriter;
 import com.dat3m.dartagnan.program.event.Tag;
@@ -36,8 +36,7 @@ public class ProgramBuilder {
     protected final Map<String, Expression> expressions = new HashMap<>();
     protected final Map<String, Expression> inputs = new HashMap<>();
     protected final Map<String, String> debugInfos = new HashMap<>();
-    protected final List<Integer> scopeSizes;
-    protected ThreadGrid grid;
+    protected List<Integer> grid;
     protected Program program;
     protected ControlFlowBuilder controlFlowBuilder;
     protected DecorationsBuilder decorationsBuilder;
@@ -46,9 +45,9 @@ public class ProgramBuilder {
     protected Arch arch;
     protected Set<String> nextOps;
 
-    public ProgramBuilder(List<Integer> scopeSizes) {
-        this.scopeSizes = scopeSizes;
-        this.program = new Program(new Memory(), Program.SourceLanguage.SPV);
+    public ProgramBuilder(List<Integer> grid) {
+        this.grid = grid;
+        this.program = new Program(new Memory(), Program.SourceLanguage.SPV, grid);
         this.controlFlowBuilder = new ControlFlowBuilder(expressions);
         this.decorationsBuilder = new DecorationsBuilder();
     }
@@ -62,7 +61,7 @@ public class ProgramBuilder {
         return program;
     }
 
-    public ThreadGrid getThreadGrid() {
+    public List<Integer> getThreadGrid() {
         return grid;
     }
 
@@ -106,16 +105,9 @@ public class ProgramBuilder {
             throw new ParsingException("Illegal attempt to override memory model");
         }
         this.arch = arch;
-        if (arch.equals(Arch.VULKAN)) {
-            grid = ThreadGrid.ThreadGridForVulkan(scopeSizes);
-        } else if (arch.equals(Arch.OPENCL)) {
-            grid = ThreadGrid.ThreadGridForOpenCL(scopeSizes);
-        } else {
-            throw new ParsingException("Unsupported architecture: " + arch);
-        }
         program.setArch(arch);
-        program.setGrid(grid);
-        decorationsBuilder.setThreadGrid(grid);
+        decorationsBuilder.setArch(arch);
+        decorationsBuilder.setGrid(program.getGrid());
     }
 
     public void setSpecification(Program.SpecificationType type, Expression condition) {

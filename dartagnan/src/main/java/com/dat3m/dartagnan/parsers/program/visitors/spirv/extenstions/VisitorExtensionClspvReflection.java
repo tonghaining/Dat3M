@@ -1,5 +1,6 @@
 package com.dat3m.dartagnan.parsers.program.visitors.spirv.extenstions;
 
+import com.dat3m.dartagnan.configuration.Arch;
 import com.dat3m.dartagnan.exception.ParsingException;
 import com.dat3m.dartagnan.expression.Expression;
 import com.dat3m.dartagnan.expression.ExpressionFactory;
@@ -8,7 +9,8 @@ import com.dat3m.dartagnan.expression.integers.IntLiteral;
 import com.dat3m.dartagnan.expression.type.*;
 import com.dat3m.dartagnan.parsers.SpirvParser;
 import com.dat3m.dartagnan.parsers.program.visitors.spirv.builders.ProgramBuilder;
-import com.dat3m.dartagnan.program.ThreadGrid;
+import com.dat3m.dartagnan.program.ScopeNames;
+import com.dat3m.dartagnan.program.ThreadGridHelper;
 import com.dat3m.dartagnan.program.event.Tag;
 import com.dat3m.dartagnan.program.memory.ScopedPointerVariable;
 
@@ -118,12 +120,14 @@ public class VisitorExtensionClspvReflection extends VisitorExtension<Void> {
     }
 
     private List<Integer> computePushConstantValue(String command) {
-        ThreadGrid grid = builder.getThreadGrid();
+        List<Integer> grid = builder.getThreadGrid();
+        ScopeNames scopeNames = ScopeNames.getByArch(Arch.VULKAN);
         return switch (command) {
-            case "PushConstantGlobalSize" -> List.of(grid.getSize(Tag.Vulkan.DEVICE), 1, 1);
-            case "PushConstantEnqueuedLocalSize" -> List.of(grid.getSize(Tag.Vulkan.WORK_GROUP), 1, 1);
+            case "PushConstantGlobalSize" -> List.of(ThreadGridHelper.getSize(scopeNames, Tag.Vulkan.DEVICE, grid), 1, 1);
+            case "PushConstantEnqueuedLocalSize" -> List.of(ThreadGridHelper.getSize(scopeNames, Tag.Vulkan.WORK_GROUP, grid), 1, 1);
             case "PushConstantNumWorkgroups" ->
-                    List.of(grid.getSize(Tag.Vulkan.QUEUE_FAMILY) / grid.getSize(Tag.Vulkan.WORK_GROUP), 1, 1);
+                    List.of(ThreadGridHelper.getSize(scopeNames, Tag.Vulkan.QUEUE_FAMILY, grid) /
+                            ThreadGridHelper.getSize(scopeNames, Tag.Vulkan.WORK_GROUP, grid), 1, 1);
             case "PushConstantGlobalOffset",
                  "PushConstantRegionOffset",
                  "PushConstantRegionGroupOffset" -> List.of(0, 0, 0);

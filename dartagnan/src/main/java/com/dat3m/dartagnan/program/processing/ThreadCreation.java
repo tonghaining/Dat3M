@@ -391,14 +391,10 @@ public class ThreadCreation implements ProgramProcessor {
     // ========================================== SPIR-V ===========================================
     // =============================================================================================
     private void createSPVThreads(Program program) {
-        ThreadGrid grid = program.getGrid();
+        List<Integer> grid = program.getGrid();
         List<ExprTransformer> transformers = program.getTransformers();
         program.getFunctionByName(program.getEntryPoint()).ifPresent(entryFunction -> {
-            int threadSize = switch (grid.getArch()) {
-                case VULKAN -> grid.getSize(Tag.Vulkan.DEVICE);
-                case OPENCL -> grid.getSize(Tag.OpenCL.DEVICE);
-                default -> throw new MalformedProgramException("Thread grid not supported for architecture: " + grid.getArch());
-            };
+            int threadSize = grid.get(grid.size() - 1);
             for (int tid = 0; tid < threadSize; tid++) {
                 final Thread thread = createSPVThreadFromFunction(entryFunction, tid, grid, transformers);
                 program.addThread(thread);
@@ -415,13 +411,15 @@ public class ThreadCreation implements ProgramProcessor {
         });
     }
 
-    private Thread createSPVThreadFromFunction(Function function, int tid, ThreadGrid grid, List<ExprTransformer> transformers) {
+    private Thread createSPVThreadFromFunction(Function function, int tid, List<Integer> grid, List<ExprTransformer> transformers) {
         String name = function.getName();
         FunctionType type = function.getFunctionType();
         List<String> args = Lists.transform(function.getParameterRegisters(), Register::getName);
         ThreadStart start = EventFactory.newThreadStart(null);
         ScopeHierarchy scope = grid.getScoreHierarchy(tid);
         Thread thread = new Thread(name, type, args, tid, start, scope, Set.of());
+//        List<Integer> scopeIds = new ArrayList<>(grid.size());// TODO: get real scope id
+//        Thread thread = new Thread(name, type, args, tid, start, scopeIds, Set.of());
         thread.copyDummyCountFrom(function);
         Label returnLabel = EventFactory.newLabel("RETURN_OF_T" + thread.getId());
         Label endLabel = EventFactory.newLabel("END_OF_T" + thread.getId());

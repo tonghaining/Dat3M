@@ -1,6 +1,5 @@
 package com.dat3m.dartagnan.parsers.program.visitors;
 
-import com.dat3m.dartagnan.configuration.Arch;
 import com.dat3m.dartagnan.exception.ParsingException;
 import com.dat3m.dartagnan.expression.Expression;
 import com.dat3m.dartagnan.expression.ExpressionFactory;
@@ -169,7 +168,7 @@ public class VisitorLitmusC extends LitmusCBaseVisitor<Object> {
             int sgID = 0; // use the first subgroup of each workgroup for OpenCL Litmus
             int wgID = ctx.threadScope().scopeID(0).id;
             int devID = ctx.threadScope().scopeID(1).id;
-            programBuilder.newScopedThread(Arch.OPENCL, currentThread, devID, wgID, sgID);
+            programBuilder.newScopedThread(currentThread, devID, wgID, sgID);
         } else {
             programBuilder.newThread(currentThread);
         }

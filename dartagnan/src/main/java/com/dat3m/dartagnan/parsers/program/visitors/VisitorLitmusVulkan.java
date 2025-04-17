@@ -109,7 +109,7 @@ public class VisitorLitmusVulkan extends LitmusVulkanBaseVisitor<Object> {
             int workgroupID = threadScopeContext.workgroupScope().scopeID().id;
             int queuefamilyID = threadScopeContext.queuefamilyScope().scopeID().id;
             // NB: the order of scopeIDs is important
-            programBuilder.newScopedThread(Arch.VULKAN, threadScopeContext.threadId().id,
+            programBuilder.newScopedThread(threadScopeContext.threadId().id,
                     queuefamilyID, workgroupID, subgroupID);
             threadCount++;
         }

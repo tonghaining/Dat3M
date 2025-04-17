@@ -52,7 +52,7 @@ public interface ThreadHierarchy {
         final Group root = new Group("__root", 0, null, new ArrayList<>());
         final List<String> scopes;
         if (threads.get(0).hasScope()) {
-            scopes = threads.get(0).getScopeHierarchy().getScopes();
+            scopes = threads.get(0).getProgram().getScopeNames().getScopes();
         } else {
             scopes = List.of();
         }
@@ -68,7 +68,7 @@ public interface ThreadHierarchy {
         } else {
             final String curScope = scopes.get(0);
             threads.stream()
-                    .collect(Collectors.groupingBy(t -> t.getScopeHierarchy().getScopeId(curScope)))
+                    .collect(Collectors.groupingBy(t -> t.getDimensionId(curScope)))
                     .forEach((id, group) -> {
                         Group groupNode = new Group(curScope, id, parent, new ArrayList<>());
                         construct(groupNode, group, scopes.subList(1, scopes.size()));

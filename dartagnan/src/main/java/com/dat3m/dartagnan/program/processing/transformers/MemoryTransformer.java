@@ -11,6 +11,7 @@ import com.dat3m.dartagnan.program.memory.MemoryObject;
 import com.dat3m.dartagnan.program.memory.ScopedPointerVariable;
 import com.dat3m.dartagnan.program.memory.VirtualMemoryObject;
 import com.dat3m.dartagnan.program.misc.NonDetValue;
+import scala.Int;
 
 import java.util.*;
 import java.util.function.IntUnaryOperator;
@@ -23,6 +24,7 @@ public class MemoryTransformer extends ExprTransformer {
 
     // Thread / Subgroup / Workgroup / QueueFamily / Device
     private static final List<String> namePrefixesVulkan = List.of("T", "S", "W", "Q", "D");
+    // Thread / Subgroup / Workgroup / Device / All
     private static final List<String> namePrefixesOpenCL = List.of("T", "S", "W", "D", "A");
 
     private final Program program;
@@ -36,56 +38,22 @@ public class MemoryTransformer extends ExprTransformer {
     private Map<NonDetValue, NonDetValue> nonDetMapping;
     private int tid;
 
-    public MemoryTransformer(ThreadGrid grid, Function function, BuiltIn builtIn, Set<ScopedPointerVariable> variables) {
+    public MemoryTransformer(List<Integer> grid, Function function, BuiltIn builtIn, Set<ScopedPointerVariable> variables) {
         this.program = function.getProgram();
         this.function = function;
         this.builtIn = builtIn;
-        this.scopeMapping = grid.getArch() == Arch.VULKAN ?
+        this.scopeMapping = function.getProgram().getArch() == Arch.VULKAN ?
                 Stream.generate(() -> new HashMap<MemoryObject, MemoryObject>()).limit(namePrefixesVulkan.size()).toList() :
                 Stream.generate(() -> new HashMap<MemoryObject, MemoryObject>()).limit(namePrefixesOpenCL.size()).toList();
         this.pointerMapping = variables.stream().collect(Collectors.toMap((ScopedPointerVariable::getAddress), (v -> v)));
-        this.scopeIdProvider = getScopeIdProvider(grid);
-        this.namePrefixIdxProvider = getNamePrefixIdxProvider(grid);
-    }
-
-    private List<IntUnaryOperator> getScopeIdProvider(ThreadGrid grid) {
-        if (grid.getArch() == Arch.VULKAN) {
-            return List.of(
-                    tid1 -> grid.getId(Tag.Vulkan.INVOCATION, tid1),
-                    tid2 -> grid.getId(Tag.Vulkan.SUB_GROUP, tid2),
-                    tid3 -> grid.getId(Tag.Vulkan.WORK_GROUP, tid3),
-                    tid4 -> grid.getId(Tag.Vulkan.QUEUE_FAMILY, tid4),
-                    tid5 -> grid.getId(Tag.Vulkan.DEVICE, tid5));
-        }
-        if (grid.getArch() == Arch.OPENCL) {
-            return List.of(
-                    tid1 -> grid.getId(Tag.OpenCL.WORK_ITEM, tid1),
-                    tid2 -> grid.getId(Tag.OpenCL.SUB_GROUP, tid2),
-                    tid3 -> grid.getId(Tag.OpenCL.WORK_GROUP, tid3),
-                    tid4 -> grid.getId(Tag.OpenCL.DEVICE, tid4),
-                    tid5 -> grid.getId(Tag.OpenCL.ALL, tid5));
-        }
-        throw new UnsupportedOperationException("Thread grid not supported for architecture: " + grid.getArch());
-    }
-
-    private List<IntUnaryOperator> getNamePrefixIdxProvider(ThreadGrid grid) {
-        if (grid.getArch() == Arch.VULKAN) {
-            return List.of(
-                    i -> i,
-                    i -> i / grid.getSize(Tag.Vulkan.SUB_GROUP),
-                    i -> i / grid.getSize(Tag.Vulkan.WORK_GROUP),
-                    i -> i / grid.getSize(Tag.Vulkan.QUEUE_FAMILY),
-                    i -> i / grid.getSize(Tag.Vulkan.DEVICE));
-        }
-        if (grid.getArch() == Arch.OPENCL) {
-            return List.of(
-                    i -> i,
-                    i -> i / grid.getSize(Tag.OpenCL.SUB_GROUP),
-                    i -> i / grid.getSize(Tag.OpenCL.WORK_GROUP),
-                    i -> i / grid.getSize(Tag.OpenCL.DEVICE),
-                    i -> i / grid.getSize(Tag.OpenCL.ALL));
-        }
-        throw new UnsupportedOperationException("Thread grid not supported for architecture: " + grid.getArch());
+        List<Integer> ids = ThreadGridHelper.getIndexes(grid);
+        this.scopeIdProvider = ids.stream()
+                .map(id -> (IntUnaryOperator) tid -> id)
+                .toList();
+        List<Integer> sizes = ThreadGridHelper.getSizes(grid);
+        this.namePrefixIdxProvider = sizes.stream()
+                .map(size -> (IntUnaryOperator) tid -> size)
+                .toList();
     }
 
     public Register getRegisterMapping(Register register) {
@@ -129,7 +97,7 @@ public class MemoryTransformer extends ExprTransformer {
     public Expression visitMemoryObject(MemoryObject memObj) {
         String storageClass = pointerMapping.get(memObj).getScopeId();
         return switch (storageClass) {
-            // Device/All-level memory (keep the same instance)
+            // Device-level memory (keep the same instance)
             case Tag.Spirv.SC_UNIFORM_CONSTANT,
                  Tag.Spirv.SC_UNIFORM,
                  Tag.Spirv.SC_GENERIC,

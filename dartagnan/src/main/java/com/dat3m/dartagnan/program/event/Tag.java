@@ -37,6 +37,9 @@ public final class Tag {
     // Some events should not be optimized (e.g. fake dependencies) or deleted (e.g. bounds)
     public static final String NOOPT            = "__NOOPT";
     public static final String STARTLOAD        = "__STARTLOAD";
+    // Default scope for non-hierarchical architectures
+    public static final String GLOBAL          = "__GLOBAL";
+    public static final String LOCAL           = "__LOCAL";
 
     // =============================================================================================
     // =========================================== ARMv8 ===========================================
@@ -278,6 +281,7 @@ public final class Tag {
     // =============================================================================================
     public static final class PTX {
         // Scopes
+        public static final String THD = "THD";
         public static final String CTA = "CTA";
         public static final String GPU = "GPU";
         public static final String SYS = "SYS";

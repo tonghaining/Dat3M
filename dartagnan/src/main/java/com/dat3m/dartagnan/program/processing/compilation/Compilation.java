@@ -95,7 +95,7 @@ public class Compilation implements ProgramProcessor {
         }
         program.getThreads().forEach(this::run);
         program.getFunctions().forEach(this::run);
-        program.setArch(target);
+//        program.setArch(target);
         program.markAsCompiled();
         IdReassignment.newInstance().run(program); // Reassign ids
 

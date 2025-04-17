@@ -1,6 +1,7 @@
 package com.dat3m.dartagnan.program;
 
 import com.dat3m.dartagnan.configuration.Arch;
+import com.dat3m.dartagnan.exception.ParsingException;
 import com.dat3m.dartagnan.expression.Expression;
 import com.dat3m.dartagnan.expression.ExpressionFactory;
 import com.dat3m.dartagnan.expression.Type;
@@ -18,42 +19,39 @@ import java.util.stream.Collectors;
 
 public class Program {
 
-    public enum SourceLanguage { LITMUS, LLVM, SPV }
-
-    public enum SpecificationType { EXISTS, FORALL, NOT_EXISTS, ASSERT }
-
-    private String name;
-    private SpecificationType specificationType = SpecificationType.ASSERT;
-    private Expression spec;
-    private Expression filterSpec; // Acts like "assume" statements, filtering out executions
     private final List<Thread> threads;
     private final List<Function> functions;
     private final List<NonDetValue> constants = new ArrayList<>();
     private final Memory memory;
+    private final SourceLanguage format;
+    private final List<ExprTransformer> transformers = new ArrayList<>();
+    private Deque<Integer> grid;
+    private String name;
+    private SpecificationType specificationType = SpecificationType.ASSERT;
+    private Expression spec;
+    private Expression filterSpec; // Acts like "assume" statements, filtering out executions
     private Arch arch;
     private int unrollingBound = 0;
     private boolean isCompiled;
-    private final SourceLanguage format;
-    private ThreadGrid grid;
+    private ScopeNames scopeNames;
     private String entryPoint;
-    private final List<ExprTransformer> transformers = new ArrayList<>();
-
     private int nextConstantId = 0;
 
-    public Program(Memory memory, SourceLanguage format) {
-        this("", memory, format);
+    public Program(Memory memory, SourceLanguage format, List<Integer> grid) {
+        this("", memory, format, grid);
     }
 
-    public Program(String name, Memory memory, SourceLanguage format) {
+    public Program(String name, Memory memory, SourceLanguage format, List<Integer> grid) {
         this.name = name;
         this.memory = memory;
         this.threads = new ArrayList<>();
         this.functions = new ArrayList<>();
         this.format = format;
+        this.grid = new LinkedList<>(grid);
     }
 
-    public void setGrid(ThreadGrid grid) {
-        this.grid = grid;
+    public ScopeNames getScopeNames() {
+        return scopeNames;
     }
 
     public SourceLanguage getFormat() {
@@ -80,12 +78,31 @@ public class Program {
         this.name = name;
     }
 
-    public void setArch(Arch arch) {
-        this.arch = arch;
-    }
-
     public Arch getArch() {
         return arch;
+    }
+
+    private void finalizeGrid() {
+        if (arch == Arch.PTX) {
+            grid.addFirst(1); // Thread
+        }
+        if (arch == Arch.VULKAN) {
+            grid.addFirst(1); // Invocation
+            grid.addLast(1); // Device
+        }
+        if (arch == Arch.OPENCL) {
+            grid.addFirst(1); // Work item
+            grid.addLast(1); // All
+        }
+    }
+
+    public void setArch(Arch arch) {
+        this.arch = arch;
+        this.scopeNames = ScopeNames.getByArch(arch);
+        finalizeGrid();
+        if (this.scopeNames.getScopes().size() != grid.size()) {
+            throw new ParsingException("Thread grid of %s dimensions must be of length %d", arch, scopeNames.getScopes().size());
+        }
     }
 
     public Memory getMemory() {
@@ -136,23 +153,25 @@ public class Program {
         return threads;
     }
 
-    public List<Function> getFunctions() { return functions; }
+    public List<Function> getFunctions() {
+        return functions;
+    }
 
     // Looks up a declared function by name.
     public Optional<Function> getFunctionByName(String name) {
         return functions.stream().filter(f -> f.getName().equals(name)).findFirst();
     }
 
-    public void setEntryPoint(String entryPoint) {
-        this.entryPoint = entryPoint;
-    }
-
     public String getEntryPoint() {
         return entryPoint;
     }
 
-    public ThreadGrid getGrid() {
-        return grid;
+    public void setEntryPoint(String entryPoint) {
+        this.entryPoint = entryPoint;
+    }
+
+    public List<Integer> getGrid() {
+        return grid.stream().toList();
     }
 
     public void addTransformer(ExprTransformer transformer) {
@@ -207,9 +226,6 @@ public class Program {
         return getThreadEvents().stream().filter(e -> e.getTags().containsAll(tagList)).collect(Collectors.toList());
     }
 
-    // Unrolling
-    // -----------------------------------------------------------------------------------------------------------------
-
     public boolean markAsUnrolled(int bound) {
         if (unrollingBound > 0) {
             return false;
@@ -218,9 +234,6 @@ public class Program {
         return true;
     }
 
-    // Compilation
-    // -----------------------------------------------------------------------------------------------------------------
-
     public boolean markAsCompiled() {
         if (isCompiled) {
             return false;
@@ -228,4 +241,14 @@ public class Program {
         isCompiled = true;
         return true;
     }
+
+    // Unrolling
+    // -----------------------------------------------------------------------------------------------------------------
+
+    public enum SourceLanguage {LITMUS, LLVM, SPV}
+
+    // Compilation
+    // -----------------------------------------------------------------------------------------------------------------
+
+    public enum SpecificationType {EXISTS, FORALL, NOT_EXISTS, ASSERT}
 }

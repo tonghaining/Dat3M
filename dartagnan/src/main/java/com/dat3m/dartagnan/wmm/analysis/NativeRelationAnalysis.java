@@ -958,14 +958,14 @@ public class NativeRelationAnalysis implements RelationAnalysis {
                     Thread thread1 = e1.getThread();
                     Thread thread2 = e2.getThread();
                     if (specificScope != null) {
-                        if (thread1.getScopeHierarchy().canSyncAtScope(thread2.getScopeHierarchy(), specificScope)) {
+                        if (thread1.canSyncAtScope(thread2, specificScope)) {
                             must.add(e1, e2);
                         }
                     } else {
                         String scope1 = Tag.getScopeTag(e1, program.getArch());
                         String scope2 = Tag.getScopeTag(e2, program.getArch());
-                        if (!scope1.isEmpty() && !scope2.isEmpty() && thread1.getScopeHierarchy().canSyncAtScope(thread2.getScopeHierarchy(), scope1)
-                                && thread2.getScopeHierarchy().canSyncAtScope(thread1.getScopeHierarchy(), scope2)) {
+                        if (!scope1.isEmpty() && !scope2.isEmpty() && thread1.canSyncAtScope(thread2, scope1)
+                                && thread2.canSyncAtScope(thread1, scope2)) {
                             must.add(e1, e2);
                         }
                     }
