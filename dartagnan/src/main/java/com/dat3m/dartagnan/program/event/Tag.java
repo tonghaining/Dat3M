@@ -316,8 +316,8 @@ public final class Tag {
             };
         }
 
-        public static List<String> getScopeTags() {
-            return List.of(CTA, GPU, SYS);
+        public static List<String> getScopeTags() { // Must be top-down
+            return List.of(SYS, GPU, CTA);
         }
     }
 
@@ -329,7 +329,6 @@ public final class Tag {
         public static final String AVDEVICE = "AVDEVICE";
         public static final String VISDEVICE = "VISDEVICE";
         // Scopes
-        public static final String INVOCATION = "INV";
         public static final String SUB_GROUP = "SG";
         public static final String WORK_GROUP = "WG";
         public static final String QUEUE_FAMILY = "QF";
@@ -351,8 +350,8 @@ public final class Tag {
         public static final String SEMSC0 = "SEMSC0";
         public static final String SEMSC1 = "SEMSC1";
 
-        public static List<String> getScopeTags() {
-            return List.of(SUB_GROUP, WORK_GROUP, QUEUE_FAMILY, DEVICE);
+        public static List<String> getScopeTags() { // Must be top-down
+            return List.of(DEVICE, QUEUE_FAMILY, WORK_GROUP, SUB_GROUP);
         }
 
         public static String loadMO(String mo) {
@@ -389,8 +388,8 @@ public final class Tag {
         public static final String DEFAULT_SCOPE = DEVICE;
         public static final String DEFAULT_WEAK_SCOPE = WORK_ITEM;
 
-        public static List<String> getScopeTags() {
-            return List.of(WORK_GROUP, DEVICE, ALL);
+        public static List<String> getScopeTags() { // Must be top-down
+            return List.of(ALL, DEVICE, WORK_GROUP, SUB_GROUP);
         }
 
         public static List<String> getSpaceTags() {

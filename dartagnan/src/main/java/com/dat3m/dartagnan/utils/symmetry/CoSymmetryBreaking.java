@@ -2,7 +2,7 @@ package com.dat3m.dartagnan.utils.symmetry;
 
 import com.dat3m.dartagnan.encoding.EncodingContext;
 import com.dat3m.dartagnan.encoding.SymmetryEncoder;
-import com.dat3m.dartagnan.program.Thread;
+import com.dat3m.dartagnan.program.thread.Thread;
 import com.dat3m.dartagnan.program.analysis.ThreadSymmetry;
 import com.dat3m.dartagnan.program.analysis.alias.AliasAnalysis;
 import com.dat3m.dartagnan.program.event.Event;

@@ -4,7 +4,7 @@ import com.dat3m.dartagnan.encoding.Encoder;
 import com.dat3m.dartagnan.encoding.EncodingContext;
 import com.dat3m.dartagnan.program.Function;
 import com.dat3m.dartagnan.program.Program;
-import com.dat3m.dartagnan.program.Thread;
+import com.dat3m.dartagnan.program.thread.Thread;
 import com.dat3m.dartagnan.program.event.metadata.Metadata;
 import com.dat3m.dartagnan.verification.Context;
 import org.sosy_lab.java_smt.api.BooleanFormula;

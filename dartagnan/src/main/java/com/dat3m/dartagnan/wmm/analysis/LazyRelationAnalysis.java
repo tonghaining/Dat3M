@@ -3,8 +3,8 @@ package com.dat3m.dartagnan.wmm.analysis;
 import com.dat3m.dartagnan.configuration.Arch;
 import com.dat3m.dartagnan.program.Program;
 import com.dat3m.dartagnan.program.Register;
-import com.dat3m.dartagnan.program.ScopeHierarchy;
-import com.dat3m.dartagnan.program.Thread;
+import com.dat3m.dartagnan.program.thread.ScopeIds;
+import com.dat3m.dartagnan.program.thread.Thread;
 import com.dat3m.dartagnan.program.analysis.ExecutionAnalysis;
 import com.dat3m.dartagnan.program.analysis.ReachingDefinitionsAnalysis;
 import com.dat3m.dartagnan.program.analysis.alias.AliasAnalysis;
@@ -347,11 +347,11 @@ public class LazyRelationAnalysis extends NativeRelationAnalysis {
                     .flatMap(t -> t.getEventsWithAllTags(VISIBLE).stream())
                     .toList();
             events.forEach(e1 -> {
-                ScopeHierarchy e1Scope = e1.getThread().getScopeHierarchy();
+                ScopeIds e1Scope = e1.getThread().getScopeIds();
                 ImmutableSet<Event> range = events.stream()
                         .filter(e2 -> !exec.areMutuallyExclusive(e1, e2))
                         .filter(e2 -> {
-                            ScopeHierarchy e2Scope = e2.getThread().getScopeHierarchy();
+                            ScopeIds e2Scope = e2.getThread().getScopeIds();
                             if (scope != null) {
                                 return e1Scope.canSyncAtScope(e2Scope, scope);
                             }

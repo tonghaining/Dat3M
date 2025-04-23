@@ -2,7 +2,7 @@ package com.dat3m.dartagnan.utils.printer;
 
 import com.dat3m.dartagnan.program.Function;
 import com.dat3m.dartagnan.program.Program;
-import com.dat3m.dartagnan.program.Thread;
+import com.dat3m.dartagnan.program.thread.Thread;
 import com.dat3m.dartagnan.program.event.Event;
 import com.dat3m.dartagnan.program.event.core.Init;
 import com.dat3m.dartagnan.program.event.core.Label;
@@ -94,7 +94,7 @@ public class Printer {
         result.append(func instanceof Thread ? " thread " : " function ");
         result.append(functionSignatureToString(func));
         if (func instanceof Thread t && t.hasScope()) {
-           result.append(" ").append(t.getScopeHierarchy());
+           result.append(" ").append(t.getScopeIds());
         }
         result.append("\n");
         for (Event e : func.getEvents()) {

@@ -11,6 +11,8 @@ import com.dat3m.dartagnan.expression.type.TypeOffset;
 import com.dat3m.dartagnan.program.event.Event;
 import com.dat3m.dartagnan.program.memory.Memory;
 import com.dat3m.dartagnan.program.misc.NonDetValue;
+import com.dat3m.dartagnan.program.thread.ScopeSizes;
+import com.dat3m.dartagnan.program.thread.Thread;
 import com.google.common.base.Preconditions;
 
 import java.util.*;
@@ -18,28 +20,22 @@ import java.util.stream.Collectors;
 
 public class Program {
 
-    public enum SourceLanguage { LITMUS, LLVM, SPV }
-
-    public enum SpecificationType { EXISTS, FORALL, NOT_EXISTS, ASSERT }
-
-    private String name;
-    private SpecificationType specificationType = SpecificationType.ASSERT;
-    private Expression spec;
-    private Expression filterSpec; // Acts like "assume" statements, filtering out executions
     private final List<Thread> threads;
     private final List<Function> functions;
     private final List<NonDetValue> constants = new ArrayList<>();
     private final Memory memory;
+    private final SourceLanguage format;
+    private final List<ExprTransformer> transformers = new ArrayList<>();
+    private String name;
+    private SpecificationType specificationType = SpecificationType.ASSERT;
+    private Expression spec;
+    private Expression filterSpec; // Acts like "assume" statements, filtering out executions
     private Arch arch;
     private int unrollingBound = 0;
     private boolean isCompiled;
-    private final SourceLanguage format;
-    private ThreadGrid grid;
+    private ScopeSizes scopeSizes;
     private String entryPoint;
-    private final List<ExprTransformer> transformers = new ArrayList<>();
-
     private int nextConstantId = 0;
-
     public Program(Memory memory, SourceLanguage format) {
         this("", memory, format);
     }
@@ -50,10 +46,6 @@ public class Program {
         this.threads = new ArrayList<>();
         this.functions = new ArrayList<>();
         this.format = format;
-    }
-
-    public void setGrid(ThreadGrid grid) {
-        this.grid = grid;
     }
 
     public SourceLanguage getFormat() {
@@ -80,12 +72,12 @@ public class Program {
         this.name = name;
     }
 
-    public void setArch(Arch arch) {
-        this.arch = arch;
-    }
-
     public Arch getArch() {
         return arch;
+    }
+
+    public void setArch(Arch arch) {
+        this.arch = arch;
     }
 
     public Memory getMemory() {
@@ -136,23 +128,29 @@ public class Program {
         return threads;
     }
 
-    public List<Function> getFunctions() { return functions; }
+    public List<Function> getFunctions() {
+        return functions;
+    }
 
     // Looks up a declared function by name.
     public Optional<Function> getFunctionByName(String name) {
         return functions.stream().filter(f -> f.getName().equals(name)).findFirst();
     }
 
-    public void setEntryPoint(String entryPoint) {
-        this.entryPoint = entryPoint;
-    }
-
     public String getEntryPoint() {
         return entryPoint;
     }
 
-    public ThreadGrid getGrid() {
-        return grid;
+    public void setEntryPoint(String entryPoint) {
+        this.entryPoint = entryPoint;
+    }
+
+    public ScopeSizes getScopeSizes() {
+        return scopeSizes;
+    }
+
+    public void setScopeSizes(ScopeSizes scopeSizes) {
+        this.scopeSizes = scopeSizes;
     }
 
     public void addTransformer(ExprTransformer transformer) {
@@ -207,9 +205,6 @@ public class Program {
         return getThreadEvents().stream().filter(e -> e.getTags().containsAll(tagList)).collect(Collectors.toList());
     }
 
-    // Unrolling
-    // -----------------------------------------------------------------------------------------------------------------
-
     public boolean markAsUnrolled(int bound) {
         if (unrollingBound > 0) {
             return false;
@@ -218,9 +213,6 @@ public class Program {
         return true;
     }
 
-    // Compilation
-    // -----------------------------------------------------------------------------------------------------------------
-
     public boolean markAsCompiled() {
         if (isCompiled) {
             return false;
@@ -228,4 +220,14 @@ public class Program {
         isCompiled = true;
         return true;
     }
+
+    // Unrolling
+    // -----------------------------------------------------------------------------------------------------------------
+
+    public enum SourceLanguage {LITMUS, LLVM, SPV}
+
+    // Compilation
+    // -----------------------------------------------------------------------------------------------------------------
+
+    public enum SpecificationType {EXISTS, FORALL, NOT_EXISTS, ASSERT}
 }

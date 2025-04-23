@@ -4,7 +4,8 @@ import com.dat3m.dartagnan.configuration.Arch;
 import com.dat3m.dartagnan.expression.Expression;
 import com.dat3m.dartagnan.expression.processing.ExprTransformer;
 import com.dat3m.dartagnan.parsers.program.visitors.spirv.decorations.BuiltIn;
-import com.dat3m.dartagnan.program.Thread;
+import com.dat3m.dartagnan.program.thread.ScopeSizes;
+import com.dat3m.dartagnan.program.thread.Thread;
 import com.dat3m.dartagnan.program.*;
 import com.dat3m.dartagnan.program.event.Tag;
 import com.dat3m.dartagnan.program.memory.MemoryObject;
@@ -36,11 +37,11 @@ public class MemoryTransformer extends ExprTransformer {
     private Map<NonDetValue, NonDetValue> nonDetMapping;
     private int tid;
 
-    public MemoryTransformer(ThreadGrid grid, Function function, BuiltIn builtIn, Set<ScopedPointerVariable> variables) {
+    public MemoryTransformer(ScopeSizes grid, Function function, BuiltIn builtIn, Set<ScopedPointerVariable> variables) {
         this.program = function.getProgram();
         this.function = function;
         this.builtIn = builtIn;
-        this.scopeMapping = grid.getArch() == Arch.VULKAN ?
+        this.scopeMapping = function.getProgram().getArch() == Arch.VULKAN ?
                 Stream.generate(() -> new HashMap<MemoryObject, MemoryObject>()).limit(namePrefixesVulkan.size()).toList() :
                 Stream.generate(() -> new HashMap<MemoryObject, MemoryObject>()).limit(namePrefixesOpenCL.size()).toList();
         this.pointerMapping = variables.stream().collect(Collectors.toMap((ScopedPointerVariable::getAddress), (v -> v)));
@@ -48,28 +49,28 @@ public class MemoryTransformer extends ExprTransformer {
         this.namePrefixIdxProvider = getNamePrefixIdxProvider(grid);
     }
 
-    private List<IntUnaryOperator> getScopeIdProvider(ThreadGrid grid) {
-        if (grid.getArch() == Arch.VULKAN) {
+    private List<IntUnaryOperator> getScopeIdProvider(ScopeSizes grid) {
+        if (program.getArch() == Arch.VULKAN) {
             return List.of(
-                    tid1 -> grid.getId(Tag.Vulkan.INVOCATION, tid1),
+                    tid1 -> tid1 % grid.getSize(Tag.Vulkan.SUB_GROUP),
                     tid2 -> grid.getId(Tag.Vulkan.SUB_GROUP, tid2),
                     tid3 -> grid.getId(Tag.Vulkan.WORK_GROUP, tid3),
                     tid4 -> grid.getId(Tag.Vulkan.QUEUE_FAMILY, tid4),
                     tid5 -> grid.getId(Tag.Vulkan.DEVICE, tid5));
         }
-        if (grid.getArch() == Arch.OPENCL) {
+        if (program.getArch() == Arch.OPENCL) {
             return List.of(
-                    tid1 -> grid.getId(Tag.OpenCL.WORK_ITEM, tid1),
+                    tid1 -> tid1 % grid.getSize(Tag.OpenCL.SUB_GROUP),
                     tid2 -> grid.getId(Tag.OpenCL.SUB_GROUP, tid2),
                     tid3 -> grid.getId(Tag.OpenCL.WORK_GROUP, tid3),
                     tid4 -> grid.getId(Tag.OpenCL.DEVICE, tid4),
                     tid5 -> grid.getId(Tag.OpenCL.ALL, tid5));
         }
-        throw new UnsupportedOperationException("Thread grid not supported for architecture: " + grid.getArch());
+        throw new UnsupportedOperationException("Thread grid not supported for architecture: " + program.getArch());
     }
 
-    private List<IntUnaryOperator> getNamePrefixIdxProvider(ThreadGrid grid) {
-        if (grid.getArch() == Arch.VULKAN) {
+    private List<IntUnaryOperator> getNamePrefixIdxProvider(ScopeSizes grid) {
+        if (program.getArch() == Arch.VULKAN) {
             return List.of(
                     i -> i,
                     i -> i / grid.getSize(Tag.Vulkan.SUB_GROUP),
@@ -77,7 +78,7 @@ public class MemoryTransformer extends ExprTransformer {
                     i -> i / grid.getSize(Tag.Vulkan.QUEUE_FAMILY),
                     i -> i / grid.getSize(Tag.Vulkan.DEVICE));
         }
-        if (grid.getArch() == Arch.OPENCL) {
+        if (program.getArch() == Arch.OPENCL) {
             return List.of(
                     i -> i,
                     i -> i / grid.getSize(Tag.OpenCL.SUB_GROUP),
@@ -85,7 +86,7 @@ public class MemoryTransformer extends ExprTransformer {
                     i -> i / grid.getSize(Tag.OpenCL.DEVICE),
                     i -> i / grid.getSize(Tag.OpenCL.ALL));
         }
-        throw new UnsupportedOperationException("Thread grid not supported for architecture: " + grid.getArch());
+        throw new UnsupportedOperationException("Thread grid not supported for architecture: " + program.getArch());
     }
 
     public Register getRegisterMapping(Register register) {

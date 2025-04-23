@@ -1,5 +1,6 @@
-package com.dat3m.dartagnan.program;
+package com.dat3m.dartagnan.program.thread;
 
+import com.dat3m.dartagnan.program.Program;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 
@@ -52,7 +53,7 @@ public interface ThreadHierarchy {
         final Group root = new Group("__root", 0, null, new ArrayList<>());
         final List<String> scopes;
         if (threads.get(0).hasScope()) {
-            scopes = threads.get(0).getScopeHierarchy().getScopes();
+            scopes = threads.get(0).getScopeIds().getScopes();
         } else {
             scopes = List.of();
         }
@@ -68,7 +69,7 @@ public interface ThreadHierarchy {
         } else {
             final String curScope = scopes.get(0);
             threads.stream()
-                    .collect(Collectors.groupingBy(t -> t.getScopeHierarchy().getScopeId(curScope)))
+                    .collect(Collectors.groupingBy(t -> t.getScopeIds().getScopeId(curScope)))
                     .forEach((id, group) -> {
                         Group groupNode = new Group(curScope, id, parent, new ArrayList<>());
                         construct(groupNode, group, scopes.subList(1, scopes.size()));

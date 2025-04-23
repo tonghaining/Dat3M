@@ -4,7 +4,7 @@ import com.dat3m.dartagnan.expression.integers.IntLiteral;
 import com.dat3m.dartagnan.program.Program;
 import com.dat3m.dartagnan.program.Register;
 import com.dat3m.dartagnan.program.Register.UsageType;
-import com.dat3m.dartagnan.program.Thread;
+import com.dat3m.dartagnan.program.thread.Thread;
 import com.dat3m.dartagnan.program.analysis.BranchEquivalence;
 import com.dat3m.dartagnan.program.analysis.ExecutionAnalysis;
 import com.dat3m.dartagnan.program.analysis.ReachingDefinitionsAnalysis;
@@ -958,14 +958,14 @@ public class NativeRelationAnalysis implements RelationAnalysis {
                     Thread thread1 = e1.getThread();
                     Thread thread2 = e2.getThread();
                     if (specificScope != null) {
-                        if (thread1.getScopeHierarchy().canSyncAtScope(thread2.getScopeHierarchy(), specificScope)) {
+                        if (thread1.getScopeIds().canSyncAtScope(thread2.getScopeIds(), specificScope)) {
                             must.add(e1, e2);
                         }
                     } else {
                         String scope1 = Tag.getScopeTag(e1, program.getArch());
                         String scope2 = Tag.getScopeTag(e2, program.getArch());
-                        if (!scope1.isEmpty() && !scope2.isEmpty() && thread1.getScopeHierarchy().canSyncAtScope(thread2.getScopeHierarchy(), scope1)
-                                && thread2.getScopeHierarchy().canSyncAtScope(thread1.getScopeHierarchy(), scope2)) {
+                        if (!scope1.isEmpty() && !scope2.isEmpty() && thread1.getScopeIds().canSyncAtScope(thread2.getScopeIds(), scope1)
+                                && thread2.getScopeIds().canSyncAtScope(thread1.getScopeIds(), scope2)) {
                             must.add(e1, e2);
                         }
                     }

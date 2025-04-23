@@ -1,11 +1,13 @@
 package com.dat3m.dartagnan.encoding;
 
+import com.dat3m.dartagnan.configuration.Arch;
 import com.dat3m.dartagnan.configuration.ProgressModel;
 import com.dat3m.dartagnan.expression.Expression;
 import com.dat3m.dartagnan.expression.integers.IntCmpOp;
 import com.dat3m.dartagnan.expression.integers.IntLiteral;
 import com.dat3m.dartagnan.expression.type.IntegerType;
-import com.dat3m.dartagnan.program.Thread;
+import com.dat3m.dartagnan.program.thread.ScopeIds;
+import com.dat3m.dartagnan.program.thread.Thread;
 import com.dat3m.dartagnan.program.*;
 import com.dat3m.dartagnan.program.analysis.BranchEquivalence;
 import com.dat3m.dartagnan.program.analysis.ExecutionAnalysis;
@@ -19,6 +21,7 @@ import com.dat3m.dartagnan.program.event.core.threading.ThreadStart;
 import com.dat3m.dartagnan.program.memory.Memory;
 import com.dat3m.dartagnan.program.memory.MemoryObject;
 import com.dat3m.dartagnan.program.misc.NonDetValue;
+import com.dat3m.dartagnan.program.thread.ThreadHierarchy;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
@@ -162,13 +165,18 @@ public class ProgramEncoder implements Encoder {
     }
 
     private int getWorkgroupId(Thread thread) {
-        ScopeHierarchy hierarchy = thread.getScopeHierarchy();
-        if (hierarchy != null) {
-            int id = hierarchy.getScopeId(Tag.Vulkan.WORK_GROUP);
-            if (id < 0) {
-                id = hierarchy.getScopeId(Tag.PTX.CTA);
+        ScopeIds scopeIds = thread.getScopeIds();
+        if (scopeIds != null) {
+            Arch arch = thread.getProgram().getArch();
+            if (arch == Arch.PTX) {
+                return scopeIds.getScopeId(Tag.PTX.CTA);
             }
-            return id;
+            if (arch == Arch.VULKAN) {
+                return scopeIds.getScopeId(Tag.Vulkan.WORK_GROUP);
+            }
+            if (arch == Arch.OPENCL) {
+                return scopeIds.getScopeId(Tag.OpenCL.WORK_GROUP);
+            }
         }
         throw new IllegalArgumentException("Attempt to compute workgroup ID " +
                 "for a non-hierarchical thread");

@@ -9,7 +9,8 @@ import com.dat3m.dartagnan.expression.integers.IntLiteral;
 import com.dat3m.dartagnan.expression.type.FunctionType;
 import com.dat3m.dartagnan.expression.type.TypeFactory;
 import com.dat3m.dartagnan.program.*;
-import com.dat3m.dartagnan.program.Thread;
+import com.dat3m.dartagnan.program.thread.ScopeIds;
+import com.dat3m.dartagnan.program.thread.Thread;
 import com.dat3m.dartagnan.program.Program.SourceLanguage;
 import com.dat3m.dartagnan.program.event.Event;
 import com.dat3m.dartagnan.program.event.EventFactory;
@@ -25,10 +26,7 @@ import com.google.common.base.Preconditions;
 import com.google.common.base.Verify;
 import com.google.common.collect.Iterables;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static com.dat3m.dartagnan.program.Program.SourceLanguage.LITMUS;
 import static com.dat3m.dartagnan.program.event.Tag.NOOPT;
@@ -297,20 +295,18 @@ public class ProgramBuilder {
 
     // ----------------------------------------------------------------------------------------------------------------
     // GPU
-    public void newScopedThread(Arch arch, String name, int id, int ...scopeIds) {
-        ScopeHierarchy scopeHierarchy = switch (arch) {
-            case PTX -> ScopeHierarchy.ScopeHierarchyForPTX(scopeIds[0], scopeIds[1]);
-            case VULKAN -> ScopeHierarchy.ScopeHierarchyForVulkan(scopeIds[0], scopeIds[1], scopeIds[2]);
-            case OPENCL -> ScopeHierarchy.ScopeHierarchyForOpenCL(scopeIds[0], scopeIds[1], scopeIds[2]);
-            default -> throw new UnsupportedOperationException("Unsupported architecture: " + arch);
-        };
+    public void newScopedThread(Arch arch, String name, int id, int ...ids) {
+        ArrayList<Integer> intList = new ArrayList<>();
+        intList.add(0);
+        intList.addAll(Arrays.stream(ids).boxed().toList());
+        ScopeIds scopeIds = new ScopeIds(arch, intList);
 
         if(id2FunctionsMap.containsKey(id)) {
             throw new MalformedProgramException("Function or thread with id " + id + " already exists.");
         }
         // Litmus threads run unconditionally (have no creator) and have no parameters/return types.
         ThreadStart threadEntry = EventFactory.newThreadStart(null);
-        Thread scopedThread = new Thread(name, DEFAULT_THREAD_TYPE, List.of(), id, threadEntry, scopeHierarchy, new HashSet<>());
+        Thread scopedThread = new Thread(name, DEFAULT_THREAD_TYPE, List.of(), id, threadEntry, scopeIds, new HashSet<>());
         id2FunctionsMap.put(id, scopedThread);
         program.addThread(scopedThread);
     }

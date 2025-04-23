@@ -1,6 +1,7 @@
-package com.dat3m.dartagnan.program;
+package com.dat3m.dartagnan.program.thread;
 
 import com.dat3m.dartagnan.expression.type.FunctionType;
+import com.dat3m.dartagnan.program.Function;
 import com.dat3m.dartagnan.program.event.Event;
 import com.dat3m.dartagnan.program.event.core.Load;
 import com.dat3m.dartagnan.program.event.core.MemoryCoreEvent;
@@ -15,7 +16,7 @@ import java.util.Set;
 public class Thread extends Function {
 
     // Scope hierarchy of the thread
-    private final Optional<ScopeHierarchy> scopeHierarchy;
+    private final Optional<ScopeIds> scopeIds;
 
     // Threads that are system-synchronized-with this thread
     private final Optional<Set<Thread>> syncSet;
@@ -24,23 +25,23 @@ public class Thread extends Function {
         super(name, funcType, parameterNames, id, entry);
         Preconditions.checkArgument(id >= 0, "Invalid thread ID");
         Preconditions.checkNotNull(entry, "Thread entry event must be not null");
-        this.scopeHierarchy = Optional.empty();
+        this.scopeIds = Optional.empty();
         this.syncSet = Optional.empty();
     }
 
     public Thread(String name, FunctionType funcType, List<String> parameterNames, int id, ThreadStart entry,
-                  ScopeHierarchy scopeHierarchy, Set<Thread> syncSet) {
+                  ScopeIds scopeIds, Set<Thread> syncSet) {
         super(name, funcType, parameterNames, id, entry);
         Preconditions.checkArgument(id >= 0, "Invalid thread ID");
         Preconditions.checkNotNull(entry, "Thread entry event must be not null");
-        Preconditions.checkNotNull(scopeHierarchy, "Thread scopeHierarchy must be not null");
+        Preconditions.checkNotNull(scopeIds, "Thread scopeIds must be not null");
         Preconditions.checkNotNull(syncSet, "Thread syncSet must be not null");
-        this.scopeHierarchy = Optional.of(scopeHierarchy);
+        this.scopeIds = Optional.of(scopeIds);
         this.syncSet = Optional.of(syncSet);
     }
 
     public boolean hasScope() {
-        return scopeHierarchy.isPresent();
+        return scopeIds.isPresent();
     }
 
     public boolean hasSyncSet() {
@@ -48,8 +49,8 @@ public class Thread extends Function {
     }
 
     // Invoke optional fields getters only if they are present
-    public ScopeHierarchy getScopeHierarchy() {
-        return scopeHierarchy.get();
+    public ScopeIds getScopeIds() {
+        return scopeIds.get();
     }
 
     public Set<Thread> getSyncSet() {

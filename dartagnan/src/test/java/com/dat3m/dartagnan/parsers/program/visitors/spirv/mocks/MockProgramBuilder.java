@@ -29,8 +29,8 @@ public class MockProgramBuilder extends ProgramBuilder {
         this(Arch.VULKAN, List.of(1, 1, 1)); // Default to Vulkan
     }
 
-    public MockProgramBuilder(Arch arch, List<Integer> scopeSizes) {
-        super(scopeSizes);
+    public MockProgramBuilder(Arch arch, List<Integer> scopeSizesConfig) {
+        super(scopeSizesConfig);
         super.setArch(arch);
         controlFlowBuilder = new MockControlFlowBuilder(expressions);
     }

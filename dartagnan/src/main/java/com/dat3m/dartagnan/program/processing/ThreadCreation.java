@@ -9,7 +9,9 @@ import com.dat3m.dartagnan.expression.processing.ExprTransformer;
 import com.dat3m.dartagnan.expression.type.FunctionType;
 import com.dat3m.dartagnan.expression.type.IntegerType;
 import com.dat3m.dartagnan.expression.type.TypeFactory;
-import com.dat3m.dartagnan.program.Thread;
+import com.dat3m.dartagnan.program.thread.ScopeIds;
+import com.dat3m.dartagnan.program.thread.ScopeSizes;
+import com.dat3m.dartagnan.program.thread.Thread;
 import com.dat3m.dartagnan.program.*;
 import com.dat3m.dartagnan.program.event.*;
 import com.dat3m.dartagnan.program.event.core.Label;
@@ -391,14 +393,10 @@ public class ThreadCreation implements ProgramProcessor {
     // ========================================== SPIR-V ===========================================
     // =============================================================================================
     private void createSPVThreads(Program program) {
-        ThreadGrid grid = program.getGrid();
+        ScopeSizes grid = program.getScopeSizes();
         List<ExprTransformer> transformers = program.getTransformers();
         program.getFunctionByName(program.getEntryPoint()).ifPresent(entryFunction -> {
-            int threadSize = switch (grid.getArch()) {
-                case VULKAN -> grid.getSize(Tag.Vulkan.DEVICE);
-                case OPENCL -> grid.getSize(Tag.OpenCL.DEVICE);
-                default -> throw new MalformedProgramException("Thread grid not supported for architecture: " + grid.getArch());
-            };
+            int threadSize = grid.getSizeAtScope(0);
             for (int tid = 0; tid < threadSize; tid++) {
                 final Thread thread = createSPVThreadFromFunction(entryFunction, tid, grid, transformers);
                 program.addThread(thread);
@@ -415,12 +413,12 @@ public class ThreadCreation implements ProgramProcessor {
         });
     }
 
-    private Thread createSPVThreadFromFunction(Function function, int tid, ThreadGrid grid, List<ExprTransformer> transformers) {
+    private Thread createSPVThreadFromFunction(Function function, int tid, ScopeSizes grid, List<ExprTransformer> transformers) {
         String name = function.getName();
         FunctionType type = function.getFunctionType();
         List<String> args = Lists.transform(function.getParameterRegisters(), Register::getName);
         ThreadStart start = EventFactory.newThreadStart(null);
-        ScopeHierarchy scope = grid.getScoreHierarchy(tid);
+        ScopeIds scope = grid.getScopeIds(function.getProgram().getArch(), tid);
         Thread thread = new Thread(name, type, args, tid, start, scope, Set.of());
         thread.copyDummyCountFrom(function);
         Label returnLabel = EventFactory.newLabel("RETURN_OF_T" + thread.getId());

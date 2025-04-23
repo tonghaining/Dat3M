@@ -5,6 +5,7 @@ import com.dat3m.dartagnan.expression.ExpressionKind;
 import com.dat3m.dartagnan.expression.ExpressionVisitor;
 import com.dat3m.dartagnan.expression.Type;
 import com.dat3m.dartagnan.expression.base.LeafExpressionBase;
+import com.dat3m.dartagnan.program.thread.Thread;
 import com.google.common.collect.ImmutableSet;
 
 import java.util.Collection;

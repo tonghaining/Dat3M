@@ -57,7 +57,7 @@ public class VisitorSpirv extends SpirvBaseVisitor<Program> {
     }
 
     private ProgramBuilder createBuilder(SpirvParser.SpvContext ctx) {
-        List<Integer> scopeSizes = Arrays.asList(1, 1, 1);
+        List<Integer> scopeSizesConfig = Arrays.asList(1, 1, 1);
         boolean hasConfig = false;
         for (SpirvParser.SpvHeaderContext header : ctx.spvHeaders().spvHeader()) {
             SpirvParser.ConfigHeaderContext cfgCtx = header.configHeader();
@@ -67,13 +67,13 @@ public class VisitorSpirv extends SpirvBaseVisitor<Program> {
                 }
                 hasConfig = true;
                 List<SpirvParser.LiteranHeaderUnsignedIntegerContext> literals = cfgCtx.literanHeaderUnsignedInteger();
-                scopeSizes = literals.stream()
+                scopeSizesConfig = literals.stream()
                         .map(SpirvParser.LiteranHeaderUnsignedIntegerContext::getText)
                         .map(Integer::parseInt)
                         .toList();
             }
         }
-        return new ProgramBuilder(scopeSizes);
+        return new ProgramBuilder(scopeSizesConfig);
     }
 
     private void initializeVisitors() {

@@ -1,6 +1,6 @@
 package com.dat3m.dartagnan.witness.graphviz;
 
-import com.dat3m.dartagnan.program.Thread;
+import com.dat3m.dartagnan.program.thread.Thread;
 import com.dat3m.dartagnan.program.analysis.SyntacticContextAnalysis;
 import com.dat3m.dartagnan.program.event.core.Init;
 import com.dat3m.dartagnan.program.event.metadata.MemoryOrder;
@@ -307,7 +307,7 @@ public class ExecutionGraphVisualizer {
         final Thread thread = e.getThreadModel().getThread();
         final String callStack = makeContextString(
             synContext.getContextInfo(e.getEvent()).getContextOfType(CallContext.class), " -> \\n");
-        final String scope = thread.hasScope() ? "@" + thread.getScopeHierarchy() : "";
+        final String scope = thread.hasScope() ? "@" + thread.getScopeIds() : "";
         final String nodeString = String.format("%s:T%s%s\\nE%s %s%s\n%s",
                 e.getThreadModel().getName(),
                 e.getThreadModel().getId(),

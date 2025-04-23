@@ -1,9 +1,10 @@
 package com.dat3m.dartagnan.spirv.header;
 
+import com.dat3m.dartagnan.configuration.Arch;
 import com.dat3m.dartagnan.exception.ParsingException;
 import com.dat3m.dartagnan.program.Program;
-import com.dat3m.dartagnan.program.ScopeHierarchy;
-import com.dat3m.dartagnan.program.ThreadGrid;
+import com.dat3m.dartagnan.program.thread.ScopeIds;
+import com.dat3m.dartagnan.program.thread.ScopeSizes;
 import com.dat3m.dartagnan.program.event.Tag;
 import org.junit.Test;
 
@@ -28,14 +29,14 @@ public class ConfigTest extends AbstractTest {
 
         // then
         int size = scopes.stream().reduce(1, (a, b) -> a * b);
-        ThreadGrid grid = program.getGrid();
+        ScopeSizes grid = program.getScopeSizes();
         assertEquals(size, grid.getSize(Tag.Vulkan.DEVICE));
 
         int sg_size = scopes.get(0);
         int wg_size = scopes.get(1) * sg_size;
         int qf_size = scopes.get(2) * wg_size;
         for (int i = 0; i < size; i++) {
-            ScopeHierarchy hierarchy = grid.getScoreHierarchy(i);
+            ScopeIds hierarchy = grid.getScopeIds(Arch.VULKAN, i);
             assertEquals(((i % qf_size) % wg_size) / sg_size, hierarchy.getScopeId(Tag.Vulkan.SUB_GROUP));
             assertEquals((i % qf_size) / wg_size, hierarchy.getScopeId(Tag.Vulkan.WORK_GROUP));
             assertEquals(i / qf_size, hierarchy.getScopeId(Tag.Vulkan.QUEUE_FAMILY));
@@ -48,7 +49,7 @@ public class ConfigTest extends AbstractTest {
         doTestIllegalConfig("; @Config: 1, 1",
                 "Line 2:16 mismatched input 'Op' expecting ','");
         doTestIllegalConfig("; @Config: 1, 1, 0",
-                "Thread grid of Vulkan dimensions must be of length 3 and positive");
+                "Thread grid dimensions must be positive");
         doTestIllegalConfig("""
                         ; @Output: forall (1 == 1)
                         ; @Config: 1, 1, 1

@@ -12,7 +12,7 @@ import com.dat3m.dartagnan.parsers.program.visitors.spirv.decorations.BuiltIn;
 import com.dat3m.dartagnan.program.Function;
 import com.dat3m.dartagnan.program.Program;
 import com.dat3m.dartagnan.program.Register;
-import com.dat3m.dartagnan.program.ThreadGrid;
+import com.dat3m.dartagnan.program.thread.ScopeSizes;
 import com.dat3m.dartagnan.program.event.Event;
 import com.dat3m.dartagnan.program.event.RegWriter;
 import com.dat3m.dartagnan.program.event.Tag;
@@ -22,10 +22,7 @@ import com.dat3m.dartagnan.program.memory.MemoryObject;
 import com.dat3m.dartagnan.program.memory.ScopedPointerVariable;
 import com.dat3m.dartagnan.program.processing.transformers.MemoryTransformer;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static com.dat3m.dartagnan.parsers.program.visitors.spirv.decorations.DecorationType.BUILT_IN;
@@ -36,8 +33,8 @@ public class ProgramBuilder {
     protected final Map<String, Expression> expressions = new HashMap<>();
     protected final Map<String, Expression> inputs = new HashMap<>();
     protected final Map<String, String> debugInfos = new HashMap<>();
-    protected final List<Integer> scopeSizes;
-    protected ThreadGrid grid;
+    protected final ArrayList<Integer> scopeSizesConfig;
+    protected ScopeSizes scopeSizes;
     protected Program program;
     protected ControlFlowBuilder controlFlowBuilder;
     protected DecorationsBuilder decorationsBuilder;
@@ -46,8 +43,11 @@ public class ProgramBuilder {
     protected Arch arch;
     protected Set<String> nextOps;
 
-    public ProgramBuilder(List<Integer> scopeSizes) {
-        this.scopeSizes = scopeSizes;
+    public ProgramBuilder(List<Integer> scopeSizesConfig) {
+        if (scopeSizesConfig.stream().anyMatch(integer -> integer <= 0)) {
+            throw new ParsingException("Thread grid dimensions must be positive");
+        }
+        this.scopeSizesConfig = new ArrayList<>(scopeSizesConfig);
         this.program = new Program(new Memory(), Program.SourceLanguage.SPV);
         this.controlFlowBuilder = new ControlFlowBuilder(expressions);
         this.decorationsBuilder = new DecorationsBuilder();
@@ -57,13 +57,13 @@ public class ProgramBuilder {
         validateBeforeBuild();
         controlFlowBuilder.build();
         BuiltIn builtIn = (BuiltIn) decorationsBuilder.getDecoration(BUILT_IN);
-        MemoryTransformer transformer = new MemoryTransformer(grid, getEntryPointFunction(), builtIn, getVariables());
+        MemoryTransformer transformer = new MemoryTransformer(scopeSizes, getEntryPointFunction(), builtIn, getVariables());
         program.addTransformer(transformer);
         return program;
     }
 
-    public ThreadGrid getThreadGrid() {
-        return grid;
+    public ScopeSizes getScopeSizes() {
+        return scopeSizes;
     }
 
     public ControlFlowBuilder getControlFlowBuilder() {
@@ -106,16 +106,12 @@ public class ProgramBuilder {
             throw new ParsingException("Illegal attempt to override memory model");
         }
         this.arch = arch;
-        if (arch.equals(Arch.VULKAN)) {
-            grid = ThreadGrid.ThreadGridForVulkan(scopeSizes);
-        } else if (arch.equals(Arch.OPENCL)) {
-            grid = ThreadGrid.ThreadGridForOpenCL(scopeSizes);
-        } else {
-            throw new ParsingException("Unsupported architecture: " + arch);
-        }
+        scopeSizesConfig.add(1); // Global Scope (Device in Vulkan, All in OpenCL)
+        scopeSizes = new ScopeSizes(arch, scopeSizesConfig);
         program.setArch(arch);
-        program.setGrid(grid);
-        decorationsBuilder.setThreadGrid(grid);
+        program.setScopeSizes(scopeSizes);
+        decorationsBuilder.setArch(arch);
+        decorationsBuilder.setScopeSizes(scopeSizes);
     }
 
     public void setSpecification(Program.SpecificationType type, Expression condition) {
