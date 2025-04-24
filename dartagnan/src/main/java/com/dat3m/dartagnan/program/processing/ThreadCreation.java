@@ -418,7 +418,7 @@ public class ThreadCreation implements ProgramProcessor {
         FunctionType type = function.getFunctionType();
         List<String> args = Lists.transform(function.getParameterRegisters(), Register::getName);
         ThreadStart start = EventFactory.newThreadStart(null);
-        ScopeIds scope = grid.getScopeIds(function.getProgram().getArch(), tid);
+        ScopeIds scope = grid.getScopeIds(tid);
         Thread thread = new Thread(name, type, args, tid, start, scope, Set.of());
         thread.copyDummyCountFrom(function);
         Label returnLabel = EventFactory.newLabel("RETURN_OF_T" + thread.getId());

@@ -5,24 +5,18 @@ import com.dat3m.dartagnan.program.event.Tag;
 
 import java.util.List;
 
-public class ScopeHierarchy {
+public record ScopeHierarchy(List<String> scopes) {
 
-    private final List<String> scopes;
-
-    public ScopeHierarchy(Arch arch) {
+    public static ScopeHierarchy fromArch(Arch arch) {
         if (arch == Arch.VULKAN) {
-            this.scopes = Tag.Vulkan.getScopeTags();
+            return new ScopeHierarchy(Tag.Vulkan.getScopeTags());
         } else if (arch == Arch.PTX) {
-            this.scopes = Tag.PTX.getScopeTags();
+            return new ScopeHierarchy(Tag.PTX.getScopeTags());
         } else if (arch == Arch.OPENCL) {
-            this.scopes = Tag.OpenCL.getScopeTags();
+            return new ScopeHierarchy(Tag.OpenCL.getScopeTags());
         } else {
             throw new IllegalArgumentException("Unsupported architecture: " + arch);
         }
-    }
-
-    public List<String> getScopes() {
-        return scopes;
     }
 
     public int getScopeLevel(String scope) {

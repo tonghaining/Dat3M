@@ -1,7 +1,5 @@
 package com.dat3m.dartagnan.program;
 
-import com.dat3m.dartagnan.configuration.Arch;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -11,16 +9,16 @@ public class ScopeIds {
     private final ScopeHierarchy scopeHierarchy;
     private final List<Integer> ids;
 
-    public ScopeIds(Arch arch, List<Integer> ids) {
-        this.scopeHierarchy = new ScopeHierarchy(arch);
-        if (ids.size() != scopeHierarchy.getScopes().size()) {
-            throw new IllegalArgumentException("Scope ids must be of length " + scopeHierarchy.getScopes().size());
+    public ScopeIds(ScopeHierarchy scopeHierarchy, List<Integer> ids) {
+        this.scopeHierarchy = scopeHierarchy;
+        if (ids.size() != this.scopeHierarchy.scopes().size()) {
+            throw new IllegalArgumentException("Scope ids must be of length " + this.scopeHierarchy.scopes().size());
         }
         this.ids = new ArrayList<>(ids);
     }
 
     public List<String> getScopes() {
-        return new ArrayList<>(scopeHierarchy.getScopes());
+        return new ArrayList<>(scopeHierarchy.scopes());
     }
 
     public int getScopeId(String scope) {
@@ -54,8 +52,8 @@ public class ScopeIds {
 
     @Override
     public String toString() {
-        return scopeHierarchy.getScopes().stream()
-                .map(scope -> scope + ":" + ids.get(scopeHierarchy.getScopes().indexOf(scope)))
+        return scopeHierarchy.scopes().stream()
+                .map(scope -> scope + ":" + ids.get(scopeHierarchy.scopes().indexOf(scope)))
                 .collect(Collectors.joining(",", "[", "]"));
     }
 }

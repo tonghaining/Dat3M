@@ -9,7 +9,6 @@ import com.dat3m.dartagnan.expression.integers.IntLiteral;
 import com.dat3m.dartagnan.expression.type.FunctionType;
 import com.dat3m.dartagnan.expression.type.TypeFactory;
 import com.dat3m.dartagnan.program.*;
-import com.dat3m.dartagnan.program.ScopeIds;
 import com.dat3m.dartagnan.program.Thread;
 import com.dat3m.dartagnan.program.Program.SourceLanguage;
 import com.dat3m.dartagnan.program.event.Event;
@@ -296,10 +295,11 @@ public class ProgramBuilder {
     // ----------------------------------------------------------------------------------------------------------------
     // GPU
     public void newScopedThread(Arch arch, String name, int id, int ...ids) {
+        ScopeHierarchy scopeHierarchy = ScopeHierarchy.fromArch(arch);
         ArrayList<Integer> intList = new ArrayList<>();
-        intList.add(0);
+        intList.add(0); // the most global scope is always 0, e.g. SYS ins PTX, Device in Vulkan, All in OpenCL
         intList.addAll(Arrays.stream(ids).boxed().toList());
-        ScopeIds scopeIds = new ScopeIds(arch, intList);
+        ScopeIds scopeIds = new ScopeIds(scopeHierarchy, intList);
 
         if(id2FunctionsMap.containsKey(id)) {
             throw new MalformedProgramException("Function or thread with id " + id + " already exists.");

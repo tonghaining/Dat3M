@@ -1,7 +1,5 @@
 package com.dat3m.dartagnan.program;
 
-import com.dat3m.dartagnan.configuration.Arch;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -11,10 +9,10 @@ public class ScopeSizes {
     private final ScopeHierarchy scopeHierarchy;
     private final List<Integer> sizes;
 
-    public ScopeSizes(Arch arch, List<Integer> sizes) {
-        this.scopeHierarchy = new ScopeHierarchy(arch);
-        if (sizes.size() != scopeHierarchy.getScopes().size()) {
-            throw new IllegalArgumentException("Scope sizes must be of length " + scopeHierarchy.getScopes().size());
+    public ScopeSizes(ScopeHierarchy scopeHierarchy, List<Integer> sizes) {
+        this.scopeHierarchy = scopeHierarchy;
+        if (sizes.size() != this.scopeHierarchy.scopes().size()) {
+            throw new IllegalArgumentException("Scope sizes must be of length " + this.scopeHierarchy.scopes().size());
         }
         this.sizes = new ArrayList<>(sizes);
         Collections.reverse(this.sizes); // Reverse the list to match the order of scopes in the hierarchy (top-down)
@@ -22,7 +20,7 @@ public class ScopeSizes {
 
     public int getSizeAtScope(int index) {
         int container = 1;
-        for (int i = index; i < scopeHierarchy.getScopes().size(); i++) {
+        for (int i = index; i < scopeHierarchy.scopes().size(); i++) {
             container *= sizes.get(i);
         }
         return container;
@@ -44,11 +42,11 @@ public class ScopeSizes {
         return getIdAtScope(tid, index);
     }
 
-    public ScopeIds getScopeIds(Arch arch, int tid) {
+    public ScopeIds getScopeIds(int tid) {
         List<Integer> ids = new ArrayList<>();
-        for (int i = 0; i < scopeHierarchy.getScopes().size(); i++) {
+        for (int i = 0; i < scopeHierarchy.scopes().size(); i++) {
             ids.add(getIdAtScope(tid, i));
         }
-        return new ScopeIds(arch, ids);
+        return new ScopeIds(scopeHierarchy, ids);
     }
 }

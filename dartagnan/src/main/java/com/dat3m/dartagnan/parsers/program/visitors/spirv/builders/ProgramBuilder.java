@@ -9,10 +9,7 @@ import com.dat3m.dartagnan.expression.type.FunctionType;
 import com.dat3m.dartagnan.expression.type.ScopedPointerType;
 import com.dat3m.dartagnan.expression.type.TypeFactory;
 import com.dat3m.dartagnan.parsers.program.visitors.spirv.decorations.BuiltIn;
-import com.dat3m.dartagnan.program.Function;
-import com.dat3m.dartagnan.program.Program;
-import com.dat3m.dartagnan.program.Register;
-import com.dat3m.dartagnan.program.ScopeSizes;
+import com.dat3m.dartagnan.program.*;
 import com.dat3m.dartagnan.program.event.Event;
 import com.dat3m.dartagnan.program.event.RegWriter;
 import com.dat3m.dartagnan.program.event.Tag;
@@ -106,8 +103,9 @@ public class ProgramBuilder {
             throw new ParsingException("Illegal attempt to override memory model");
         }
         this.arch = arch;
-        scopeSizesConfig.add(1); // Global Scope (Device in Vulkan, All in OpenCL)
-        scopeSizes = new ScopeSizes(arch, scopeSizesConfig);
+        ScopeHierarchy scopeHierarchy = ScopeHierarchy.fromArch(arch);
+        scopeSizesConfig.add(1); // Global Scope size is always 1 (Device in Vulkan, All in OpenCL)
+        scopeSizes = new ScopeSizes(scopeHierarchy, scopeSizesConfig);
         program.setArch(arch);
         program.setScopeSizes(scopeSizes);
         decorationsBuilder.setArch(arch);
