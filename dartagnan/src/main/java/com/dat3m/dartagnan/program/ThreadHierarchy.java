@@ -1,6 +1,5 @@
-package com.dat3m.dartagnan.program.thread;
+package com.dat3m.dartagnan.program;
 
-import com.dat3m.dartagnan.program.Program;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 

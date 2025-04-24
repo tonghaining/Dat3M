@@ -11,8 +11,6 @@ import com.dat3m.dartagnan.expression.type.TypeOffset;
 import com.dat3m.dartagnan.program.event.Event;
 import com.dat3m.dartagnan.program.memory.Memory;
 import com.dat3m.dartagnan.program.misc.NonDetValue;
-import com.dat3m.dartagnan.program.thread.ScopeSizes;
-import com.dat3m.dartagnan.program.thread.Thread;
 import com.google.common.base.Preconditions;
 
 import java.util.*;

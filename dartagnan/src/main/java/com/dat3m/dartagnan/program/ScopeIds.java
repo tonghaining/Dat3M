@@ -1,4 +1,4 @@
-package com.dat3m.dartagnan.program.thread;
+package com.dat3m.dartagnan.program;
 
 import com.dat3m.dartagnan.configuration.Arch;
 

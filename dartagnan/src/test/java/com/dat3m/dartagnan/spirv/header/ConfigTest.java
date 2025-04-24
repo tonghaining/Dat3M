@@ -3,8 +3,8 @@ package com.dat3m.dartagnan.spirv.header;
 import com.dat3m.dartagnan.configuration.Arch;
 import com.dat3m.dartagnan.exception.ParsingException;
 import com.dat3m.dartagnan.program.Program;
-import com.dat3m.dartagnan.program.thread.ScopeIds;
-import com.dat3m.dartagnan.program.thread.ScopeSizes;
+import com.dat3m.dartagnan.program.ScopeIds;
+import com.dat3m.dartagnan.program.ScopeSizes;
 import com.dat3m.dartagnan.program.event.Tag;
 import org.junit.Test;
 

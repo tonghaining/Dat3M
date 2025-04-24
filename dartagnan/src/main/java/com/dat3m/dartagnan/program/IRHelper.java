@@ -12,7 +12,6 @@ import com.dat3m.dartagnan.program.event.core.Init;
 import com.dat3m.dartagnan.program.event.functions.AbortIf;
 import com.dat3m.dartagnan.program.event.functions.Return;
 import com.dat3m.dartagnan.program.event.lang.llvm.LlvmCmpXchg;
-import com.dat3m.dartagnan.program.thread.Thread;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Verify;
 

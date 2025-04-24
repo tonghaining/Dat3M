@@ -1,6 +1,6 @@
 package com.dat3m.dartagnan.witness.graphviz;
 
-import com.dat3m.dartagnan.program.thread.Thread;
+import com.dat3m.dartagnan.program.Thread;
 import com.dat3m.dartagnan.program.analysis.SyntacticContextAnalysis;
 import com.dat3m.dartagnan.program.event.core.Init;
 import com.dat3m.dartagnan.program.event.metadata.MemoryOrder;

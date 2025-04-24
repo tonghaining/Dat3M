@@ -6,7 +6,7 @@ import com.dat3m.dartagnan.parsers.program.visitors.spirv.decorations.BuiltIn;
 import com.dat3m.dartagnan.parsers.program.visitors.spirv.decorations.Decoration;
 import com.dat3m.dartagnan.parsers.program.visitors.spirv.decorations.DecorationType;
 import com.dat3m.dartagnan.parsers.program.visitors.spirv.decorations.Offset;
-import com.dat3m.dartagnan.program.thread.ScopeSizes;
+import com.dat3m.dartagnan.program.ScopeSizes;
 
 import java.util.EnumMap;
 
