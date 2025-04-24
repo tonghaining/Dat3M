@@ -396,7 +396,7 @@ public class ThreadCreation implements ProgramProcessor {
         ScopeSizes grid = program.getScopeSizes();
         List<ExprTransformer> transformers = program.getTransformers();
         program.getFunctionByName(program.getEntryPoint()).ifPresent(entryFunction -> {
-            int threadSize = grid.getSizeAtScope(0);
+            int threadSize = grid.totalSize();
             for (int tid = 0; tid < threadSize; tid++) {
                 final Thread thread = createSPVThreadFromFunction(entryFunction, tid, grid, transformers);
                 program.addThread(thread);

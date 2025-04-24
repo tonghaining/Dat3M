@@ -45,48 +45,13 @@ public class MemoryTransformer extends ExprTransformer {
                 Stream.generate(() -> new HashMap<MemoryObject, MemoryObject>()).limit(namePrefixesVulkan.size()).toList() :
                 Stream.generate(() -> new HashMap<MemoryObject, MemoryObject>()).limit(namePrefixesOpenCL.size()).toList();
         this.pointerMapping = variables.stream().collect(Collectors.toMap((ScopedPointerVariable::getAddress), (v -> v)));
-        this.scopeIdProvider = getScopeIdProvider(grid);
-        this.namePrefixIdxProvider = getNamePrefixIdxProvider(grid);
-    }
-
-    private List<IntUnaryOperator> getScopeIdProvider(ScopeSizes grid) {
-        if (program.getArch() == Arch.VULKAN) {
-            return List.of(
-                    tid1 -> tid1 % grid.getSize(Tag.Vulkan.SUB_GROUP),
-                    tid2 -> grid.getId(Tag.Vulkan.SUB_GROUP, tid2),
-                    tid3 -> grid.getId(Tag.Vulkan.WORK_GROUP, tid3),
-                    tid4 -> grid.getId(Tag.Vulkan.QUEUE_FAMILY, tid4),
-                    tid5 -> grid.getId(Tag.Vulkan.DEVICE, tid5));
-        }
-        if (program.getArch() == Arch.OPENCL) {
-            return List.of(
-                    tid1 -> tid1 % grid.getSize(Tag.OpenCL.SUB_GROUP),
-                    tid2 -> grid.getId(Tag.OpenCL.SUB_GROUP, tid2),
-                    tid3 -> grid.getId(Tag.OpenCL.WORK_GROUP, tid3),
-                    tid4 -> grid.getId(Tag.OpenCL.DEVICE, tid4),
-                    tid5 -> grid.getId(Tag.OpenCL.ALL, tid5));
-        }
-        throw new UnsupportedOperationException("Thread grid not supported for architecture: " + program.getArch());
-    }
-
-    private List<IntUnaryOperator> getNamePrefixIdxProvider(ScopeSizes grid) {
-        if (program.getArch() == Arch.VULKAN) {
-            return List.of(
-                    i -> i,
-                    i -> i / grid.getSize(Tag.Vulkan.SUB_GROUP),
-                    i -> i / grid.getSize(Tag.Vulkan.WORK_GROUP),
-                    i -> i / grid.getSize(Tag.Vulkan.QUEUE_FAMILY),
-                    i -> i / grid.getSize(Tag.Vulkan.DEVICE));
-        }
-        if (program.getArch() == Arch.OPENCL) {
-            return List.of(
-                    i -> i,
-                    i -> i / grid.getSize(Tag.OpenCL.SUB_GROUP),
-                    i -> i / grid.getSize(Tag.OpenCL.WORK_GROUP),
-                    i -> i / grid.getSize(Tag.OpenCL.DEVICE),
-                    i -> i / grid.getSize(Tag.OpenCL.ALL));
-        }
-        throw new UnsupportedOperationException("Thread grid not supported for architecture: " + program.getArch());
+        this.scopeIdProvider = List.of(grid::thId, grid::sgId, grid::wgId, grid::qfId, grid::dvId);
+        this.namePrefixIdxProvider = List.of(
+                i -> i,
+                i -> i / grid.sgSize(),
+                i -> i / grid.wgSize(),
+                i -> i / grid.qfSize(),
+                i -> i / grid.dvSize());
     }
 
     public Register getRegisterMapping(Register register) {

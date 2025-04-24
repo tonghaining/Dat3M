@@ -103,12 +103,16 @@ public class ProgramBuilder {
             throw new ParsingException("Illegal attempt to override memory model");
         }
         this.arch = arch;
-        ScopeHierarchy scopeHierarchy = ScopeHierarchy.fromArch(arch);
         scopeSizesConfig.add(0, 1); // Global Scope size is always 1 (Device in Vulkan, All in OpenCL)
-        scopeSizes = new ScopeSizes(scopeHierarchy, scopeSizesConfig);
+        if (arch == Arch.VULKAN) {
+            scopeSizes = new ScopeSizesVulkan(scopeSizesConfig);
+        } else if (arch == Arch.OPENCL) {
+            scopeSizes = new ScopeSizesOpenCL(scopeSizesConfig);
+        } else {
+            throw new ParsingException("Unsupported architecture '%s'", arch);
+        }
         program.setArch(arch);
         program.setScopeSizes(scopeSizes);
-        decorationsBuilder.setArch(arch);
         decorationsBuilder.setScopeSizes(scopeSizes);
     }
 

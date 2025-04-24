@@ -1,6 +1,5 @@
 package com.dat3m.dartagnan.parsers.program.visitors.spirv.decorations;
 
-import com.dat3m.dartagnan.configuration.Arch;
 import com.dat3m.dartagnan.exception.ParsingException;
 import com.dat3m.dartagnan.expression.Expression;
 import com.dat3m.dartagnan.expression.ExpressionFactory;
@@ -10,7 +9,6 @@ import com.dat3m.dartagnan.expression.type.ArrayType;
 import com.dat3m.dartagnan.expression.type.IntegerType;
 import com.dat3m.dartagnan.expression.type.TypeFactory;
 import com.dat3m.dartagnan.program.ScopeSizes;
-import com.dat3m.dartagnan.program.event.Tag;
 import com.dat3m.dartagnan.program.memory.MemoryObject;
 
 import java.util.ArrayList;
@@ -25,14 +23,9 @@ public class BuiltIn implements Decoration {
     private final Map<String, String> mapping;
     private ScopeSizes scopeSizes;
     private int tid;
-    private Arch arch;
 
     public BuiltIn() {
         this.mapping = new HashMap<>();
-    }
-
-    public void setArch(Arch arch) {
-        this.arch = arch;
     }
 
     public void setScopeSizes(ScopeSizes scopeSizes) {
@@ -83,44 +76,22 @@ public class BuiltIn implements Decoration {
     }
 
     private Expression getDecorationExpressions(String id, Type type) {
-        if (arch == Arch.VULKAN) {
-            return switch (mapping.get(id)) {
-                // BuiltIn decorations according to the Vulkan API
-                case "SubgroupLocalInvocationId" ->
-                        makeScalar(id, type, tid % scopeSizes.getSize(Tag.Vulkan.SUB_GROUP));
-                case "LocalInvocationId" -> makeArray(id, type, tid % scopeSizes.getSize(Tag.Vulkan.WORK_GROUP), 0, 0);
-                case "LocalInvocationIndex" ->
-                        makeScalar(id, type, tid % scopeSizes.getSize(Tag.Vulkan.WORK_GROUP)); // scalar of LocalInvocationId
-                case "GlobalInvocationId" -> makeArray(id, type, tid % scopeSizes.getSize(Tag.Vulkan.DEVICE), 0, 0);
-                case "DeviceIndex" -> makeScalar(id, type, scopeSizes.getId(Tag.Vulkan.DEVICE, tid));
-                case "SubgroupId" -> makeScalar(id, type, scopeSizes.getId(Tag.Vulkan.SUB_GROUP, tid));
-                case "WorkgroupId" -> makeArray(id, type, scopeSizes.getId(Tag.Vulkan.WORK_GROUP, tid), 0, 0);
-                case "SubgroupSize" -> makeScalar(id, type, scopeSizes.getSize(Tag.Vulkan.SUB_GROUP));
-                case "WorkgroupSize" -> makeArray(id, type, scopeSizes.getSize(Tag.Vulkan.WORK_GROUP), 1, 1);
-                case "GlobalSize" -> makeArray(id, type, scopeSizes.getSize(Tag.Vulkan.DEVICE), 1, 1);
-                case "NumWorkgroups" ->
-                        makeArray(id, type, scopeSizes.getSize(Tag.Vulkan.DEVICE) / scopeSizes.getSize(Tag.Vulkan.WORK_GROUP), 1, 1);
-                default -> throw new ParsingException("Unsupported decoration '%s'", mapping.get(id));
-            };
-        }
-        if (arch == Arch.OPENCL) {
-            return switch (mapping.get(id)) {
-                // BuiltIn decorations according to the OpenCL API
-                case "GlobalInvocationId" -> makeArray(id, type, tid % scopeSizes.getSize(Tag.OpenCL.ALL), 0, 0);
-                case "SubgroupLocalInvocationId" ->
-                        makeScalar(id, type, tid % scopeSizes.getSize(Tag.OpenCL.SUB_GROUP));
-                case "SubgroupId" -> makeScalar(id, type, scopeSizes.getId(Tag.OpenCL.SUB_GROUP, tid));
-                case "SubgroupSize" -> makeScalar(id, type, scopeSizes.getSize(Tag.OpenCL.SUB_GROUP));
-                case "GlobalSize" -> makeArray(id, type, scopeSizes.getSize(Tag.OpenCL.ALL), 1, 1);
-                case "LocalInvocationId" -> makeArray(id, type, tid % scopeSizes.getSize(Tag.OpenCL.WORK_GROUP), 0, 0);
-                case "WorkgroupId" -> makeArray(id, type, scopeSizes.getId(Tag.OpenCL.WORK_GROUP, tid), 0, 0);
-                case "WorkgroupSize" -> makeArray(id, type, scopeSizes.getSize(Tag.OpenCL.WORK_GROUP), 1, 1);
-                case "NumWorkgroups" ->
-                        makeArray(id, type, scopeSizes.getSize(Tag.OpenCL.DEVICE) / scopeSizes.getSize(Tag.OpenCL.WORK_GROUP), 1, 1);
-                default -> throw new ParsingException("Unsupported decoration '%s'", mapping.get(id));
-            };
-        }
-        throw new ParsingException("Unsupported architecture '%s'", arch);
+        return switch (mapping.get(id)) {
+            // BuiltIn decorations according to the Vulkan API
+            case "SubgroupLocalInvocationId" -> makeScalar(id, type, tid % scopeSizes.sgSize());
+            case "LocalInvocationId" -> makeArray(id, type, tid % scopeSizes.wgSize(), 0, 0);
+            case "LocalInvocationIndex" ->
+                    makeScalar(id, type, tid % scopeSizes.wgSize()); // scalar of LocalInvocationId
+            case "GlobalInvocationId" -> makeArray(id, type, tid % scopeSizes.dvSize(), 0, 0);
+            case "DeviceIndex" -> makeScalar(id, type, 0);
+            case "SubgroupId" -> makeScalar(id, type, scopeSizes.sgId(tid));
+            case "WorkgroupId" -> makeArray(id, type, scopeSizes.wgId(tid), 0, 0);
+            case "SubgroupSize" -> makeScalar(id, type, scopeSizes.sgSize());
+            case "WorkgroupSize" -> makeArray(id, type, scopeSizes.wgSize(), 1, 1);
+            case "GlobalSize" -> makeArray(id, type, scopeSizes.dvSize(), 1, 1);
+            case "NumWorkgroups" -> makeArray(id, type, scopeSizes.dvSize() / scopeSizes.wgSize(), 1, 1);
+            default -> throw new ParsingException("Unsupported decoration '%s'", mapping.get(id));
+        };
     }
 
     private Expression makeArray(String id, Type type, int x, int y, int z) {

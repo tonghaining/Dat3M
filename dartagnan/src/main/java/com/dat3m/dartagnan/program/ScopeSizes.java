@@ -6,8 +6,8 @@ import java.util.List;
 
 public class ScopeSizes {
 
-    private final ScopeHierarchy scopeHierarchy;
-    private final List<Integer> sizes;
+    protected final ScopeHierarchy scopeHierarchy;
+    protected final List<Integer> sizes;
 
     public ScopeSizes(ScopeHierarchy scopeHierarchy, List<Integer> sizes) {
         this.scopeHierarchy = scopeHierarchy;
@@ -17,7 +17,7 @@ public class ScopeSizes {
         this.sizes = sizes;
     }
 
-    public int getSizeAtScope(int index) {
+    private int getSizeAtScope(int index) {
         int container = 1;
         for (int i = index; i < scopeHierarchy.scopes().size(); i++) {
             container *= sizes.get(i);
@@ -48,4 +48,47 @@ public class ScopeSizes {
         }
         return new ScopeIds(scopeHierarchy, ids);
     }
+
+    // Sizes of the scopes in the hierarchy
+    public int totalSize() {
+        return sizes.stream().reduce(1, (a, b) -> a * b);
+    }
+
+    public int dvSize() {
+        throw new UnsupportedOperationException("Not implemented");
+    }
+
+    public int qfSize() {
+        throw new UnsupportedOperationException("Not implemented");
+    }
+
+    public int wgSize() {
+        throw new UnsupportedOperationException("Not implemented");
+    }
+
+    public int sgSize() {
+        throw new UnsupportedOperationException("Not implemented");
+    }
+
+    // Ids of the scopes in the hierarchy
+    public int dvId(int tid) {
+        throw new UnsupportedOperationException("Not implemented");
+    }
+
+    public int qfId(int tid) {
+        throw new UnsupportedOperationException("Not implemented");
+    }
+
+    public int wgId(int tid) {
+        throw new UnsupportedOperationException("Not implemented");
+    }
+
+    public int sgId(int tid) {
+        throw new UnsupportedOperationException("Not implemented");
+    }
+
+    public int thId(int tid) {
+        throw new UnsupportedOperationException("Not implemented");
+    }
+
 }

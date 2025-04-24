@@ -29,7 +29,7 @@ public class ConfigTest extends AbstractTest {
         // then
         int size = scopes.stream().reduce(1, (a, b) -> a * b);
         ScopeSizes grid = program.getScopeSizes();
-        assertEquals(size, grid.getSize(Tag.Vulkan.DEVICE));
+        assertEquals(size, grid.totalSize());
 
         int sg_size = scopes.get(0);
         int wg_size = scopes.get(1) * sg_size;

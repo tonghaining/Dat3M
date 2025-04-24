@@ -28,12 +28,6 @@ public class DecorationsBuilder {
         }
     }
 
-    public void setArch(Arch arch) {
-        if (mapping.containsKey(BUILT_IN)) {
-            ((BuiltIn) mapping.get(BUILT_IN)).setArch(arch);
-        }
-    }
-
     public Decoration getDecoration(DecorationType type) {
         if (mapping.containsKey(type)) {
             return mapping.get(type);
