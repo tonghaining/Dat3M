@@ -13,6 +13,7 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class VisitorSpirv extends SpirvBaseVisitor<Program> {
 
@@ -57,7 +58,7 @@ public class VisitorSpirv extends SpirvBaseVisitor<Program> {
     }
 
     private ProgramBuilder createBuilder(SpirvParser.SpvContext ctx) {
-        List<Integer> scopeSizesConfig = Arrays.asList(1, 1, 1);
+        ArrayList<Integer> scopeSizesConfig = new ArrayList<>(List.of(1, 1, 1));
         boolean hasConfig = false;
         for (SpirvParser.SpvHeaderContext header : ctx.spvHeaders().spvHeader()) {
             SpirvParser.ConfigHeaderContext cfgCtx = header.configHeader();
@@ -68,11 +69,11 @@ public class VisitorSpirv extends SpirvBaseVisitor<Program> {
                 hasConfig = true;
                 List<SpirvParser.LiteranHeaderUnsignedIntegerContext> literals = cfgCtx.literanHeaderUnsignedInteger();
                 scopeSizesConfig = literals.stream()
-                        .map(SpirvParser.LiteranHeaderUnsignedIntegerContext::getText)
-                        .map(Integer::parseInt)
-                        .toList();
+                        .map(literal -> Integer.parseInt(literal.getText()))
+                        .collect(Collectors.toCollection(ArrayList::new));
             }
         }
+        Collections.reverse(scopeSizesConfig); // Reverse the list to match the order of scopes in the hierarchy (top-down)
         return new ProgramBuilder(scopeSizesConfig);
     }
 

@@ -14,8 +14,7 @@ public class ScopeSizes {
         if (sizes.size() != this.scopeHierarchy.scopes().size()) {
             throw new IllegalArgumentException("Scope sizes must be of length " + this.scopeHierarchy.scopes().size());
         }
-        this.sizes = new ArrayList<>(sizes);
-        Collections.reverse(this.sizes); // Reverse the list to match the order of scopes in the hierarchy (top-down)
+        this.sizes = sizes;
     }
 
     public int getSizeAtScope(int index) {

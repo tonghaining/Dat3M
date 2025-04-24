@@ -104,7 +104,7 @@ public class ProgramBuilder {
         }
         this.arch = arch;
         ScopeHierarchy scopeHierarchy = ScopeHierarchy.fromArch(arch);
-        scopeSizesConfig.add(1); // Global Scope size is always 1 (Device in Vulkan, All in OpenCL)
+        scopeSizesConfig.add(0, 1); // Global Scope size is always 1 (Device in Vulkan, All in OpenCL)
         scopeSizes = new ScopeSizes(scopeHierarchy, scopeSizesConfig);
         program.setArch(arch);
         program.setScopeSizes(scopeSizes);
