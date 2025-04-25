@@ -8,7 +8,7 @@ import com.dat3m.dartagnan.expression.aggregates.ConstructExpr;
 import com.dat3m.dartagnan.expression.type.ArrayType;
 import com.dat3m.dartagnan.expression.type.IntegerType;
 import com.dat3m.dartagnan.expression.type.TypeFactory;
-import com.dat3m.dartagnan.program.ScopeSizes;
+import com.dat3m.dartagnan.program.ThreadGrid;
 import com.dat3m.dartagnan.program.memory.MemoryObject;
 
 import java.util.ArrayList;
@@ -21,15 +21,15 @@ public class BuiltIn implements Decoration {
     private static final TypeFactory types = TypeFactory.getInstance();
     private static final ExpressionFactory expressions = ExpressionFactory.getInstance();
     private final Map<String, String> mapping;
-    private ScopeSizes scopeSizes;
+    private ThreadGrid tg;
     private int tid;
 
     public BuiltIn() {
         this.mapping = new HashMap<>();
     }
 
-    public void setScopeSizes(ScopeSizes scopeSizes) {
-        this.scopeSizes = scopeSizes;
+    public void setScopeSizes(ThreadGrid threadGrid) {
+        this.tg = threadGrid;
     }
 
     public void setThreadId(int tid) {
@@ -78,18 +78,18 @@ public class BuiltIn implements Decoration {
     private Expression getDecorationExpressions(String id, Type type) {
         return switch (mapping.get(id)) {
             // BuiltIn decorations according to the Vulkan API
-            case "SubgroupLocalInvocationId" -> makeScalar(id, type, tid % scopeSizes.sgSize());
-            case "LocalInvocationId" -> makeArray(id, type, tid % scopeSizes.wgSize(), 0, 0);
+            case "SubgroupLocalInvocationId" -> makeScalar(id, type, tid % tg.getSize(3));
+            case "LocalInvocationId" -> makeArray(id, type, tid % tg.getSize(2), 0, 0);
             case "LocalInvocationIndex" ->
-                    makeScalar(id, type, tid % scopeSizes.wgSize()); // scalar of LocalInvocationId
-            case "GlobalInvocationId" -> makeArray(id, type, tid % scopeSizes.dvSize(), 0, 0);
-            case "DeviceIndex" -> makeScalar(id, type, 0);
-            case "SubgroupId" -> makeScalar(id, type, scopeSizes.sgId(tid));
-            case "WorkgroupId" -> makeArray(id, type, scopeSizes.wgId(tid), 0, 0);
-            case "SubgroupSize" -> makeScalar(id, type, scopeSizes.sgSize());
-            case "WorkgroupSize" -> makeArray(id, type, scopeSizes.wgSize(), 1, 1);
-            case "GlobalSize" -> makeArray(id, type, scopeSizes.dvSize(), 1, 1);
-            case "NumWorkgroups" -> makeArray(id, type, scopeSizes.dvSize() / scopeSizes.wgSize(), 1, 1);
+                    makeScalar(id, type, tid % tg.getSize(2)); // scalar of LocalInvocationId
+            case "GlobalInvocationId" -> makeArray(id, type, tid % tg.getSize(0), 0, 0);
+            case "DeviceIndex" -> makeScalar(id, type, tg.getId(tid, 0));
+            case "SubgroupId" -> makeScalar(id, type, tg.getId(tid, 3));
+            case "WorkgroupId" -> makeArray(id, type, tg.getId(tid, 2), 0, 0);
+            case "SubgroupSize" -> makeScalar(id, type, tg.getSize(3));
+            case "WorkgroupSize" -> makeArray(id, type, tg.getSize(2), 1, 1);
+            case "GlobalSize" -> makeArray(id, type, tg.getSize(0), 1, 1);
+            case "NumWorkgroups" -> makeArray(id, type, tg.getSize(0) / tg.getSize(2), 1, 1);
             default -> throw new ParsingException("Unsupported decoration '%s'", mapping.get(id));
         };
     }

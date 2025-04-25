@@ -8,7 +8,7 @@ import com.dat3m.dartagnan.expression.integers.IntLiteral;
 import com.dat3m.dartagnan.expression.type.*;
 import com.dat3m.dartagnan.parsers.SpirvParser;
 import com.dat3m.dartagnan.parsers.program.visitors.spirv.builders.ProgramBuilder;
-import com.dat3m.dartagnan.program.ScopeSizes;
+import com.dat3m.dartagnan.program.ThreadGrid;
 import com.dat3m.dartagnan.program.event.Tag;
 import com.dat3m.dartagnan.program.memory.ScopedPointerVariable;
 
@@ -118,11 +118,11 @@ public class VisitorExtensionClspvReflection extends VisitorExtension<Void> {
     }
 
     private List<Integer> computePushConstantValue(String command) {
-        ScopeSizes grid = builder.getScopeSizes();
+        ThreadGrid grid = builder.getScopeSizes();
         return switch (command) {
-            case "PushConstantGlobalSize" -> List.of(grid.dvSize(), 1, 1);
-            case "PushConstantEnqueuedLocalSize" -> List.of(grid.wgSize(), 1, 1);
-            case "PushConstantNumWorkgroups" -> List.of(grid.qfSize() / grid.wgSize(), 1, 1);
+            case "PushConstantGlobalSize" -> List.of(grid.getSize(0), 1, 1);
+            case "PushConstantEnqueuedLocalSize" -> List.of(grid.getSize(2), 1, 1);
+            case "PushConstantNumWorkgroups" -> List.of(grid.getSize(1) / grid.getSize(2), 1, 1);
             case "PushConstantGlobalOffset",
                  "PushConstantRegionOffset",
                  "PushConstantRegionGroupOffset" -> List.of(0, 0, 0);

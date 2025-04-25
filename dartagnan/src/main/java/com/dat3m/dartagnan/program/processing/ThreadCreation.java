@@ -10,7 +10,7 @@ import com.dat3m.dartagnan.expression.type.FunctionType;
 import com.dat3m.dartagnan.expression.type.IntegerType;
 import com.dat3m.dartagnan.expression.type.TypeFactory;
 import com.dat3m.dartagnan.program.ScopeIds;
-import com.dat3m.dartagnan.program.ScopeSizes;
+import com.dat3m.dartagnan.program.ThreadGrid;
 import com.dat3m.dartagnan.program.Thread;
 import com.dat3m.dartagnan.program.*;
 import com.dat3m.dartagnan.program.event.*;
@@ -393,10 +393,10 @@ public class ThreadCreation implements ProgramProcessor {
     // ========================================== SPIR-V ===========================================
     // =============================================================================================
     private void createSPVThreads(Program program) {
-        ScopeSizes grid = program.getScopeSizes();
+        ThreadGrid grid = program.getScopeSizes();
         List<ExprTransformer> transformers = program.getTransformers();
         program.getFunctionByName(program.getEntryPoint()).ifPresent(entryFunction -> {
-            int threadSize = grid.totalSize();
+            int threadSize = grid.getSize(0);
             for (int tid = 0; tid < threadSize; tid++) {
                 final Thread thread = createSPVThreadFromFunction(entryFunction, tid, grid, transformers);
                 program.addThread(thread);
@@ -413,12 +413,12 @@ public class ThreadCreation implements ProgramProcessor {
         });
     }
 
-    private Thread createSPVThreadFromFunction(Function function, int tid, ScopeSizes grid, List<ExprTransformer> transformers) {
+    private Thread createSPVThreadFromFunction(Function function, int tid, ThreadGrid grid, List<ExprTransformer> transformers) {
         String name = function.getName();
         FunctionType type = function.getFunctionType();
         List<String> args = Lists.transform(function.getParameterRegisters(), Register::getName);
         ThreadStart start = EventFactory.newThreadStart(null);
-        ScopeIds scope = grid.getScopeIds(tid);
+        ScopeIds scope = grid.getIds(tid);
         Thread thread = new Thread(name, type, args, tid, start, scope, Set.of());
         thread.copyDummyCountFrom(function);
         Label returnLabel = EventFactory.newLabel("RETURN_OF_T" + thread.getId());

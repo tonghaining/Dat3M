@@ -31,7 +31,7 @@ public class ProgramBuilder {
     protected final Map<String, Expression> inputs = new HashMap<>();
     protected final Map<String, String> debugInfos = new HashMap<>();
     protected final ArrayList<Integer> scopeSizesConfig;
-    protected ScopeSizes scopeSizes;
+    protected ThreadGrid threadGrid;
     protected Program program;
     protected ControlFlowBuilder controlFlowBuilder;
     protected DecorationsBuilder decorationsBuilder;
@@ -54,13 +54,13 @@ public class ProgramBuilder {
         validateBeforeBuild();
         controlFlowBuilder.build();
         BuiltIn builtIn = (BuiltIn) decorationsBuilder.getDecoration(BUILT_IN);
-        MemoryTransformer transformer = new MemoryTransformer(scopeSizes, getEntryPointFunction(), builtIn, getVariables());
+        MemoryTransformer transformer = new MemoryTransformer(threadGrid, getEntryPointFunction(), builtIn, getVariables());
         program.addTransformer(transformer);
         return program;
     }
 
-    public ScopeSizes getScopeSizes() {
-        return scopeSizes;
+    public ThreadGrid getScopeSizes() {
+        return threadGrid;
     }
 
     public ControlFlowBuilder getControlFlowBuilder() {
@@ -104,16 +104,11 @@ public class ProgramBuilder {
         }
         this.arch = arch;
         scopeSizesConfig.add(0, 1); // Global Scope size is always 1 (Device in Vulkan, All in OpenCL)
-        if (arch == Arch.VULKAN) {
-            scopeSizes = new ScopeSizesVulkan(scopeSizesConfig);
-        } else if (arch == Arch.OPENCL) {
-            scopeSizes = new ScopeSizesOpenCL(scopeSizesConfig);
-        } else {
-            throw new ParsingException("Unsupported architecture '%s'", arch);
-        }
+        ScopeHierarchy scopeHierarchy = ScopeHierarchy.fromArch(arch);
+        threadGrid = new ThreadGrid(scopeHierarchy, scopeSizesConfig);
         program.setArch(arch);
-        program.setScopeSizes(scopeSizes);
-        decorationsBuilder.setScopeSizes(scopeSizes);
+        program.setScopeSizes(threadGrid);
+        decorationsBuilder.setScopeSizes(threadGrid);
     }
 
     public void setSpecification(Program.SpecificationType type, Expression condition) {

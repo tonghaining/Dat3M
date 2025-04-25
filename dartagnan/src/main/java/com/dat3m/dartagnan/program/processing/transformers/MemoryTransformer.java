@@ -4,7 +4,7 @@ import com.dat3m.dartagnan.configuration.Arch;
 import com.dat3m.dartagnan.expression.Expression;
 import com.dat3m.dartagnan.expression.processing.ExprTransformer;
 import com.dat3m.dartagnan.parsers.program.visitors.spirv.decorations.BuiltIn;
-import com.dat3m.dartagnan.program.ScopeSizes;
+import com.dat3m.dartagnan.program.ThreadGrid;
 import com.dat3m.dartagnan.program.Thread;
 import com.dat3m.dartagnan.program.*;
 import com.dat3m.dartagnan.program.event.Tag;
@@ -24,6 +24,7 @@ public class MemoryTransformer extends ExprTransformer {
 
     // Thread / Subgroup / Workgroup / QueueFamily / Device
     private static final List<String> namePrefixesVulkan = List.of("T", "S", "W", "Q", "D");
+    // Thread / Subgroup / Workgroup / Device / All
     private static final List<String> namePrefixesOpenCL = List.of("T", "S", "W", "D", "A");
 
     private final Program program;
@@ -37,7 +38,7 @@ public class MemoryTransformer extends ExprTransformer {
     private Map<NonDetValue, NonDetValue> nonDetMapping;
     private int tid;
 
-    public MemoryTransformer(ScopeSizes grid, Function function, BuiltIn builtIn, Set<ScopedPointerVariable> variables) {
+    public MemoryTransformer(ThreadGrid grid, Function function, BuiltIn builtIn, Set<ScopedPointerVariable> variables) {
         this.program = function.getProgram();
         this.function = function;
         this.builtIn = builtIn;
@@ -45,13 +46,18 @@ public class MemoryTransformer extends ExprTransformer {
                 Stream.generate(() -> new HashMap<MemoryObject, MemoryObject>()).limit(namePrefixesVulkan.size()).toList() :
                 Stream.generate(() -> new HashMap<MemoryObject, MemoryObject>()).limit(namePrefixesOpenCL.size()).toList();
         this.pointerMapping = variables.stream().collect(Collectors.toMap((ScopedPointerVariable::getAddress), (v -> v)));
-        this.scopeIdProvider = List.of(grid::thId, grid::sgId, grid::wgId, grid::qfId, grid::dvId);
+        this.scopeIdProvider = List.of(
+                i -> grid.getId(i, 4),
+                i -> grid.getId(i, 3),
+                i -> grid.getId(i, 2),
+                i -> grid.getId(i, 1),
+                i -> grid.getId(i, 0));
         this.namePrefixIdxProvider = List.of(
                 i -> i,
-                i -> i / grid.sgSize(),
-                i -> i / grid.wgSize(),
-                i -> i / grid.qfSize(),
-                i -> i / grid.dvSize());
+                i -> i / grid.getSize(3),
+                i -> i / grid.getSize(2),
+                i -> i / grid.getSize(1),
+                i -> i / grid.getSize(0));
     }
 
     public Register getRegisterMapping(Register register) {

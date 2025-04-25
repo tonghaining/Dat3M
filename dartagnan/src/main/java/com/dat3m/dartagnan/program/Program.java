@@ -31,7 +31,7 @@ public class Program {
     private Arch arch;
     private int unrollingBound = 0;
     private boolean isCompiled;
-    private ScopeSizes scopeSizes;
+    private ThreadGrid threadGrid;
     private String entryPoint;
     private int nextConstantId = 0;
     public Program(Memory memory, SourceLanguage format) {
@@ -143,12 +143,12 @@ public class Program {
         this.entryPoint = entryPoint;
     }
 
-    public ScopeSizes getScopeSizes() {
-        return scopeSizes;
+    public ThreadGrid getScopeSizes() {
+        return threadGrid;
     }
 
-    public void setScopeSizes(ScopeSizes scopeSizes) {
-        this.scopeSizes = scopeSizes;
+    public void setScopeSizes(ThreadGrid threadGrid) {
+        this.threadGrid = threadGrid;
     }
 
     public void addTransformer(ExprTransformer transformer) {
