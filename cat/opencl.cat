@@ -25,7 +25,7 @@ OpenCL
 // dynamic_tag relates events to itself that access an address whose init event is marked X or Fence tagged with X
 let dynamic_tag(X) = [range([IW & X]; loc)] | [X & F]
 
-let mo = dynamic_tag(~NAL); co; dynamic_tag(~NAL)
+let mo = co \ ([NA]; co; [NA])
 let sb = po
 let rb = rf^-1;mo | ([R] \ [range(rf)]);loc;[W]
 let unv = _ * _
@@ -96,8 +96,8 @@ irreflexive rf; (ghb | lhb) as O-Rf
 let vis(hb) = (W * R) & hb & loc & ~((hb & loc); [W]; hb)
 
 (* A non-atomic load can only read from a store that is visible. *)
-empty (rf; (dynamic_tag(NAL) & dynamic_tag(GLOBAL))) \ vis(ghb) as O-NaRfG
-empty (rf; (dynamic_tag(NAL) & dynamic_tag(LOCAL))) \ vis(lhb) as O-NaRfL
+empty (rf; [NA] & dynamic_tag(GLOBAL)) \ vis(ghb) as O-NaRfG
+empty (rf; [NA] & dynamic_tag(LOCAL)) \ vis(lhb) as O-NaRfL
 
 (* Consistency of RMWs *)
 // The original model was tested with Herd, which treats RMW as a single atomic operation.
