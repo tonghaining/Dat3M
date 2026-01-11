@@ -1,0 +1,19 @@
+OPENCL barrier-ordered
+
+{
+[x] = 0;
+}
+
+P0@wg 0, dev 0 (global int* x) {
+ atomic_store_explicit(x, 1, memory_order_release);
+}
+
+P1@wg 0, dev 0 (global int* x) {
+ int r1 = *x;
+ int r2 = 1;
+ if (r1 == 1) {
+  r2 = atomic_exchange_explicit(x, 0, memory_order_acq_rel);
+ }
+}
+
+forall (1:r2=1)

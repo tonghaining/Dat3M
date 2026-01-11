@@ -12,6 +12,7 @@ litmus/OPENCL/herd/RWC.litmus,0
 litmus/OPENCL/herd/S.litmus,0
 litmus/OPENCL/herd/SB.litmus,0
 litmus/OPENCL/herd/SB1.litmus,0
+litmus/OPENCL/herd/SB2.litmus,0
 litmus/OPENCL/herd/WRC.litmus,0
 litmus/OPENCL/herd/barrier_example.litmus,1
 litmus/OPENCL/herd/global_barrier.litmus,0
@@ -21,10 +22,6 @@ litmus/OPENCL/herd/old/MP_dr.litmus,0
 litmus/OPENCL/herd/old/MP_relacq.litmus,0
 litmus/OPENCL/herd/old/MP_relaxed.litmus,0
 litmus/OPENCL/herd/old/MP_relseq.litmus,0
-litmus/OPENCL/mixedAtomicity/barrier-ordered.litmus,1
-litmus/OPENCL/mixedAtomicity/histgram.litmus,1
-litmus/OPENCL/mixedAtomicity/MP.litmus,0
-litmus/OPENCL/mixedAtomicity/partial-atomic.litmus,0
 litmus/OPENCL/overhauling/example4.litmus,1
 litmus/OPENCL/overhauling/example5.litmus,0
 litmus/OPENCL/overhauling/example6.litmus,1
@@ -42,3 +39,16 @@ litmus/OPENCL/overhauling/MP_ra_dev.litmus,1
 litmus/OPENCL/overhauling/MP_ra_dev_broken.litmus,0
 litmus/OPENCL/overhauling/MP_ra_wg.litmus,0
 litmus/OPENCL/overhauling/MP_ra_dev.litmus,1
+litmus/OPENCL/mixedAtomicity/histgram.litmus,1
+litmus/OPENCL/mixedAtomicity/barrier-ordered.litmus,1
+litmus/OPENCL/mixedAtomicity/wkwk-mp-ordered.litmus,0
+litmus/OPENCL/mixedAtomicity/relacq-mp-ordered.litmus,1
+litmus/OPENCL/mixedAtomicity/rlxrlx-mp-ordered.litmus,0
+litmus/OPENCL/mixedAtomicity/relrlx-mp-ordered.litmus,0
+litmus/OPENCL/mixedAtomicity/rlxacq-mp-ordered.litmus,0
+litmus/OPENCL/mixedAtomicity/sc-fence-ordered.litmus,1
+litmus/OPENCL/mixedAtomicity/partial-atomic.litmus,0
+litmus/OPENCL/mixedAtomicity/partial-atomic1.litmus,0
+litmus/OPENCL/mixedAtomicity/partial-atomic2.litmus,1
+litmus/OPENCL/mixedAtomicity/mp-fence-rel-acq.litmus,1
+litmus/OPENCL/mixedAtomicity/ttas-lock.litmus,0
