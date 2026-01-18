@@ -8,7 +8,7 @@ OpenCL
 *)
 
 // Base relations:
-// int: same work-item
+// swi: same work-item (same thread)
 // swg: same work-group
 // sdv: same device
 // syncbar: same barrier id
@@ -24,11 +24,11 @@ OpenCL
 // dynamic_tag relates events to itself that access an address whose init event is marked X or Fence tagged with X
 let dynamic_tag(X) = [range([IW & X]; loc)] | [X & F]
 
-let mo = co \ ([NA]; co; [NA])
+let mo = co \ (NA * NA)
 let sb = po
 let rb = rf^-1;mo | ([R] \ [range(rf)]);loc;[W]
 let unv = _ * _
-let wi = int
+let swi = int
 
 (* Inclusive scopes *)
 let incl = (swg & (WG * WG)) | (sdv & (DV * DV)) | (ALL * ALL)
@@ -45,17 +45,17 @@ let Fsb = [F]; sb
 let sbF = sb; [F]
 
 (* Release sequence *)
-let rs_prime = (_ * RMW) | wi
+let rs_prime = (_ * RMW) | swi
 let rs = mo & rs_prime & ~((mo & ~rs_prime) ; mo)
 
 (* Release-acquire synchronisation *)
-let ra_sw(r) = ((r & [Rel]); Fsb?; [W]; rs?; r; rf; [R]; sbF?; ([Acq] & r)) & incl & ~wi
+let ra_sw(r) = ((r & [Rel]); Fsb?; [W]; rs?; r; rf; [R]; sbF?; ([Acq] & r)) & incl & ~swi
 
 (* Barrier synchronisation *)
 // in OpenCL a barrier results in two fence operations: entry and exit fences:
 // https://registry.khronos.org/OpenCL/specs/3.0-unified/html/OpenCL_API.html#_work_group_functions
 // In our implementation, we use a single barrier event and omit the special EF and XF tags
-let bar_sw(r) = r; syncbar & ~wi & swg; r
+let bar_sw(r) = r; syncbar & ~swi & swg; r
 
 (* Allowed to synchronise on the other region *)
 let scf = (SC * SC) | ((dynamic_tag(GLOBAL) & dynamic_tag(LOCAL)); unv; (dynamic_tag(GLOBAL) & dynamic_tag(LOCAL)))
@@ -102,7 +102,7 @@ empty (rf; [NA] & dynamic_tag(LOCAL)) \ vis(lhb) as O-NaRfL
 // The original model was tested with Herd, which treats RMW as a single atomic operation.
 // We have modified the model to handle RMW as a sequence of atomic operations.
 // irreflexive rf | (mo;mo;rf^-1) | (mo;rf) as O-Rmw
-empty rmw & (fre; coe) as atomic
+empty rmw & (fre; coe) as 0-Atomic
 
 (****************************************)
 (* Sequential consistency, simplified,  *)
@@ -119,10 +119,10 @@ acyclic (SC*SC) & scp & incl as O-Sscoped
 (* data_races *)
 let cnf = ((W * W) | (W * R) | (R * W)) & loc
 // TODO: "there is exactly one initial event per location", in current implementation, memory object like global scope id is initialized by three write events
-let dr = cnf & ~(ghb | lhb) & ~(ghb | lhb)^-1 & ~wi & ~incl \ ((_ * IW) | (IW * _))
+let dr = cnf & ~(ghb | lhb) & ~(ghb | lhb)^-1 & ~swi & ~incl \ ((_ * IW) | (IW * _))
 flag ~empty dr as data_race
 
 (* unsequenced_races *)
 let symm(r) = r | r^-1
-let ur = (wi & cnf & ~symm(sb)) \ id
+let ur = (swi & cnf & ~symm(sb)) \ id
 flag ~empty ur as unsequenced_race
