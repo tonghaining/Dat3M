@@ -65,7 +65,7 @@
        %uint = OpTypeInt 32 0
      %uint_2 = OpConstant %uint 2
      %uint_0 = OpConstant %uint 0
-   %uint_784 = OpConstant %uint 784
+   %uint_272 = OpConstant %uint 272
      %uint_1 = OpConstant %uint 1
 %_arr_uint_uint_2 = OpTypeArray %uint %uint_2
 %_ptr_Workgroup__arr_uint_uint_2 = OpTypePointer Workgroup %_arr_uint_uint_2
@@ -103,7 +103,7 @@
          %32 = OpLoad %uint %tid Aligned 4
    %arrayidx = OpInBoundsPtrAccessChain %_ptr_Workgroup_uint %histo_main_kernel_sub_histo %uint_0 %32
                OpStore %arrayidx %uint_0 Aligned 4
-               OpControlBarrier %uint_2 %uint_2 %uint_784
+               OpControlBarrier %uint_2 %uint_2 %uint_272
          %37 = OpLoad %_ptr_CrossWorkgroup_uint %sm_mappings_addr Aligned 4
          %38 = OpLoad %uint %gid Aligned 4
   %arrayidx2 = OpInBoundsPtrAccessChain %_ptr_CrossWorkgroup_uint %37 %38
@@ -112,8 +112,8 @@
          %41 = OpLoad %uint %bin_index Aligned 4
   %arrayidx3 = OpInBoundsPtrAccessChain %_ptr_Workgroup_uint %histo_main_kernel_sub_histo %uint_0 %41
 %arrayidx3_ascast = OpPtrCastToGeneric %_ptr_Generic_uint %arrayidx3
-      %call4 = OpAtomicIAdd %uint %arrayidx3_ascast %uint_1 %uint_0 %uint_1
-               OpControlBarrier %uint_2 %uint_2 %uint_784
+      %call4 = OpAtomicIAdd %uint %arrayidx3_ascast %uint_2 %uint_0 %uint_1
+               OpControlBarrier %uint_2 %uint_2 %uint_272
          %47 = OpLoad %uint %tid Aligned 4
   %arrayidx5 = OpInBoundsPtrAccessChain %_ptr_Workgroup_uint %histo_main_kernel_sub_histo %uint_0 %47
          %49 = OpLoad %uint %arrayidx5 Aligned 4

@@ -95,8 +95,8 @@ irreflexive rf; (ghb | lhb) as O-Rf
 let vis(hb) = (W * R) & hb & loc & ~((hb & loc); [W]; hb)
 
 (* A non-atomic load can only read from a store that is visible. *)
-empty (rf; [NA] & dynamic_tag(GLOBAL)) \ vis(ghb) as O-NaRfG
-empty (rf; [NA] & dynamic_tag(LOCAL)) \ vis(lhb) as O-NaRfL
+empty (rf; ([NA] & dynamic_tag(GLOBAL))) \ vis(ghb) as O-NaRfG
+empty (rf; ([NA] & dynamic_tag(LOCAL))) \ vis(lhb) as O-NaRfL
 
 (* Consistency of RMWs *)
 // The original model was tested with Herd, which treats RMW as a single atomic operation.
