@@ -199,14 +199,15 @@ public class VisitorLitmusC extends LitmusCBaseVisitor<Object> {
         Register register = programBuilder.getOrNewRegister(scope, name, archType);
         boolean atomicity = ctx.pointerTypeSpecifier().atomicTypeSpecifier() != null
                 || ctx.pointerTypeSpecifier().basicTypeSpecifier().AtomicInt() != null;
+        if (!atomicity) {
+            object.addFeatureTag(C11.NON_ATOMIC_LOCATION);
+        }
         if (isOpenCL) {
             if (ctx.pointerTypeSpecifier().openCLSpace() != null) {
                 object.addFeatureTag(ctx.pointerTypeSpecifier().openCLSpace().space);
             } else {
                 object.addFeatureTag(Tag.OpenCL.DEFAULT_SPACE);
             }
-        } else if (!atomicity) {
-            object.addFeatureTag(C11.NON_ATOMIC_LOCATION);
         }
         programBuilder.addChild(currentThread, EventFactory.newLocal(register, object));
         return null;
