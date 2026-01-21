@@ -50,7 +50,7 @@ let rs_prime = (_ * RMW) | wi
 let rs = mo & rs_prime & ~((mo & ~rs_prime) ; mo)
 
 (* Release-acquire synchronisation *)
-let ra_sw(r) = ((r & [Rel]); Fsb?; [W \ WI]; rs?; r; rf; [R \ WI]; sbF?; ([Acq] & r)) & incl & ~wi
+let ra_sw(r) = ((r & [Rel]); Fsb?; [W & A]; rs?; r; rf; [R & A]; sbF?; ([Acq] & r)) & incl & ~wi
 
 (* Barrier synchronisation *)
 // in OpenCL a barrier results in two fence operations: entry and exit fences:
@@ -120,7 +120,7 @@ acyclic (SC*SC) & scp & incl as O-Sscoped
 (* data_races *)
 let cnf = ((W * W) | (W * R) | (R * W)) & loc
 // TODO: "there is exactly one initial event per location", in current implementation, memory object like global scope id is initialized by three write events
-let dr = cnf & ~(ghb | lhb) & ~(ghb | lhb)^-1 & ~wi & ~incl \ ((_ * IW) | (IW * _))
+let dr = cnf & ~(ghb | lhb) & ~(ghb | lhb)^-1 & ~wi & ~incl \ (IW * IW)
 flag ~empty dr as data_race
 
 (* unsequenced_races *)

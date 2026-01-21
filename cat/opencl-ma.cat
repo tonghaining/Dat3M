@@ -70,8 +70,9 @@ let lsw = ra_sw(dynamic_tag(LOCAL)) | bar_sw(dynamic_tag(LOCAL)) | (scf & ra_sw(
 
 (* Global and local happens-before *)
 // Since we use single barrier events, we exclude the identity relation from the happens-before relation
-let ghb = ((dynamic_tag(GLOBAL); sb; dynamic_tag(GLOBAL)) | (dynamic_tag(GLOBAL); IW * ~IW; dynamic_tag(GLOBAL)) | gsw)+ \ id
-let lhb = ((dynamic_tag(LOCAL); sb; dynamic_tag(LOCAL)) | (dynamic_tag(LOCAL); IW * ~IW; dynamic_tag(LOCAL)) | lsw)+ \ id
+let ini = IW * ~IW
+let ghb = ((dynamic_tag(GLOBAL); sb; dynamic_tag(GLOBAL)) | (dynamic_tag(GLOBAL); ini; dynamic_tag(GLOBAL)) | gsw)+ \ id
+let lhb = ((dynamic_tag(LOCAL); sb; dynamic_tag(LOCAL)) | (dynamic_tag(LOCAL); ini; dynamic_tag(LOCAL)) | lsw)+ \ id
 
 irreflexive ghb as O-HbG
 irreflexive lhb as O-HbL
@@ -119,7 +120,7 @@ acyclic (SC*SC) & scp & incl as O-Sscoped
 (* data_races *)
 let cnf = ((W * W) | (W * R) | (R * W)) & loc
 // TODO: "there is exactly one initial event per location", in current implementation, memory object like global scope id is initialized by three write events
-let dr = cnf & ~(ghb | lhb) & ~(ghb | lhb)^-1 & ~wi & ~incl \ ((_ * IW) | (IW * _))
+let dr = cnf & ~(ghb | lhb) & ~(ghb | lhb)^-1 & ~wi & ~incl \ (IW * IW)
 flag ~empty dr as data_race
 
 (* unsequenced_races *)
