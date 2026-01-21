@@ -23,7 +23,8 @@ litmus/OPENCL/herd/old/MP_relacq.litmus,1
 litmus/OPENCL/herd/old/MP_relaxed.litmus,1
 litmus/OPENCL/herd/old/MP_relseq.litmus,1
 litmus/OPENCL/mixedAtomicity/barrier-ordered.litmus,1
-litmus/OPENCL/mixedAtomicity/histgram.litmus,1
+litmus/OPENCL/mixedAtomicity/histogram.litmus,1
+litmus/OPENCL/mixedAtomicity/rmw-bar.litmus,1
 litmus/OPENCL/mixedAtomicity/relacq-mp-ordered.litmus,1
 litmus/OPENCL/mixedAtomicity/sc-fence-ordered.litmus,1
 litmus/OPENCL/mixedAtomicity/partial-atomic2.litmus,1

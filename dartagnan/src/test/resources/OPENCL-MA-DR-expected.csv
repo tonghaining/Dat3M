@@ -39,7 +39,8 @@ litmus/OPENCL/overhauling/MP_ra_dev.litmus,1
 litmus/OPENCL/overhauling/MP_ra_dev_broken.litmus,0
 litmus/OPENCL/overhauling/MP_ra_wg.litmus,0
 litmus/OPENCL/overhauling/MP_ra_dev.litmus,1
-litmus/OPENCL/mixedAtomicity/histgram.litmus,1
+litmus/OPENCL/mixedAtomicity/histogram.litmus,1
+litmus/OPENCL/mixedAtomicity/rmw-bar.litmus,1
 litmus/OPENCL/mixedAtomicity/barrier-ordered.litmus,1
 litmus/OPENCL/mixedAtomicity/wkwk-mp-ordered.litmus,0
 litmus/OPENCL/mixedAtomicity/relacq-mp-ordered.litmus,1
