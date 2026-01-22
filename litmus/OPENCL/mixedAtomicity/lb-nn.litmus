@@ -1,0 +1,18 @@
+OPENCL LB
+
+{
+[x] = 0;
+[y] = 0;
+}
+
+P0@wg 0, dev 0 (global int* x, global int* y){
+  if (atomic_load_explicit(x, memory_order_relaxed, memory_scope_work_group) == 1)
+    *y=1;
+}
+
+P1@wg 0, dev 0 (global int* x, global int* y){
+  if (*y == 1)
+    *x=1;
+}
+
+~exists (x == 1 /\ y == 1)
