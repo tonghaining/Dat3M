@@ -113,7 +113,7 @@ public class SpirvRacesTest {
                 {"atomics/refined_atomic_abstraction/intra_local_counters.spvasm", 1, PASS},
 
                 // Should pass according to gpu-verify, suspecting a bug in the memory model
-                {"atomics/counter.spvasm", 1, FAIL},
+                {"atomics/counter.spvasm", 1, PASS},
 
                 // In gpu-verify fails barrier divergence but not leading to a data race
                 // TODO: check opencl barrier divergence
@@ -127,7 +127,7 @@ public class SpirvRacesTest {
 
                 // barrier avvis variations
                 {"inter_group_and_barrier_flag_tests/fail/missing_local_barrier_flag.spvasm", 1, FAIL},
-                {"inter_group_and_barrier_flag_tests/pass/local_barrier_flag.spvasm", 1, FAIL},
+                {"inter_group_and_barrier_flag_tests/pass/local_barrier_flag.spvasm", 1, PASS},
 
                 // Unsupported large array (4K elements) leading to OOM
                 // {"misc/fail/2d_array_race.spvasm", 1, FAIL},
