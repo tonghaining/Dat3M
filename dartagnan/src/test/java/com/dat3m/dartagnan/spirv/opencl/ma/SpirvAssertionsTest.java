@@ -52,7 +52,7 @@ public class SpirvAssertionsTest {
                 {"histogram-4.1.1.spvasm", 2, PASS},
                 {"histogram-implicit-1.1.4.spvasm", 2, FAIL},
                 {"histogram-implicit-4.1.1.spvasm", 2, PASS},
-                {"arrayfire-fast-2.1.1.spvasm", 2, PASS},
+                {"arrayfire-fast-2.1.2.spvasm", 2, PASS},
         });
     }
 
