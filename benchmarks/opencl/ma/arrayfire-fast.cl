@@ -17,17 +17,18 @@
 #define bar_flag CLK_LOCAL_MEM_FENCE
 #endif
 
-__kernel void compact_features(__global int* flags,
-                               __global int* out_indices,
-                               uint group_offset) {
+__kernel void compact_features(__global uint* flags,
+                               __global uint* out_indices,
+                               __global uint* group_offset) {
     __local uint s_idx;
 
-    int tid = get_local_id(0);
-    int gid = get_global_id(0);
+    uint tid = get_local_id(0);
+    uint gid = get_global_id(0);
+    uint group_id = get_group_id(0);
 
     // The work-group leader initializes the index using a plain store.
     if (tid == 0) {
-        s_idx = group_offset;
+        s_idx = group_offset[group_id];
     }
 
     barrier(bar_flag);
