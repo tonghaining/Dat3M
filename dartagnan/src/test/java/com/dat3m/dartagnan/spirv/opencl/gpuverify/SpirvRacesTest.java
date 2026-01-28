@@ -113,7 +113,8 @@ public class SpirvRacesTest {
                 {"atomics/refined_atomic_abstraction/intra_local_counters.spvasm", 1, PASS},
 
                 // Should pass according to gpu-verify, suspecting a bug in the memory model
-                {"atomics/counter.spvasm", 1, PASS},
+                // Accessing NAL using ATOMIC instructions
+                {"atomics/counter.spvasm", 1, FAIL},
 
                 // In gpu-verify fails barrier divergence but not leading to a data race
                 // TODO: check opencl barrier divergence

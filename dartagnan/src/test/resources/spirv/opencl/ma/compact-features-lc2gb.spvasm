@@ -6,14 +6,15 @@
 ; SPIR-V
 ; Version: 1.4
 ; Generator: Khronos LLVM/SPIR-V Translator; 14
-; Bound: 63
+; Bound: 66
 ; Schema: 0
                OpCapability Addresses
                OpCapability Linkage
                OpCapability Kernel
+               OpCapability GenericPointer
           %1 = OpExtInstImport "OpenCL.std"
                OpMemoryModel Physical32 OpenCL
-               OpEntryPoint Kernel %57 "compact_features" %compact_features_s_idx %__spirv_BuiltInLocalInvocationId %__spirv_BuiltInGlobalInvocationId %__spirv_BuiltInWorkgroupId
+               OpEntryPoint Kernel %60 "compact_features" %compact_features_s_idx %__spirv_BuiltInLocalInvocationId %__spirv_BuiltInGlobalInvocationId %__spirv_BuiltInWorkgroupId
                OpSource OpenCL_C 200000
                OpName %compact_features_s_idx "compact_features.s_idx"
                OpName %__spirv_BuiltInLocalInvocationId "__spirv_BuiltInLocalInvocationId"
@@ -75,6 +76,7 @@
      %uint_0 = OpConstant %uint 0
      %uint_2 = OpConstant %uint 2
    %uint_528 = OpConstant %uint 528
+     %uint_1 = OpConstant %uint 1
 %_ptr_Workgroup_uint = OpTypePointer Workgroup %uint
      %v3uint = OpTypeVector %uint 3
 %_ptr_Input_v3uint = OpTypePointer Input %v3uint
@@ -84,6 +86,7 @@
 %_ptr_Function__ptr_CrossWorkgroup_uint = OpTypePointer Function %_ptr_CrossWorkgroup_uint
 %_ptr_Function_uint = OpTypePointer Function %uint
        %bool = OpTypeBool
+%_ptr_Generic_uint = OpTypePointer Generic %uint
 %compact_features_s_idx = OpVariable %_ptr_Workgroup_uint Workgroup
 %__spirv_BuiltInLocalInvocationId = OpVariable %_ptr_Input_v3uint Input
 %__spirv_BuiltInGlobalInvocationId = OpVariable %_ptr_Input_v3uint Input
@@ -114,39 +117,40 @@
                OpStore %group_id %call2 Aligned 4
          %37 = OpLoad %uint %tid Aligned 4
         %cmp = OpIEqual %bool %37 %uint_0
+         %42 = OpPtrCastToGeneric %_ptr_Generic_uint %compact_features_s_idx
                OpBranchConditional %cmp %if_then %if_end
     %if_then = OpLabel
-         %41 = OpLoad %_ptr_CrossWorkgroup_uint %group_offset_addr Aligned 4
-         %42 = OpLoad %uint %group_id Aligned 4
-   %arrayidx = OpInBoundsPtrAccessChain %_ptr_CrossWorkgroup_uint %41 %42
-         %44 = OpLoad %uint %arrayidx Aligned 4
-               OpStore %compact_features_s_idx %44 Aligned 4
+         %43 = OpLoad %_ptr_CrossWorkgroup_uint %group_offset_addr Aligned 4
+         %44 = OpLoad %uint %group_id Aligned 4
+   %arrayidx = OpInBoundsPtrAccessChain %_ptr_CrossWorkgroup_uint %43 %44
+         %46 = OpLoad %uint %arrayidx Aligned 4
+               OpStore %compact_features_s_idx %46 Aligned 4
                OpBranch %if_end
      %if_end = OpLabel
                OpControlBarrier %uint_2 %uint_2 %uint_528
-         %47 = OpLoad %_ptr_CrossWorkgroup_uint %flags_addr Aligned 4
-         %48 = OpLoad %uint %gid Aligned 4
-  %arrayidx3 = OpInBoundsPtrAccessChain %_ptr_CrossWorkgroup_uint %47 %48
-         %50 = OpLoad %uint %arrayidx3 Aligned 4
-     %tobool = OpINotEqual %bool %50 %uint_0
+         %49 = OpLoad %_ptr_CrossWorkgroup_uint %flags_addr Aligned 4
+         %50 = OpLoad %uint %gid Aligned 4
+  %arrayidx3 = OpInBoundsPtrAccessChain %_ptr_CrossWorkgroup_uint %49 %50
+         %52 = OpLoad %uint %arrayidx3 Aligned 4
+     %tobool = OpINotEqual %bool %52 %uint_0
                OpBranchConditional %tobool %if_then4 %if_end7
    %if_then4 = OpLabel
-      %call5 = OpAtomicIIncrement %uint %compact_features_s_idx %uint_2 %uint_0
+      %call5 = OpAtomicIAdd %uint %42 %uint_1 %uint_0 %uint_1
                OpStore %dst %call5 Aligned 4
-         %53 = OpLoad %uint %gid Aligned 4
-         %54 = OpLoad %_ptr_CrossWorkgroup_uint %out_indices_addr Aligned 4
-         %55 = OpLoad %uint %dst Aligned 4
-  %arrayidx6 = OpInBoundsPtrAccessChain %_ptr_CrossWorkgroup_uint %54 %55
-               OpStore %arrayidx6 %53 Aligned 4
+         %56 = OpLoad %uint %gid Aligned 4
+         %57 = OpLoad %_ptr_CrossWorkgroup_uint %out_indices_addr Aligned 4
+         %58 = OpLoad %uint %dst Aligned 4
+  %arrayidx6 = OpInBoundsPtrAccessChain %_ptr_CrossWorkgroup_uint %57 %58
+               OpStore %arrayidx6 %56 Aligned 4
                OpBranch %if_end7
     %if_end7 = OpLabel
                OpReturn
                OpFunctionEnd
-         %57 = OpFunction %void DontInline %12
+         %60 = OpFunction %void DontInline %12
     %flags_0 = OpFunctionParameter %_ptr_CrossWorkgroup_uint
 %out_indices_0 = OpFunctionParameter %_ptr_CrossWorkgroup_uint
 %group_offset_0 = OpFunctionParameter %_ptr_CrossWorkgroup_uint
-         %61 = OpLabel
-         %62 = OpFunctionCall %void %compact_features %flags_0 %out_indices_0 %group_offset_0
+         %64 = OpLabel
+         %65 = OpFunctionCall %void %compact_features %flags_0 %out_indices_0 %group_offset_0
                OpReturn
                OpFunctionEnd

@@ -1,4 +1,4 @@
-package com.dat3m.dartagnan.spirv.opencl.ma;
+package com.dat3m.dartagnan.spirv.vulkan.ma;
 
 import com.dat3m.dartagnan.configuration.Arch;
 import com.dat3m.dartagnan.encoding.ProverWithTracker;
@@ -24,22 +24,23 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.EnumSet;
 
-import static com.dat3m.dartagnan.configuration.Property.PROGRAM_SPEC;
+import static com.dat3m.dartagnan.configuration.Property.CAT_SPEC;
 import static com.dat3m.dartagnan.utils.ResourceHelper.getRootPath;
 import static com.dat3m.dartagnan.utils.ResourceHelper.getTestResourcePath;
-import static com.dat3m.dartagnan.utils.Result.*;
+import static com.dat3m.dartagnan.utils.Result.FAIL;
+import static com.dat3m.dartagnan.utils.Result.PASS;
 import static org.junit.Assert.assertEquals;
 
 @RunWith(Parameterized.class)
-public class SpirvAssertionsTest {
+public class SpirvRacesTest {
 
-    private final String modelPath = getRootPath("cat/opencl-ma.cat");
+    private final String modelPath = getRootPath("cat/vulkan.cat");
     private final String programPath;
     private final int bound;
     private final Result expected;
 
-    public SpirvAssertionsTest(String file, int bound, Result expected) {
-        this.programPath = getTestResourcePath("spirv/opencl/ma/" + file);
+    public SpirvRacesTest(String file, int bound, Result expected) {
+        this.programPath = getTestResourcePath("spirv/vulkan/ma/" + file);
         this.bound = bound;
         this.expected = expected;
     }
@@ -47,11 +48,10 @@ public class SpirvAssertionsTest {
     @Parameterized.Parameters(name = "{index}: {0}, {1}, {2}")
     public static Iterable<Object[]> data() throws IOException {
         return Arrays.asList(new Object[][]{
-                {"histogram-1.1.4.spvasm", 2, FAIL},
+                {"histogram-1.1.4.spvasm", 2, PASS},
                 {"histogram-2.1.2.spvasm", 2, PASS},
                 {"histogram-4.1.1.spvasm", 2, PASS},
-                {"histogram-implicit-1.1.4.spvasm", 2, FAIL},
-                {"histogram-implicit-4.1.1.spvasm", 2, PASS},
+                {"histogram-dv2wg.spvasm", 2, FAIL},
                 {"histogram-lc2gb-1.spvasm", 2, FAIL},
                 {"histogram-lc2gb-2.spvasm", 2, FAIL},
                 {"compact-features-2.1.2.spvasm", 2, PASS},
@@ -72,7 +72,7 @@ public class SpirvAssertionsTest {
                 cfg,
                 BasicLogManager.create(cfg),
                 ShutdownManager.create().getNotifier(),
-                SolverContextFactory.Solvers.Z3);
+                SolverContextFactory.Solvers.YICES2);
     }
 
     private ProverWithTracker mkProver(SolverContext ctx) {
@@ -83,9 +83,9 @@ public class SpirvAssertionsTest {
         VerificationTask.VerificationTaskBuilder builder = VerificationTask.builder()
                 .withConfig(Configuration.builder().build())
                 .withBound(bound)
-                .withTarget(Arch.OPENCL);
+                .withTarget(Arch.VULKAN);
         Program program = new ProgramParser().parse(new File(programPath));
         Wmm mcm = new ParserCat().parse(new File(modelPath));
-        return builder.build(program, mcm, EnumSet.of(PROGRAM_SPEC));
+        return builder.build(program, mcm, EnumSet.of(CAT_SPEC));
     }
 }
