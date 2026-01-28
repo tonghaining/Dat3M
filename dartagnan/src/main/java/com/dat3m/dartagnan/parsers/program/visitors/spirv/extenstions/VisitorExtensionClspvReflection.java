@@ -59,6 +59,12 @@ public class VisitorExtensionClspvReflection extends VisitorExtension<Expression
     }
 
     @Override
+    public Expression visitClspvReflection_workgroupVariableSize(SpirvParser.ClspvReflection_workgroupVariableSizeContext ctx) {
+        // Do nothing, will be overwritten by BuiltIn WorkgroupSize
+        return null;
+    }
+
+    @Override
     public Expression visitClspvReflection_pushConstantGlobalOffset(SpirvParser.ClspvReflection_pushConstantGlobalOffsetContext ctx) {
         return setPushConstantValue("PushConstantGlobalOffset", ctx.offsetIdRef().getText(), ctx.sizeIdRef().getText());
     }
@@ -195,7 +201,8 @@ public class VisitorExtensionClspvReflection extends VisitorExtension<Expression
                 "PushConstantNumWorkgroups",
                 "PushConstantRegionOffset",
                 "PushConstantRegionGroupOffset",
-                "SpecConstantWorkgroupSize"
+                "SpecConstantWorkgroupSize",
+                "WorkgroupVariableSize"
         );
     }
 }

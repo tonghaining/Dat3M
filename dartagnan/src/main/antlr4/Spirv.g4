@@ -1741,6 +1741,7 @@ clspvReflection
     |   clspvReflection_specConstantSubgroupMaxSize
     |   clspvReflection_specConstantWorkDim
     |   clspvReflection_specConstantWorkgroupSize
+    |   clspvReflection_workgroupVariableSize
     ;
 
 clspvReflection_kernel : ModeExt_Kernel kernelIdRef nameIdRef (numArguments (flags attributes?)?)?;
@@ -1755,6 +1756,7 @@ clspvReflection_argumentStorageImage : ModeExt_ArgumentStorageImage decl ordinal
 clspvReflection_argumentSampler : ModeExt_ArgumentSampler decl ordinal descriptorSetIdRef binding argInfo?;
 clspvReflection_argumentWorkgroup : ModeExt_ArgumentWorkgroup decl ordinal specId elemSize argInfo?;
 clspvReflection_specConstantWorkgroupSize : ModeExt_SpecConstantWorkgroupSize x y z;
+clspvReflection_workgroupVariableSize : ModeExt_WorkgroupVariableSize x y;
 clspvReflection_specConstantGlobalOffset : ModeExt_SpecConstantGlobalOffset x y z;
 clspvReflection_specConstantWorkDim : ModeExt_SpecConstantWorkDim dimIdRef;
 clspvReflection_pushConstantGlobalOffset : ModeExt_PushConstantGlobalOffset offsetIdRef sizeIdRef;

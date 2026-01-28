@@ -124,3 +124,4 @@
          %78 = OpExtInst %void %66 ArgumentInfo %77
          %79 = OpExtInst %void %66 ArgumentStorageBuffer %70 %uint_2 %uint_0 %uint_2 %78
          %84 = OpExtInst %void %66 SpecConstantWorkgroupSize %uint_0 %uint_1 %uint_2
+         %86 = OpExtInst %void %66 WorkgroupVariableSize %3 %uint_4
