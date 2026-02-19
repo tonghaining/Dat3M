@@ -1,7 +1,6 @@
 package com.dat3m.dartagnan.program.event;
 
-import com.dat3m.dartagnan.program.event.arch.StoreExclusive;
-import com.dat3m.dartagnan.program.event.arch.Xchg;
+import com.dat3m.dartagnan.program.event.arch.*;
 import com.dat3m.dartagnan.program.event.arch.ptx.PTXAtomCAS;
 import com.dat3m.dartagnan.program.event.arch.ptx.PTXAtomExch;
 import com.dat3m.dartagnan.program.event.arch.ptx.PTXAtomOp;
@@ -53,7 +52,10 @@ public interface EventVisitor<T> {
 
     // ------------------ Common Events ------------------
     default T visitStoreExclusive(StoreExclusive e) { return visitMemEvent(e); }
-    default T visitXchg(Xchg xchg) { return visitMemEvent(xchg); };
+    default T visitXchg(Xchg xchg) { return visitMemEvent(xchg); }
+    default T visitCas(CAS cas) { return visitMemEvent(cas); }
+    default T visitRMWOp(RMWOp rmwOp) { return visitMemEvent(rmwOp); };
+    default T visitRMWFetchOp(RMWFetchOp rmwOp) { return visitMemEvent(rmwOp); };
 
     // ------------------ Linux Events ------------------
     default T visitLKMMAddUnless(LKMMAddUnless e) { return visitMemEvent(e); }
