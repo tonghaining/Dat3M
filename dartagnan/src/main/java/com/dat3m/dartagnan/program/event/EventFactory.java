@@ -12,24 +12,14 @@ import com.dat3m.dartagnan.program.Function;
 import com.dat3m.dartagnan.program.Register;
 import com.dat3m.dartagnan.program.Thread;
 import com.dat3m.dartagnan.program.event.arch.*;
-import com.dat3m.dartagnan.program.event.arch.ptx.PTXAtomCAS;
-import com.dat3m.dartagnan.program.event.arch.ptx.PTXAtomExch;
-import com.dat3m.dartagnan.program.event.arch.ptx.PTXAtomOp;
-import com.dat3m.dartagnan.program.event.arch.ptx.PTXRedOp;
+import com.dat3m.dartagnan.program.event.arch.ptx.*;
 import com.dat3m.dartagnan.program.event.arch.tso.TSOXchg;
-import com.dat3m.dartagnan.program.event.arch.vulkan.VulkanCmpXchg;
-import com.dat3m.dartagnan.program.event.arch.vulkan.VulkanRMW;
-import com.dat3m.dartagnan.program.event.arch.vulkan.VulkanRMWOp;
+import com.dat3m.dartagnan.program.event.arch.vulkan.*;
 import com.dat3m.dartagnan.program.event.core.*;
-import com.dat3m.dartagnan.program.event.core.annotations.FunCallMarker;
-import com.dat3m.dartagnan.program.event.core.annotations.FunReturnMarker;
-import com.dat3m.dartagnan.program.event.core.annotations.StringAnnotation;
+import com.dat3m.dartagnan.program.event.core.annotations.*;
 import com.dat3m.dartagnan.program.event.core.special.StateSnapshot;
 import com.dat3m.dartagnan.program.event.core.threading.*;
-import com.dat3m.dartagnan.program.event.functions.AbortIf;
-import com.dat3m.dartagnan.program.event.functions.Return;
-import com.dat3m.dartagnan.program.event.functions.ValueFunctionCall;
-import com.dat3m.dartagnan.program.event.functions.VoidFunctionCall;
+import com.dat3m.dartagnan.program.event.functions.*;
 import com.dat3m.dartagnan.program.event.lang.catomic.*;
 import com.dat3m.dartagnan.program.event.lang.dat3m.*;
 import com.dat3m.dartagnan.program.event.lang.linux.*;
@@ -228,6 +218,14 @@ public class EventFactory {
         return new Local(register, expr);
     }
 
+    public static NonDetChoice newNonDetChoice(Register register) {
+        return new NonDetChoice(register, false);
+    }
+
+    public static NonDetChoice newSignedNonDetChoice(Register register, boolean isSigned) {
+        return new NonDetChoice(register, isSigned);
+    }
+
     public static Label newLabel(String name) {
         return new Label(name);
     }
@@ -267,6 +265,10 @@ public class EventFactory {
 
     public static Assert newAssert(Expression expr, String errorMessage) {
         return new Assert(expr, errorMessage);
+    }
+
+    public static LoopBound newLoopBound(Expression bound) {
+        return new LoopBound(bound);
     }
 
     // ------------------------------------------ RMW events ------------------------------------------
@@ -515,30 +517,6 @@ public class EventFactory {
 
         public static EndAtomic newEndAtomic(BeginAtomic begin) {
             return new EndAtomic(begin);
-        }
-
-        public static LoopBegin newLoopBegin() {
-            return new LoopBegin();
-        }
-
-        public static SpinStart newSpinStart() {
-            return new SpinStart();
-        }
-
-        public static SpinEnd newSpinEnd() {
-            return new SpinEnd();
-        }
-
-        public static LoopBound newLoopBound(Expression bound) {
-            return new LoopBound(bound);
-        }
-
-        public static NonDetChoice newNonDetChoice(Register register) {
-            return new NonDetChoice(register, false);
-        }
-
-        public static NonDetChoice newSignedNonDetChoice(Register register, boolean isSigned) {
-            return new NonDetChoice(register, isSigned);
         }
     }
 

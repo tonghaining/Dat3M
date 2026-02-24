@@ -180,10 +180,10 @@ public class Intrinsics {
         VERIFIER_ATOMIC_BEGIN("__VERIFIER_atomic_begin", false, false, true, true, Intrinsics::inlineAtomicBegin),
         VERIFIER_ATOMIC_END("__VERIFIER_atomic_end", false, false, true, true, Intrinsics::inlineAtomicEnd),
         // --------------------------- __VERIFIER ---------------------------
-        VERIFIER_LOOP_BEGIN("__VERIFIER_loop_begin", false, false, true, true, Intrinsics::inlineLoopBegin),
+        VERIFIER_LOOP_BEGIN("__VERIFIER_loop_begin", false, false, true, true, Intrinsics::inlineAsZero),
+        VERIFIER_SPIN_START("__VERIFIER_spin_start", false, false, true, true, Intrinsics::inlineAsZero),
+        VERIFIER_SPIN_END("__VERIFIER_spin_end", false, false, true, true, Intrinsics::inlineAsZero),
         VERIFIER_LOOP_BOUND("__VERIFIER_loop_bound", false, false, true, true, Intrinsics::inlineLoopBound),
-        VERIFIER_SPIN_START("__VERIFIER_spin_start", false, false, true, true, Intrinsics::inlineSpinStart),
-        VERIFIER_SPIN_END("__VERIFIER_spin_end", false, false, true, true, Intrinsics::inlineSpinEnd),
         VERIFIER_ASSUME("__VERIFIER_assume", false, false, true, true, Intrinsics::inlineAssume),
         VERIFIER_ASSERT("__VERIFIER_assert", false, false, true, true, Intrinsics::inlineUserAssert),
         VERIFIER_NONDET(List.of("__VERIFIER_nondet_bool",
@@ -380,21 +380,9 @@ public class Intrinsics {
         return List.of(exit);
     }
 
-    private List<Event> inlineLoopBegin(FunctionCall ignored) {
-        return List.of(EventFactory.Svcomp.newLoopBegin());
-    }
-
     private List<Event> inlineLoopBound(FunctionCall call) {
         final Expression boundExpression = call.getArguments().get(0);
-        return List.of(EventFactory.Svcomp.newLoopBound(boundExpression));
-    }
-
-    private List<Event> inlineSpinStart(FunctionCall ignored) {
-        return List.of(EventFactory.Svcomp.newSpinStart());
-    }
-
-    private List<Event> inlineSpinEnd(FunctionCall ignored) {
-        return List.of(EventFactory.Svcomp.newSpinEnd());
+        return List.of(EventFactory.newLoopBound(boundExpression));
     }
 
     private List<Event> inlineAssume(FunctionCall call) {
@@ -935,7 +923,7 @@ public class Intrinsics {
                 // Write-lock only if unlocked.
                 newRwlockTryWrlock(call, successRegister, lockAddress),
                 // Indicate success by returning zero.
-                EventFactory.Svcomp.newNonDetChoice(errorRegister),
+                EventFactory.newNonDetChoice(errorRegister),
                 EventFactory.newAssume(expressions.makeEQ(successRegister, expressions.makeEQ(errorRegister, success)))
         );
     }
@@ -960,7 +948,7 @@ public class Intrinsics {
         final Expression lockAddress = call.getArguments().get(0);
         return List.of(
                 // Expect any other value than write-locked.
-                EventFactory.Svcomp.newNonDetChoice(expectedRegister),
+                EventFactory.newNonDetChoice(expectedRegister),
                 EventFactory.newAssume(expressions.makeNEQ(expectedRegister, getRwlockWriteLockedValue())),
                 // Increment shared counter only if not locked by writer.
                 newRwlockTryRdlock(call, oldValueRegister, successRegister, lockAddress, expectedRegister),
@@ -982,14 +970,14 @@ public class Intrinsics {
         final Expression success = expressions.makeGeneralZero(errorRegister.getType());
         return List.of(
                 // Expect any other value than write-locked.
-                EventFactory.Svcomp.newNonDetChoice(expectedRegister),
+                EventFactory.newNonDetChoice(expectedRegister),
                 EventFactory.newAssume(expressions.makeNEQ(expectedRegister, getRwlockWriteLockedValue())),
                 // Increment shared counter only if not locked by writer.
                 newRwlockTryRdlock(call, oldValueRegister, successRegister, lockAddress, expectedRegister),
                 // Fail only if write-locked.
                 EventFactory.newAssume(expressions.makeOr(successRegister, expressions.makeEQ(oldValueRegister, getRwlockWriteLockedValue()))),
                 // Indicate success with zero.
-                EventFactory.Svcomp.newNonDetChoice(errorRegister),
+                EventFactory.newNonDetChoice(errorRegister),
                 EventFactory.newAssume(expressions.makeEQ(successRegister, expressions.makeEQ(errorRegister, success)))
         );
     }
@@ -1022,7 +1010,7 @@ public class Intrinsics {
         //TODO does not recognize whether the calling thread is allowed to unlock
         return List.of(
                 // decreases the lock value by 1, if not the last reader, or else 2.
-                EventFactory.Svcomp.newNonDetChoice(decrementRegister),
+                EventFactory.newNonDetChoice(decrementRegister),
                 EventFactory.Llvm.newRMW(oldValueRegister, lockAddress, decrementRegister, IntBinaryOp.SUB, Tag.C11.MO_RELEASE),
                 EventFactory.newAssume(expressions.makeEQ(decrementRegister, properDecrement)),
                 assignSuccess(errorRegister)
@@ -1562,7 +1550,7 @@ public class Intrinsics {
 
     private List<Event> inlineCallAsNonDet(FunctionCall call) {
         return List.of(
-                EventFactory.Svcomp.newSignedNonDetChoice(getResultRegister(call), true)
+                EventFactory.newSignedNonDetChoice(getResultRegister(call), true)
         );
     }
 
@@ -1609,7 +1597,7 @@ public class Intrinsics {
 
         final Register nonDetReg = call.getFunction().getOrNewRegister("__r_nondet_" + suffix, nonDetType);
         return List.of(
-                EventFactory.Svcomp.newSignedNonDetChoice(nonDetReg, signed),
+                EventFactory.newSignedNonDetChoice(nonDetReg, signed),
                 EventFactory.newLocal(result, expressions.makeCast(nonDetReg, result.getType(), signed))
         );
     }
