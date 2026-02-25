@@ -491,7 +491,11 @@
                         <plugin>
                             <artifactId>maven-surefire-plugin</artifactId>
                             <configuration>
-                                <argLine>@{argLine} -Djava.library.path=${project.build.directory}/${dat3m.library.path}:{java.library.path}</argLine>
+                            <argLine>
+                                @{argLine}
+                                -Djava.library.path=${project.build.directory}/${dat3m.library.path}:{java.library.path}
+                                --enable-native-access=ALL-UNNAMED
+                            </argLine>
                             </configuration>
                         </plugin>
                     </plugins>
