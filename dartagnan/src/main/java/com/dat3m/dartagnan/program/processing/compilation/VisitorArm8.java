@@ -191,27 +191,24 @@ class VisitorArm8 extends VisitorBase {
     }
 
     @Override
-    public List<Event> visitLlvmCmpXchg(LlvmCmpXchg e) {
-        Register oldValueRegister = e.getStructRegister(0);
-        Register resultRegister = e.getStructRegister(1);
-        verify(resultRegister.getType() instanceof BooleanType);
+    protected List<Event> newLlvmCmpXchg(Register oldValue, Register success, Expression address, Expression expected,
+            Expression newValue, String mo, boolean strong) {
+        verify(success.getType() instanceof BooleanType, "Non-boolean success register.");
 
-        Expression address = e.getAddress();
-        String mo = e.getMo();
-        Expression expectedValue = e.getExpectedValue();
+        final Local casCmpResult = newLocal(success, expressions.makeEQ(oldValue, expected));
+        final Label casEnd = newLabel("CAS_end");
+        final CondJump branchOnCasCmpResult = newJumpUnless(success, casEnd);
 
-        Local casCmpResult = newLocal(resultRegister, expressions.makeEQ(oldValueRegister, expectedValue));
-        Label casEnd = newLabel("CAS_end");
-        CondJump branchOnCasCmpResult = newJumpUnless(resultRegister, casEnd);
-
-        Load load = newRMWLoadExclusiveWithMo(oldValueRegister, address, ARMv8.extractLoadMoFromCMo(mo));
-        Store store = newRMWStoreExclusiveWithMo(address, e.getStoreValue(), true, ARMv8.extractStoreMoFromCMo(mo));
+        final Load load = newRMWLoadExclusiveWithMo(oldValue, address, ARMv8.extractLoadMoFromCMo(mo));
+        final Store store = newRMWStoreExclusiveWithMo(address, newValue, strong, ARMv8.extractStoreMoFromCMo(mo));
 
         return eventSequence(
                 load,
                 casCmpResult,
                 branchOnCasCmpResult,
                 store,
+                strong ? null : newExecutionStatus(success, store),
+                strong ? null : newLocal(success, expressions.makeNot(success)),
                 casEnd
         );
     }
