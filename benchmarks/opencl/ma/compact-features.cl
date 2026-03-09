@@ -1,9 +1,9 @@
 // clang -x cl -cl-std=CL2.0 -target spir-unknown-unknown -cl-opt-disable \
 //     -finline-functions -finline-hint-functions \
-//     -emit-llvm -fno-discard-value-names -c arrayfire-fast.cl
-//     -o arrayfire-fast.bc -DNUM_VAR=1 -DNUM_OUTPUT_VAR=1
-// llvm-spirv arrayfire-fast.bc -o arrayfire-fast.spv
-// spirv-dis arrayfire-fast.spv > arrayfire-fast.spvasm
+//     -emit-llvm -fno-discard-value-names -c compact-features.cl
+//     -o compact-features.bc -DNUM_VAR=1 -DNUM_OUTPUT_VAR=1
+// llvm-spirv compact-features.bc -o compact-features.spv
+// spirv-dis compact-features.spv > compact-features.spvasm
 
 #ifdef DV2WG
 #define scope memory_scope_work_group
