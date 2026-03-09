@@ -49,7 +49,7 @@ public class VisitorSpirvOpenCLTest {
                 Set.of( Tag.C11.MO_RELAXED, Tag.OpenCL.DEVICE, Tag.OpenCL.GLOBAL_SPACE)
         );
         doTestLoad(
-                Set.of(Tag.Spirv.WORKGROUP, Tag.Spirv.ACQUIRE, Tag.Spirv.SEM_WORKGROUP, Tag.Spirv.SC_FUNCTION),
+                Set.of(Tag.Spirv.WORKGROUP, Tag.Spirv.ACQUIRE, Tag.Spirv.SEM_WORKGROUP, Tag.Spirv.SC_WORKGROUP),
                 Set.of(Tag.OpenCL.WORK_GROUP, Tag.C11.MO_ACQUIRE, Tag.OpenCL.LOCAL_SPACE)
         );
     }
@@ -86,7 +86,7 @@ public class VisitorSpirvOpenCLTest {
                 Set.of( Tag.C11.MO_RELAXED, Tag.OpenCL.DEVICE, Tag.OpenCL.GLOBAL_SPACE)
         );
         doTestStore(
-                Set.of(Tag.Spirv.WORKGROUP, Tag.Spirv.RELEASE, Tag.Spirv.SEM_WORKGROUP, Tag.Spirv.SC_FUNCTION),
+                Set.of(Tag.Spirv.WORKGROUP, Tag.Spirv.RELEASE, Tag.Spirv.SEM_WORKGROUP, Tag.Spirv.SC_WORKGROUP),
                 Set.of(Tag.OpenCL.WORK_GROUP, Tag.C11.MO_RELEASE, Tag.OpenCL.LOCAL_SPACE)
         );
     }
@@ -127,7 +127,7 @@ public class VisitorSpirvOpenCLTest {
                 Set.of(Tag.C11.MO_ACQUIRE, Tag.OpenCL.WORK_ITEM, Tag.OpenCL.GENERIC_SPACE)
         );
         doTestSpirvLoad(
-                Set.of(Tag.Spirv.RELAXED, Tag.Spirv.DEVICE, Tag.Spirv.SC_FUNCTION),
+                Set.of(Tag.Spirv.RELAXED, Tag.Spirv.DEVICE, Tag.Spirv.SC_WORKGROUP),
                 Set.of(Tag.C11.MO_RELAXED, Tag.OpenCL.DEVICE, Tag.OpenCL.LOCAL_SPACE)
         );
     }
@@ -169,7 +169,7 @@ public class VisitorSpirvOpenCLTest {
                 Set.of(Tag.C11.MO_RELEASE, Tag.OpenCL.WORK_ITEM, Tag.OpenCL.GENERIC_SPACE)
         );
         doTestSpirvStore(
-                Set.of(Tag.Spirv.RELAXED, Tag.Spirv.DEVICE, Tag.Spirv.SC_FUNCTION),
+                Set.of(Tag.Spirv.RELAXED, Tag.Spirv.DEVICE, Tag.Spirv.SC_WORKGROUP),
                 Set.of(Tag.C11.MO_RELAXED, Tag.OpenCL.DEVICE, Tag.OpenCL.LOCAL_SPACE)
         );
     }
