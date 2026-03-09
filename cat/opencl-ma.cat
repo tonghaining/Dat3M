@@ -8,7 +8,7 @@ OpenCL
 *)
 
 // Base relations:
-// int: same work-item
+// wi: same work-item (same thread)
 // swg: same work-group
 // sdv: same device
 // syncbar: same barrier id
@@ -20,12 +20,11 @@ OpenCL
 // ALL: all-svm-devices scope
 // GLOBAL: global memory
 // LOCAL: local memory
-// NAL: non-atomic location
 
 // dynamic_tag relates events to itself that access an address whose init event is marked X or Fence tagged with X
 let dynamic_tag(X) = [range([IW & X]; loc)] | [X & F]
 
-let mo = dynamic_tag(~NAL); co; dynamic_tag(~NAL)
+let mo = co \ (NA * NA)
 let sb = po
 let rb = rf^-1;mo | ([R] \ [range(rf)]);loc;[W]
 let unv = _ * _
@@ -71,8 +70,9 @@ let lsw = ra_sw(dynamic_tag(LOCAL)) | bar_sw(dynamic_tag(LOCAL)) | (scf & ra_sw(
 
 (* Global and local happens-before *)
 // Since we use single barrier events, we exclude the identity relation from the happens-before relation
-let ghb = ((dynamic_tag(GLOBAL); sb; dynamic_tag(GLOBAL)) | (dynamic_tag(GLOBAL); IW * ~IW; dynamic_tag(GLOBAL)) | gsw)+ \ id
-let lhb = ((dynamic_tag(LOCAL); sb; dynamic_tag(LOCAL)) | (dynamic_tag(LOCAL); IW * ~IW; dynamic_tag(LOCAL)) | lsw)+ \ id
+let ini = IW * ~IW
+let ghb = ((dynamic_tag(GLOBAL); sb; dynamic_tag(GLOBAL)) | (dynamic_tag(GLOBAL); ini; dynamic_tag(GLOBAL)) | gsw)+ \ id
+let lhb = ((dynamic_tag(LOCAL); sb; dynamic_tag(LOCAL)) | (dynamic_tag(LOCAL); ini; dynamic_tag(LOCAL)) | lsw)+ \ id
 
 irreflexive ghb as O-HbG
 irreflexive lhb as O-HbL
@@ -96,14 +96,14 @@ irreflexive rf; (ghb | lhb) as O-Rf
 let vis(hb) = (W * R) & hb & loc & ~((hb & loc); [W]; hb)
 
 (* A non-atomic load can only read from a store that is visible. *)
-empty (rf; (dynamic_tag(NAL) & dynamic_tag(GLOBAL))) \ vis(ghb) as O-NaRfG
-empty (rf; (dynamic_tag(NAL) & dynamic_tag(LOCAL))) \ vis(lhb) as O-NaRfL
+empty (rf; ([NA] & dynamic_tag(GLOBAL))) \ vis(ghb) as O-NaRfG
+empty (rf; ([NA] & dynamic_tag(LOCAL))) \ vis(lhb) as O-NaRfL
 
 (* Consistency of RMWs *)
 // The original model was tested with Herd, which treats RMW as a single atomic operation.
 // We have modified the model to handle RMW as a sequence of atomic operations.
 // irreflexive rf | (mo;mo;rf^-1) | (mo;rf) as O-Rmw
-empty rmw & (fre; coe) as atomic
+empty rmw & (fre; coe) as 0-Atomic
 
 (****************************************)
 (* Sequential consistency, simplified,  *)

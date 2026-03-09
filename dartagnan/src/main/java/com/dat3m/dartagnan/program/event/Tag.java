@@ -378,6 +378,7 @@ public final class Tag {
         public static final String GLOBAL_SPACE = "GLOBAL";
         public static final String LOCAL_SPACE = "LOCAL";
         public static final String GENERIC_SPACE = "GENERIC";
+        public static final String PRIVATE = "PRIVATE";
         // Default Tags
         public static final String DEFAULT_SPACE = GENERIC_SPACE;
         public static final String DEFAULT_SCOPE = DEVICE;
@@ -563,7 +564,8 @@ public final class Tag {
                 // Storage class
                 case SC_GENERIC -> OpenCL.GENERIC_SPACE;
                 case SC_FUNCTION,
-                     SC_INPUT,
+                     SC_PRIVATE -> OpenCL.PRIVATE;
+                case SC_INPUT,
                      SC_WORKGROUP -> OpenCL.LOCAL_SPACE;
                 case SC_UNIFORM_CONSTANT,
                      SC_PHYS_STORAGE_BUFFER,
@@ -571,8 +573,7 @@ public final class Tag {
                 case SC_PUSH_CONSTANT,
                      SC_UNIFORM,
                      SC_OUTPUT,
-                     SC_STORAGE_BUFFER,
-                     SC_PRIVATE -> throw new UnsupportedOperationException(
+                     SC_STORAGE_BUFFER -> throw new UnsupportedOperationException(
                              getErrorMsg(model, "storage class", tag));
 
                 default -> throw new IllegalArgumentException(

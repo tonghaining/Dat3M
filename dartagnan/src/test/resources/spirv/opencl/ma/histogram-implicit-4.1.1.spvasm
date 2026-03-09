@@ -1,0 +1,136 @@
+; @Input: %sm_mappings_0 = {0, 1, 1, 1}
+; @Input: %global_histo_0 = {0, 0}
+; @Output: forall (%global_histo_0[0] == 1 and %global_histo_0[1] == 3)
+; @Config: 4, 1, 1
+; SPIR-V
+; Version: 1.4
+; Generator: Khronos LLVM/SPIR-V Translator; 14
+; Bound: 62
+; Schema: 0
+               OpCapability Addresses
+               OpCapability Linkage
+               OpCapability Kernel
+          %1 = OpExtInstImport "OpenCL.std"
+               OpMemoryModel Physical32 OpenCL
+               OpEntryPoint Kernel %57 "histo_main_kernel" %histo_main_kernel_sub_histo %__spirv_BuiltInLocalInvocationId %__spirv_BuiltInGlobalInvocationId
+               OpSource OpenCL_C 200000
+               OpName %histo_main_kernel_sub_histo "histo_main_kernel.sub_histo"
+               OpName %__spirv_BuiltInLocalInvocationId "__spirv_BuiltInLocalInvocationId"
+               OpName %__spirv_BuiltInGlobalInvocationId "__spirv_BuiltInGlobalInvocationId"
+               OpName %histo_main_kernel "histo_main_kernel"
+               OpName %sm_mappings "sm_mappings"
+               OpName %global_histo "global_histo"
+               OpName %entry "entry"
+               OpName %if_then "if.then"
+               OpName %if_end "if.end"
+               OpName %sm_mappings_addr "sm_mappings.addr"
+               OpName %global_histo_addr "global_histo.addr"
+               OpName %tid "tid"
+               OpName %gid "gid"
+               OpName %bin_index "bin_index"
+               OpName %count "count"
+               OpName %call "call"
+               OpName %call1 "call1"
+               OpName %arrayidx "arrayidx"
+               OpName %arrayidx2 "arrayidx2"
+               OpName %add_ptr "add.ptr"
+               OpName %call3 "call3"
+               OpName %arrayidx4 "arrayidx4"
+               OpName %cmp "cmp"
+               OpName %add_ptr5 "add.ptr5"
+               OpName %call6 "call6"
+               OpName %sm_mappings_0 "sm_mappings"
+               OpName %global_histo_0 "global_histo"
+               OpDecorate %histo_main_kernel_sub_histo Alignment 4
+               OpDecorate %__spirv_BuiltInLocalInvocationId LinkageAttributes "__spirv_BuiltInLocalInvocationId" Import
+               OpDecorate %__spirv_BuiltInLocalInvocationId Constant
+               OpDecorate %__spirv_BuiltInLocalInvocationId BuiltIn LocalInvocationId
+               OpDecorate %__spirv_BuiltInGlobalInvocationId LinkageAttributes "__spirv_BuiltInGlobalInvocationId" Import
+               OpDecorate %__spirv_BuiltInGlobalInvocationId Constant
+               OpDecorate %__spirv_BuiltInGlobalInvocationId BuiltIn GlobalInvocationId
+               OpDecorate %histo_main_kernel LinkageAttributes "histo_main_kernel" Export
+               OpDecorate %sm_mappings Alignment 4
+               OpDecorate %global_histo Alignment 4
+               OpDecorate %sm_mappings_addr Alignment 4
+               OpDecorate %global_histo_addr Alignment 4
+               OpDecorate %tid Alignment 4
+               OpDecorate %gid Alignment 4
+               OpDecorate %bin_index Alignment 4
+               OpDecorate %count Alignment 4
+               OpDecorate %sm_mappings_0 Alignment 4
+               OpDecorate %global_histo_0 Alignment 4
+       %uint = OpTypeInt 32 0
+     %uint_2 = OpConstant %uint 2
+     %uint_0 = OpConstant %uint 0
+   %uint_272 = OpConstant %uint 272
+     %uint_1 = OpConstant %uint 1
+%_arr_uint_uint_2 = OpTypeArray %uint %uint_2
+%_ptr_Workgroup__arr_uint_uint_2 = OpTypePointer Workgroup %_arr_uint_uint_2
+     %v3uint = OpTypeVector %uint 3
+%_ptr_Input_v3uint = OpTypePointer Input %v3uint
+       %void = OpTypeVoid
+%_ptr_CrossWorkgroup_uint = OpTypePointer CrossWorkgroup %uint
+         %13 = OpTypeFunction %void %_ptr_CrossWorkgroup_uint %_ptr_CrossWorkgroup_uint
+%_ptr_Function__ptr_CrossWorkgroup_uint = OpTypePointer Function %_ptr_CrossWorkgroup_uint
+%_ptr_Function_uint = OpTypePointer Function %uint
+%_ptr_Workgroup_uint = OpTypePointer Workgroup %uint
+       %bool = OpTypeBool
+%histo_main_kernel_sub_histo = OpVariable %_ptr_Workgroup__arr_uint_uint_2 Workgroup
+%__spirv_BuiltInLocalInvocationId = OpVariable %_ptr_Input_v3uint Input
+%__spirv_BuiltInGlobalInvocationId = OpVariable %_ptr_Input_v3uint Input
+%histo_main_kernel = OpFunction %void DontInline %13
+%sm_mappings = OpFunctionParameter %_ptr_CrossWorkgroup_uint
+%global_histo = OpFunctionParameter %_ptr_CrossWorkgroup_uint
+      %entry = OpLabel
+%sm_mappings_addr = OpVariable %_ptr_Function__ptr_CrossWorkgroup_uint Function
+%global_histo_addr = OpVariable %_ptr_Function__ptr_CrossWorkgroup_uint Function
+        %tid = OpVariable %_ptr_Function_uint Function
+        %gid = OpVariable %_ptr_Function_uint Function
+  %bin_index = OpVariable %_ptr_Function_uint Function
+      %count = OpVariable %_ptr_Function_uint Function
+               OpStore %sm_mappings_addr %sm_mappings Aligned 4
+               OpStore %global_histo_addr %global_histo Aligned 4
+         %28 = OpLoad %v3uint %__spirv_BuiltInLocalInvocationId Aligned 16
+       %call = OpCompositeExtract %uint %28 0
+               OpStore %tid %call Aligned 4
+         %30 = OpLoad %v3uint %__spirv_BuiltInGlobalInvocationId Aligned 16
+      %call1 = OpCompositeExtract %uint %30 0
+               OpStore %gid %call1 Aligned 4
+         %32 = OpLoad %uint %tid Aligned 4
+   %arrayidx = OpInBoundsPtrAccessChain %_ptr_Workgroup_uint %histo_main_kernel_sub_histo %uint_0 %32
+               OpStore %arrayidx %uint_0 Aligned 4
+               OpControlBarrier %uint_2 %uint_2 %uint_272
+         %37 = OpLoad %_ptr_CrossWorkgroup_uint %sm_mappings_addr Aligned 4
+         %38 = OpLoad %uint %gid Aligned 4
+  %arrayidx2 = OpInBoundsPtrAccessChain %_ptr_CrossWorkgroup_uint %37 %38
+         %40 = OpLoad %uint %arrayidx2 Aligned 4
+               OpStore %bin_index %40 Aligned 4
+         %41 = OpLoad %uint %bin_index Aligned 4
+         %42 = OpBitcast %_ptr_Workgroup_uint %histo_main_kernel_sub_histo
+    %add_ptr = OpInBoundsPtrAccessChain %_ptr_Workgroup_uint %42 %41
+      %call3 = OpAtomicIAdd %uint %add_ptr %uint_2 %uint_0 %uint_1
+               OpControlBarrier %uint_2 %uint_2 %uint_272
+         %46 = OpLoad %uint %tid Aligned 4
+  %arrayidx4 = OpInBoundsPtrAccessChain %_ptr_Workgroup_uint %histo_main_kernel_sub_histo %uint_0 %46
+         %48 = OpLoad %uint %arrayidx4 Aligned 4
+               OpStore %count %48 Aligned 4
+         %49 = OpLoad %uint %count Aligned 4
+        %cmp = OpUGreaterThan %bool %49 %uint_0
+               OpBranchConditional %cmp %if_then %if_end
+    %if_then = OpLabel
+         %52 = OpLoad %_ptr_CrossWorkgroup_uint %global_histo_addr Aligned 4
+         %53 = OpLoad %uint %tid Aligned 4
+   %add_ptr5 = OpInBoundsPtrAccessChain %_ptr_CrossWorkgroup_uint %52 %53
+         %55 = OpLoad %uint %count Aligned 4
+      %call6 = OpAtomicIAdd %uint %add_ptr5 %uint_2 %uint_0 %55
+               OpBranch %if_end
+     %if_end = OpLabel
+               OpReturn
+               OpFunctionEnd
+         %57 = OpFunction %void DontInline %13
+%sm_mappings_0 = OpFunctionParameter %_ptr_CrossWorkgroup_uint
+%global_histo_0 = OpFunctionParameter %_ptr_CrossWorkgroup_uint
+         %60 = OpLabel
+         %61 = OpFunctionCall %void %histo_main_kernel %sm_mappings_0 %global_histo_0
+               OpReturn
+               OpFunctionEnd

@@ -1,0 +1,22 @@
+OPENCL Histgram
+
+{
+[x] = 0;
+[y] = 0;
+}
+
+P0@wg 0, dev 0 (global int* x, global int* y) {
+  int r0 = atomic_fetch_add_explicit(x, 1, memory_order_relaxed, memory_scope_work_group);
+  B1: barrier(CLK_GLOBAL_MEM_FENCE);
+  int r1 = *x;
+  int r2 = atomic_fetch_add_explicit(y, r1, memory_order_relaxed, memory_scope_work_group);
+}
+
+P1@wg 0, dev 0 (global int* x, global int* y) {
+  int r0 = atomic_fetch_add_explicit(x, 1, memory_order_relaxed, memory_scope_work_group);
+  B1: barrier(CLK_GLOBAL_MEM_FENCE);
+  int r1 = *x;
+  int r2 = atomic_fetch_add_explicit(y, r1, memory_order_relaxed, memory_scope_work_group);
+}
+
+forall (y = 4)

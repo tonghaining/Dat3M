@@ -47,6 +47,7 @@ public class VisitorOpsMemory extends SpirvBaseVisitor<Event> {
     @Override
     public Event visitOpStore(SpirvParser.OpStoreContext ctx) {
         Expression pointer = builder.getExpression(ctx.pointer().getText());
+        pointer.getMemoryObjects().forEach(mo -> mo.addFeatureTag(Tag.C11.NON_ATOMIC_LOCATION));
         String valueId = ctx.object().getText();
         Expression value = builder.getExpression(valueId);
         Type type = value.getType();
@@ -63,6 +64,7 @@ public class VisitorOpsMemory extends SpirvBaseVisitor<Event> {
     public Event visitOpLoad(SpirvParser.OpLoadContext ctx) {
         String resultId = ctx.idResult().getText();
         Expression pointer = builder.getExpression(ctx.pointer().getText());
+        pointer.getMemoryObjects().forEach(mo -> mo.addFeatureTag(Tag.C11.NON_ATOMIC_LOCATION));
         Type type = builder.getType(ctx.idResultType().getText());
         List<Event> events = visitMemoryAccess(resultId, type, pointer, (i, exp) -> {
             String regId = resultId;
