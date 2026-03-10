@@ -440,10 +440,24 @@ public class RefinementSolver extends ModelChecker {
         return !last.inconsistencyReasons.equals(prev.inconsistencyReasons);
     }
 
+    private static boolean isUnknownDefinitionForCAAT(Definition def) {
+        // TODO: We should probably automatically cut all "unknown relation",
+        //  i.e., use a white list of known relations instead of a black list of unknown one's.
+        return def instanceof AMOPairs || def instanceof SameInstruction || def instanceof Free // Basic
+                || def instanceof LinuxCriticalSections // LKMM
+                || def instanceof CASDependency // IMM
+                // GPUs
+                || def instanceof SameScope || def instanceof SyncWith
+                || def instanceof SyncFence || def instanceof SyncBar || def instanceof SameVirtualLocation;
+    }
+
+    // ================================================================================================================
+    // Special memory model processing
+
     private RefinementIteration doRefinementIteration(ProverWithTracker prover, WMMSolver solver, Refiner refiner)
             throws SolverException, InterruptedException {
 
-        long nativeTime = 0;
+        long nativeTime;
         long caatTime = 0;
         long refineTime = 0;
         CAATSolver.Status caatStatus = INCONCLUSIVE;
@@ -487,20 +501,6 @@ public class RefinementSolver extends ModelChecker {
                 smtStatus, nativeTime, caatTime, refineTime, caatStatus,
                 refinementFormula, caatStats, inconsistencyReasons, observedEvents
         );
-    }
-
-    // ================================================================================================================
-    // Special memory model processing
-
-    private static boolean isUnknownDefinitionForCAAT(Definition def) {
-        // TODO: We should probably automatically cut all "unknown relation",
-        //  i.e., use a white-list of known relations instead of a blacklist of unknown one's.
-        return def instanceof LinuxCriticalSections // LKMM
-                || def instanceof AMOPairs || def instanceof SameInstruction
-                || def instanceof CASDependency // IMM
-                // GPUs
-                || def instanceof SameScope || def instanceof SyncWith
-                || def instanceof SyncFence || def instanceof SyncBar || def instanceof SameVirtualLocation;
     }
 
     private static Set<Constraint> generateCut(Wmm model) {

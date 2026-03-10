@@ -13,11 +13,11 @@ import com.dat3m.dartagnan.program.Register;
 import com.dat3m.dartagnan.program.Thread;
 import com.dat3m.dartagnan.program.event.arch.*;
 import com.dat3m.dartagnan.program.event.arch.ptx.*;
-import com.dat3m.dartagnan.program.event.arch.tso.TSOXchg;
+import com.dat3m.dartagnan.program.event.arch.tso.*;
 import com.dat3m.dartagnan.program.event.arch.vulkan.*;
 import com.dat3m.dartagnan.program.event.core.*;
 import com.dat3m.dartagnan.program.event.core.annotations.*;
-import com.dat3m.dartagnan.program.event.core.special.StateSnapshot;
+import com.dat3m.dartagnan.program.event.core.special.*;
 import com.dat3m.dartagnan.program.event.core.threading.*;
 import com.dat3m.dartagnan.program.event.functions.*;
 import com.dat3m.dartagnan.program.event.lang.catomic.*;
@@ -190,6 +190,8 @@ public class EventFactory {
 
     // ------------------------------------------ Local events ------------------------------------------
 
+    // TODO: Unused, but "new Skip()" calls are used in several unit tests
+    //  Generally, this event is pointless and could be deleted entirely
     public static Skip newSkip() {
         return new Skip();
     }
@@ -529,10 +531,6 @@ public class EventFactory {
             private DMB() {
             }
 
-            public static GenericVisibleEvent newBarrier() {
-                return newSYBarrier(); // Default barrier
-            }
-
             public static GenericVisibleEvent newSYBarrier() {
                 return newFence("DMB.SY");
             }
@@ -556,10 +554,6 @@ public class EventFactory {
 
         public static class DSB {
             private DSB() {
-            }
-
-            public static GenericVisibleEvent newBarrier() {
-                return newSYBarrier(); // Default barrier
             }
 
             public static GenericVisibleEvent newSYBarrier() {
