@@ -1,0 +1,45 @@
+Tile-IR
+(* Tile IR Memory Model *)
+
+// Base relations:
+// sr: same-scope
+// token_dep: token dependency, for synchronization by tokens
+
+// Scope Tags:
+// TLB: Tile block, for communication within a single tile block.
+// DEV: Device, for communication within the same GPU.
+// SYS: System, for communication anywhere in the system.
+
+(*******************)
+(*   Auxiliaries   *)
+(*******************)
+
+// Explicitly add transitivity for coherence since the co in Tile IR is not total
+// and recompute fr based on the new co
+let co = co+
+let fr = rf^-1; co
+
+let morally-strong = loc & ((po | po^-1) | sr)
+
+let waits-for = token_dep+
+let sync = [REL]; rf; [ACQ]
+let happens-before = (waits-for | sync)+
+
+(*******************)
+(*     Axioms      *)
+(*******************)
+
+(* Axiom Atomicity *)
+empty (((morally-strong & fr); (morally-strong & co)) & rmw) as axiom-Atomicity
+
+(* Axiom Coherence *)
+empty (([W]; hb; [W]) & loc \ co) as axiom-Coherence-HB
+empty (([W]; morally-strong; [W]) & loc \ (co | co^-1)) as axiom-Coherence-Moral
+
+(*******************)
+(*   Data Races    *)
+(*******************)
+
+let conflict = ((W * _) | (_ * W)) & loc
+let dr = conflict \ morally-strong \ (happens-before | happens-before^-1)
+flag ~empty dr as racy
