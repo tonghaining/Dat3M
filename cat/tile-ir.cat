@@ -36,6 +36,10 @@ empty (((morally-strong & fr); (morally-strong & co)) & rmw) as axiom-Atomicity
 empty (([W]; hb; [W]) & loc \ co) as axiom-Coherence-HB
 empty (([W]; morally-strong; [W]) & loc \ (co | co^-1)) as axiom-Coherence-Moral
 
+(* Axiom No Thin Air *)
+// Nvidia informally permits "no thin air" for compiler optimizations
+// acyclic (rf | waits-for) as axiom-NoThinAir
+
 (*******************)
 (*   Data Races    *)
 (*******************)
