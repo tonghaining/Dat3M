@@ -63,13 +63,13 @@ public class VisitorLitmusVulkan extends LitmusVulkanBaseVisitor<Object> {
     @Override
     public Object visitVariableDeclaratorRegister(LitmusVulkanParser.VariableDeclaratorRegisterContext ctx) {
         programBuilder.initRegEqConst(ctx.threadId().id, ctx.register().getText(),
-                (IntLiteral) ctx.constant().accept(this));
+                (IntLiteral) ctx.constant().accept(this), ctx.getStart().getLine());
         return null;
     }
 
     @Override
     public Object visitVariableDeclaratorRegisterLocation(LitmusVulkanParser.VariableDeclaratorRegisterLocationContext ctx) {
-        programBuilder.initRegEqLocPtr(ctx.threadId().id, ctx.register().getText(), ctx.location().getText(), archType);
+        programBuilder.initRegEqLocPtr(ctx.threadId().id, ctx.register().getText(), ctx.location().getText(), archType, ctx.getStart().getLine());
         return null;
     }
 
@@ -151,7 +151,7 @@ public class VisitorLitmusVulkan extends LitmusVulkanBaseVisitor<Object> {
             store.addTags(Tag.Vulkan.AVAILABLE);
             store.addTags(ctx.scope().content);
         }
-        return programBuilder.addChild(mainThread, store);
+        return programBuilder.addChild(mainThread, store, ctx.getStart().getLine());
     }
 
     @Override
@@ -168,7 +168,7 @@ public class VisitorLitmusVulkan extends LitmusVulkanBaseVisitor<Object> {
             load.addTags(Tag.Vulkan.VISIBLE);
             load.addTags(ctx.scope().content);
         }
-        return programBuilder.addChild(mainThread, load);
+        return programBuilder.addChild(mainThread, load, ctx.getStart().getLine());
     }
 
     @Override
@@ -188,7 +188,7 @@ public class VisitorLitmusVulkan extends LitmusVulkanBaseVisitor<Object> {
             store.addTags(Tag.Vulkan.SEM_AVAILABLE);
         }
         store.addTags(ctx.semSc().stream().map(c -> c.content).toList());
-        return programBuilder.addChild(mainThread, store);
+        return programBuilder.addChild(mainThread, store, ctx.getStart().getLine());
     }
 
     @Override
@@ -208,7 +208,7 @@ public class VisitorLitmusVulkan extends LitmusVulkanBaseVisitor<Object> {
             load.addTags(Tag.Vulkan.SEM_VISIBLE);
         }
         load.addTags(ctx.semSc().stream().map(c -> c.content).toList());
-        return programBuilder.addChild(mainThread, load);
+        return programBuilder.addChild(mainThread, load, ctx.getStart().getLine());
     }
 
     @Override
@@ -233,7 +233,7 @@ public class VisitorLitmusVulkan extends LitmusVulkanBaseVisitor<Object> {
             rmw.addTags(Tag.Vulkan.SEM_VISIBLE);
         }
         rmw.addTags(ctx.semSc().stream().map(c -> c.content).toList());
-        return programBuilder.addChild(mainThread, rmw);
+        return programBuilder.addChild(mainThread, rmw, ctx.getStart().getLine());
     }
 
     @Override
@@ -251,7 +251,7 @@ public class VisitorLitmusVulkan extends LitmusVulkanBaseVisitor<Object> {
             fence.addTags(Tag.Vulkan.SEM_VISIBLE);
         }
         fence.addTags(ctx.semSc().stream().map(c -> c.content).toList());
-        return programBuilder.addChild(mainThread, fence);
+        return programBuilder.addChild(mainThread, fence, ctx.getStart().getLine());
     }
 
     @Override
@@ -283,7 +283,7 @@ public class VisitorLitmusVulkan extends LitmusVulkanBaseVisitor<Object> {
             }
             barrier.addTags(ctx.semSc().stream().map(c -> c.content).toList());
         }
-        return programBuilder.addChild(mainThread, barrier);
+        return programBuilder.addChild(mainThread, barrier, ctx.getStart().getLine());
     }
 
     @Override
@@ -292,18 +292,18 @@ public class VisitorLitmusVulkan extends LitmusVulkanBaseVisitor<Object> {
         Expression lhs = (Expression) ctx.value(0).accept(this);
         Expression rhs = (Expression) ctx.value(1).accept(this);
         Expression exp = expressions.makeIntBinary(lhs, ctx.operation().op, rhs);
-        return programBuilder.addChild(mainThread, EventFactory.newLocal(rd, exp));
+        return programBuilder.addChild(mainThread, EventFactory.newLocal(rd, exp), ctx.getStart().getLine());
     }
 
     @Override
     public Object visitLabelInstruction(LitmusVulkanParser.LabelInstructionContext ctx) {
-        return programBuilder.addChild(mainThread, programBuilder.getOrCreateLabel(mainThread, ctx.Label().getText()));
+        return programBuilder.addChild(mainThread, programBuilder.getOrCreateLabel(mainThread, ctx.Label().getText()), ctx.getStart().getLine());
     }
 
     @Override
     public Object visitJumpInstruction(LitmusVulkanParser.JumpInstructionContext ctx) {
         Label label = programBuilder.getOrCreateLabel(mainThread, ctx.Label().getText());
-        return programBuilder.addChild(mainThread, EventFactory.newGoto(label));
+        return programBuilder.addChild(mainThread, EventFactory.newGoto(label), ctx.getStart().getLine());
     }
 
     @Override
@@ -312,7 +312,7 @@ public class VisitorLitmusVulkan extends LitmusVulkanBaseVisitor<Object> {
         Expression lhs = (Expression) ctx.value(0).accept(this);
         Expression rhs = (Expression) ctx.value(1).accept(this);
         Expression expr = expressions.makeIntCmp(lhs, ctx.cond().op, rhs);
-        return programBuilder.addChild(mainThread, EventFactory.newJump(expr, label));
+        return programBuilder.addChild(mainThread, EventFactory.newJump(expr, label), ctx.getStart().getLine());
     }
 
     @Override
@@ -325,7 +325,7 @@ public class VisitorLitmusVulkan extends LitmusVulkanBaseVisitor<Object> {
         } else {
             throw new ParsingException("Unknown device operation");
         }
-        return programBuilder.addChild(mainThread, e);
+        return programBuilder.addChild(mainThread, e, ctx.getStart().getLine());
     }
 
     private String getMemoryOrderOrDefault(ParserRuleContext ctx, String defaultMo) {

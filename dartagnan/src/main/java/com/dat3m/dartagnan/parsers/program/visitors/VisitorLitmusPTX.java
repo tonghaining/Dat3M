@@ -61,14 +61,14 @@ public class VisitorLitmusPTX extends LitmusPTXBaseVisitor<Object> {
     @Override
     public Object visitVariableDeclaratorRegister(LitmusPTXParser.VariableDeclaratorRegisterContext ctx) {
         programBuilder.initRegEqConst(ctx.threadId().id, ctx.register().getText(),
-                (IntLiteral) ctx.constant().accept(this));
+                (IntLiteral) ctx.constant().accept(this), ctx.getStart().getLine());
         return null;
     }
 
     @Override
     public Object visitVariableDeclaratorRegisterLocation(LitmusPTXParser.VariableDeclaratorRegisterLocationContext ctx) {
         programBuilder.initRegEqLocPtr(ctx.threadId().id, ctx.register().getText(), ctx.location().getText(),
-                archType);
+                archType, ctx.getStart().getLine());
         return null;
     }
 
@@ -143,14 +143,14 @@ public class VisitorLitmusPTX extends LitmusPTXBaseVisitor<Object> {
             default -> throw new ParsingException("Store instruction doesn't support mo: " + mo);
         }
         store.addTags(ctx.store().storeProxy);
-        return programBuilder.addChild(mainThread, store);
+        return programBuilder.addChild(mainThread, store, ctx.getStart().getLine());
     }
 
     @Override
     public Object visitLocalValue(LitmusPTXParser.LocalValueContext ctx) {
         Register register = (Register) ctx.register().accept(this);
         Expression value = (Expression) ctx.value().accept(this);
-        return programBuilder.addChild(mainThread, EventFactory.newLocal(register, value));
+        return programBuilder.addChild(mainThread, EventFactory.newLocal(register, value), ctx.getStart().getLine());
     }
 
     @Override
@@ -159,7 +159,7 @@ public class VisitorLitmusPTX extends LitmusPTXBaseVisitor<Object> {
         Expression lhs = (Expression) ctx.value(0).accept(this);
         Expression rhs = (Expression) ctx.value(1).accept(this);
         Expression exp = expressions.makeAdd(lhs, rhs);
-        return programBuilder.addChild(mainThread, EventFactory.newLocal(rd, exp));
+        return programBuilder.addChild(mainThread, EventFactory.newLocal(rd, exp), ctx.getStart().getLine());
     }
 
     @Override
@@ -168,7 +168,7 @@ public class VisitorLitmusPTX extends LitmusPTXBaseVisitor<Object> {
         Expression lhs = (Expression) ctx.value(0).accept(this);
         Expression rhs = (Expression) ctx.value(1).accept(this);
         Expression exp = expressions.makeSub(lhs, rhs);
-        return programBuilder.addChild(mainThread, EventFactory.newLocal(rd, exp));
+        return programBuilder.addChild(mainThread, EventFactory.newLocal(rd, exp), ctx.getStart().getLine());
     }
 
     @Override
@@ -177,7 +177,7 @@ public class VisitorLitmusPTX extends LitmusPTXBaseVisitor<Object> {
         Expression lhs = (Expression) ctx.value(0).accept(this);
         Expression rhs = (Expression) ctx.value(1).accept(this);
         Expression exp = expressions.makeMul(lhs, rhs);
-        return programBuilder.addChild(mainThread, EventFactory.newLocal(rd, exp));
+        return programBuilder.addChild(mainThread, EventFactory.newLocal(rd, exp), ctx.getStart().getLine());
     }
 
     @Override
@@ -186,7 +186,7 @@ public class VisitorLitmusPTX extends LitmusPTXBaseVisitor<Object> {
         Expression lhs = (Expression) ctx.value(0).accept(this);
         Expression rhs = (Expression) ctx.value(1).accept(this);
         Expression exp = expressions.makeDiv(lhs, rhs, true);
-        return programBuilder.addChild(mainThread, EventFactory.newLocal(rd, exp));
+        return programBuilder.addChild(mainThread, EventFactory.newLocal(rd, exp), ctx.getStart().getLine());
     }
 
     @Override
@@ -205,7 +205,7 @@ public class VisitorLitmusPTX extends LitmusPTXBaseVisitor<Object> {
             default -> throw new ParsingException("Load instruction doesn't support mo: " + mo);
         }
         load.addTags(ctx.load().loadProxy);
-        return programBuilder.addChild(mainThread, load);
+        return programBuilder.addChild(mainThread, load, ctx.getStart().getLine());
     }
 
     @Override
@@ -221,7 +221,7 @@ public class VisitorLitmusPTX extends LitmusPTXBaseVisitor<Object> {
         }
         PTXAtomOp atom = EventFactory.PTX.newAtomOp(object, register_destination, value, op, mo, scope);
         atom.addTags(ctx.atom().atomProxy);
-        return programBuilder.addChild(mainThread, atom);
+        return programBuilder.addChild(mainThread, atom, ctx.getStart().getLine());
     }
 
     @Override
@@ -237,7 +237,7 @@ public class VisitorLitmusPTX extends LitmusPTXBaseVisitor<Object> {
         }
         PTXAtomCAS atom = EventFactory.PTX.newAtomCAS(object, register_destination, expected, value, mo, scope);
         atom.addTags(ctx.atom().atomProxy);
-        return programBuilder.addChild(mainThread, atom);
+        return programBuilder.addChild(mainThread, atom, ctx.getStart().getLine());
     }
 
     @Override 
@@ -252,7 +252,7 @@ public class VisitorLitmusPTX extends LitmusPTXBaseVisitor<Object> {
         }
         PTXAtomExch atom = EventFactory.PTX.newAtomExch(object, register_destination, value, mo, scope);
         atom.addTags(ctx.atom().atomProxy);
-        return programBuilder.addChild(mainThread, atom);
+        return programBuilder.addChild(mainThread, atom, ctx.getStart().getLine());
     }
 
     @Override
@@ -267,7 +267,7 @@ public class VisitorLitmusPTX extends LitmusPTXBaseVisitor<Object> {
         }
         PTXRedOp red = EventFactory.PTX.newRedOp(object, value, op, mo, scope);
         red.addTags(ctx.red().redProxy);
-        return programBuilder.addChild(mainThread, red);
+        return programBuilder.addChild(mainThread, red, ctx.getStart().getLine());
     }
 
     @Override
@@ -279,21 +279,21 @@ public class VisitorLitmusPTX extends LitmusPTXBaseVisitor<Object> {
         }
         Event fence = EventFactory.newFence(ctx.getText().toLowerCase());
         fence.addTags(mo, scope, Tag.PTX.GEN);
-        return programBuilder.addChild(mainThread, fence);
+        return programBuilder.addChild(mainThread, fence, ctx.getStart().getLine());
     }
 
     @Override
     public Object visitFenceProxy(LitmusPTXParser.FenceProxyContext ctx) {
         Event fence = EventFactory.newFence(ctx.getText().toLowerCase());
         fence.addTags(ctx.proxyType().content);
-        return programBuilder.addChild(mainThread, fence);
+        return programBuilder.addChild(mainThread, fence, ctx.getStart().getLine());
     }
 
     @Override
     public Object visitFenceAlias(LitmusPTXParser.FenceAliasContext ctx) {
         Event fence = EventFactory.newFence(ctx.getText().toLowerCase());
         fence.addTags(Tag.PTX.ALIAS);
-        return programBuilder.addChild(mainThread, fence);
+        return programBuilder.addChild(mainThread, fence, ctx.getStart().getLine());
     }
 
     @Override
@@ -314,12 +314,12 @@ public class VisitorLitmusPTX extends LitmusPTXBaseVisitor<Object> {
         if(ctx.barrierMode().Arrive() != null) {
             barrier.addTags(Tag.PTX.ARRIVE);
         }
-        return programBuilder.addChild(mainThread, barrier);
+        return programBuilder.addChild(mainThread, barrier, ctx.getStart().getLine());
     }
 
     @Override
     public Object visitLabel(LitmusPTXParser.LabelContext ctx) {
-        return programBuilder.addChild(mainThread, programBuilder.getOrCreateLabel(mainThread, ctx.Label().getText()));
+        return programBuilder.addChild(mainThread, programBuilder.getOrCreateLabel(mainThread, ctx.Label().getText()), ctx.getStart().getLine());
     }
 
     @Override
@@ -328,13 +328,13 @@ public class VisitorLitmusPTX extends LitmusPTXBaseVisitor<Object> {
         Expression lhs = (Expression) ctx.value(0).accept(this);
         Expression rhs = (Expression) ctx.value(1).accept(this);
         Expression expr = expressions.makeIntCmp(lhs, ctx.cond().op, rhs);
-        return programBuilder.addChild(mainThread, EventFactory.newJump(expr, label));
+        return programBuilder.addChild(mainThread, EventFactory.newJump(expr, label), ctx.getStart().getLine());
     }
 
     @Override
     public Object visitJump(LitmusPTXParser.JumpContext ctx) {
         Label label = programBuilder.getOrCreateLabel(mainThread, ctx.Label().getText());
-        return programBuilder.addChild(mainThread, EventFactory.newGoto(label));
+        return programBuilder.addChild(mainThread, EventFactory.newGoto(label), ctx.getStart().getLine());
     }
 
 }
