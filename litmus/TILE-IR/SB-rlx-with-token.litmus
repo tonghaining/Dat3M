@@ -1,0 +1,17 @@
+TileIR SB
+"Store Buffering with explicit token dependencies"
+{
+  x=[0, 0];
+  y=[0, 0];
+}
+P0@tlb 0, dev 0 {
+  <t1> = st.rlx.dev x, [1, 1];
+  y_tile, <t2> = ld.rlx.dev y, <t1>;
+}
+P1@tlb 1, dev 0 {
+  <t3> = st.rlx.dev y, [1, 1];
+  x_tile, <t4> = ld.rlx.dev x, <t3>;
+}
+
+forall
+(0:y_tile=[1,1] \/ 1:x_tile=[1,1])

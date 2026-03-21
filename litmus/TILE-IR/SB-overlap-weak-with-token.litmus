@@ -1,0 +1,16 @@
+TileIR SB
+"Store Buffering with explicit token dependencies"
+{
+  x=[0, 0];
+}
+P0@tlb 0, dev 0 {
+  <t1> = st.weak x, [0, 1];
+  x_tile0, <t2> = ld.weak x, <t1>;
+}
+P1@tlb 1, dev 0 {
+  <t3> = st.weak x, [1, 0];
+  x_tile1, <t4> = ld.weak x, <t3>;
+}
+
+exists
+(0:x_tile0=[1,1] \/ 1:x_tile1=[1,1])
