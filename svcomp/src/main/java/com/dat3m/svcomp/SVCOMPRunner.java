@@ -1,5 +1,6 @@
 package com.dat3m.svcomp;
 
+import com.dat3m.dartagnan.Dartagnan;
 import com.dat3m.dartagnan.parsers.witness.ParserWitness;
 import com.dat3m.dartagnan.utils.options.BaseOptions;
 import com.dat3m.dartagnan.witness.graphml.WitnessGraph;
@@ -23,7 +24,6 @@ import java.util.Set;
 import java.util.EnumSet;
 import java.util.stream.Collectors;
 
-import static com.dat3m.dartagnan.configuration.OptionInfo.collectOptions;
 import static com.dat3m.dartagnan.configuration.OptionNames.*;
 import static com.dat3m.dartagnan.utils.ExitCode.*;
 
@@ -69,7 +69,7 @@ public class SVCOMPRunner extends BaseOptions {
     public static void main(String[] args) throws Exception {
 
         if(Arrays.asList(args).contains("--help")) {
-            collectOptions();
+            Dartagnan.printOptions();
             return;
         }
 
@@ -98,9 +98,8 @@ public class SVCOMPRunner extends BaseOptions {
             return;
         }
 
-        WitnessGraph witness = new WitnessGraph(); 
         if(r.witnessPath != null) {
-            witness = new ParserWitness().parse(new File(r.witnessPath));
+            WitnessGraph witness = new ParserWitness().parse(new File(r.witnessPath));
             if(!fileProgram.getName().equals(Paths.get(witness.getProgram()).getFileName().toString())) {
                 System.out.println("The witness was generated from a different program than " + fileProgram);
                 System.exit(WRONG_WITNESS_FILE.asInt());
@@ -161,9 +160,8 @@ public class SVCOMPRunner extends BaseOptions {
     }
 
     private static List<String> filterOptions(Configuration config) {
-    	
         List<String> skip = Arrays.asList(PROPERTYPATH, NATIVE);
-    	
+
         return Arrays.stream(config.asPropertiesString().split("\n")).
             filter(p -> skip.stream().noneMatch(s -> s.equals(p.split(" = ")[0]))).
             map(p -> "--" + p.split(" = ")[0] + "=" + p.split(" = ")[1]).

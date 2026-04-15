@@ -18,7 +18,7 @@ import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 /*
-Represents a verification task.
+    Represents a verification task.
  */
 public class VerificationTask {
 
@@ -99,6 +99,11 @@ public class VerificationTask {
 
         public VerificationTaskBuilder withConfig(Configuration config) {
             this.config.copyFrom(config);
+            return this;
+        }
+
+        public VerificationTaskBuilder withOption(String option, String value) {
+            this.config.setOption(option, value);
             return this;
         }
 
