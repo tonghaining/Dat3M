@@ -10,6 +10,7 @@ import com.dat3m.dartagnan.expression.type.ScopedPointerType;
 import com.dat3m.dartagnan.parsers.SpirvBaseVisitor;
 import com.dat3m.dartagnan.parsers.SpirvParser;
 import com.dat3m.dartagnan.parsers.program.visitors.spirv.builders.ProgramBuilder;
+import com.dat3m.dartagnan.parsers.program.visitors.spirv.helpers.HelperTags;
 import com.dat3m.dartagnan.program.Register;
 import com.dat3m.dartagnan.program.event.Event;
 import com.dat3m.dartagnan.program.event.EventFactory;
@@ -88,6 +89,37 @@ public class VisitorOpsConversion extends SpirvBaseVisitor<Event> {
     }
 
     @Override
+    public Event visitOpGenericCastToPtrExplicit(SpirvParser.OpGenericCastToPtrExplicitContext ctx) {
+        String id = ctx.idResult().getText();
+        Type type = builder.getType(ctx.idResultType().getText());
+        Expression pointer = builder.getExpression(ctx.pointer().getText());
+        String storage = HelperTags.parseStorageClass(ctx.storage().getText());
+        if (!(type instanceof ScopedPointerType newType)) {
+            throw new ParsingException("Illegal OpGenericCastToPtrExplicit for '%s', " +
+                    "attempt to cast into a non-pointer type", id);
+        }
+        if (!(pointer.getType() instanceof ScopedPointerType oldType)) {
+            throw new ParsingException("Illegal OpGenericCastToPtrExplicit for '%s', " +
+                    "attempt to apply cast on a non-pointer type", id);
+        }
+        if (!oldType.getScopeId().equals(Tag.Spirv.SC_GENERIC)) {
+            throw new ParsingException("Illegal OpGenericCastToPtrExplicit for '%s', " +
+                    "attempt to cast from a non-generic pointer", id);
+        }
+        if (!newType.getScopeId().equals(storage)) {
+            throw new ParsingException("Illegal OpGenericCastToPtrExplicit for '%s', " +
+                    "storage class mismatch between result pointer and storage operand", id);
+        }
+        if (!Set.of(Tag.Spirv.SC_WORKGROUP, Tag.Spirv.SC_CROSS_WORKGROUP, Tag.Spirv.SC_FUNCTION).contains(storage)) {
+            throw new ParsingException("Illegal OpGenericCastToPtrExplicit for '%s', " +
+                    "invalid storage class '%s'", id, storage);
+        }
+        Expression newPointer = expressions.makeScopedPointer(id, newType, pointer);
+        builder.addExpression(id, newPointer);
+        return null;
+    }
+
+    @Override
     public Event visitOpPtrCastToGeneric(SpirvParser.OpPtrCastToGenericContext ctx) {
         String id = ctx.idResult().getText();
         Type type = builder.getType(ctx.idResultType().getText());
@@ -143,6 +175,7 @@ public class VisitorOpsConversion extends SpirvBaseVisitor<Event> {
                 "OpBitcast",
                 "OpConvertPtrToU",
                 "OpConvertUToPtr",
+                "OpGenericCastToPtrExplicit",
                 "OpPtrCastToGeneric",
                 "OpUConvert",
                 "OpSConvert"

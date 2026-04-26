@@ -1,0 +1,12 @@
+OPENCL MP
+
+{
+  [x]=0;
+}
+
+P0@wg 0, dev 0 (global int* x) {
+  *x = 1;
+  int r0 = atomic_load_explicit(x, memory_order_relaxed, memory_scope_work_group);
+}
+
+forall (0:r0=1)

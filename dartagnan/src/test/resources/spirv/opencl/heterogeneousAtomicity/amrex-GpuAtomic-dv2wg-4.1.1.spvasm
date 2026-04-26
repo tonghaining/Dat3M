@@ -1,0 +1,56 @@
+; @Input: %29 = {0}
+; @Output: forall (%29[0] == 4)
+; @Config: 4, 1, 1
+; SPIR-V
+; Version: 1.0
+; Generator: Khronos LLVM/SPIR-V Translator; 14
+; Bound: 32
+; Schema: 0
+               OpCapability Addresses
+               OpCapability Linkage
+               OpCapability Kernel
+               OpCapability GenericPointer
+               OpCapability Int8
+          %1 = OpExtInstImport "OpenCL.std"
+               OpMemoryModel Physical64 OpenCL
+               OpEntryPoint Kernel %28 "_ZTS15MacroTestKernel"
+               OpSource OpenCL_CPP 100000
+               OpName %_ZTS15MacroTestKernel "_ZTS15MacroTestKernel"
+               OpDecorate %_ZTS15MacroTestKernel LinkageAttributes "_ZTS15MacroTestKernel" Export
+               OpDecorate %7 Alignment 4
+               OpDecorate %29 Alignment 4
+      %uchar = OpTypeInt 8 0
+       %uint = OpTypeInt 32 0
+     %uint_2 = OpConstant %uint 2
+   %uint_896 = OpConstant %uint 896
+     %uint_1 = OpConstant %uint 1
+       %void = OpTypeVoid
+%_ptr_CrossWorkgroup_uchar = OpTypePointer CrossWorkgroup %uchar
+          %5 = OpTypeFunction %void %_ptr_CrossWorkgroup_uchar
+%_ptr_Generic_uchar = OpTypePointer Generic %uchar
+%_ptr_CrossWorkgroup_uint = OpTypePointer CrossWorkgroup %uint
+       %bool = OpTypeBool
+%_ZTS15MacroTestKernel = OpFunction %void None %5
+          %7 = OpFunctionParameter %_ptr_CrossWorkgroup_uchar
+          %8 = OpLabel
+         %11 = OpBitcast %_ptr_CrossWorkgroup_uchar %7
+         %13 = OpPtrCastToGeneric %_ptr_Generic_uchar %11
+         %14 = OpGenericCastToPtrExplicit %_ptr_CrossWorkgroup_uchar %13 CrossWorkgroup
+         %17 = OpBitcast %_ptr_CrossWorkgroup_uint %14
+         %20 = OpAtomicLoad %uint %17 %uint_2 %uint_896
+               OpBranch %9
+          %9 = OpLabel
+         %22 = OpPhi %uint %20 %8 %21 %9
+         %24 = OpIAdd %uint %22 %uint_1
+         %21 = OpAtomicCompareExchange %uint %17 %uint_2 %uint_896 %uint_896 %24 %22
+         %27 = OpIEqual %bool %21 %22
+               OpBranchConditional %27 %10 %9
+         %10 = OpLabel
+               OpReturn
+               OpFunctionEnd
+         %28 = OpFunction %void None %5
+         %29 = OpFunctionParameter %_ptr_CrossWorkgroup_uchar
+         %30 = OpLabel
+         %31 = OpFunctionCall %void %_ZTS15MacroTestKernel %29
+               OpReturn
+               OpFunctionEnd

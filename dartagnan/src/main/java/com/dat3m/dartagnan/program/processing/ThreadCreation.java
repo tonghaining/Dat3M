@@ -664,7 +664,7 @@ public class ThreadCreation implements ProgramProcessor {
         ScopeHierarchy scope;
         if (arch == Arch.VULKAN) {
             scope = ScopeHierarchy.ScopeHierarchyForVulkan(grid.qfId(tid), grid.wgId(tid), grid.sgId(tid));
-        } else if (arch == Arch.OPENCL) {
+        } else if (arch == Arch.OPENCL || arch == Arch.OPENCLPAA) {
             scope = ScopeHierarchy.ScopeHierarchyForOpenCL(grid.dvId(tid), grid.wgId(tid), grid.sgId(tid));
         } else {
             throw new MalformedProgramException("Unsupported architecture for thread creation: " + arch);
