@@ -48,7 +48,8 @@ let ms1 = (po | po^-1) | ([strong-operation]; sr; [strong-operation])
 let ms2 = ((M * M) & loc) | ((_ * _) \ (M * M))
 let morally-strong = (ms1 & ms2) \ id
 
-let quiet-order = [nsh-op] ; po ; [QUIET] ; po ; [nsh-op]
+// Weak network barrier (InfiniBand)
+let quiet-order = [nv-op] ; po ; [QUIET] ; po
 
 let nsh-rf = ([nsh-write]; rf; [nsh-read]) | ([nsh-amo]; rf; [nsh-read])
 let put_order = [W]; po-loc?; [Put]

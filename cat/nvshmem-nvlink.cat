@@ -1,0 +1,11 @@
+PTX
+(* NVIDIA. Parallel Thread Execution ISA Version 6.0 *)
+
+include "nvshmem-base.cat"
+
+// NVLink Strengthened Axiom:
+// A QUIET operation forces the preceding network writes to be visible to ALL PEs.
+let global-quiet-order = [nv-write] ; po ; [QUIET]
+
+// This axiom prevents any thread from reading stale data if a QUIET has passed
+empty (global-quiet-order ; [R] & fr) as axiom-NVLinkGlobalVisibility
