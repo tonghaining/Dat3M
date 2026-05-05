@@ -1,0 +1,95 @@
+PTX
+(* NVIDIA. Parallel Thread Execution ISA Version 6.0 *)
+
+// Base relations:
+// sr: same-scope
+// scta: same-cta
+// sgpu: same-gpu, same PE
+// syncbar: synchronize by barriers with same logical barrier resource (barID)
+// sync_fence: synchronize by morally strong fence.sc
+
+// Scope Tags:
+// CTA: Cooperative thread array, is an array of threads that execute a kernel concurrently or in parallel.
+//      The CTA scope is the set of all threads executing in the same CTA as the current thread.
+// GPU: Graphics processing unit. The GPU scope is the set of all threads executing in the same cluster as the current thread.
+// SYS: System. The SYS scope is the set of all threads in the current program.
+
+// NVSHMEM Tags:
+// PUT: NVSHMEM put operation
+// GET: NVSHMEM get operation
+// AMO: NVSHMEM atomic operation
+// BLOCK: NVSHMEM block operation
+// NONBLOCK: NVSHMEM non-block operation
+// QUIET: NVSHMEM quiet operation
+
+(*******************)
+(*   Auxiliaries   *)
+(*******************)
+
+let sync_barrier = syncbar & scta
+let quiet_barrier = syncbar & [QUIET]
+let co = co+
+let fr = rf^-1; co
+
+(* Events *)
+let strong-write = W & (RLX | REL)
+let strong-read = R & (RLX | ACQ)
+let strong-m = strong-write | strong-read
+let strong-operation = strong-m | F
+
+let nsh-write = W & (PUT | AMO)
+let nsh-read = R & (GET | AMO)
+let nsh-amo = M & AMO
+let nsh-op = nsh-write | nsh-read | nsh-amo
+
+
+(* Relations *)
+let ms1 = (po | po^-1) | ([strong-operation]; sr; [strong-operation])
+let ms2 = ((M * M) & loc) | ((_ * _) \ (M * M))
+let morally-strong = (ms1 & ms2) \ id
+
+let quiet-order = [nsh-op] ; po ; [QUIET] ; po ; [nsh-op]
+
+let nsh-rf = ([nsh-write]; rf; [nsh-read]) | ([nsh-amo]; rf; [nsh-read])
+let put_order = [W]; po-loc?; [Put]
+
+let rec observation = (morally-strong & rf) | (observation; rmw; observation)
+
+let nsh-release-pattern = [nsh-write] ; po ; [QUIET | BLOCK] ; po-loc? ; [strong-write]
+let release-pattern = ([W & REL]; po-loc?; [strong-write]) | ([F & ACQ_REL]; po; [strong-write])
+let unified-release-pattern = nsh-release-pattern | release-pattern
+
+let acquire-pattern = ([strong-read]; po-loc?; [R & ACQ]) | ([strong-read]; po; [F & ACQ_REL])
+
+let block-order = [nsh-op]? ; po ; [BLOCK] ; quiet_barrier ; [BLOCK] ; po ; [M]?
+
+let sync = morally-strong & (unified-release-pattern; observation; acquire-pattern)
+let cause-base = po?; ((sync | sync_fence | sync_barrier | quiet-order | block-order); po?)+
+let cause = cause-base | (observation; (cause-base | po-loc))
+
+let local-po-loc = po-loc \ ([nsh-op] ; po-loc ; [nsh-op])
+let network-po-loc = [nsh-op] ; po ; [QUIET] ; po-loc ; [nsh-op]
+
+(******************************)
+(*  PTX Memory Model Axioms   *)
+(******************************)
+
+(* Axiom Coherence *)
+empty ((([W | nsh-write]; cause; [W | nsh-write]) & loc) \ co) as axiom-Coherence
+empty (([W | nsh-write]; morally-strong; [W | nsh-write]) & loc) \ (co | co^-1) as axiom-Coherence2
+
+(* Axiom FenceSC *)
+empty (([F & SC]; cause; [F & SC]) \ sync_fence) as axiom-FenceSC
+
+(* Axiom Atomicity *)
+empty (((morally-strong & fr); (morally-strong & co)) & rmw) as axiom-Atomicity
+
+(* Axiom No-Thin-Air *)
+let dep = addr | data | ctrl
+acyclic (rf | dep) as axiom-NoThinAir
+
+(* Axiom SC-per-Location (Updated for NVSHMEM) *)
+acyclic ((morally-strong & (rf | co | fr)) | local-po-loc | network-po-loc) as axiom-ScPerLocation
+
+(* Axiom Causality *)
+irreflexive ((rf | fr); cause) as axiom-Causality
