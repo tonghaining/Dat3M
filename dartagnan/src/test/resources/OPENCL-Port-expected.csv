@@ -1,0 +1,6 @@
+litmus/OPENCL/portability/sc-swg-atom.litmus,1
+litmus/OPENCL/portability/sc-swg-bar.litmus,1
+litmus/OPENCL/portability/mp-swg-atom.litmus,1
+litmus/OPENCL/portability/mp-swg-bar.litmus,1
+litmus/OPENCL/portability/mp-sdv-atom.litmus,1
+litmus/OPENCL/portability/mp-swg-lock.litmus,1

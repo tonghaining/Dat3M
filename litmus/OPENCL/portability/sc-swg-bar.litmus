@@ -1,0 +1,20 @@
+OPENCL SB
+
+{
+[x] = 0;
+[y] = 0;
+}
+
+P0@wg 0, dev 0 (global int* x, global int* y) {
+ *x = 1;
+ B1: barrier(CLK_GLOBAL_MEM_FENCE);
+ int r1 = *y;
+}
+
+P1@wg 0, dev 0 (global int* x, global int* y) {
+ *y = 1;
+ B1: barrier(CLK_GLOBAL_MEM_FENCE);
+ int r2 = *x;
+}
+
+~exists (P0:r1==0 /\ P1:r2==0)
