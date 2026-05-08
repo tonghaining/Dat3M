@@ -27,7 +27,7 @@ public class LitmusOpenClPortTest extends AbstractLitmusTest {
 
     @Override
     protected Provider<EnumSet<Property>> getPropertyProvider() {
-        return Provider.fromSupplier(() -> EnumSet.of(Property.CAT_SPEC));
+        return Provider.fromSupplier(() -> EnumSet.of(Property.PROGRAM_SPEC));
     }
 
     @Override

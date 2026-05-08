@@ -4,3 +4,4 @@ litmus/OPENCL/portability/mp-swg-atom.litmus,1
 litmus/OPENCL/portability/mp-swg-bar.litmus,1
 litmus/OPENCL/portability/mp-sdv-atom.litmus,1
 litmus/OPENCL/portability/mp-swg-lock.litmus,1
+litmus/OPENCL/portability/iriw.litmus,1

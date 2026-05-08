@@ -4,3 +4,4 @@ litmus/PTX/portability/sc-swg-bar.litmus,1
 litmus/PTX/portability/mp-swg.litmus,1
 litmus/PTX/portability/mp-swg-atom.litmus,1
 litmus/PTX/portability/mp-swg-fence3.litmus,1
+litmus/PTX/portability/iriw.litmus,1

@@ -11,3 +11,4 @@ litmus/OPENCL/portability/mp-swg-fence3.litmus,0
 litmus/OPENCL/portability/mp-swg-fence4.litmus,0
 litmus/OPENCL/portability/mp-sdv.litmus,0
 litmus/OPENCL/portability/mp-sdv-atom.litmus,1
+litmus/OPENCL/portability/iriw.litmus,1
