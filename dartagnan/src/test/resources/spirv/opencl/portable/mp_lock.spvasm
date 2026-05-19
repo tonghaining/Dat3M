@@ -1,0 +1,128 @@
+; @Input: %x_0 = {0}
+; @Input: %y_0 = {0}
+; @Input: %r_0 = {0}
+; @Output: forall (%r_0[0] == 1)
+; @Config: 1, 1, 2
+; SPIR-V
+; Version: 1.0
+; Generator: Khronos LLVM/SPIR-V Translator; 14
+; Bound: 56
+; Schema: 0
+               OpCapability Addresses
+               OpCapability Linkage
+               OpCapability Kernel
+               OpCapability Int64
+               OpCapability GenericPointer
+          %1 = OpExtInstImport "OpenCL.std"
+               OpMemoryModel Physical64 OpenCL
+               OpEntryPoint Kernel %50 "test" %__spirv_BuiltInWorkgroupId
+               OpSource OpenCL_C 200000
+               OpName %__spirv_BuiltInWorkgroupId "__spirv_BuiltInWorkgroupId"
+               OpName %test "test"
+               OpName %x "x"
+               OpName %y "y"
+               OpName %r "r"
+               OpName %entry "entry"
+               OpName %if_then "if.then"
+               OpName %if_end "if.end"
+               OpName %if_then3 "if.then3"
+               OpName %while_cond "while.cond"
+               OpName %while_body "while.body"
+               OpName %while_end "while.end"
+               OpName %if_end6 "if.end6"
+               OpName %x_addr "x.addr"
+               OpName %y_addr "y.addr"
+               OpName %r_addr "r.addr"
+               OpName %call "call"
+               OpName %cmp "cmp"
+               OpName %call1 "call1"
+               OpName %cmp2 "cmp2"
+               OpName %call4 "call4"
+               OpName %cmp5 "cmp5"
+               OpName %x_0 "x"
+               OpName %y_0 "y"
+               OpName %r_0 "r"
+               OpDecorate %__spirv_BuiltInWorkgroupId LinkageAttributes "__spirv_BuiltInWorkgroupId" Import
+               OpDecorate %__spirv_BuiltInWorkgroupId Constant
+               OpDecorate %__spirv_BuiltInWorkgroupId BuiltIn WorkgroupId
+               OpDecorate %test LinkageAttributes "test" Export
+               OpDecorate %x Alignment 4
+               OpDecorate %y Alignment 4
+               OpDecorate %r Alignment 4
+               OpDecorate %x_addr Alignment 8
+               OpDecorate %y_addr Alignment 8
+               OpDecorate %r_addr Alignment 8
+               OpDecorate %x_0 Alignment 4
+               OpDecorate %y_0 Alignment 4
+               OpDecorate %r_0 Alignment 4
+      %ulong = OpTypeInt 64 0
+       %uint = OpTypeInt 32 0
+    %ulong_0 = OpConstant %ulong 0
+     %uint_1 = OpConstant %uint 1
+     %uint_4 = OpConstant %uint 4
+    %ulong_1 = OpConstant %ulong 1
+     %uint_2 = OpConstant %uint 2
+     %uint_0 = OpConstant %uint 0
+    %v3ulong = OpTypeVector %ulong 3
+%_ptr_Input_v3ulong = OpTypePointer Input %v3ulong
+       %void = OpTypeVoid
+%_ptr_CrossWorkgroup_uint = OpTypePointer CrossWorkgroup %uint
+          %9 = OpTypeFunction %void %_ptr_CrossWorkgroup_uint %_ptr_CrossWorkgroup_uint %_ptr_CrossWorkgroup_uint
+%_ptr_Function__ptr_CrossWorkgroup_uint = OpTypePointer Function %_ptr_CrossWorkgroup_uint
+       %bool = OpTypeBool
+%_ptr_Generic_uint = OpTypePointer Generic %uint
+%__spirv_BuiltInWorkgroupId = OpVariable %_ptr_Input_v3ulong Input
+       %test = OpFunction %void DontInline %9
+          %x = OpFunctionParameter %_ptr_CrossWorkgroup_uint
+          %y = OpFunctionParameter %_ptr_CrossWorkgroup_uint
+          %r = OpFunctionParameter %_ptr_CrossWorkgroup_uint
+      %entry = OpLabel
+     %x_addr = OpVariable %_ptr_Function__ptr_CrossWorkgroup_uint Function
+     %y_addr = OpVariable %_ptr_Function__ptr_CrossWorkgroup_uint Function
+     %r_addr = OpVariable %_ptr_Function__ptr_CrossWorkgroup_uint Function
+               OpStore %x_addr %x Aligned 8
+               OpStore %y_addr %y Aligned 8
+               OpStore %r_addr %r Aligned 8
+         %26 = OpLoad %v3ulong %__spirv_BuiltInWorkgroupId Aligned 32
+       %call = OpCompositeExtract %ulong %26 0
+        %cmp = OpIEqual %bool %call %ulong_0
+               OpBranchConditional %cmp %if_then %if_end
+    %if_then = OpLabel
+         %31 = OpLoad %_ptr_CrossWorkgroup_uint %x_addr Aligned 8
+               OpStore %31 %uint_1 Aligned 4
+         %33 = OpLoad %_ptr_CrossWorkgroup_uint %y_addr Aligned 8
+         %35 = OpPtrCastToGeneric %_ptr_Generic_uint %33
+               OpAtomicStore %35 %uint_1 %uint_4 %uint_1
+               OpBranch %if_end
+     %if_end = OpLabel
+         %37 = OpLoad %v3ulong %__spirv_BuiltInWorkgroupId Aligned 32
+      %call1 = OpCompositeExtract %ulong %37 0
+       %cmp2 = OpIEqual %bool %call1 %ulong_1
+               OpBranchConditional %cmp2 %if_then3 %if_end6
+   %if_then3 = OpLabel
+               OpBranch %while_cond
+ %while_cond = OpLabel
+         %41 = OpLoad %_ptr_CrossWorkgroup_uint %y_addr Aligned 8
+         %42 = OpPtrCastToGeneric %_ptr_Generic_uint %41
+      %call4 = OpAtomicLoad %uint %42 %uint_1 %uint_2
+       %cmp5 = OpIEqual %bool %call4 %uint_0
+               OpBranchConditional %cmp5 %while_body %while_end
+ %while_body = OpLabel
+               OpBranch %while_cond
+  %while_end = OpLabel
+         %47 = OpLoad %_ptr_CrossWorkgroup_uint %x_addr Aligned 8
+         %48 = OpLoad %uint %47 Aligned 4
+         %49 = OpLoad %_ptr_CrossWorkgroup_uint %r_addr Aligned 8
+               OpStore %49 %48 Aligned 4
+               OpBranch %if_end6
+    %if_end6 = OpLabel
+               OpReturn
+               OpFunctionEnd
+         %50 = OpFunction %void DontInline %9
+        %x_0 = OpFunctionParameter %_ptr_CrossWorkgroup_uint
+        %y_0 = OpFunctionParameter %_ptr_CrossWorkgroup_uint
+        %r_0 = OpFunctionParameter %_ptr_CrossWorkgroup_uint
+         %54 = OpLabel
+         %55 = OpFunctionCall %void %test %x_0 %y_0 %r_0
+               OpReturn
+               OpFunctionEnd

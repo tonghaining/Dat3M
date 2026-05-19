@@ -1,4 +1,4 @@
-package com.dat3m.dartagnan.spirv.vulkan.openclLitmus;
+package com.dat3m.dartagnan.spirv.opencl.portable;
 
 import com.dat3m.dartagnan.configuration.Arch;
 import com.dat3m.dartagnan.configuration.Method;
@@ -12,14 +12,13 @@ import com.dat3m.dartagnan.wmm.Wmm;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
-import org.sosy_lab.common.configuration.Configuration;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.EnumSet;
 
-import static com.dat3m.dartagnan.configuration.Property.CAT_SPEC;
+import static com.dat3m.dartagnan.configuration.Property.PROGRAM_SPEC;
 import static com.dat3m.dartagnan.utils.ResourceHelper.getRootPath;
 import static com.dat3m.dartagnan.utils.ResourceHelper.getTestResourcePath;
 import static com.dat3m.dartagnan.utils.Result.FAIL;
@@ -27,24 +26,21 @@ import static com.dat3m.dartagnan.utils.Result.PASS;
 import static org.junit.Assert.assertEquals;
 
 @RunWith(Parameterized.class)
-public class SpirvRacesTest {
+public class SpirvAssertionsTest {
 
-    private final String modelPath = getRootPath("cat/vulkan.cat");
+    private final String modelPath = getRootPath("cat/opencl.cat");
     private final String programPath;
     private final Result expected;
 
-    public SpirvRacesTest(String file, Result expected) {
-        this.programPath = getTestResourcePath("spirv/vulkan/openclLitmus/" + file);
+    public SpirvAssertionsTest(String file, Result expected) {
+        this.programPath = getTestResourcePath("spirv/opencl/portable/" + file);
         this.expected = expected;
     }
 
-    @Parameterized.Parameters(name = "{index}: {0}, {1}, {2}")
+    @Parameterized.Parameters(name = "{index}: {0}, {1}")
     public static Iterable<Object[]> data() throws IOException {
         return Arrays.asList(new Object[][]{
-                {"3.2W.spvasm", FAIL}
-                {"2+2W.spvasm", PASS},
-                {"barrier_example.spvasm", PASS},
-                {"mp_lock.spvasm", FAIL},
+                {"mp_lock.spvasm", PASS},
         });
     }
 
@@ -54,14 +50,11 @@ public class SpirvRacesTest {
     }
 
     private VerificationTask mkTask() throws Exception {
-        Configuration config = Configuration.builder()
-                .copyFrom(TestHelper.getBasicConfig())
-                .build();
         VerificationTask.VerificationTaskBuilder builder = VerificationTask.builder()
-                .withConfig(config)
-                .withTarget(Arch.VULKAN);
+                .withConfig(TestHelper.getBasicConfig())
+                .withTarget(Arch.OPENCL);
         Program program = new ProgramParser().parse(new File(programPath));
         Wmm mcm = new ParserCat().parse(new File(modelPath));
-        return builder.build(program, mcm, EnumSet.of(CAT_SPEC));
+        return builder.build(program, mcm, EnumSet.of(PROGRAM_SPEC));
     }
 }
