@@ -41,7 +41,7 @@ public class SpirvRacesTest {
     @Parameterized.Parameters(name = "{index}: {0}, {1}, {2}")
     public static Iterable<Object[]> data() throws IOException {
         return Arrays.asList(new Object[][]{
-                {"3.2W.spvasm", FAIL}
+                {"3.2W.spvasm", FAIL},
                 {"2+2W.spvasm", PASS},
                 {"barrier_example.spvasm", PASS},
                 {"mp_lock.spvasm", FAIL},
