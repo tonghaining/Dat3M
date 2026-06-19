@@ -52,6 +52,8 @@ import org.sosy_lab.java_smt.api.BooleanFormulaManager;
 import org.sosy_lab.java_smt.api.SolverContext;
 import org.sosy_lab.java_smt.api.SolverException;
 
+import java.io.IOException;
+import java.nio.file.Path;
 import java.text.DecimalFormat;
 import java.util.*;
 import java.util.function.BiPredicate;
@@ -83,6 +85,11 @@ public class RefinementSolver extends ModelChecker {
 
     // ================================================================================================================
     // Configuration
+
+    @Option(name = EXPORT_ENCODING_PATH,
+            description = "Path for the program-encoding interface JSON file (events + relation may/must sets).",
+            secure = true)
+    private String exportEncodingPath = "";
 
     @Option(name=BASELINE,
             description="Refinement starts from this baseline WMM.",
@@ -227,6 +234,17 @@ public class RefinementSolver extends ModelChecker {
         logger.info("Starting encoding using {}", ctx.getVersion());
         prover.writeComment("Program encoding");
         prover.addConstraint(programEncoder.encodeFullProgram());
+
+        try {
+            Path exportPath = exportEncodingPath.isEmpty()
+                    ? ProgramEncodingExporter.defaultExportPath(context.getTask().getProgram())
+                    : Path.of(exportEncodingPath);
+            new ProgramEncodingExporter(context).export(exportPath);
+            logger.info("Exported program encoding interface to {}", exportPath);
+        } catch (IOException e) {
+            logger.warn("Failed to export program encoding interface: {}", e.getMessage());
+        }
+
         prover.writeComment("Memory model (baseline) encoding");
         prover.addConstraint(baselineEncoder.encodeFullMemoryModel());
         prover.writeComment("Symmetry breaking encoding");

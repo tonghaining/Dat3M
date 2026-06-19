@@ -71,6 +71,7 @@ public final class EncodingContext {
     private final Map<Event, BooleanFormula> controlFlowVariables = new HashMap<>();
     private final Map<Event, BooleanFormula> executionVariables = new HashMap<>();
     private final Map<NamedBarrier, BooleanFormula> syncVariables = new HashMap<>();
+    private final Map<Event, String> executionVarNames = new HashMap<>();
 
     private final Map<Event, TypedFormula<?, ?>> values = new HashMap<>();
     private final Map<Event, TypedFormula<?, ?>> results = new HashMap<>();
@@ -175,6 +176,10 @@ public final class EncodingContext {
             return execution(y);
         }
         return bmgr.and(execution(x), execution(y));
+    }
+
+    public String executionVarName(Event event) {
+        return executionVarNames.get(event);
     }
 
     // ====================================================================================
@@ -309,14 +314,18 @@ public final class EncodingContext {
         final boolean mergeCFVars = shouldMergeCFVars && verificationTask.getProgressModel().isFair();
         if (mergeCFVars) {
             for (BranchEquivalence.Class cls : analysisContext.get(BranchEquivalence.class).getAllEquivalenceClasses()) {
-                BooleanFormula v = bmgr.makeVariable("cf " + cls.getRepresentative().getGlobalId());
+                String varName = "cf " + cls.getRepresentative().getGlobalId();
+                BooleanFormula v = bmgr.makeVariable(varName);
                 for (Event e : cls) {
                     controlFlowVariables.put(e, v);
+                    executionVarNames.put(e, varName);
                 }
             }
         } else {
             for (Event e : verificationTask.getProgram().getThreadEvents()) {
-                controlFlowVariables.put(e, bmgr.makeVariable("cf " + e.getGlobalId()));
+                String varName = "cf " + e.getGlobalId();
+                controlFlowVariables.put(e, bmgr.makeVariable(varName));
+                executionVarNames.put(e, varName);
             }
         }
 
@@ -334,7 +343,9 @@ public final class EncodingContext {
                 syncVariables.put(b, bmgr.makeVariable("sync " + e.getGlobalId()));
             }
             if (!e.cfImpliesExec()) {
-                executionVariables.put(e, bmgr.makeVariable("exec " + e.getGlobalId()));
+                String varName = "exec " + e.getGlobalId();
+                executionVariables.put(e, bmgr.makeVariable(varName));
+                executionVarNames.put(e, varName);
             }
             if (e instanceof RegWriter rw) {
                 final Register register = rw.getResultRegister();

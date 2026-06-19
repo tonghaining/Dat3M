@@ -10,6 +10,7 @@ import com.dat3m.dartagnan.solver.caat4wmm.coreReasoning.CoreReasoner;
 import com.dat3m.dartagnan.utils.options.BaseOptions;
 import com.dat3m.dartagnan.utils.printer.Printer;
 import com.dat3m.dartagnan.verification.TaskSolver;
+import com.dat3m.dartagnan.verification.solving.AssumeSolver;
 import com.dat3m.dartagnan.verification.solving.ModelChecker;
 import com.dat3m.dartagnan.verification.solving.RefinementSolver;
 import com.dat3m.dartagnan.witness.graphviz.ExecutionGraphVisualizer;
@@ -67,6 +68,7 @@ public final class OptionInfo implements Comparable<OptionInfo> {
                 BaseOptions.class,
                 Printer.class,
                 ModelChecker.SMTConfig.class,
+                AssumeSolver.class,
                 RefinementSolver.class,
                 RelationAnalysis.Config.class,
                 WmmAnalysis.class,

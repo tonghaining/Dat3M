@@ -10,21 +10,36 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.sosy_lab.common.configuration.Configuration;
 import org.sosy_lab.common.configuration.InvalidConfigurationException;
+import org.sosy_lab.common.configuration.Option;
+import org.sosy_lab.common.configuration.Options;
 import org.sosy_lab.java_smt.api.BooleanFormula;
 import org.sosy_lab.java_smt.api.BooleanFormulaManager;
 import org.sosy_lab.java_smt.api.SolverContext;
 import org.sosy_lab.java_smt.api.SolverException;
 
+import java.io.IOException;
+import java.nio.file.Path;
+
+import static com.dat3m.dartagnan.configuration.OptionNames.EXPORT_ENCODING_PATH;
 import static com.dat3m.dartagnan.utils.Result.FAIL;
 import static com.dat3m.dartagnan.utils.Result.PASS;
 import static java.util.Collections.singletonList;
 
+@Options
 public class AssumeSolver extends ModelChecker {
 
     private static final Logger logger = LoggerFactory.getLogger(AssumeSolver.class);
 
+    @Option(name = EXPORT_ENCODING_PATH,
+            description = "Path for the program-encoding interface JSON file (events + relation may/must sets). " +
+                    "Defaults to <output_dir>/encoding/<program_name>.json. " +
+                    "Intended as input for an external WMM encoder (e.g. Rust).",
+            secure = true)
+    private String exportEncodingPath = "";
+
     private AssumeSolver(VerificationTask task) throws InvalidConfigurationException {
         super(task);
+        task.getConfig().inject(this);
     }
 
     public static AssumeSolver create(VerificationTask task) throws InvalidConfigurationException {
@@ -60,6 +75,17 @@ public class AssumeSolver extends ModelChecker {
         logger.info("Starting encoding using {}", solverContext.getVersion());
         prover.writeComment("Program encoding");
         prover.addConstraint(programEncoder.encodeFullProgram());
+
+        try {
+            Path exportPath = exportEncodingPath.isEmpty()
+                    ? ProgramEncodingExporter.defaultExportPath(context.getTask().getProgram())
+                    : Path.of(exportEncodingPath);
+            new ProgramEncodingExporter(context).export(exportPath);
+            logger.info("Exported program encoding interface to {}", exportPath);
+        } catch (IOException e) {
+            logger.warn("Failed to export program encoding interface: {}", e.getMessage());
+        }
+
         prover.writeComment("Memory model encoding");
         prover.addConstraint(wmmEncoder.encodeFullMemoryModel());
         prover.writeComment("Symmetry breaking encoding");

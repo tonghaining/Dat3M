@@ -85,6 +85,9 @@ public class OptionNames {
     public static final String PROPERTYPATH = "svcomp.property";
     public static final String NATIVE = "svcomp.native";
 
+    // Export Options
+    public static final String EXPORT_ENCODING_PATH = "export.encoding.path";
+
     // Debugging Options
     public static final String PRINT_PROGRAM_BEFORE_PROCESSING = "printer.beforeProcessing";
     public static final String PRINT_PROGRAM_AFTER_SIMPLIFICATION = "printer.afterSimplification";
