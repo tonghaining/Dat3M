@@ -9,6 +9,7 @@ import java.util.Set;
 
 import com.dat3m.dartagnan.GlobalSettings;
 import com.dat3m.dartagnan.program.Program;
+import com.dat3m.dartagnan.program.analysis.ExecutionAnalysis;
 import com.dat3m.dartagnan.program.event.Event;
 import com.dat3m.dartagnan.wmm.Relation;
 import com.dat3m.dartagnan.wmm.Wmm;
@@ -21,6 +22,7 @@ import com.dat3m.dartagnan.wmm.utils.graph.EventGraph;
  * The file captures:
  *   - events: id, thread, tags, and the SMT execution-variable name
  *   - relations: name, may-set, and must-set as lists of [e1_id, e2_id] pairs
+ *   - exec_implications: [from_id, to_id] pairs where executing "from" implies "to" also executes
  */
 public class ProgramEncodingExporter {
 
@@ -45,6 +47,8 @@ public class ProgramEncodingExporter {
         appendEvents(json);
         json.append(",\n");
         appendRelations(json);
+        json.append(",\n");
+        appendExecImplications(json);
 
         json.append("\n}\n");
         Files.writeString(outputPath, json.toString());
@@ -87,6 +91,26 @@ public class ProgramEncodingExporter {
             json.append("\n");
         }
         json.append("  ]");
+    }
+
+    private void appendExecImplications(StringBuilder json) {
+        ExecutionAnalysis exec = context.getAnalysisContext().requires(ExecutionAnalysis.class);
+        List<Event> events = context.getTask().getProgram().getThreadEvents();
+
+        json.append("  \"exec_implications\": [\n");
+        boolean first = true;
+        for (int i = 0; i < events.size(); i++) {
+            for (int j = 0; j < events.size(); j++) {
+                if (i == j) continue;
+                Event from = events.get(i);
+                Event to = events.get(j);
+                if (!exec.isImplied(from, to)) continue;
+                if (!first) json.append(",\n");
+                json.append("    [").append(from.getGlobalId()).append(", ").append(to.getGlobalId()).append("]");
+                first = false;
+            }
+        }
+        json.append("\n  ]");
     }
 
     // -------------------------------------------------------------------------
