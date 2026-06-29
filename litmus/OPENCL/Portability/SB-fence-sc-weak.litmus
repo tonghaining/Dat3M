@@ -1,0 +1,25 @@
+OPENCL Fence-SC-Weak
+
+(*
+ * Figure 6 of https://dl.acm.org/doi/epdf/10.1145/3297858.3304043
+ *)
+
+{
+[x] = 0;
+[y] = 0;
+}
+
+P0@wg 0, dev 0 (global int* x, global int* y) {
+ *x = 1;
+ atomic_work_item_fence(CLK_GLOBAL_MEM_FENCE, memory_order_seq_cst, memory_scope_device);
+ int r0 = *y;
+}
+
+P1@wg 0, dev 0 (global int* x, global atomic_int* y) {
+  *y = 1;
+  atomic_work_item_fence(CLK_GLOBAL_MEM_FENCE, memory_order_seq_cst, memory_scope_device);
+  int r1 = *x;
+}
+
+~exists
+(P0:r0 == 0 /\ P1:r1 == 0)

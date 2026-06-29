@@ -1,0 +1,14 @@
+PTX Fence-SC-Weak
+"Figure 6 of https://dl.acm.org/doi/epdf/10.1145/3297858.3304043"
+{
+x=0;
+y=0;
+P0:r0=0;
+P1:r1=0;
+}
+ P0@cta 0,gpu 0         | P1@cta 1,gpu 0         ;
+ st.weak x, 1           | st.weak y, 1           ;
+ fence.sc.gpu           | fence.sc.gpu           ;
+ ld.weak r0, y          | ld.weak r1, x          ;
+~exists
+(P0:r0 == 0 /\ P1:r1 == 0)
