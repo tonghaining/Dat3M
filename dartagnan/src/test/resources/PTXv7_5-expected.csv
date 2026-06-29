@@ -214,6 +214,7 @@ litmus/PTX/Manual/barrier-instance-id-exists.litmus,1
 litmus/PTX/Manual/barrier-instance-id-forall.litmus,1
 litmus/PTX/Manual/barrier-logical-id-exists.litmus,1
 litmus/PTX/Manual/barrier-logical-id-forall.litmus,1
+litmus/PTX/Manual/LB.litmus,0
 litmus/PTX/Memalloy/IRIW1.litmus,1
 litmus/PTX/Memalloy/IRIW2.litmus,1
 litmus/PTX/Memalloy/IRIW_gl_cta.litmus,1

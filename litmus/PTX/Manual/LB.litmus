@@ -1,0 +1,13 @@
+PTX SB-cta
+"https://github.com/NVlabs/mixedproxy/blob/main/tests/SB_cta.test"
+{
+x=0;
+y=0;
+P0:r0=0;
+P1:r1=0;
+}
+ P0@cta 0,gpu 0                | P1@cta 0,gpu 0         ;
+ ld.relaxed.gpu r0, y          | ld.relaxed.gpu r1, x          ;
+ st.relaxed.gpu x, 1           | st.relaxed.gpu y, 2           ;
+exists
+(P0:r0 == 1 /\ P1:r1 == 1)

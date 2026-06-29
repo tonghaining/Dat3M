@@ -31,7 +31,9 @@ let unv = _ * _
 let wi = int
 
 (* Inclusive scopes *)
-let incl = (swg & (WG * WG)) | (sdv & (DV * DV)) | (ALL * ALL)
+let incl = (ALL * ALL) |
+           (sdv & ((ALL | DV) * (ALL | DV))) |
+           (swg & ((ALL | DV | WG) * (ALL | DV | WG)))
 
 (*******************)
 (* Synchronisation *)
@@ -104,12 +106,32 @@ let moe = mo \ wi
 empty rmw & (fre; moe) as 0-Atomic
 
 (****************************************)
-(* Sequential consistency, simplified,  *)
-(* with scoped SC axioms                *)
+(* Sequential consistency — Scoped RC11 *)
 (****************************************)
 
-let scp = Fsb?; (rb | mo | (ghb | lhb)); sbF?
-acyclic (SC*SC) & scp & incl as O-Sscoped
+(* Extended coherence order (needed for pscF) *)
+let eco = (rf | mo | rb)+
+
+(* Combined happens-before: union of the two OpenCL regions *)
+let hb   = ghb | lhb
+let hbl  = hb & loc
+let sbnl = sb \ loc
+
+(* SC-before — RC11's repair: hb is replaced by scb *)
+let scb  = sb | (sbnl; hb; sbnl) | hbl | mo | rb
+
+(* Partial SC relations (RC11) *)
+let Esc      = [SC]
+let Fsc      = [F & SC]
+let pscbase  = (Esc | (Fsc; hb?)) ; scb ; (Esc | (hb?; Fsc))
+let pscF     = Fsc; (hb | (hb; eco; hb)); Fsc
+let psc      = pscbase | pscF
+
+(* Scoped SC axiom: enforce psc only between scope-inclusive endpoints *)
+acyclic (psc & incl) as SC
+
+(* No thin air *)
+acyclic (sb | rf) as no_thin_air
 
 (***************)
 (*    Races    *)
