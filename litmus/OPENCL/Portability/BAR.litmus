@@ -1,0 +1,21 @@
+OPENCL BAR
+
+{
+[x] = 0;
+}
+
+P0@wg 0, dev 0 (global int* x) {
+  *x = 1;
+  *x = 2;
+  *x = 3;
+  B1: barrier(CLK_GLOBAL_MEM_FENCE);
+}
+
+P1@wg 0, dev 0 (global int* x) {
+  B1: barrier(CLK_GLOBAL_MEM_FENCE);
+  int r0 = *x;
+  int r1 = *x;
+}
+
+forall
+(P1:r0 == 3 /\ P1:r1 == 3)

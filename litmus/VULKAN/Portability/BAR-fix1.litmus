@@ -1,0 +1,13 @@
+Vulkan barrier
+{
+x=0;
+}
+ P0@sg 0, wg 0, qf 0      | P1@sg 0, wg 0, qf 0      ;
+ st.nonpriv.sc0 x, 1      |                          ;
+ st.nonpriv.sc0 x, 2      |                          ;
+ st.av.dv.sc0 x, 3        |                          ;
+ cbar.acq_rel.dv.semsc0 1 | cbar.acq_rel.dv.semsc0 1 ;
+                          | ld.vis.dv.sc0 r0, x      ;
+                          | ld.nonpriv.sc0 r1, x     ;
+
+forall (P1:r0 == 3 /\ P1:r1 == 3)

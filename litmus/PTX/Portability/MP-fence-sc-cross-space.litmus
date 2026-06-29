@@ -1,0 +1,14 @@
+PTX Fence-sc-MP
+{
+x=0;
+y=0;
+P1:r0=0;
+P1:r1=0;
+}
+ P0@cta 0,gpu 0         | P1@cta 0,gpu 0         ;
+ st.relaxed.cta x, 1    | ld.relaxed.cta r0, y   ;
+ fence.sc.cta           | fence.sc.cta           ;
+ st.relaxed.cta y, 1    | ld.relaxed.cta r1, x   ;
+
+~exists
+(P1:r0 == 1 /\ P1:r1 == 0)

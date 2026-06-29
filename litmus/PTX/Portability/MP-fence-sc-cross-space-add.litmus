@@ -1,0 +1,16 @@
+PTX Fence-sc-MP
+{
+x=0;
+y=0;
+P0:r0=0;
+P0:r1=0;
+P1:r2=0;
+P1:r3=0;
+}
+ P0@cta 0,gpu 0                | P1@cta 0,gpu 0                ;
+ atom.relaxed.gpu.add r0, x, 1 | atom.relaxed.gpu.add r2, y, 0 ;
+ fence.sc.gpu                  | fence.sc.gpu                  ;
+ atom.relaxed.gpu.add r1, y, 1 | atom.relaxed.gpu.add r3, x, 0 ;
+
+~exists
+(P1:r2 == 1 /\ P1:r3 == 0)

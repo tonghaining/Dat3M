@@ -1,0 +1,16 @@
+PTX Fence-SC-W+RWC
+// Figure 6 of https://dl.acm.org/doi/10.1145/3062341.3062352
+{
+x=0;
+y=0;
+z=0;
+P1:r0=0;
+P1:r2=0;
+P2:r1=0;
+}
+P0@cta 0,gpu 0         | P1@cta 1,gpu 0         | P2@cta 2,gpu 0        ;
+st.relaxed.gpu x, 1    | ld.acquire.gpu r0, z   | st.relaxed.gpu y, 1   ;
+st.release.gpu z, 1    | fence.sc.gpu           | fence.sc.gpu          ;
+                       | ld.relaxed.gpu r2, y   | ld.relaxed.gpu r1, x  ;
+~exists
+(P1:r0==1 /\ P2:r1==0 /\ P1:r2==0)

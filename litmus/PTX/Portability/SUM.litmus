@@ -1,0 +1,14 @@
+PTX LB
+{
+x=0;
+count=0;
+P0:r0=0;
+P1:r1=0;
+P1:r2=0;
+}
+ P0@cta 0,gpu 0                     | P1@cta 1,gpu 0                    ;
+ st.relaxed.gpu x, 1                | fence.sc.gpu                      ;
+ fence.sc.gpu                       | atom.relaxed.gpu.add r1, count, 1 ;
+ atom.relaxed.gpu.add r0, count, 1  | ld.relaxed.gpu r2, x              ;
+~exists
+(P1:r1 == 1 /\ P1:r2 == 0)
