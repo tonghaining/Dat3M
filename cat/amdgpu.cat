@@ -2,27 +2,26 @@ AMDGPU
 (* AMDGPU Memory Model *)
 (* Ported from vulkan.cat; availability-visibility chains retained.          *)
 (* Reference: https://llvm.org/docs/AMDGPUMemoryModel.html                   *)
-(* See NOTES at the bottom for the deltas w.r.t. the Vulkan model.           *)
 
 // Base relations (expected from the front-end):
 // loc:       events accessing the same address
 // swave:     same wavefront
 // swg:       same workgroup
-// scluster:  same cluster        (gfx12+; see NOTE 8 to elide)
+// scluster:  same cluster
 // sagent:    same agent (device)
 // ssw:       system-synchronizes-with (dispatch, host<->device)
 // syncbar:   barriers with the same logical barrier resource   [optional]
 
 // Tags (expected from the front-end):
-// Scope of an operation, exactly one; absent syncscope => SYS (spec default):
-//   THREAD, WAVE, WG, CLUSTER, AGENT, SYS
-// Ordering: REL means "at least release", ACQ means "at least acquire"
-// Kind:     R, W, M, F, ATOM, RMW, IW, CBAR
-// AMDGPU-specific:
-//   AVSTORE : @llvm.amdgcn.av.store.*  (non-atomic store-available)
-//   AVLOAD  : @llvm.amdgcn.av.load.*   (non-atomic load-visible)
-//   NOAV    : !mmra !{!"amdgcn-av", !"none"}
-//   LDS     : addrspace(3), or addrspace(0) resolving to addrspace(3)
+// THREAD, WAVE, WG, CLUSTER, AGENT, SYS: thread, wavefront, workgroup, cluster, agent, system scopes
+
+// AV: @llvm.amdgcn.av.store.*  (non-atomic store-available)
+// VIS: @llvm.amdgcn.av.load.*   (non-atomic load-visible)
+// NOAV: !mmra !{!"amdgcn-av", !"none"}
+
+// https://llvm.org/docs/AMDGPUUsage.html#address-spaces
+// FLAT: flat, addrspace(0)
+// LDS: Local Data Share, addrspace(3), or addrspace(0) resolving to addrspace(3)
 
 (*******************)
 (*   Auxiliaries   *)
@@ -44,13 +43,11 @@ let inscope = (GESYS * GESYS) |
               (swave    & (GEWAVE    * GEWAVE))    |
               (int      & (GETHREAD  * GETHREAD))
 
-(* The four operation classes of the AMDGPU model.                          *)
-(* NOAV does NOT affect the operation's own access (MakePointerAvailable /  *)
-(* MakePointerVisible survive); it only kills MakeAvailable / MakeVisible.  *)
-let SAV  = (W & ATOM) | AVSTORE | (W & LDS)   // store-available
-let LVIS = (R & ATOM) | AVLOAD  | (R & LDS)   // load-visible
-let MAV  = ((F | ATOM) & REL) \ NOAV          // make-available
-let MVIS = ((F | ATOM) & ACQ) \ NOAV          // make-visible
+// NOAV does NOT affect the operation's own access (MakePointerAvailable / MakePointerVisible survive); it only kills MakeAvailable / MakeVisible.
+let SAV  = (W & ATOM) | AV | (W & LDS)    // store-available
+let LVIS = (R & ATOM) | VIS | (R & LDS)   // load-visible
+let MAV  = ((F | ATOM) & REL) \ NOAV      // make-available
+let MVIS = ((F | ATOM) & ACQ) \ NOAV      // make-visible
 
 (* LDS accesses are store-available / load-visible at WORKGROUP scope,      *)
 (* independent of their syncscope, so they never feed the wider levels.     *)
