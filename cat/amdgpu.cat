@@ -18,6 +18,7 @@ AMDGPU
 // AV: @llvm.amdgcn.av.store.*  (non-atomic store-available)
 // VIS: @llvm.amdgcn.av.load.*   (non-atomic load-visible)
 // NOAV: !mmra !{!"amdgcn-av", !"none"}
+// VOL: `volatile` access
 
 // https://llvm.org/docs/AMDGPUUsage.html#address-spaces
 // FLAT: flat, addrspace(0)
@@ -44,27 +45,57 @@ let inscope = (GESYS * GESYS) |
               (int      & (GETHREAD  * GETHREAD))
 
 // NOAV does NOT affect the operation's own access (MakePointerAvailable / MakePointerVisible survive); it only kills MakeAvailable / MakeVisible.
-let SAV  = (W & ATOM) | AV | (W & LDS)    // store-available
-let LVIS = (R & ATOM) | VIS | (R & LDS)   // load-visible
+// Only synchronizing operations qualify here, so `volatile` never appears.
 let MAV  = ((F | ATOM) & REL) \ NOAV      // make-available
 let MVIS = ((F | ATOM) & ACQ) \ NOAV      // make-visible
 
-(* LDS accesses are store-available / load-visible at WORKGROUP scope,      *)
-(* independent of their syncscope, so they never feed the wider levels.     *)
-let SAVG  = SAV  \ LDS
-let LVISG = LVIS \ LDS
+(* Store-available / load-visible have three sources, with three different  *)
+(* rules for the EFFECTIVE av/vis scope -- which is not in general the      *)
+(* operation's syncscope:                                                   *)
+//   *SCOPED : atomics and the av.store/av.load intrinsics -> syncscope / !scope
+//   *LDS    : any addrspace(3) access                     -> workgroup
+//   *VOL    : non-atomic volatile on global/generic       -> system
+// A volatile ATOMIC access is not widened: it falls into *SCOPED and keeps
+// its syncscope, which is why *VOL subtracts ATOM.
+let SAVSCOPED = ((W & ATOM) | AV) \ LDS
+let SAVLDS    = W & LDS
+let SAVVOL    = (((W & VOL) \ ATOM) \ AV) \ LDS
+let SAV = SAVSCOPED | SAVLDS | SAVVOL      // store-available
 
-let AVSYS     = (MAV | SAVG) & GESYS
-let AVAGENT   = (MAV | SAVG) & GEAGENT
-let AVCLUSTER = (MAV | SAVG) & GECLUSTER
-let AVWG      = ((MAV | SAVG) & GEWG)   | (W & LDS)
-let AVWAVE    = ((MAV | SAVG) & GEWAVE) | (W & LDS)
+let LVISSCOPED = ((R & ATOM) | VIS) \ LDS
+let LVISLDS    = R & LDS
+let LVISVOL    = (((R & VOL) \ ATOM) \ VIS) \ LDS
+let LVIS = LVISSCOPED | LVISLDS | LVISVOL  // load-visible
 
-let VISSYS     = (MVIS | LVISG) & GESYS
-let VISAGENT   = (MVIS | LVISG) & GEAGENT
-let VISCLUSTER = (MVIS | LVISG) & GECLUSTER
-let VISWG      = ((MVIS | LVISG) & GEWG)   | (R & LDS)
-let VISWAVE    = ((MVIS | LVISG) & GEWAVE) | (R & LDS)
+(* The syncscope-driven source is filtered by the GE* lattice; the LDS and  *)
+(* volatile sources are injected at their fixed effective level instead.    *)
+let SAVSYS     = (SAVSCOPED & GESYS)     | SAVVOL
+let SAVAGENT   = (SAVSCOPED & GEAGENT)   | SAVVOL
+let SAVCLUSTER = (SAVSCOPED & GECLUSTER) | SAVVOL
+let SAVWG      = (SAVSCOPED & GEWG)      | SAVVOL | SAVLDS
+let SAVWAVE    = (SAVSCOPED & GEWAVE)    | SAVVOL | SAVLDS
+
+let LVISSYS     = (LVISSCOPED & GESYS)     | LVISVOL
+let LVISAGENT   = (LVISSCOPED & GEAGENT)   | LVISVOL
+let LVISCLUSTER = (LVISSCOPED & GECLUSTER) | LVISVOL
+let LVISWG      = (LVISSCOPED & GEWG)      | LVISVOL | LVISLDS
+let LVISWAVE    = (LVISSCOPED & GEWAVE)    | LVISVOL | LVISLDS
+
+let AVSYS     = (MAV & GESYS)     | SAVSYS
+let AVAGENT   = (MAV & GEAGENT)   | SAVAGENT
+let AVCLUSTER = (MAV & GECLUSTER) | SAVCLUSTER
+let AVWG      = (MAV & GEWG)      | SAVWG
+let AVWAVE    = (MAV & GEWAVE)    | SAVWAVE
+
+let VISSYS     = (MVIS & GESYS)     | LVISSYS
+let VISAGENT   = (MVIS & GEAGENT)   | LVISAGENT
+let VISCLUSTER = (MVIS & GECLUSTER) | LVISCLUSTER
+let VISWG      = (MVIS & GEWG)      | LVISWG
+let VISWAVE    = (MVIS & GEWAVE)    | LVISWAVE
+
+// Verdicts involving unresolved flat volatile accesses are reading-dependent.
+// See NOTE 9.
+flag ~empty [(FLAT \ LDS) & VOL] as unresolved-volatile-flat
 
 (* Scoped modification order: no global co across non-inclusive scopes *)
 let mutordatom = (loc & inscope & (ATOM * ATOM)) \ id
@@ -197,9 +228,12 @@ flag ~empty undefval as undef-value
 (* 5. No device/host domain. AVDEVICE / VISDEVICE and the avdv/visdv *)
 (*    locord cases are gone; SYS is the ceiling.                     *)
 (*                                                                   *)
-(* 6. LDS promotion. addrspace(3) accesses are unconditionally       *)
-(*    SAV/LVIS at WG scope regardless of syncscope, which is why     *)
-(*    SAVG/LVISG exclude them from the CLUSTER/AGENT/SYS levels.     *)
+(* 6. Effective av/vis scope is decoupled from syncscope in two      *)
+(*    places, which is why SAV*/LVIS* are built per level rather     *)
+(*    than filtered through GE* as one set: addrspace(3) accesses    *)
+(*    are SAV/LVIS at WG scope regardless of syncscope, and          *)
+(*    non-atomic volatile accesses are SAV/LVIS at system scope.     *)
+(*    Neither feeds the levels above its own.                        *)
 (*                                                                   *)
 (* 7. vloc dropped. The AMDGPU model does not distinguish virtual    *)
 (*    from physical locations; add `vloc` back if you model          *)
@@ -210,4 +244,21 @@ flag ~empty undefval as undef-value
 (*    sixth chain level would only cost solver time. Likewise, drop  *)
 (*    the CLUSTER level entirely for pre-gfx12 targets: that removes *)
 (*    one link from every chain.                                     *)
+(*                                                                   *)
+(* 9. volatile ambiguity. The spec grants system scope to            *)
+(*    addrspace(0) volatile accesses, but grants workgroup scope to  *)
+(*    addrspace(0) resolving to addrspace(3) in the earlier section, *)
+(*    without stating which wins. We take the resolved space as      *)
+(*    authoritative: the LDS tag already absorbs resolved flat, and  *)
+(*    SAVVOL/LVISVOL subtract it. For flat accesses the front-end    *)
+(*    cannot resolve, this file grants system scope (the FIDELITY    *)
+(*    reading); the SOUND reading is workgroup, since over-granting  *)
+(*    availability admits broken executions. Run both and report     *)
+(*    disagreements -- the flag above marks the affected tests.      *)
+(*                                                                   *)
+(* 10. volatile makes this model STRONGER than generic LLVM, not     *)
+(*    weaker: LangRef leaves volatile's inter-thread behaviour       *)
+(*    target-dependent and AMDGPU pins it down. Every other delta    *)
+(*    in this file is a relaxation, so "LLVM subset of AMDGPU subset *)
+(*    of Vulkan" does not hold without qualification.                *)
 (*********************************************************************)
