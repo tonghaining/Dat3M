@@ -1,0 +1,12 @@
+PTX LB-2
+{
+x0=0;
+x1=0;
+P0:r1=0;
+P1:r0=0;
+}
+P0@cta 0, gpu 0 | P1@cta 1, gpu 0 ;
+ld.acquire.gpu r1, x1 | ld.acquire.gpu r0, x0 ;
+st.release.gpu x0, 1 | st.release.gpu x1, 1 ;
+exists
+(P0:r1 == 1 /\ P1:r0 == 1)

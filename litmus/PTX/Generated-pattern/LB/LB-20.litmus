@@ -1,0 +1,48 @@
+PTX LB-20
+{
+x0=0;
+x1=0;
+x2=0;
+x3=0;
+x4=0;
+x5=0;
+x6=0;
+x7=0;
+x8=0;
+x9=0;
+x10=0;
+x11=0;
+x12=0;
+x13=0;
+x14=0;
+x15=0;
+x16=0;
+x17=0;
+x18=0;
+x19=0;
+P0:r1=0;
+P1:r2=0;
+P2:r3=0;
+P3:r4=0;
+P4:r5=0;
+P5:r6=0;
+P6:r7=0;
+P7:r8=0;
+P8:r9=0;
+P9:r10=0;
+P10:r11=0;
+P11:r12=0;
+P12:r13=0;
+P13:r14=0;
+P14:r15=0;
+P15:r16=0;
+P16:r17=0;
+P17:r18=0;
+P18:r19=0;
+P19:r0=0;
+}
+P0@cta 0, gpu 0 | P1@cta 1, gpu 0 | P2@cta 2, gpu 0 | P3@cta 3, gpu 0 | P4@cta 4, gpu 0 | P5@cta 5, gpu 0 | P6@cta 6, gpu 0 | P7@cta 7, gpu 0 | P8@cta 8, gpu 0 | P9@cta 9, gpu 0 | P10@cta 10, gpu 0 | P11@cta 11, gpu 0 | P12@cta 12, gpu 0 | P13@cta 13, gpu 0 | P14@cta 14, gpu 0 | P15@cta 15, gpu 0 | P16@cta 16, gpu 0 | P17@cta 17, gpu 0 | P18@cta 18, gpu 0 | P19@cta 19, gpu 0 ;
+ld.acquire.gpu r1, x1 | ld.acquire.gpu r2, x2 | ld.acquire.gpu r3, x3 | ld.acquire.gpu r4, x4 | ld.acquire.gpu r5, x5 | ld.acquire.gpu r6, x6 | ld.acquire.gpu r7, x7 | ld.acquire.gpu r8, x8 | ld.acquire.gpu r9, x9 | ld.acquire.gpu r10, x10 | ld.acquire.gpu r11, x11 | ld.acquire.gpu r12, x12 | ld.acquire.gpu r13, x13 | ld.acquire.gpu r14, x14 | ld.acquire.gpu r15, x15 | ld.acquire.gpu r16, x16 | ld.acquire.gpu r17, x17 | ld.acquire.gpu r18, x18 | ld.acquire.gpu r19, x19 | ld.acquire.gpu r0, x0 ;
+st.release.gpu x0, 1 | st.release.gpu x1, 1 | st.release.gpu x2, 1 | st.release.gpu x3, 1 | st.release.gpu x4, 1 | st.release.gpu x5, 1 | st.release.gpu x6, 1 | st.release.gpu x7, 1 | st.release.gpu x8, 1 | st.release.gpu x9, 1 | st.release.gpu x10, 1 | st.release.gpu x11, 1 | st.release.gpu x12, 1 | st.release.gpu x13, 1 | st.release.gpu x14, 1 | st.release.gpu x15, 1 | st.release.gpu x16, 1 | st.release.gpu x17, 1 | st.release.gpu x18, 1 | st.release.gpu x19, 1 ;
+exists
+(P0:r1 == 1 /\ P1:r2 == 1 /\ P2:r3 == 1 /\ P3:r4 == 1 /\ P4:r5 == 1 /\ P5:r6 == 1 /\ P6:r7 == 1 /\ P7:r8 == 1 /\ P8:r9 == 1 /\ P9:r10 == 1 /\ P10:r11 == 1 /\ P11:r12 == 1 /\ P12:r13 == 1 /\ P13:r14 == 1 /\ P14:r15 == 1 /\ P15:r16 == 1 /\ P16:r17 == 1 /\ P17:r18 == 1 /\ P18:r19 == 1 /\ P19:r0 == 1)

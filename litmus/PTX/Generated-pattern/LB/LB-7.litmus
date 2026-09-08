@@ -1,0 +1,22 @@
+PTX LB-7
+{
+x0=0;
+x1=0;
+x2=0;
+x3=0;
+x4=0;
+x5=0;
+x6=0;
+P0:r1=0;
+P1:r2=0;
+P2:r3=0;
+P3:r4=0;
+P4:r5=0;
+P5:r6=0;
+P6:r0=0;
+}
+P0@cta 0, gpu 0 | P1@cta 1, gpu 0 | P2@cta 2, gpu 0 | P3@cta 3, gpu 0 | P4@cta 4, gpu 0 | P5@cta 5, gpu 0 | P6@cta 6, gpu 0 ;
+ld.acquire.gpu r1, x1 | ld.acquire.gpu r2, x2 | ld.acquire.gpu r3, x3 | ld.acquire.gpu r4, x4 | ld.acquire.gpu r5, x5 | ld.acquire.gpu r6, x6 | ld.acquire.gpu r0, x0 ;
+st.release.gpu x0, 1 | st.release.gpu x1, 1 | st.release.gpu x2, 1 | st.release.gpu x3, 1 | st.release.gpu x4, 1 | st.release.gpu x5, 1 | st.release.gpu x6, 1 ;
+exists
+(P0:r1 == 1 /\ P1:r2 == 1 /\ P2:r3 == 1 /\ P3:r4 == 1 /\ P4:r5 == 1 /\ P5:r6 == 1 /\ P6:r0 == 1)
