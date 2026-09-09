@@ -102,10 +102,10 @@ public class BuiltIn implements Decoration {
     }
 
     private IntegerType getIntegerType(String id, Type type) {
-        if (type instanceof IntegerType iType && iType.getBitWidth() == 32) {
+        if (type instanceof IntegerType iType && (iType.getBitWidth() == 32 || iType.getBitWidth() == 64)) {
             return iType;
         }
         throw new ParsingException("Illegal type in '%s', " +
-                "expected a 32-bit integer but received '%s'", id, type);
+                "expected a 32-bit or 64-bit integer but received '%s'", id, type);
     }
 }
