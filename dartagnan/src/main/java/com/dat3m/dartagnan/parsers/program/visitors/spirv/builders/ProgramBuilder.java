@@ -91,10 +91,11 @@ public class ProgramBuilder {
     }
 
     public void setEntryPointId(String id) {
-        if (entryPointId != null) {
-            throw new ParsingException("Multiple entry points are not supported");
+        // Multiple entry points are allowed by SPIR-V, but we only support running a single
+        // kernel at a time, so we use the first one and ignore the rest.
+        if (entryPointId == null) {
+            entryPointId = id;
         }
-        entryPointId = id;
     }
 
     public Arch getArch() {

@@ -1,8 +1,7 @@
-; @Input: %x_coerce_0 = {0}
+; @Input: %y_coerce_0 = {0}
 ; @Input: %r0_coerce_0 = {0}
-; @Input: %y__hidden_dyn_local_mem_0 = {0}
+; @Input: %x__hidden_dyn_local_mem = {0}
 ; @Output: forall (%r0_coerce_0[0] == 1)
-; @Filter: %r0_coerce_0[0] == 1
 ; @Config: 2, 1, 1
 ; SPIR-V
 ; Version: 1.0
@@ -18,14 +17,17 @@
           %1 = OpExtInstImport "OpenCL.std"
                OpMemoryModel Physical64 OpenCL
                OpEntryPoint Kernel %71 "_Z4testPiS_" %__spirv_BuiltInLocalInvocationId
+               OpEntryPoint Kernel %77 "__chip_var_info___chipspv_device_heap"
+               OpEntryPoint Kernel %81 "__chip_var_bind___chipspv_device_heap"
+               OpEntryPoint Kernel %85 "__chip_reset_non_symbols"
                OpSource OpenCL_C 200000
                OpName %__chip_var___chipspv_device_heap "__chip_var___chipspv_device_heap"
                OpName %__chip_module_has_no_IGBAs "__chip_module_has_no_IGBAs"
                OpName %__spirv_BuiltInLocalInvocationId "__spirv_BuiltInLocalInvocationId"
                OpName %_Z4testPiS_ "_Z4testPiS_"
-               OpName %x_coerce "x.coerce"
+               OpName %y_coerce "y.coerce"
                OpName %r0_coerce "r0.coerce"
-               OpName %y__hidden_dyn_local_mem "y__hidden_dyn_local_mem"
+               OpName %x__hidden_dyn_local_mem "x__hidden_dyn_local_mem"
                OpName %entry "entry"
                OpName %if_then "if.then"
                OpName %if_else "if.else"
@@ -48,9 +50,9 @@
                OpName %entry_1 "entry"
                OpName %__chip_reset_non_symbols "__chip_reset_non_symbols"
                OpName %entry_2 "entry"
-               OpName %x_coerce_0 "x.coerce"
+               OpName %y_coerce_0 "y.coerce"
                OpName %r0_coerce_0 "r0.coerce"
-               OpName %y__hidden_dyn_local_mem_0 "y__hidden_dyn_local_mem"
+               OpName %x__hidden_dyn_local_mem_0 "x__hidden_dyn_local_mem"
                OpDecorate %__chip_var___chipspv_device_heap LinkageAttributes "__chip_var___chipspv_device_heap" Export
                OpDecorate %__chip_module_has_no_IGBAs LinkageAttributes "__chip_module_has_no_IGBAs" Export
                OpDecorate %__chip_module_has_no_IGBAs Constant
@@ -68,8 +70,8 @@
     %uchar_1 = OpConstant %uchar 1
      %uint_0 = OpConstant %uint 0
      %uint_1 = OpConstant %uint 1
-     %uint_4 = OpConstant %uint 4
      %uint_2 = OpConstant %uint 2
+     %uint_4 = OpConstant %uint 4
     %ulong_8 = OpConstant %ulong 8
     %ulong_1 = OpConstant %ulong 1
     %ulong_2 = OpConstant %ulong 2
@@ -90,11 +92,11 @@
 %__spirv_BuiltInLocalInvocationId = OpVariable %_ptr_Input_v3ulong Input
        %true = OpConstantTrue %bool
 %_Z4testPiS_ = OpFunction %void None %16
-   %x_coerce = OpFunctionParameter %_ptr_CrossWorkgroup_uchar
+   %y_coerce = OpFunctionParameter %_ptr_CrossWorkgroup_uchar
   %r0_coerce = OpFunctionParameter %_ptr_CrossWorkgroup_uchar
-%y__hidden_dyn_local_mem = OpFunctionParameter %_ptr_Workgroup_uint
+%x__hidden_dyn_local_mem = OpFunctionParameter %_ptr_Workgroup_uint
       %entry = OpLabel
-         %30 = OpConvertPtrToU %ulong %x_coerce
+         %30 = OpConvertPtrToU %ulong %y_coerce
          %32 = OpConvertUToPtr %_ptr_Generic_uint %30
          %33 = OpConvertPtrToU %ulong %r0_coerce
          %34 = OpConvertUToPtr %_ptr_Generic_uint %33
@@ -105,26 +107,26 @@
         %cmp = OpIEqual %bool %conv_i %uint_0
                OpBranchConditional %cmp %if_then %if_else
     %if_then = OpLabel
-               OpStore %32 %uint_1 Aligned 4
-               OpAtomicStore %y__hidden_dyn_local_mem %uint_1 %uint_4 %uint_1
+               OpStore %x__hidden_dyn_local_mem %uint_1 Aligned 4
+               OpAtomicStore %32 %uint_2 %uint_4 %uint_1
                OpBranch %if_end7
     %if_else = OpLabel
-         %45 = OpLoad %v3ulong %__spirv_BuiltInLocalInvocationId Aligned 32
-         %46 = OpCompositeExtract %ulong %45 0
-   %call_i16 = OpSelect %ulong %true %46 %ulong_0
+         %46 = OpLoad %v3ulong %__spirv_BuiltInLocalInvocationId Aligned 32
+         %47 = OpCompositeExtract %ulong %46 0
+   %call_i16 = OpSelect %ulong %true %47 %ulong_0
    %conv_i17 = OpUConvert %uint %call_i16
        %cmp4 = OpIEqual %bool %conv_i17 %uint_1
                OpBranchConditional %cmp4 %if_then5 %if_end
    %if_then5 = OpLabel
                OpBranch %while_cond
  %while_cond = OpLabel
-         %51 = OpAtomicLoad %uint %y__hidden_dyn_local_mem %uint_1 %uint_2
+         %51 = OpAtomicLoad %uint %32 %uint_2 %uint_2
        %cmp6 = OpIEqual %bool %51 %uint_0
                OpBranchConditional %cmp6 %while_body %while_end
  %while_body = OpLabel
                OpBranch %while_cond
   %while_end = OpLabel
-         %53 = OpLoad %uint %32 Aligned 4
+         %53 = OpLoad %uint %x__hidden_dyn_local_mem Aligned 4
                OpStore %34 %53 Aligned 4
                OpBranch %if_end
      %if_end = OpLabel
@@ -154,11 +156,11 @@
                OpReturn
                OpFunctionEnd
          %71 = OpFunction %void None %16
- %x_coerce_0 = OpFunctionParameter %_ptr_CrossWorkgroup_uchar
+ %y_coerce_0 = OpFunctionParameter %_ptr_CrossWorkgroup_uchar
 %r0_coerce_0 = OpFunctionParameter %_ptr_CrossWorkgroup_uchar
-%y__hidden_dyn_local_mem_0 = OpFunctionParameter %_ptr_Workgroup_uint
+%x__hidden_dyn_local_mem_0 = OpFunctionParameter %_ptr_Workgroup_uint
          %75 = OpLabel
-         %76 = OpFunctionCall %void %_Z4testPiS_ %x_coerce_0 %r0_coerce_0 %y__hidden_dyn_local_mem_0
+         %76 = OpFunctionCall %void %_Z4testPiS_ %y_coerce_0 %r0_coerce_0 %x__hidden_dyn_local_mem_0
                OpReturn
                OpFunctionEnd
          %77 = OpFunction %void None %54

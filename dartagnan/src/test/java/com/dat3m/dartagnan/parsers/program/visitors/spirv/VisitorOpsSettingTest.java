@@ -108,15 +108,11 @@ public class VisitorOpsSettingTest {
                 OpEntryPoint GLCompute %ep2 "ep2"
                 """;
 
-        try {
-            // when
-            visit(input);
-            fail("Should throw exception");
-        } catch (ParsingException e) {
-            // then
-            assertEquals("Multiple entry points are not supported",
-                    e.getMessage());
-        }
+        // when
+        visit(input);
+
+        // then
+        assertEquals("%ep1", builder.getEntryPointId());
     }
 
     private void visit(String text) {
