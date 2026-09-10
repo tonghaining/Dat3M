@@ -41,7 +41,7 @@ public class SpirvRacesTest {
     public static Iterable<Object[]> data() throws IOException {
         return Arrays.asList(new Object[][]{
                 {"mp-cross-region.spvasm", FAIL},
-                {"mp-cross-region-fix.spvasm", PASS}
+                {"mp-cross-region-fix.spvasm", PASS},
         });
     }
 

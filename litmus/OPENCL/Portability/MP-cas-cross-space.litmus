@@ -1,0 +1,21 @@
+OPENCL RMW-release-sequence
+{
+[x] = 0;
+[y] = 0;
+[expected] = 1;
+}
+
+P0@wg 0, dev 0 (local int* x, global atomic_int* y, global int* expected) {
+ *x = 1;
+ int r0 = atomic_exchange_explicit(y, 1, memory_order_relaxed, memory_scope_device);
+}
+
+P1@wg 0, dev 0 (local int* x, global atomic_int* y, global int* expected) {
+  int t = atomic_compare_exchange_strong_explicit(y, expected, 0, memory_order_relaxed, memory_order_relaxed, memory_scope_device);
+  if (t) {
+    int r1 = *x;
+  }
+}
+
+~exists
+(P1:t == 1 /\ P1:r1 == 0)

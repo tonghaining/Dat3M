@@ -49,6 +49,8 @@ public class PtxToOpenCLTest extends AbstractCompilationWithDrCheckTest {
             // {"MP.litmus", "MP-cross-space-fix7.litmus", true},  // Data Race
             // {"MP.litmus", "MP-cross-space-fix8.litmus", true}, // Data Race
             // {"MP-fence-sc-weak.litmus", "MP-fence-sc-weak.litmus", true}, // Data Race
+            {"MP-cas-cross-space.litmus", "MP-cas-cross-space.litmus", false},
+            {"MP-cas-cross-space.litmus", "MP-cas-cross-space-fix.litmus", true},
             {"MP-fence-sc-cross-space.litmus", "MP-fence-sc-cross-space.litmus", false},
             {"MP-fence-sc-cross-space-add.litmus", "MP-fence-sc-cross-space-add.litmus", true},
             {"MP-fence-sc-cross-space-add-3.litmus", "MP-fence-sc-cross-space-add-3.litmus", true},
