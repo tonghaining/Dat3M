@@ -7,6 +7,7 @@ P1:r1=0;
 }
  P0@cta 0,gpu 0                 | P1@cta 1,gpu 0                   ;
  st.weak x, 1                   | atom.relaxed.gpu.cas r1, y, 1, 0 ;
+ fence.acq_rel.gpu              | fence.acq_rel.gpu                ;
  atom.relaxed.gpu.exch r0, y, 1 | ld.weak r2, x   ;
 ~exists
 (P1:r1 == 1 /\ P1:r2 == 0)

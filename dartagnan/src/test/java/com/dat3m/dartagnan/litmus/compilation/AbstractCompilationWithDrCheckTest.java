@@ -16,7 +16,6 @@ import java.util.stream.Stream;
 
 import static com.dat3m.dartagnan.configuration.Property.CAT_SPEC;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
 
 public abstract class AbstractCompilationWithDrCheckTest extends AbstractCompilationTest {
 
@@ -25,6 +24,14 @@ public abstract class AbstractCompilationWithDrCheckTest extends AbstractCompila
     }
 
     protected abstract Provider<String> getTargetFilePathProvider();
+
+    // Whether the target program is known/expected to have a data race under the target
+    // memory model (e.g. because the source relies on guarantees that get lost in translation).
+    // When true, we only check that the race is still present and skip the compiled-behaviour
+    // comparison below, since its outcome is meaningless (undefined behaviour) once there is a race.
+    protected boolean isExpectedDataRace() {
+        return false;
+    }
 
     protected final Provider<Program> drCheckProgramProvider = Providers.createProgramFromPath(getTargetFilePathProvider());
     protected final Provider<Wmm> drCheckWmmProvider = getTargetWmmProvider();
@@ -63,12 +70,14 @@ public abstract class AbstractCompilationWithDrCheckTest extends AbstractCompila
             s1.run();
             if (!s1.hasModel()) {
                 drChecker.run();
-                if (drChecker.hasModel()) {
-                    fail("Target program has a data race under the target memory model");
+                boolean dataRaceExpected = isExpectedDataRace();
+                assertEquals("Unexpected data race status for target program",
+                        dataRaceExpected, drChecker.hasModel());
+                if (!dataRaceExpected) {
+                    boolean compilationIsBroken = getCompilationBreakers().contains(filePathProvider.get());
+                    s2.run();
+                    assertEquals(compilationIsBroken, s2.hasModel());
                 }
-                boolean compilationIsBroken = getCompilationBreakers().contains(filePathProvider.get());
-                s2.run();
-                assertEquals(compilationIsBroken, s2.hasModel());
             }
         }
     }
