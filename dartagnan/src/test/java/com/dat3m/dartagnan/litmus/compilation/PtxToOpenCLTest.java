@@ -21,7 +21,7 @@ public class PtxToOpenCLTest extends AbstractCompilationWithDrCheckTest {
     private static final String OPENCL_DIR = "litmus/OPENCL/Portability/";
 
     // { PTX filename, OpenCL filename, expectDataRace, expectedToMatch }
-    // expectedToMatch is ignored when expectDataRace is true.
+    // expectedToMatch is omitted when expectDataRace is true, since it is ignored in that case.
     private static final Object[][] LITMUS_MAP = {
             {"IRIW-fence-sc.litmus", "IRIW-fence-sc.litmus", false, false},
             {"IRIW-fence-sc.litmus", "IRIW-fence-sc-fix1.litmus", false, true},
@@ -32,7 +32,7 @@ public class PtxToOpenCLTest extends AbstractCompilationWithDrCheckTest {
             {"SB-fence-sc-relaxed.litmus", "SB-fence-sc-relaxed.litmus", false, true},
             {"SB-fence-sc-relaxed.litmus", "SB-fence-sc-relaxed-cross-space.litmus", false, true},
             {"SB-fence-sc-relaxed.litmus", "SB-fence-sc-relaxed-cross-space1.litmus", false, true},
-            {"SB-fence-sc-weak.litmus", "SB-fence-sc-weak.litmus", true, false},
+            {"SB-fence-sc-weak.litmus", "SB-fence-sc-weak.litmus", true},
             {"WRC-fence-acq-rel.litmus", "WRC-fence-acq-rel.litmus", false, true},
             {"W+RWC-fence-sc.litmus", "W+RWC-fence-sc.litmus", false, false},
             {"W+RWC-fence-sc.litmus", "W+RWC-fence-sc-fix1.litmus", false, true},
@@ -40,17 +40,17 @@ public class PtxToOpenCLTest extends AbstractCompilationWithDrCheckTest {
             {"LB.litmus", "LB.litmus", false, true},
             {"SUM.litmus", "SUM.litmus", false, true},
             {"MP.litmus", "MP-same-space.litmus", false, true},
-            {"MP.litmus", "MP-cross-space.litmus", true, false},
-            {"MP.litmus", "MP-cross-space-fix1.litmus", true, true},
-            {"MP.litmus", "MP-cross-space-fix2.litmus", true, true},
+            {"MP.litmus", "MP-cross-space.litmus", true},
+            {"MP.litmus", "MP-cross-space-fix1.litmus", true},
+            {"MP.litmus", "MP-cross-space-fix2.litmus", true},
             {"MP.litmus", "MP-cross-space-fix3.litmus", false, true},
             {"MP.litmus", "MP-cross-space-fix4.litmus", false, true},
-            {"MP.litmus", "MP-cross-space-fix5.litmus", true, true},
+            {"MP.litmus", "MP-cross-space-fix5.litmus", true},
             {"MP.litmus", "MP-cross-space-fix6.litmus", false, true},
-            {"MP.litmus", "MP-cross-space-fix7.litmus", true, true},
-            {"MP.litmus", "MP-cross-space-fix8.litmus", true, true},
-            {"MP-fence-sc-weak.litmus", "MP-fence-sc-weak.litmus", true, true},
-            {"MP-cas-cross-space.litmus", "MP-cas-cross-space.litmus", true, false},
+            {"MP.litmus", "MP-cross-space-fix7.litmus", true},
+            {"MP.litmus", "MP-cross-space-fix8.litmus", true},
+            {"MP-fence-sc-weak.litmus", "MP-fence-sc-weak.litmus", true},
+            {"MP-cas-cross-space.litmus", "MP-cas-cross-space.litmus", true},
             {"MP-cas-cross-space.litmus", "MP-cas-cross-space-fix.litmus", false, true},
             {"MP-fence-sc-cross-space.litmus", "MP-fence-sc-cross-space.litmus", false, false},
             {"MP-fence-sc-cross-space-add.litmus", "MP-fence-sc-cross-space-add.litmus", false, true},
@@ -81,7 +81,7 @@ public class PtxToOpenCLTest extends AbstractCompilationWithDrCheckTest {
                         getRootPath(PTX_DIR + e[0]),
                         getRootPath(OPENCL_DIR + e[1]),
                         e[2],
-                        e[3]
+                        e.length > 3 ? e[3] : false
                 })
                 .collect(Collectors.toList());
     }

@@ -19,13 +19,13 @@ public class OpenCLToVulkanTest extends AbstractCompilationWithDrCheckTest {
     private static final String VULKAN_DIR = "litmus/VULKAN/Portability/";
 
     // { OpenCL filename, Vulkan filename, expectDataRace, expectedToMatch }
-    // expectedToMatch is ignored when expectDataRace is true.
+    // expectedToMatch is omitted when expectDataRace is true, since it is ignored in that case.
     private static final Object[][] LITMUS_MAP = {
-            {"BAR.litmus", "BAR.litmus", true, false},
+            {"BAR.litmus", "BAR.litmus", true},
             {"BAR.litmus", "BAR-fix1.litmus", false, true},
             {"BAR.litmus", "BAR-fix2.litmus", false, true},
             {"BAR.litmus", "BAR-fix3.litmus", false, true},
-            {"BAR.litmus", "BAR-fix4.litmus", true, true},
+            {"BAR.litmus", "BAR-fix4.litmus", true},
             {"SB-RMW-SC.litmus", "SB-RMW-SC.litmus", false, true},
             {"SB-fence-sc-relaxed.litmus", "SB-fence-SC.litmus", false, false}, // SC downgrade to AcqRel in Vulkan
             {"SB-fence-sc-relaxed.litmus", "SB-fence-SC-fix1.litmus", false, false},
@@ -47,7 +47,7 @@ public class OpenCLToVulkanTest extends AbstractCompilationWithDrCheckTest {
                         getRootPath(OPENCL_DIR + e[0]),
                         getRootPath(VULKAN_DIR + e[1]),
                         e[2],
-                        e[3]
+                        e.length > 3 ? e[3] : false
                 })
                 .collect(Collectors.toList());
     }
