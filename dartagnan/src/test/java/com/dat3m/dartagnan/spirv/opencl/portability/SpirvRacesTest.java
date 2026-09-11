@@ -42,6 +42,8 @@ public class SpirvRacesTest {
         return Arrays.asList(new Object[][]{
                 {"mp-cross-region.spvasm", FAIL},
                 {"mp-cross-region-fix.spvasm", PASS},
+                {"mp-cross-region-extern.spvasm", FAIL},
+                {"mp-cross-region-extern-fix.spvasm", PASS},
         });
     }
 
