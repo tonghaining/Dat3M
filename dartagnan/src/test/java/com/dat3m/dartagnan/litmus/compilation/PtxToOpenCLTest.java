@@ -29,6 +29,8 @@ public class PtxToOpenCLTest extends AbstractCompilationWithDrCheckTest {
             {"IRIW-fence-sc.litmus", "IRIW-fence-sc-fix3.litmus", false, true},
             {"RWC-fence-sc.litmus", "RWC-fence-sc.litmus", false, false},
             {"RWC-fence-sc.litmus", "RWC-fence-sc-fix1.litmus", false, true},
+            {"RWC-fence-sc.litmus", "RWC-fence-sc-fix2.litmus", false, true},
+            {"RWC-fence-sc.litmus", "RWC-fence-sc-fix3.litmus", false, false},
             {"SB-fence-sc-relaxed.litmus", "SB-fence-sc-relaxed.litmus", false, true},
             {"SB-fence-sc-relaxed.litmus", "SB-fence-sc-relaxed-cross-space.litmus", false, true},
             {"SB-fence-sc-relaxed.litmus", "SB-fence-sc-relaxed-cross-space1.litmus", false, true},
