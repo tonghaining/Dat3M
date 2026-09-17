@@ -1,0 +1,20 @@
+OPENCL MP
+
+{
+  [x]=0;
+  [y]=0;
+}
+
+P0@wg 0, dev 0 (global int* x, global atomic_int* y) {
+  atomic_store_explicit(x, 1, memory_order_relaxed, memory_scope_work_group);
+  atomic_work_item_fence(CLK_GLOBAL_MEM_FENCE,memory_order_seq_cst,memory_scope_work_group);
+  atomic_store_explicit(y, 1, memory_order_release, memory_scope_work_group);
+}
+
+P1@wg 0, dev 0 (global int* x, global atomic_int* y) {
+  while(atomic_load_explicit(y, memory_order_relaxed, memory_scope_work_group) == 0) {}
+  atomic_work_item_fence(CLK_GLOBAL_MEM_FENCE,memory_order_seq_cst,memory_scope_work_group);
+  int r1 = *x;
+}
+
+forall (1:r1=1)

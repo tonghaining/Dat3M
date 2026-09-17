@@ -1,0 +1,95 @@
+; @Config: 2, 1, 2
+; SPIR-V
+; Version: 1.4
+; Generator: Khronos LLVM/SPIR-V Translator; 14
+; Bound: 54
+; Schema: 0
+               OpCapability Addresses
+               OpCapability Linkage
+               OpCapability Kernel
+               OpCapability Int64
+               OpCapability GenericPointer
+               OpCapability Int8
+          %1 = OpExtInstImport "OpenCL.std"
+               OpMemoryModel Physical64 OpenCL
+               OpEntryPoint Kernel %47 "_ZTSZZ4mainENKUlRN4sycl3_V17handlerEE_clES2_EUlT_E_" %__spirv_BuiltInGlobalInvocationId
+               OpSource OpenCL_CPP 100000
+               OpName %__spirv_BuiltInGlobalInvocationId "__spirv_BuiltInGlobalInvocationId"
+               OpName %class_sycl___V1__id "class.sycl::_V1::id"
+               OpName %class_sycl___V1__detail__array "class.sycl::_V1::detail::array"
+               OpName %_ZTSZZ4mainENKUlRN4sycl3_V17handlerEE_clES2_EUlT_E_ "_ZTSZZ4mainENKUlRN4sycl3_V17handlerEE_clES2_EUlT_E_"
+               OpDecorate %__spirv_BuiltInGlobalInvocationId LinkageAttributes "__spirv_BuiltInGlobalInvocationId" Import
+               OpDecorate %__spirv_BuiltInGlobalInvocationId Constant
+               OpDecorate %__spirv_BuiltInGlobalInvocationId BuiltIn GlobalInvocationId
+               OpDecorate %__spirv_BuiltInGlobalInvocationId Alignment 32
+               OpDecorate %_ZTSZZ4mainENKUlRN4sycl3_V17handlerEE_clES2_EUlT_E_ LinkageAttributes "_ZTSZZ4mainENKUlRN4sycl3_V17handlerEE_clES2_EUlT_E_" Export
+               OpDecorate %16 Alignment 4
+               OpDecorate %17 FuncParamAttr ByVal
+               OpDecorate %17 Alignment 8
+               OpDecorate %18 FuncParamAttr NoWrite
+               OpDecorate %18 Alignment 4
+               OpDecorate %19 FuncParamAttr ByVal
+               OpDecorate %19 Alignment 8
+               OpDecorate %48 Alignment 4
+               OpDecorate %49 FuncParamAttr ByVal
+               OpDecorate %49 Alignment 8
+               OpDecorate %50 FuncParamAttr NoWrite
+               OpDecorate %50 Alignment 4
+               OpDecorate %51 FuncParamAttr ByVal
+               OpDecorate %51 Alignment 8
+      %ulong = OpTypeInt 64 0
+       %uint = OpTypeInt 32 0
+      %uchar = OpTypeInt 8 0
+    %ulong_1 = OpConstant %ulong 1
+    %ulong_0 = OpConstant %ulong 0
+     %uint_0 = OpConstant %uint 0
+%ulong_2147483648 = OpConstant %ulong 2147483648
+     %uint_1 = OpConstant %uint 1
+   %uint_896 = OpConstant %uint 896
+    %v3ulong = OpTypeVector %ulong 3
+%_ptr_CrossWorkgroup_v3ulong = OpTypePointer CrossWorkgroup %v3ulong
+       %void = OpTypeVoid
+%_ptr_CrossWorkgroup_uint = OpTypePointer CrossWorkgroup %uint
+%_arr_ulong_ulong_1 = OpTypeArray %ulong %ulong_1
+%class_sycl___V1__detail__array = OpTypeStruct %_arr_ulong_ulong_1
+%class_sycl___V1__id = OpTypeStruct %class_sycl___V1__detail__array
+%_ptr_Function_class_sycl___V1__id = OpTypePointer Function %class_sycl___V1__id
+         %14 = OpTypeFunction %void %_ptr_CrossWorkgroup_uint %_ptr_Function_class_sycl___V1__id %_ptr_CrossWorkgroup_uint %_ptr_Function_class_sycl___V1__id
+%_ptr_Function_ulong = OpTypePointer Function %ulong
+       %bool = OpTypeBool
+%_ptr_CrossWorkgroup_uchar = OpTypePointer CrossWorkgroup %uchar
+%_ptr_Generic_uchar = OpTypePointer Generic %uchar
+%__spirv_BuiltInGlobalInvocationId = OpVariable %_ptr_CrossWorkgroup_v3ulong CrossWorkgroup
+%_ZTSZZ4mainENKUlRN4sycl3_V17handlerEE_clES2_EUlT_E_ = OpFunction %void None %14
+         %16 = OpFunctionParameter %_ptr_CrossWorkgroup_uint
+         %17 = OpFunctionParameter %_ptr_Function_class_sycl___V1__id
+         %18 = OpFunctionParameter %_ptr_CrossWorkgroup_uint
+         %19 = OpFunctionParameter %_ptr_Function_class_sycl___V1__id
+         %20 = OpLabel
+         %24 = OpInBoundsPtrAccessChain %_ptr_Function_ulong %17 %ulong_0 %uint_0 %uint_0 %ulong_0
+         %25 = OpLoad %ulong %24 Aligned 8
+         %26 = OpInBoundsPtrAccessChain %_ptr_CrossWorkgroup_uint %16 %25
+         %27 = OpInBoundsPtrAccessChain %_ptr_Function_ulong %19 %ulong_0 %uint_0 %uint_0 %ulong_0
+         %28 = OpLoad %ulong %27 Aligned 8
+         %29 = OpInBoundsPtrAccessChain %_ptr_CrossWorkgroup_uint %18 %28
+         %30 = OpLoad %v3ulong %__spirv_BuiltInGlobalInvocationId Aligned 32
+         %31 = OpCompositeExtract %ulong %30 0
+         %34 = OpULessThan %bool %31 %ulong_2147483648
+         %37 = OpBitcast %_ptr_CrossWorkgroup_uchar %26
+         %39 = OpPtrCastToGeneric %_ptr_Generic_uchar %37
+         %40 = OpGenericCastToPtrExplicit %_ptr_CrossWorkgroup_uchar %39 CrossWorkgroup
+         %41 = OpBitcast %_ptr_CrossWorkgroup_uint %40
+         %42 = OpInBoundsPtrAccessChain %_ptr_CrossWorkgroup_uint %29 %31
+         %43 = OpLoad %uint %42 Aligned 4
+         %46 = OpAtomicIAdd %uint %41 %uint_1 %uint_896 %43
+               OpReturn
+               OpFunctionEnd
+         %47 = OpFunction %void None %14
+         %48 = OpFunctionParameter %_ptr_CrossWorkgroup_uint
+         %49 = OpFunctionParameter %_ptr_Function_class_sycl___V1__id
+         %50 = OpFunctionParameter %_ptr_CrossWorkgroup_uint
+         %51 = OpFunctionParameter %_ptr_Function_class_sycl___V1__id
+         %52 = OpLabel
+         %53 = OpFunctionCall %void %_ZTSZZ4mainENKUlRN4sycl3_V17handlerEE_clES2_EUlT_E_ %48 %49 %50 %51
+               OpReturn
+               OpFunctionEnd

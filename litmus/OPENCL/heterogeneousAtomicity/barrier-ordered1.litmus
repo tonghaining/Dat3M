@@ -1,0 +1,17 @@
+OPENCL corr
+
+{
+[x] = 0;
+}
+
+P0@wg 0, dev 0 (global int* x) {
+ *x = 1;
+ B1: barrier(CLK_GLOBAL_MEM_FENCE);
+}
+
+P1@wg 0, dev 0 (global int* x) {
+ B1: barrier(CLK_GLOBAL_MEM_FENCE);
+ int r = atomic_load_explicit(x, memory_order_acquire, memory_scope_work_group);
+}
+
+exists (1:r==0)

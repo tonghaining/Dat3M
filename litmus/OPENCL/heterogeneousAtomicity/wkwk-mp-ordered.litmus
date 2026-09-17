@@ -1,0 +1,18 @@
+OPENCL MP
+
+{
+  [x]=0;
+  [y]=0;
+}
+
+P0@wg 0, dev 0 (global int* x, global atomic_int* y) {
+  *x = 1;
+  *y = 1;
+}
+
+P1@wg 0, dev 0 (global int* x, global atomic_int* y) {
+  while(*y == 0) {}
+  int r1 = *x;
+}
+
+forall (1:r1==1)

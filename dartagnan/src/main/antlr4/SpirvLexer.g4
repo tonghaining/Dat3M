@@ -1836,6 +1836,7 @@ ModeExt_PrintfInfo : 'PrintfInfo';
 ModeExt_PrintfBufferStorageBuffer : 'PrintfBufferStorageBuffer';
 ModeExt_PrintfBufferPointerPushConstant : 'PrintfBufferPointerPushConstant';
 ModeExt_NormalizedSamplerMaskPushConstant : 'NormalizedSamplerMaskPushConstant';
+ModeExt_WorkgroupVariableSize : 'WorkgroupVariableSize';
 
 ModeExt_Round : 'Round';
 ModeExt_RoundEven : 'RoundEven';

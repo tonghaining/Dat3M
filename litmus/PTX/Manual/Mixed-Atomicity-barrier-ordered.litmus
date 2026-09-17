@@ -1,0 +1,12 @@
+PTX Mixed-Atomicity-barrier-ordered
+{
+x=0;
+P0:r1=0;
+P1:r2=0;
+}
+ P0@cta 0,gpu 0         | P1@cta 0,gpu 0         ;
+ st.weak x, 1           | ld.weak r1, x          ;
+ bar.cta.sync 1         | bar.cta.sync 1         ;
+                        | ld.relaxed.sys r2, x   ;
+forall
+(P1:r2 == 1)

@@ -1,0 +1,17 @@
+OPENCL barrier-ordered
+
+{
+[x] = 0;
+}
+
+P0@wg 0, dev 0 (global int* x) {
+ B1: barrier(CLK_GLOBAL_MEM_FENCE);
+ atomic_store_explicit(x, 1, memory_order_relaxed);
+}
+
+P1@wg 0, dev 0 (global int* x) {
+ int r2 = *x;
+ B1: barrier(CLK_GLOBAL_MEM_FENCE);
+}
+
+~exists (1:r2==1)

@@ -15,7 +15,7 @@ P0@wg 0, dev 0 (global int* x, global int* y) {
   }
 }
 
-P1@wg 0, dev 0 (global int* x, local atomic_int* y) {
+P1@wg 0, dev 0 (global int* x, global int* y) {
   if (*y == 1) {
      *x = 1;
   }

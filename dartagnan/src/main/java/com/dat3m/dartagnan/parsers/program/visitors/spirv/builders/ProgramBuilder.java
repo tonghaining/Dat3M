@@ -11,6 +11,7 @@ import com.dat3m.dartagnan.expression.type.TypeFactory;
 import com.dat3m.dartagnan.parsers.program.visitors.spirv.decorations.BuiltIn;
 import com.dat3m.dartagnan.program.*;
 import com.dat3m.dartagnan.program.event.Event;
+import com.dat3m.dartagnan.program.event.EventFactory;
 import com.dat3m.dartagnan.program.event.RegWriter;
 import com.dat3m.dartagnan.program.event.Tag;
 import com.dat3m.dartagnan.program.event.functions.FunctionCall;
@@ -256,6 +257,9 @@ public class ProgramBuilder {
     }
 
     public void endCurrentFunction() {
+        if (!currentFunction.hasBody()) {
+            currentFunction.append(EventFactory.newLabel("dummy_entry"));
+        }
         if (currentFunction == null) {
             throw new ParsingException("Illegal attempt to exit a function definition");
         }

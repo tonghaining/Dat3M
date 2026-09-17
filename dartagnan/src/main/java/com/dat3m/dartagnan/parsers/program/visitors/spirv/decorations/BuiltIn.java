@@ -102,10 +102,16 @@ public class BuiltIn implements Decoration {
     }
 
     private IntegerType getIntegerType(String id, Type type) {
-        if (type instanceof IntegerType iType && iType.getBitWidth() == 32) {
-            return iType;
+        if (type instanceof IntegerType iType) {
+            // Historically built-ins were treated as 32-bit (Vulkan / GLSL defaults).
+            // Allow 32-bit and 64-bit here to support targets that use 64-bit integers
+            // for built-in variables. The expression factory / IntegerType already
+            // supports arbitrary bit widths, so returning the IntegerType lets the
+            // rest of the pipeline create properly-typed constants.
+            if (iType.getBitWidth() == 32 || iType.getBitWidth() == 64) {
+                return iType;
+            }
         }
-        throw new ParsingException("Illegal type in '%s', " +
-                "expected a 32-bit integer but received '%s'", id, type);
+        throw new ParsingException("Illegal type in '%s', expected a 32- or 64-bit integer but received '%s'", id, type);
     }
 }

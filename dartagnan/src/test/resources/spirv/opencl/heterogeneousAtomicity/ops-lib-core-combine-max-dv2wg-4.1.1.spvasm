@@ -1,0 +1,66 @@
+; @Input: %33 = {4}
+; @Input: %34 = 5
+; @Output: forall (%33[0] == 5)
+; @Config: 4, 1, 1
+; SPIR-V
+; Version: 1.0
+; Generator: Khronos LLVM/SPIR-V Translator; 14
+; Bound: 37
+; Schema: 0
+               OpCapability Addresses
+               OpCapability Linkage
+               OpCapability Kernel
+               OpCapability GenericPointer
+               OpCapability Int8
+          %1 = OpExtInstImport "OpenCL.std"
+               OpMemoryModel Physical64 OpenCL
+               OpEntryPoint Kernel %32 "_ZTS10TestKernel"
+               OpSource OpenCL_CPP 100000
+               OpName %_ZTS10TestKernel "_ZTS10TestKernel"
+               OpName %_preheader ".preheader"
+               OpName %_loopexit ".loopexit"
+               OpDecorate %_ZTS10TestKernel LinkageAttributes "_ZTS10TestKernel" Export
+               OpDecorate %8 Alignment 4
+               OpDecorate %33 Alignment 4
+      %uchar = OpTypeInt 8 0
+       %uint = OpTypeInt 32 0
+     %uint_2 = OpConstant %uint 2
+   %uint_896 = OpConstant %uint 896
+       %void = OpTypeVoid
+%_ptr_CrossWorkgroup_uchar = OpTypePointer CrossWorkgroup %uchar
+          %6 = OpTypeFunction %void %_ptr_CrossWorkgroup_uchar %uint
+%_ptr_Generic_uchar = OpTypePointer Generic %uchar
+%_ptr_CrossWorkgroup_uint = OpTypePointer CrossWorkgroup %uint
+       %bool = OpTypeBool
+%_ZTS10TestKernel = OpFunction %void None %6
+          %8 = OpFunctionParameter %_ptr_CrossWorkgroup_uchar
+          %9 = OpFunctionParameter %uint
+         %10 = OpLabel
+         %15 = OpBitcast %_ptr_CrossWorkgroup_uchar %8
+         %17 = OpPtrCastToGeneric %_ptr_Generic_uchar %15
+         %18 = OpGenericCastToPtrExplicit %_ptr_CrossWorkgroup_uchar %17 CrossWorkgroup
+         %20 = OpBitcast %_ptr_CrossWorkgroup_uint %18
+         %23 = OpAtomicLoad %uint %20 %uint_2 %uint_896
+         %25 = OpSLessThan %bool %23 %9
+               OpBranchConditional %25 %_preheader %14
+ %_preheader = OpLabel
+               OpBranch %12
+         %12 = OpLabel
+         %27 = OpPhi %uint %26 %12 %23 %_preheader
+         %26 = OpAtomicCompareExchange %uint %20 %uint_2 %uint_896 %uint_896 %9 %27
+         %29 = OpINotEqual %bool %26 %27
+         %30 = OpSLessThan %bool %26 %9
+         %31 = OpLogicalAnd %bool %29 %30
+               OpBranchConditional %31 %12 %_loopexit
+  %_loopexit = OpLabel
+               OpBranch %14
+         %14 = OpLabel
+               OpReturn
+               OpFunctionEnd
+         %32 = OpFunction %void None %6
+         %33 = OpFunctionParameter %_ptr_CrossWorkgroup_uchar
+         %34 = OpFunctionParameter %uint
+         %35 = OpLabel
+         %36 = OpFunctionCall %void %_ZTS10TestKernel %33 %34
+               OpReturn
+               OpFunctionEnd
