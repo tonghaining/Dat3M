@@ -1,6 +1,6 @@
 OPENCL Fence-SC-RWC
 // Figure 5 of https://dl.acm.org/doi/10.1145/3062341.3062352
-// Upgrade producer to SC
+// Upgrade all stores to SC
 {
 [x] = 0;
 [y] = 0;
