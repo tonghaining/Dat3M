@@ -1,7 +1,7 @@
 package com.dat3m.dartagnan.litmus;
 
 import com.dat3m.dartagnan.configuration.Arch;
-import com.dat3m.dartagnan.utils.Result;
+import com.dat3m.dartagnan.verification.ResultStatus;
 import com.dat3m.dartagnan.utils.rules.Provider;
 import com.dat3m.dartagnan.utils.rules.Providers;
 import com.dat3m.dartagnan.wmm.Wmm;
@@ -9,6 +9,7 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 
 import java.io.IOException;
+import java.nio.file.Path;
 
 @RunWith(Parameterized.class)
 public class LitmusOpenClPaaTest extends AbstractLitmusTest {
@@ -28,7 +29,7 @@ public class LitmusOpenClPaaTest extends AbstractLitmusTest {
         return Providers.createWmmFromName(() -> "opencl-paa");
     }
 
-    public LitmusOpenClPaaTest(String path, Result expected) {
+    public LitmusOpenClPaaTest(Path path, ResultStatus expected) {
         super(path, expected);
     }
 }

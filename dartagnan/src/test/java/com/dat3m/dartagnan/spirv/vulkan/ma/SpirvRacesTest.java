@@ -1,25 +1,19 @@
 package com.dat3m.dartagnan.spirv.vulkan.ma;
 
 import com.dat3m.dartagnan.configuration.Arch;
-import com.dat3m.dartagnan.encoding.ProverWithTracker;
+import com.dat3m.dartagnan.configuration.Method;
 import com.dat3m.dartagnan.parsers.cat.ParserCat;
 import com.dat3m.dartagnan.parsers.program.ProgramParser;
 import com.dat3m.dartagnan.program.Program;
-import com.dat3m.dartagnan.utils.Result;
-import com.dat3m.dartagnan.verification.VerificationTask;
-import com.dat3m.dartagnan.verification.solving.AssumeSolver;
+import com.dat3m.dartagnan.verification.ResultStatus;
+import com.dat3m.dartagnan.utils.TestHelper;
+import com.dat3m.dartagnan.verification.Task;
 import com.dat3m.dartagnan.wmm.Wmm;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
-import org.sosy_lab.common.ShutdownManager;
-import org.sosy_lab.common.configuration.Configuration;
-import org.sosy_lab.common.configuration.InvalidConfigurationException;
-import org.sosy_lab.common.log.BasicLogManager;
-import org.sosy_lab.java_smt.SolverContextFactory;
-import org.sosy_lab.java_smt.api.SolverContext;
 
-import java.io.File;
+import java.nio.file.Path;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.EnumSet;
@@ -27,19 +21,19 @@ import java.util.EnumSet;
 import static com.dat3m.dartagnan.configuration.Property.CAT_SPEC;
 import static com.dat3m.dartagnan.utils.ResourceHelper.getRootPath;
 import static com.dat3m.dartagnan.utils.ResourceHelper.getTestResourcePath;
-import static com.dat3m.dartagnan.utils.Result.FAIL;
-import static com.dat3m.dartagnan.utils.Result.PASS;
+import static com.dat3m.dartagnan.verification.ResultStatus.FAIL;
+import static com.dat3m.dartagnan.verification.ResultStatus.PASS;
 import static org.junit.Assert.assertEquals;
 
 @RunWith(Parameterized.class)
 public class SpirvRacesTest {
 
-    private final String modelPath = getRootPath("cat/vulkan.cat");
-    private final String programPath;
+    private final Path modelPath = getRootPath("cat/vulkan.cat");
+    private final Path programPath;
     private final int bound;
-    private final Result expected;
+    private final ResultStatus expected;
 
-    public SpirvRacesTest(String file, int bound, Result expected) {
+    public SpirvRacesTest(String file, int bound, ResultStatus expected) {
         this.programPath = getTestResourcePath("spirv/vulkan/ma/" + file);
         this.bound = bound;
         this.expected = expected;
@@ -61,31 +55,16 @@ public class SpirvRacesTest {
 
     @Test
     public void test() throws Exception {
-        try (SolverContext ctx = mkCtx(); ProverWithTracker prover = mkProver(ctx)) {
-            assertEquals(expected, AssumeSolver.run(ctx, prover, mkTask()).getResult());
-        }
+        assertEquals(expected, TestHelper.createAndRunSolver(mkTask(), Method.EAGER));
     }
 
-    private SolverContext mkCtx() throws InvalidConfigurationException {
-        Configuration cfg = Configuration.builder().build();
-        return SolverContextFactory.createSolverContext(
-                cfg,
-                BasicLogManager.create(cfg),
-                ShutdownManager.create().getNotifier(),
-                SolverContextFactory.Solvers.YICES2);
-    }
-
-    private ProverWithTracker mkProver(SolverContext ctx) {
-        return new ProverWithTracker(ctx, "", SolverContext.ProverOptions.GENERATE_MODELS);
-    }
-
-    private VerificationTask mkTask() throws Exception {
-        VerificationTask.VerificationTaskBuilder builder = VerificationTask.builder()
-                .withConfig(Configuration.builder().build())
+    private Task mkTask() throws Exception {
+        Task.TaskBuilder builder = Task.builder()
+                .withConfig(TestHelper.getBasicConfig())
                 .withBound(bound)
                 .withTarget(Arch.VULKAN);
-        Program program = new ProgramParser().parse(new File(programPath));
-        Wmm mcm = new ParserCat().parse(new File(modelPath));
+        Program program = new ProgramParser().parse(programPath);
+        Wmm mcm = new ParserCat().parse(modelPath);
         return builder.build(program, mcm, EnumSet.of(CAT_SPEC));
     }
 }
