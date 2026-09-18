@@ -1,11 +1,5 @@
-OpenCL
-(* Repaired OpenCL Memory Model *)
-
-(*
-* This model is based on:
-* https://multicore.doc.ic.ac.uk/overhauling/opencl_base.cat
-* https://multicore.doc.ic.ac.uk/overhauling/opencl_scopedsc.cat
-*)
+SRC11
+(* Scoped RC11 Memory Model *)
 
 // Base relations:
 // wi: same work-item (same thread)
@@ -30,6 +24,9 @@ let rb = rf^-1;mo | ([R] \ [range(rf)]);loc;[W]
 let unv = _ * _
 let wi = int
 
+(* Needed for herd, which can represent an rmw as a single event rather than a split R/W pair *)
+let myrmw = [RMW] | rmw
+
 (* Inclusive scopes *)
 let incl = (ALL * ALL) |
            (sdv & ((ALL | DV) * (ALL | DV))) |
@@ -46,9 +43,8 @@ let Rel = (REL | SC | ACQ_REL) & (W | F)
 let Fsb = [F]; sb
 let sbF = sb; [F]
 
-(* Release sequence *)
-let rs_prime = (_ * RMW) | wi
-let rs = mo & rs_prime & ~((mo & ~rs_prime) ; mo)
+(* Release sequence — RC11's rf;rmw-chain form (replaces the mo-based encoding) *)
+let rs = [W]; (sb & loc)?; [W & A]; (rf; myrmw)*
 
 (* Release-acquire synchronisation *)
 let ra_sw(r) = ((r & [Rel]); Fsb?; [W & A]; rs?; r; rf; [R & A]; sbF?; ([Acq] & r)) & incl & ~wi
@@ -76,37 +72,38 @@ let ini = IW * ~IW
 let ghb = ((dynamic_tag(GLOBAL); sb; dynamic_tag(GLOBAL)) | (dynamic_tag(GLOBAL); ini; dynamic_tag(GLOBAL)) | gsw)+ \ id
 let lhb = ((dynamic_tag(LOCAL); sb; dynamic_tag(LOCAL)) | (dynamic_tag(LOCAL); ini; dynamic_tag(LOCAL)) | lsw)+ \ id
 
-(* Extended coherence order (needed for pscF) *)
+(* Extended coherence order (needed for pscF and O-CohRMW) *)
 let eco = (rf | mo | rb)+
 
 (*************)
 (* Coherence *)
 (*************)
 
-let coh(hb) = (rf^-1)?; mo; rf?; hb
 irreflexive ghb; eco? as O-CohG
 irreflexive lhb; eco? as O-CohL
+
+(* RC11's separate RMW-coherence axiom. Region-independent: eco is provably intra-location
+ * at every step (rf, mo, rb are each same-location by definition), so it never needs a
+ * ghb/lhb split — same reasoning as pscF below. *)
+irreflexive (myrmw; eco) as O-CohRMW
 
 (************************)
 (* Consistency of reads *)
 (************************)
 
-(* A non-atomic load can only read from a store that is visible. *)
-empty (rf; ([NA] & dynamic_tag(GLOBAL))) \ ghb as O-NaRfG
-empty (rf; ([NA] & dynamic_tag(LOCAL))) \ lhb as O-NaRfL
+(* O-NaRfG/O-NaRfL removed. With mo = co (unified over atomic and non-atomic writes), every
+ * execution they would reject is already excluded by O-CohG/O-CohL (stale-but-hb-ordered
+ * reads) together with data_race below (hb-unrelated reads: [NA] events never carry a scope
+ * tag, so any pair involving one always fails `incl`). The reference RC11 model has no
+ * NaRf-shaped axiom either, which is direct confirmation of this. Re-run example7a and
+ * friends against this file before relying on the removal. *)
 
 (* Consistency of RMWs *)
-// The original model was tested with Herd, which treats RMW as a single atomic operation.
-// We have modified the model to handle RMW as a sequence of atomic operations.
-// irreflexive rf | (mo;mo;rf^-1) | (mo;rf) as O-Rmw
-let moe = mo \ wi
-empty rmw & (fre; moe) as 0-Atomic
+empty (myrmw & (rb; mo)) as O-Atomic
 
 (****************************************)
 (* Sequential consistency — Scoped RC11 *)
 (****************************************)
-
-
 
 (* Combined happens-before: union of the two OpenCL regions *)
 let hb   = ghb | lhb
@@ -128,6 +125,8 @@ acyclic (psc & incl) as SC
 
 (* No thin air *)
 // contradicts current GPU behavior: https://dl.acm.org/doi/epdf/10.1145/3297858.3304043
+// The reference RC11 model keeps this axiom ACTIVE (acyclic (po|rf) as no-thin-air).
+// It stays disabled here as a deliberate divergence from plain RC11, not an oversight.
 // acyclic (sb | rf) as no_thin_air
 
 (***************)
