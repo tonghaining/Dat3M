@@ -156,8 +156,8 @@ litmus/OPENCL/portedFromC11/manual/imm-E3.2.litmus,0
 litmus/OPENCL/portedFromC11/manual/mp_fences.litmus,0
 litmus/OPENCL/portedFromC11/manual/imm-E3.10.litmus,0
 litmus/OPENCL/portedFromC11/manual/imm-E3.4.litmus,0
-litmus/OPENCL/portedFromC11/manual/RWC-sc-acq-sc-sc-sc.litmus,0
-litmus/OPENCL/portedFromC11/manual/imm-E3.8.litmus,1
+litmus/OPENCL/portedFromC11/manual/RWC-sc-acq-sc-sc-sc.litmus,1
+litmus/OPENCL/portedFromC11/manual/imm-E3.8.litmus,0
 litmus/OPENCL/portedFromC11/manual/imm-E3.8-alt.litmus,1
 litmus/OPENCL/portedFromC11/manual/imm-E3.6.litmus,1
 litmus/OPENCL/portedFromC11/manual/mp_relacq.litmus,0
@@ -171,7 +171,7 @@ litmus/OPENCL/portedFromC11/manual/imm-R2.litmus,0
 litmus/OPENCL/portedFromC11/manual/example1.litmus,0
 litmus/OPENCL/portedFromC11/manual/imm-R2-alt.litmus,1
 litmus/OPENCL/portedFromC11/manual/mp_relaxed.litmus,1
-litmus/OPENCL/portedFromC11/manual/IRIW-sc-sc-acq-sc-acq-sc.litmus,0
+litmus/OPENCL/portedFromC11/manual/IRIW-sc-sc-acq-sc-acq-sc.litmus,1
 litmus/OPENCL/portedFromC11/manual/imm-E3.7.litmus,0
 litmus/OPENCL/heterogeneousAtomicity/barrier-ordered.litmus,1
 litmus/OPENCL/heterogeneousAtomicity/barrier-ordered1.litmus,0
