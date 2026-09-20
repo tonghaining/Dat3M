@@ -18,12 +18,12 @@ public class LitmusROpenClRacesTest extends AbstractLitmusTest {
 
     @Parameterized.Parameters(name = "{index}: {0}, {1}")
     public static Iterable<Object[]> data() throws IOException {
-        return buildLitmusTests("litmus/OPENCL/", "OPENCL", "-PAA-DR");
+        return buildLitmusTests("litmus/OPENCL/", "ROPENCL", "-DR");
     }
 
     @Override
     protected Provider<Arch> getTargetProvider() {
-        return () -> Arch.OPENCLPAA;
+        return () -> Arch.ROPENCL;
     }
 
     @Override

@@ -3,7 +3,7 @@ package com.dat3m.dartagnan.configuration;
 import java.util.Arrays;
 
 public enum Arch implements OptionInterface {
-    C11, ARM7, ARM8, POWER, PTX, TSO, IMM, LKMM, RISCV, VULKAN, OPENCL, OPENCLPAA;
+    C11, ARM7, ARM8, POWER, PTX, TSO, IMM, LKMM, RISCV, VULKAN, OPENCL, ROPENCL;
 
     // Used to display in UI
     @Override
@@ -20,7 +20,7 @@ public enum Arch implements OptionInterface {
             case RISCV -> "RISCV";
             case VULKAN -> "VULKAN";
             case OPENCL -> "OpenCL";
-            case OPENCLPAA -> "OpenCLPAA";
+            case ROPENCL -> "ROpenCL";
         };
     }
 
