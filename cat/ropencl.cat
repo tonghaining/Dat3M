@@ -109,7 +109,7 @@ empty rmw & (fre; moe) as 0-Atomic
 (* Sequential consistency — Scoped RC11 *)
 (****************************************)
 
-(* Extended coherence order (needed for pscF) *)
+(* Extended coherence order *)
 let eco = (rf | mo | rb)+
 
 (* Combined happens-before: union of the two OpenCL regions *)

@@ -72,31 +72,16 @@ let ini = IW * ~IW
 let ghb = ((dynamic_tag(GLOBAL); sb; dynamic_tag(GLOBAL)) | (dynamic_tag(GLOBAL); ini; dynamic_tag(GLOBAL)) | gsw)+ \ id
 let lhb = ((dynamic_tag(LOCAL); sb; dynamic_tag(LOCAL)) | (dynamic_tag(LOCAL); ini; dynamic_tag(LOCAL)) | lsw)+ \ id
 
-(* Extended coherence order (needed for pscF and O-CohRMW) *)
-let eco = (rf | mo | rb)+
-
 (*************)
 (* Coherence *)
 (*************)
 
+(* Extended coherence order *)
+let eco = (rf | mo | rb)+
+
 irreflexive ghb; eco? as O-CohG
 irreflexive lhb; eco? as O-CohL
-
-(* RC11's separate RMW-coherence axiom. Region-independent: eco is provably intra-location
- * at every step (rf, mo, rb are each same-location by definition), so it never needs a
- * ghb/lhb split — same reasoning as pscF below. *)
 irreflexive (myrmw; eco) as O-CohRMW
-
-(************************)
-(* Consistency of reads *)
-(************************)
-
-(* O-NaRfG/O-NaRfL removed. With mo = co (unified over atomic and non-atomic writes), every
- * execution they would reject is already excluded by O-CohG/O-CohL (stale-but-hb-ordered
- * reads) together with data_race below (hb-unrelated reads: [NA] events never carry a scope
- * tag, so any pair involving one always fails `incl`). The reference RC11 model has no
- * NaRf-shaped axiom either, which is direct confirmation of this. Re-run example7a and
- * friends against this file before relying on the removal. *)
 
 (* Consistency of RMWs *)
 empty (myrmw & (rb; mo)) as O-Atomic
@@ -124,10 +109,7 @@ let psc      = pscbase | pscF
 acyclic (psc & incl) as SC
 
 (* No thin air *)
-// contradicts current GPU behavior: https://dl.acm.org/doi/epdf/10.1145/3297858.3304043
-// The reference RC11 model keeps this axiom ACTIVE (acyclic (po|rf) as no-thin-air).
-// It stays disabled here as a deliberate divergence from plain RC11, not an oversight.
-// acyclic (sb | rf) as no_thin_air
+acyclic (sb | rf) as no_thin_air
 
 (***************)
 (*    Races    *)
