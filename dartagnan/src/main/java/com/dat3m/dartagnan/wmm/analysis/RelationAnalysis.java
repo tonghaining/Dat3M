@@ -10,6 +10,7 @@ import com.dat3m.dartagnan.verification.VerificationTask;
 import com.dat3m.dartagnan.wmm.Relation;
 import com.dat3m.dartagnan.wmm.Wmm;
 import com.dat3m.dartagnan.wmm.utils.graph.EventGraph;
+import com.dat3m.dartagnan.wmm.utils.graph.immutable.ImmutableMapEventGraph;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.sosy_lab.common.configuration.Configuration;
@@ -17,6 +18,7 @@ import org.sosy_lab.common.configuration.InvalidConfigurationException;
 import org.sosy_lab.common.configuration.Option;
 import org.sosy_lab.common.configuration.Options;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -72,6 +74,18 @@ public interface RelationAnalysis {
         long t0 = System.currentTimeMillis();
         a.run();
         long t1 = System.currentTimeMillis();
+
+        // Snapshot the raw, per-relation may/must sets before the (optional) extended analysis
+        // below back-propagates information from the memory model's constraints into them.
+        final Map<Relation, Knowledge> rawKnowledgeMap = new HashMap<>();
+        for (Relation r : wmm.getRelations()) {
+            final Knowledge k = a.getKnowledge(r);
+            rawKnowledgeMap.put(r, new Knowledge(
+                    new ImmutableMapEventGraph(k.getMaySet().getOutMap()),
+                    new ImmutableMapEventGraph(k.getMustSet().getOutMap())));
+        }
+        context.register(RawRelationAnalysis.class, new RawRelationAnalysis(rawKnowledgeMap));
+
         final StringBuilder summary = new StringBuilder();
         if (logger.isInfoEnabled()) {
             logger.info("Finished regular analysis in {}", Utils.toTimeString(t1 - t0));

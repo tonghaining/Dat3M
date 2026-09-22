@@ -6,13 +6,15 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import com.dat3m.dartagnan.GlobalSettings;
 import com.dat3m.dartagnan.program.Program;
-import com.dat3m.dartagnan.program.analysis.ExecutionAnalysis;
 import com.dat3m.dartagnan.program.event.Event;
 import com.dat3m.dartagnan.wmm.Relation;
+import com.dat3m.dartagnan.wmm.RelationNameRepository;
 import com.dat3m.dartagnan.wmm.Wmm;
+import com.dat3m.dartagnan.wmm.analysis.RawRelationAnalysis;
 import com.dat3m.dartagnan.wmm.analysis.RelationAnalysis;
 import com.dat3m.dartagnan.wmm.utils.graph.EventGraph;
 
@@ -20,9 +22,11 @@ import com.dat3m.dartagnan.wmm.utils.graph.EventGraph;
  * Serializes the program-encoding output to a JSON file.
  *
  * The file captures:
- *   - events: id, thread, tags, and the SMT execution-variable name
- *   - relations: name, may-set, and must-set as lists of [e1_id, e2_id] pairs
- *   - exec_implications: [from_id, to_id] pairs where executing "from" implies "to" also executes
+ *   - events: id, thread, name (original source-level representation), and tags
+ *   - relations: name, may-set, and must-set as lists of [e1_id, e2_id] pairs, restricted to
+ *     base relations (predefined relations a .cat file may use without defining, e.g. co, po, rf),
+ *     computed directly from the relation definitions of the program encoding (i.e. raw, without
+ *     any back propagation of information from the memory model's constraints/axioms)
  */
 public class ProgramEncodingExporter {
 
@@ -47,8 +51,6 @@ public class ProgramEncodingExporter {
         appendEvents(json);
         json.append(",\n");
         appendRelations(json);
-        json.append(",\n");
-        appendExecImplications(json);
 
         json.append("\n}\n");
         Files.writeString(outputPath, json.toString());
@@ -64,8 +66,8 @@ public class ProgramEncodingExporter {
             json.append("    {");
             json.append("\"id\": ").append(e.getGlobalId()).append(", ");
             json.append("\"thread\": ").append(e.getThread().getId()).append(", ");
-            json.append("\"tags\": ").append(tagsJson(e.getTags())).append(", ");
-            json.append("\"exec_var\": \"").append(jsonEscape(context.executionVarName(e))).append("\"");
+            json.append("\"name\": \"").append(jsonEscape(e.toString())).append("\", ");
+            json.append("\"tags\": ").append(tagsJson(e.getTags()));
             json.append("}");
             if (i < events.size() - 1) json.append(",");
             json.append("\n");
@@ -74,9 +76,11 @@ public class ProgramEncodingExporter {
     }
 
     private void appendRelations(StringBuilder json) {
-        RelationAnalysis ra = context.getAnalysisContext().requires(RelationAnalysis.class);
+        RawRelationAnalysis ra = context.getAnalysisContext().requires(RawRelationAnalysis.class);
         Wmm wmm = context.getTask().getMemoryModel();
-        List<Relation> relations = new ArrayList<>(wmm.getRelations());
+        List<Relation> relations = wmm.getRelations().stream()
+                .filter(ProgramEncodingExporter::isBaseRelation)
+                .collect(Collectors.toCollection(ArrayList::new));
 
         json.append("  \"relations\": [\n");
         for (int i = 0; i < relations.size(); i++) {
@@ -93,27 +97,11 @@ public class ProgramEncodingExporter {
         json.append("  ]");
     }
 
-    private void appendExecImplications(StringBuilder json) {
-        ExecutionAnalysis exec = context.getAnalysisContext().requires(ExecutionAnalysis.class);
-        List<Event> events = context.getTask().getProgram().getThreadEvents();
-
-        json.append("  \"exec_implications\": [\n");
-        boolean first = true;
-        for (int i = 0; i < events.size(); i++) {
-            for (int j = 0; j < events.size(); j++) {
-                if (i == j) continue;
-                Event from = events.get(i);
-                Event to = events.get(j);
-                if (!exec.isImplied(from, to)) continue;
-                if (!first) json.append(",\n");
-                json.append("    [").append(from.getGlobalId()).append(", ").append(to.getGlobalId()).append("]");
-                first = false;
-            }
-        }
-        json.append("\n  ]");
-    }
-
     // -------------------------------------------------------------------------
+
+    private static boolean isBaseRelation(Relation rel) {
+        return rel.getNames().stream().anyMatch(n -> RelationNameRepository.contains(n) && !n.startsWith("__"));
+    }
 
     private static String edgeListJson(EventGraph graph) {
         StringBuilder sb = new StringBuilder("[");
