@@ -30,6 +30,7 @@ litmus/OPENCL/overhauling/example5.litmus,0
 litmus/OPENCL/overhauling/example6.litmus,1
 litmus/OPENCL/overhauling/example7a.litmus,1
 litmus/OPENCL/overhauling/example7b.litmus,0
+litmus/OPENCL/overhauling/example7b-wg.litmus,1
 litmus/OPENCL/overhauling/example8.litmus,0
 litmus/OPENCL/overhauling/example9a.litmus,1
 litmus/OPENCL/overhauling/example9b.litmus,1

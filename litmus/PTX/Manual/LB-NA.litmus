@@ -1,0 +1,13 @@
+PTX LB
+"Non-atomic LB"
+{
+x=0;
+y=0;
+P0:r1=0;
+P1:r2=0;
+}
+ P0@cta 0,gpu 0                   | P1@cta 0,gpu 0                   ;
+ ld.weak r0, y                    | ld.weak r1, x                    ;
+ st.weak x, 1                     | st.weak y, 1                     ;
+exists
+(P0:r0 == 1 /\ P1:r1 == 1)

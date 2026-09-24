@@ -1,0 +1,24 @@
+OPENCL example7b-wg
+
+(*
+ * example7b.litmus with work-group scope instead of work-item scope
+ *)
+
+{
+[x] = 0;
+[y] = 0;
+}
+
+P0@wg 0, dev 0 (global atomic_int* x, global atomic_int* y) {
+  if (atomic_load_explicit(x, memory_order_relaxed, memory_scope_work_group) == 1) {
+    atomic_store_explicit(y, 1, memory_order_relaxed, memory_scope_work_group);
+  }
+}
+
+P1@wg 0, dev 0 (global atomic_int* x, global atomic_int* y) {
+  if (atomic_load_explicit(y, memory_order_relaxed, memory_scope_work_group) == 1) {
+     atomic_store_explicit(x, 1, memory_order_relaxed, memory_scope_work_group);
+  }
+}
+
+exists (x = 1 /\ y = 1)
