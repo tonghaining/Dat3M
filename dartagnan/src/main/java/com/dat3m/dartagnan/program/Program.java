@@ -246,7 +246,7 @@ public class Program {
     }
 
     public void addInit(MemoryObject object, int offset) {
-        final boolean isC11 = arch == Arch.C11 || arch == Arch.OPENCL;
+        final boolean isC11 = arch == Arch.C11 || arch == Arch.OPENCL || arch == Arch.ROPENCL;
         final List<String> paramNames = List.of();
         // NOTE: We use different names to avoid symmetry detection treating all inits as symmetric.
         final String threadName = "Init_" + nextThreadId;
