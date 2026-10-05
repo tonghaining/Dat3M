@@ -23,22 +23,41 @@ public class PtxToOpenCLTest extends AbstractCompilationWithDrCheckTest {
     // { PTX filename, OpenCL filename, expectDataRace, expectedToMatch }
     // expectedToMatch is omitted when expectDataRace is true, since it is ignored in that case.
     private static final Object[][] LITMUS_MAP = {
-            {"IRIW-fence-sc.litmus", "IRIW-fence-sc.litmus", false, false},
+            // Sequential Consistency mismatches
+            // Fix1: St-Sc
+            // Fix2: All-Sc
+            // Fix3: Ld-Sc
+            // Fix4: St-Rel
+            {"IRIW-fence-sc.litmus", "IRIW-fence-sc-naive.litmus", false, false},
             {"IRIW-fence-sc.litmus", "IRIW-fence-sc-fix1.litmus", false, true},
-            {"IRIW-fence-sc.litmus", "IRIW-fence-sc-fix2.litmus", false, false},
-            {"IRIW-fence-sc.litmus", "IRIW-fence-sc-fix3.litmus", false, true},
-            {"RWC-fence-sc.litmus", "RWC-fence-sc.litmus", false, false},
+            {"IRIW-fence-sc.litmus", "IRIW-fence-sc-fix2.litmus", false, true},
+            {"IRIW-fence-sc.litmus", "IRIW-fence-sc-fix3.litmus", false, false},
+            {"IRIW-fence-sc.litmus", "IRIW-fence-sc-fix4.litmus", false, false},
+
+            {"RWC-fence-sc.litmus", "RWC-fence-sc-naive.litmus", false, false},
             {"RWC-fence-sc.litmus", "RWC-fence-sc-fix1.litmus", false, true},
             {"RWC-fence-sc.litmus", "RWC-fence-sc-fix2.litmus", false, true},
             {"RWC-fence-sc.litmus", "RWC-fence-sc-fix3.litmus", false, false},
-            {"SB-fence-sc-relaxed.litmus", "SB-fence-sc-relaxed.litmus", false, true},
+            {"RWC-fence-sc.litmus", "RWC-fence-sc-fix4.litmus", false, false},
+
+            {"W+RWC-fence-sc.litmus", "W+RWC-fence-sc-naive.litmus", false, false},
+            {"W+RWC-fence-sc.litmus", "W+RWC-fence-sc-fix1.litmus", false, true},
+            {"W+RWC-fence-sc.litmus", "W+RWC-fence-sc-fix2.litmus", false, true},
+            {"W+RWC-fence-sc.litmus", "W+RWC-fence-sc-fix3.litmus", false, false},
+            {"W+RWC-fence-sc.litmus", "W+RWC-fence-sc-fix4.litmus", false, false},
+            {"W+RWC-fence-sc.litmus", "W+RWC-fence-sc-fix5.litmus", false, true}, // Pick ones involved in fence-sc interleaving
+            {"W+RWC-fence-sc.litmus", "W+RWC-fence-sc-fix6.litmus", false, false}, // Pick ones not involved in fence-sc interleaving
+
+            {"WRC-fence-acq-rel.litmus", "WRC-fence-acq-rel-naive.litmus", false, true},
+
+            // Memory Region Mismatches
+            {"SB-fence-sc-relaxed.litmus", "SB-fence-sc.litmus", false, true},
             {"SB-fence-sc-relaxed.litmus", "SB-fence-sc-relaxed-cross-space.litmus", false, true},
             {"SB-fence-sc-relaxed.litmus", "SB-fence-sc-relaxed-cross-space1.litmus", false, true},
+
+            // Data Race Mismatches
             {"SB-fence-sc-weak.litmus", "SB-fence-sc-weak.litmus", true},
-            {"WRC-fence-acq-rel.litmus", "WRC-fence-acq-rel.litmus", false, true},
-            {"W+RWC-fence-sc.litmus", "W+RWC-fence-sc.litmus", false, false},
-            {"W+RWC-fence-sc.litmus", "W+RWC-fence-sc-fix1.litmus", false, true},
-            {"W+RWC-fence-sc.litmus", "W+RWC-fence-sc-fix2.litmus", false, false},
+
             {"LB.litmus", "LB.litmus", false, true},
             {"SUM.litmus", "SUM.litmus", false, true},
             {"MP.litmus", "MP-same-space.litmus", false, true},
