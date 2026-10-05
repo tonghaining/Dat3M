@@ -87,6 +87,13 @@ public class PtxToOpenCLTest extends AbstractCompilationWithDrCheckTest {
             {"MP-fence-acqrel-cross-space-add.litmus", "MP-fence-acqrel-cross-space-add-fix.litmus", false, true},
             {"MP-fence-acq-rel.litmus", "MP-fence-acqrel-cross-wg.litmus", false, true},
 
+            // Scope Inclusion Mismatches
+            // Fix1: Scope-Upper-Alignment
+            // Fix2: Scope-Lower-Alignment
+            {"RMW-add.litmus", "RMW-add-naive.litmus", true},
+            {"RMW-add.litmus", "RMW-add-fix1.litmus", false, true},
+            {"RMW-add.litmus", "RMW-add-fix2.litmus", false, true},
+
             // Data Race Mismatches
             {"SB-fence-sc-weak.litmus", "SB-fence-sc-weak.litmus", true},
             {"MP-fence-sc-weak.litmus", "MP-fence-sc-weak.litmus", true},
