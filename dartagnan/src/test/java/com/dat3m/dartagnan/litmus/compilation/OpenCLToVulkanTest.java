@@ -21,14 +21,16 @@ public class OpenCLToVulkanTest extends AbstractCompilationWithDrCheckTest {
     // { OpenCL filename, Vulkan filename, expectDataRace, expectedToMatch }
     // expectedToMatch is omitted when expectDataRace is true, since it is ignored in that case.
     private static final Object[][] LITMUS_MAP = {
-            {"BAR.litmus", "BAR.litmus", true},
-            {"BAR.litmus", "BAR-fix1.litmus", false, true},
-            {"BAR.litmus", "BAR-fix2.litmus", false, true},
-            {"BAR.litmus", "BAR-fix3.litmus", false, true},
-            {"BAR.litmus", "BAR-fix4.litmus", true},
-            {"SB-RMW-SC.litmus", "SB-RMW-SC.litmus", false, true},
-            {"SB-fence-sc-relaxed.litmus", "SB-fence-SC.litmus", false, false}, // SC downgrade to AcqRel in Vulkan
-            {"SB-fence-sc-relaxed.litmus", "SB-fence-SC-fix1.litmus", false, false},
+            // Av/Vis mismatches
+            {"CoWR-barrier.litmus", "CoWR-barrier-naive.litmus", true},
+            {"CoWR-barrier.litmus", "CoWR-barrier-fix1.litmus", false, true},
+            {"CoWR-barrier.litmus", "CoWR-barrier-fix2.litmus", false, true},
+            {"CoWR-barrier.litmus", "CoWR-barrier-fix3.litmus", false, true},
+            {"CoWR-barrier.litmus", "CoWR-barrier-fix4.litmus", true}, // without .nonpriv for the non-adjacent stores and loads
+
+            // SC downgrade to AcqRel in Vulkan
+            {"SB-fence-sc.litmus", "SB-fence-sc-naive.litmus", false, false}, // SC downgrade to AcqRel in Vulkan
+            {"SB-fence-sc.litmus", "SB-fence-sc-fix1.litmus", false, false}, // Make Store/Load to Rel/Acq, but still fail
     };
     private final String targetPath;
     private final boolean expectDataRace;

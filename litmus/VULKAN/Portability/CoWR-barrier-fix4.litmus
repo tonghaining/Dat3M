@@ -1,4 +1,5 @@
-Vulkan barrier
+Vulkan CoWR-barrier
+// without .nonpriv for the non-adjacent stores and loads
 {
 x=0;
 }

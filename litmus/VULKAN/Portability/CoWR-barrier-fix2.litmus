@@ -1,4 +1,4 @@
-Vulkan barrier
+Vulkan CoWR-barrier
 {
 x=0;
 }
