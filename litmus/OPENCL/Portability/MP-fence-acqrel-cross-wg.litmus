@@ -1,4 +1,4 @@
-OPENCL Fence-acq-rel-MP
+OPENCL MP-fence-acqrel-cross-wg
 {
 [x] = 0;
 [y] = 0;

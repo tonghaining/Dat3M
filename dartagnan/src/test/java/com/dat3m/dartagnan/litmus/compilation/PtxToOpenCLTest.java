@@ -62,7 +62,7 @@ public class PtxToOpenCLTest extends AbstractCompilationWithDrCheckTest {
             {"MP-fence-acqrel-cross-space-add.litmus", "MP-fence-acqrel-cross-space-add-local.litmus", false, false},
             {"MP-fence-acqrel-cross-space-add.litmus", "MP-fence-acqrel-cross-space-add-asym.litmus", false, false},
             {"MP-fence-acqrel-cross-space-add.litmus", "MP-fence-acqrel-cross-space-add-fix.litmus", false, true},
-            {"MP-fence-acq-rel.litmus", "MP-fence-acq-rel.litmus", false, true},
+            {"MP-fence-acq-rel.litmus", "MP-fence-acqrel-cross-wg.litmus", false, true},
             {"RMW-release-sequence.litmus", "RMW-release-sequence.litmus", false, true},
             {"RMW-cas.litmus", "RMW-cas.litmus", false, true},
     };
