@@ -51,28 +51,32 @@ public class PtxToOpenCLTest extends AbstractCompilationWithDrCheckTest {
             {"WRC-fence-acq-rel.litmus", "WRC-fence-acq-rel-naive.litmus", false, true},
 
             // Memory Region Mismatches
+            // Fix1: Ra-Region-Widen
+            // Fix2: Ra-Target-Only
+            // Fix3: Ra-Inner-Fence
+            {"MP-rel-acq-cross-space.litmus", "MP-rel-acq-same-space.litmus", false, true},
+            {"MP-rel-acq-cross-space.litmus", "MP-rel-acq-cross-space-naive.litmus", true},
+            {"MP-rel-acq-cross-space.litmus", "MP-rel-acq-cross-space-fix1.litmus", false, true},
+            {"MP-rel-acq-cross-space.litmus", "MP-rel-acq-cross-space-fix2.litmus", true},
+            {"MP-rel-acq-cross-space.litmus", "MP-rel-acq-cross-space-fix3.litmus", true},
+            {"MP-rel-acq-cross-space.litmus", "MP-rel-acq-cross-space-fix4.litmus", false, true}, // Use barriers with both flags
+            {"MP-rel-acq-cross-space.litmus", "MP-rel-acq-cross-space-fix5.litmus", false, true}, // Use barriers with source flag only
+            {"MP-rel-acq-cross-space.litmus", "MP-rel-acq-cross-space-fix6.litmus", true}, // Use barriers with target flag only
+            {"MP-rel-acq-cross-space.litmus", "MP-rel-acq-cross-space-fix7.litmus", true}, // Use Source Memory Space Flag
+            {"MP-rel-acq-cross-space.litmus", "MP-rel-acq-cross-space-fix8.litmus", true}, // Use SC
+
+            {"MP-cas-cross-space.litmus", "MP-cas-cross-space-naive.litmus", true},
+            {"MP-cas-cross-space.litmus", "MP-cas-cross-space-fix1.litmus", false, true},
+            {"MP-cas-cross-space.litmus", "MP-cas-cross-space-fix2.litmus", true},
+            {"MP-cas-cross-space.litmus", "MP-cas-cross-space-fix3.litmus", true},
+
+            {"SB-barrier-cross-space.litmus", "SB-barrier-cross-space-naive.litmus", true},
+            {"SB-barrier-cross-space.litmus", "SB-barrier-cross-space-fix1.litmus", false, true},
+
             {"SB-fence-sc-relaxed.litmus", "SB-fence-sc.litmus", false, true},
             {"SB-fence-sc-relaxed.litmus", "SB-fence-sc-relaxed-cross-space.litmus", false, true},
             {"SB-fence-sc-relaxed.litmus", "SB-fence-sc-relaxed-cross-space1.litmus", false, true},
-
-            // Data Race Mismatches
-            {"SB-fence-sc-weak.litmus", "SB-fence-sc-weak.litmus", true},
-
-            {"LB.litmus", "LB.litmus", false, true},
             {"SUM.litmus", "SUM.litmus", false, true},
-            {"MP.litmus", "MP-same-space.litmus", false, true},
-            {"MP.litmus", "MP-cross-space.litmus", true},
-            {"MP.litmus", "MP-cross-space-fix1.litmus", true},
-            {"MP.litmus", "MP-cross-space-fix2.litmus", true},
-            {"MP.litmus", "MP-cross-space-fix3.litmus", false, true},
-            {"MP.litmus", "MP-cross-space-fix4.litmus", false, true},
-            {"MP.litmus", "MP-cross-space-fix5.litmus", true},
-            {"MP.litmus", "MP-cross-space-fix6.litmus", false, true},
-            {"MP.litmus", "MP-cross-space-fix7.litmus", true},
-            {"MP.litmus", "MP-cross-space-fix8.litmus", true},
-            {"MP-fence-sc-weak.litmus", "MP-fence-sc-weak.litmus", true},
-            {"MP-cas-cross-space.litmus", "MP-cas-cross-space.litmus", true},
-            {"MP-cas-cross-space.litmus", "MP-cas-cross-space-fix.litmus", false, true},
             {"MP-fence-sc-cross-space.litmus", "MP-fence-sc-cross-space.litmus", false, false},
             {"MP-fence-sc-cross-space-add.litmus", "MP-fence-sc-cross-space-add.litmus", false, true},
             {"MP-fence-sc-cross-space-add-3.litmus", "MP-fence-sc-cross-space-add-3.litmus", false, true},
@@ -82,6 +86,13 @@ public class PtxToOpenCLTest extends AbstractCompilationWithDrCheckTest {
             {"MP-fence-acqrel-cross-space-add.litmus", "MP-fence-acqrel-cross-space-add-asym.litmus", false, false},
             {"MP-fence-acqrel-cross-space-add.litmus", "MP-fence-acqrel-cross-space-add-fix.litmus", false, true},
             {"MP-fence-acq-rel.litmus", "MP-fence-acqrel-cross-wg.litmus", false, true},
+
+            // Data Race Mismatches
+            {"SB-fence-sc-weak.litmus", "SB-fence-sc-weak.litmus", true},
+            {"MP-fence-sc-weak.litmus", "MP-fence-sc-weak.litmus", true},
+
+            // Other litmus tests
+            {"LB.litmus", "LB.litmus", false, true},
             {"RMW-release-sequence.litmus", "RMW-release-sequence.litmus", false, true},
             {"RMW-cas.litmus", "RMW-cas.litmus", false, true},
     };
