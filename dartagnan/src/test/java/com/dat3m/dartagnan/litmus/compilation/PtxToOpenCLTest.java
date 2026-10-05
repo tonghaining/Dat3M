@@ -95,8 +95,12 @@ public class PtxToOpenCLTest extends AbstractCompilationWithDrCheckTest {
             {"RMW-add.litmus", "RMW-add-fix2.litmus", false, true},
 
             // Data Race Mismatches
+            // Fix1: Atomic-Affected
+            {"MP-fence-sc-weak.litmus", "MP-fence-sc-weak-naive.litmus", true},
+            {"MP-fence-sc-weak.litmus", "MP-fence-sc-weak-fix1.litmus", false, true},
+
             {"SB-fence-sc-weak.litmus", "SB-fence-sc-weak.litmus", true},
-            {"MP-fence-sc-weak.litmus", "MP-fence-sc-weak.litmus", true},
+            {"SB-fence-sc-weak.litmus", "SB-fence-sc.litmus", false, true}, // Fix1
 
             // Other litmus tests
             {"LB.litmus", "LB.litmus", false, true},
