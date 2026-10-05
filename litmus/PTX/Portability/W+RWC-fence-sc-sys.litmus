@@ -1,0 +1,16 @@
+PTX W+RWC-fence-sc-sys
+// Figure 6 of https://dl.acm.org/doi/10.1145/3062341.3062352
+{
+x=0;
+y=0;
+z=0;
+P1:r0=0;
+P1:r2=0;
+P2:r1=0;
+}
+P0@cta 0,gpu 0         | P1@cta 1,gpu 0         | P2@cta 2,gpu 0        ;
+st.relaxed.sys x, 1    | ld.acquire.sys r0, z   | st.relaxed.sys y, 1   ;
+st.release.sys z, 1    | fence.sc.sys           | fence.sc.sys          ;
+                       | ld.relaxed.sys r2, y   | ld.relaxed.sys r1, x  ;
+~exists
+(P1:r0==1 /\ P2:r1==0 /\ P1:r2==0)

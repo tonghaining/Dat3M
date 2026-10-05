@@ -1,0 +1,29 @@
+OPENCL IRIW-fence-sc-sys-fix2
+// Upgrade both producer and consumer to SC
+{
+[x] = 0;
+[y] = 0;
+}
+
+P0@wg 0, dev 0 (global atomic_int* x, global atomic_int* y) {
+ atomic_store_explicit(x, 1, memory_order_seq_cst, memory_scope_all_svm_devices);
+}
+
+P1@wg 1, dev 0 (global atomic_int* x, global atomic_int* y) {
+ atomic_store_explicit(y, 1, memory_order_seq_cst, memory_scope_all_svm_devices);
+}
+
+P2@wg 2, dev 0 (global atomic_int* x, global atomic_int* y) {
+ int r0 = atomic_load_explicit(x, memory_order_seq_cst, memory_scope_all_svm_devices);
+ atomic_work_item_fence(CLK_GLOBAL_MEM_FENCE, memory_order_seq_cst, memory_scope_all_svm_devices);
+ int r1 = atomic_load_explicit(y, memory_order_seq_cst, memory_scope_all_svm_devices);
+}
+
+P3@wg 3, dev 0 (global atomic_int* x, global atomic_int* y) {
+  int r2 = atomic_load_explicit(y, memory_order_seq_cst, memory_scope_all_svm_devices);
+  atomic_work_item_fence(CLK_GLOBAL_MEM_FENCE, memory_order_seq_cst, memory_scope_all_svm_devices);
+  int r3 = atomic_load_explicit(x, memory_order_seq_cst, memory_scope_all_svm_devices);
+}
+
+~exists
+(P2:r0==1 /\ P2:r1==0 /\ P3:r2==1 /\ P3:r3==0)

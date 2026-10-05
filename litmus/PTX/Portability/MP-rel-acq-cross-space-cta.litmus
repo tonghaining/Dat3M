@@ -1,0 +1,12 @@
+PTX MP-rel-acq-cross-space-cta
+{
+x=0;
+y=0;
+P1:r0=0;
+P1:r1=0;
+}
+ P0@cta 0,gpu 0        | P1@cta 0,gpu 0         ;
+ st.weak x, 1          | ld.acquire.cta r0, y   ;
+ st.release.cta y, 1   | ld.weak r1, x          ;
+~exists
+(P1:r0 == 1 /\ P1:r1 == 0)

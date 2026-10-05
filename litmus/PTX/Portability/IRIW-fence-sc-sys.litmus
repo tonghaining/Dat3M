@@ -1,0 +1,16 @@
+PTX IRIW-fence-sc-sys
+{
+x=0;
+y=0;
+P2:r0=0;
+P2:r1=0;
+P3:r2=0;
+P3:r3=0;
+}
+P0@cta 0,gpu 0         | P1@cta 1,gpu 0         | P2@cta 2,gpu 0         | P3@cta 3,gpu 0        ;
+st.relaxed.sys x, 1    | st.relaxed.sys y, 1    | ld.relaxed.sys r0, x   | ld.relaxed.sys r2, y  ;
+                       |                        | fence.sc.sys           | fence.sc.sys          ;
+                       |                        | ld.relaxed.sys r1, y   | ld.relaxed.sys r3, x  ;
+
+~exists
+(P2:r0==1 /\ P2:r1==0 /\ P3:r2==1 /\ P3:r3==0)

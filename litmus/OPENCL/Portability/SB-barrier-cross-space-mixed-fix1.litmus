@@ -1,0 +1,20 @@
+OPENCL SB-barrier-cross-space-mixed-fix1
+
+{
+[x] = 0;
+[y] = 0;
+}
+
+P0@wg 0, dev 0 (global int* x, local atomic_int* y) {
+  *x = 1;
+  B1: barrier(CLK_GLOBAL_MEM_FENCE|CLK_LOCAL_MEM_FENCE);
+  int r0 = *y;
+}
+
+P1@wg 0, dev 0 (global int* x, local atomic_int* y) {
+  *y = 1;
+  B1: barrier(CLK_GLOBAL_MEM_FENCE|CLK_LOCAL_MEM_FENCE);
+  int r1 = *x;
+}
+~exists
+(P0:r0 == 0 /\ P1:r1 == 0)

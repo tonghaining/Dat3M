@@ -1,0 +1,16 @@
+PTX RWC-fence-sc-cta
+// Figure 5 of https://dl.acm.org/doi/10.1145/3062341.3062352
+{
+x=0;
+y=0;
+P1:r0=0;
+P1:r1=0;
+P2:r2=0;
+}
+P0@cta 0,gpu 0         | P1@cta 0,gpu 0         | P2@cta 0,gpu 0         ;
+st.relaxed.cta x, 1    | ld.relaxed.cta r0, x   | st.relaxed.cta y, 1    ;
+                       | fence.sc.cta           | fence.sc.cta           ;
+                       | ld.relaxed.cta r1, y   | ld.relaxed.cta r2, x   ;
+
+~exists
+(P1:r0==1 /\ P1:r1==0 /\ P2:r2==0)
