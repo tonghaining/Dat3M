@@ -22,11 +22,17 @@ public class OpenCLToVulkanTest extends AbstractCompilationWithDrCheckTest {
     // expectedToMatch is omitted when expectDataRace is true, since it is ignored in that case.
     private static final Object[][] LITMUS_MAP = {
             // Av/Vis mismatches
+            // Fix1: Sync-AvVis
+            // Fix2: Access-Full-AvVis
+            // Fix3: Adjacent-Access-AvVis
             {"CoWR-barrier.litmus", "CoWR-barrier-naive.litmus", true},
             {"CoWR-barrier.litmus", "CoWR-barrier-fix1.litmus", false, true},
             {"CoWR-barrier.litmus", "CoWR-barrier-fix2.litmus", false, true},
             {"CoWR-barrier.litmus", "CoWR-barrier-fix3.litmus", false, true},
             {"CoWR-barrier.litmus", "CoWR-barrier-fix4.litmus", true}, // without .nonpriv for the non-adjacent stores and loads
+            {"MP.litmus", "MP-naive.litmus", true},
+            {"MP.litmus", "MP-fix1.litmus", false, true},
+            {"MP.litmus", "MP-fix2+3.litmus", false, true},
 
             // SC downgrade to AcqRel in Vulkan
             {"SB-fence-sc.litmus", "SB-fence-sc-naive.litmus", false, false}, // SC downgrade to AcqRel in Vulkan
