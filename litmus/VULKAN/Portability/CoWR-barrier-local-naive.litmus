@@ -1,0 +1,14 @@
+Vulkan CoWR-barrier-local
+{
+x=0;
+}
+
+ P0@sg 0, wg 0, qf 0      | P1@sg 0, wg 0, qf 0      ;
+ st.sc1 x, 1              |                          ;
+ st.sc1 x, 2              |                          ;
+ st.sc1 x, 3              |                          ;
+ cbar.acq_rel.wg.semsc1 1 | cbar.acq_rel.wg.semsc1 1 ;
+                          | ld.sc1 r0, x             ;
+                          | ld.sc1 r1, x             ;
+
+forall (P1:r0 == 3 /\ P1:r1 == 3)

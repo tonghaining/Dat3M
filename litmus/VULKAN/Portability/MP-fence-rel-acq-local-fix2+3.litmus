@@ -1,0 +1,15 @@
+Vulkan MP-fence-rel-acq-local
+{
+P1:r0=0;
+P1:r1=0;
+x=0;
+y=0;
+}
+
+P0@sg 0, wg 0, qf 0  | P1@sg 1, wg 0, qf 0  ;
+st.av.wg.sc1 x, 1    | ld.atom.wg.sc1 r0, y ;
+membar.rel.wg.semsc1 | membar.acq.wg.semsc1 ;
+st.atom.wg.sc1 y, 1  | ld.vis.wg.sc1 r1, x  ;
+
+filter (P1:r0 == 1)
+~exists (P1:r1 == 0)

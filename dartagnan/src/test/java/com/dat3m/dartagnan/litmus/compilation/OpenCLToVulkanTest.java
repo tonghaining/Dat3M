@@ -37,6 +37,31 @@ public class OpenCLToVulkanTest extends AbstractCompilationWithDrCheckTest {
             {"MP-fence-rel-acq.litmus", "MP-fence-rel-acq-fix1.litmus", false, true},
             {"MP-fence-rel-acq.litmus", "MP-fence-rel-acq-fix2+3.litmus", false, true},
 
+            // Local memory (sc1 / semsc1)
+            {"CoWR-barrier-local.litmus", "CoWR-barrier-local-naive.litmus", true},
+            {"CoWR-barrier-local.litmus", "CoWR-barrier-local-fix1.litmus", false, true},
+            {"CoWR-barrier-local.litmus", "CoWR-barrier-local-fix2.litmus", false, true},
+            {"CoWR-barrier-local.litmus", "CoWR-barrier-local-fix3.litmus", false, true},
+            {"MP-rel-acq-local.litmus", "MP-rel-acq-local-naive.litmus", true},
+            {"MP-rel-acq-local.litmus", "MP-rel-acq-local-fix1.litmus", false, true},
+            {"MP-rel-acq-local.litmus", "MP-rel-acq-local-fix2+3.litmus", false, true},
+            {"MP-fence-rel-acq-local.litmus", "MP-fence-rel-acq-local-naive.litmus", true},
+            {"MP-fence-rel-acq-local.litmus", "MP-fence-rel-acq-local-fix1.litmus", false, true},
+            {"MP-fence-rel-acq-local.litmus", "MP-fence-rel-acq-local-fix2+3.litmus", false, true},
+
+            // Cross work-group, device scope
+            {"MP-rel-acq-cross-wg.litmus", "MP-rel-acq-cross-wg-naive.litmus", true},
+            {"MP-rel-acq-cross-wg.litmus", "MP-rel-acq-cross-wg-fix1.litmus", false, true},
+            {"MP-rel-acq-cross-wg.litmus", "MP-rel-acq-cross-wg-fix2+3.litmus", false, true},
+            {"MP-fence-rel-acq-cross-wg.litmus", "MP-fence-rel-acq-cross-wg-naive.litmus", true},
+            {"MP-fence-rel-acq-cross-wg.litmus", "MP-fence-rel-acq-cross-wg-fix1.litmus", false, true},
+            {"MP-fence-rel-acq-cross-wg.litmus", "MP-fence-rel-acq-cross-wg-fix2+3.litmus", false, true},
+
+            // Cross space: local data (sc1), global flag (sc0), fences with semsc0.semsc1
+            {"MP-fence-rel-acq-cross-space.litmus", "MP-fence-rel-acq-cross-space-naive.litmus", true},
+            {"MP-fence-rel-acq-cross-space.litmus", "MP-fence-rel-acq-cross-space-fix1.litmus", false, true},
+            {"MP-fence-rel-acq-cross-space.litmus", "MP-fence-rel-acq-cross-space-fix2+3.litmus", false, true},
+
             // SC downgrade to AcqRel in Vulkan
             {"SB-fence-sc.litmus", "SB-fence-sc-naive.litmus", false, false}, // SC downgrade to AcqRel in Vulkan
             {"SB-fence-sc.litmus", "SB-fence-sc-fix1.litmus", false, false}, // Make Store/Load to Rel/Acq, but still fail
