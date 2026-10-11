@@ -30,20 +30,41 @@ public class SpirvRacesTest {
 
     private final String modelPath = getRootPath("cat/opencl.cat");
     private final String programPath;
+    private final int bound;
     private final Result expected;
 
-    public SpirvRacesTest(String file, Result expected) {
+    public SpirvRacesTest(String file, int bound, Result expected) {
         this.programPath = getTestResourcePath("spirv/opencl/portability/" + file);
+        this.bound = bound;
         this.expected = expected;
     }
 
-    @Parameterized.Parameters(name = "{index}: {0}, {1}")
+    @Parameterized.Parameters(name = "{index}: {0}, {1}, {2}")
     public static Iterable<Object[]> data() throws IOException {
         return Arrays.asList(new Object[][]{
-                {"mp-cross-region.spvasm", FAIL},
-                {"mp-cross-region-fix.spvasm", PASS},
-                {"mp-cross-region-extern.spvasm", FAIL},
-                {"mp-cross-region-extern-fix.spvasm", PASS},
+                {"mp-cross-region.spvasm", 1, FAIL},
+                {"mp-cross-region-fix.spvasm", 1, PASS},
+                {"mp-cross-region-extern.spvasm", 1, FAIL},
+                {"mp-cross-region-extern-fix.spvasm", 1, PASS},
+                // Kernels in benchmarks/cuda; -fix is the R1 repair pass.
+                // Memory region (--ra-region-widen)
+                {"mp-cas-cross-space.spvasm", 1, FAIL},
+                {"mp-cas-cross-space-fix.spvasm", 1, PASS},
+                {"mp-rel-acq-cross-space-cta.spvasm", 2, FAIL},
+                {"mp-rel-acq-cross-space-cta-fix.spvasm", 2, PASS},
+                {"mp-rel-acq-cross-space-swap.spvasm", 2, FAIL},
+                {"mp-rel-acq-cross-space-swap-fix.spvasm", 2, PASS},
+                // Scope inclusion (--scope-upper-alignment)
+                {"rmw-add.spvasm", 1, FAIL},
+                {"rmw-add-fix.spvasm", 1, PASS},
+                // Sequential consistency (--st-sc)
+                {"rwc-fence-sc-threadfence.spvasm", 1, PASS},
+                {"rwc-fence-sc-threadfence-fix.spvasm", 1, PASS},
+                // Data race (--atomic-affected)
+                {"mp-fence-sc-weak.spvasm", 1, FAIL},
+                {"mp-fence-sc-weak-fix.spvasm", 1, PASS},
+                {"sb-fence-sc-weak.spvasm", 1, FAIL},
+                {"sb-fence-sc-weak-fix.spvasm", 1, PASS},
         });
     }
 
@@ -55,6 +76,7 @@ public class SpirvRacesTest {
     private VerificationTask mkTask() throws Exception {
         VerificationTask.VerificationTaskBuilder builder = VerificationTask.builder()
                 .withConfig(TestHelper.getBasicConfig())
+                .withBound(bound)
                 .withTarget(Arch.OPENCL);
         Program program = new ProgramParser().parse(new File(programPath));
         Wmm mcm = new ParserCat().parse(new File(modelPath));

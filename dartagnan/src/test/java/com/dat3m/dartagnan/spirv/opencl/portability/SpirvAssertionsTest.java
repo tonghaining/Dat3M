@@ -21,6 +21,7 @@ import java.util.EnumSet;
 import static com.dat3m.dartagnan.configuration.Property.PROGRAM_SPEC;
 import static com.dat3m.dartagnan.utils.ResourceHelper.getRootPath;
 import static com.dat3m.dartagnan.utils.ResourceHelper.getTestResourcePath;
+import static com.dat3m.dartagnan.utils.Result.FAIL;
 import static com.dat3m.dartagnan.utils.Result.PASS;
 import static org.junit.Assert.assertEquals;
 
@@ -43,6 +44,25 @@ public class SpirvAssertionsTest {
         return Arrays.asList(new Object[][]{
                 {"mp-cross-region-fix.spvasm", 1, PASS},
                 {"mp-cross-region-extern-fix.spvasm", 1, PASS},
+                // Kernels in benchmarks/cuda; -fix is the R1 repair pass.
+                // Memory region (--ra-region-widen)
+                {"mp-cas-cross-space.spvasm", 1, PASS},
+                {"mp-cas-cross-space-fix.spvasm", 1, PASS},
+                {"mp-rel-acq-cross-space-cta.spvasm", 2, FAIL},
+                {"mp-rel-acq-cross-space-cta-fix.spvasm", 2, PASS},
+                {"mp-rel-acq-cross-space-swap.spvasm", 2, FAIL},
+                {"mp-rel-acq-cross-space-swap-fix.spvasm", 2, PASS},
+                // Scope inclusion (--scope-upper-alignment)
+                {"rmw-add.spvasm", 1, PASS},
+                {"rmw-add-fix.spvasm", 1, PASS},
+                // Sequential consistency (--st-sc)
+                {"rwc-fence-sc-threadfence.spvasm", 1, FAIL},
+                {"rwc-fence-sc-threadfence-fix.spvasm", 1, PASS},
+                // Data race (--atomic-affected)
+                {"mp-fence-sc-weak.spvasm", 1, PASS},
+                {"mp-fence-sc-weak-fix.spvasm", 1, PASS},
+                {"sb-fence-sc-weak.spvasm", 1, PASS},
+                {"sb-fence-sc-weak-fix.spvasm", 1, PASS},
         });
     }
 

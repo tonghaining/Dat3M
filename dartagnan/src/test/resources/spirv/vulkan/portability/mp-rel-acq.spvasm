@@ -1,0 +1,122 @@
+; @Input: %14 = {{0}}
+; @Input: %15 = {{0}}
+; @Input: %16 = {{0}}
+; @Output: not exists (%16[0][0] == 0)
+; @Config: 2, 1, 1
+; SPIR-V
+; Version: 1.6
+; Generator: Google Clspv; 0
+; Bound: 87
+; Schema: 0
+               OpCapability Shader
+               OpCapability VulkanMemoryModel
+               OpExtension "SPV_KHR_vulkan_memory_model"
+         %72 = OpExtInstImport "NonSemantic.ClspvReflection.5"
+               OpMemoryModel Logical Vulkan
+               OpEntryPoint GLCompute %19 "test" %gl_LocalInvocationID %10 %14 %15 %16
+               OpSource OpenCL_C 200
+         %73 = OpString "test"
+         %74 = OpString "__kernel"
+         %77 = OpString "x"
+         %80 = OpString "y"
+         %83 = OpString "r_"
+               OpDecorate %gl_LocalInvocationID BuiltIn LocalInvocationId
+               OpDecorate %gl_WorkGroupSize BuiltIn WorkgroupSize
+               OpDecorate %_runtimearr_uint ArrayStride 4
+               OpMemberDecorate %_struct_12 0 Offset 0
+               OpDecorate %_struct_12 Block
+               OpDecorate %14 DescriptorSet 0
+               OpDecorate %14 Binding 0
+               OpDecorate %15 DescriptorSet 0
+               OpDecorate %15 Binding 1
+               OpDecorate %16 DescriptorSet 0
+               OpDecorate %16 Binding 2
+               OpDecorate %5 SpecId 0
+               OpDecorate %6 SpecId 1
+               OpDecorate %7 SpecId 2
+       %uint = OpTypeInt 32 0
+     %v3uint = OpTypeVector %uint 3
+%_ptr_Input_v3uint = OpTypePointer Input %v3uint
+          %5 = OpSpecConstant %uint 1
+          %6 = OpSpecConstant %uint 1
+          %7 = OpSpecConstant %uint 1
+%gl_WorkGroupSize = OpSpecConstantComposite %v3uint %5 %6 %7
+%_ptr_Private_v3uint = OpTypePointer Private %v3uint
+%_runtimearr_uint = OpTypeRuntimeArray %uint
+ %_struct_12 = OpTypeStruct %_runtimearr_uint
+%_ptr_StorageBuffer__struct_12 = OpTypePointer StorageBuffer %_struct_12
+       %void = OpTypeVoid
+         %18 = OpTypeFunction %void
+%_ptr_StorageBuffer_uint = OpTypePointer StorageBuffer %uint
+     %uint_0 = OpConstant %uint 0
+%_ptr_Input_uint = OpTypePointer Input %uint
+       %bool = OpTypeBool
+     %uint_1 = OpConstant %uint 1
+%uint_4294967295 = OpConstant %uint 4294967295
+     %uint_2 = OpConstant %uint 2
+    %uint_66 = OpConstant %uint 66
+    %uint_42 = OpConstant %uint 42
+    %uint_68 = OpConstant %uint 68
+      %false = OpConstantFalse %bool
+       %true = OpConstantTrue %bool
+     %uint_3 = OpConstant %uint 3
+%gl_LocalInvocationID = OpVariable %_ptr_Input_v3uint Input
+         %10 = OpVariable %_ptr_Private_v3uint Private %gl_WorkGroupSize
+         %14 = OpVariable %_ptr_StorageBuffer__struct_12 StorageBuffer
+         %15 = OpVariable %_ptr_StorageBuffer__struct_12 StorageBuffer
+         %16 = OpVariable %_ptr_StorageBuffer__struct_12 StorageBuffer
+         %19 = OpFunction %void None %18
+         %20 = OpLabel
+         %23 = OpAccessChain %_ptr_StorageBuffer_uint %14 %uint_0 %uint_0
+         %24 = OpAccessChain %_ptr_StorageBuffer_uint %15 %uint_0 %uint_0
+         %25 = OpAccessChain %_ptr_StorageBuffer_uint %16 %uint_0 %uint_0
+         %27 = OpAccessChain %_ptr_Input_uint %gl_LocalInvocationID %uint_0
+         %28 = OpLoad %uint %27 Aligned 16
+               OpBranch %30
+         %30 = OpLabel
+         %33 = OpSGreaterThanEqual %bool %28 %uint_1
+               OpSelectionMerge %55 None
+               OpBranchConditional %33 %36 %55
+         %36 = OpLabel
+         %37 = OpIEqual %bool %28 %uint_1
+               OpSelectionMerge %53 None
+               OpBranchConditional %37 %40 %53
+         %40 = OpLabel
+               OpStore %25 %uint_4294967295 Aligned 4
+         %44 = OpAtomicLoad %uint %24 %uint_2 %uint_66
+         %45 = OpIEqual %bool %44 %uint_1
+               OpSelectionMerge %51 None
+               OpBranchConditional %45 %48 %51
+         %48 = OpLabel
+         %49 = OpLoad %uint %23 Aligned 4
+               OpStore %25 %49 Aligned 4
+               OpBranch %51
+         %51 = OpLabel
+               OpBranch %53
+         %53 = OpLabel
+               OpBranch %55
+         %55 = OpLabel
+         %56 = OpPhi %bool %false %53 %true %30
+               OpSelectionMerge %69 None
+               OpBranchConditional %56 %59 %69
+         %59 = OpLabel
+         %60 = OpIEqual %bool %28 %uint_0
+               OpSelectionMerge %67 None
+               OpBranchConditional %60 %63 %67
+         %63 = OpLabel
+               OpStore %23 %uint_42 Aligned 4
+               OpAtomicStore %24 %uint_2 %uint_68 %uint_1
+               OpBranch %67
+         %67 = OpLabel
+               OpBranch %69
+         %69 = OpLabel
+               OpReturn
+               OpFunctionEnd
+         %76 = OpExtInst %void %72 Kernel %19 %73 %uint_3 %uint_0 %74
+         %78 = OpExtInst %void %72 ArgumentInfo %77
+         %79 = OpExtInst %void %72 ArgumentStorageBuffer %76 %uint_0 %uint_0 %uint_0 %78
+         %81 = OpExtInst %void %72 ArgumentInfo %80
+         %82 = OpExtInst %void %72 ArgumentStorageBuffer %76 %uint_1 %uint_0 %uint_1 %81
+         %84 = OpExtInst %void %72 ArgumentInfo %83
+         %85 = OpExtInst %void %72 ArgumentStorageBuffer %76 %uint_2 %uint_0 %uint_2 %84
+         %86 = OpExtInst %void %72 SpecConstantWorkgroupSize %uint_0 %uint_1 %uint_2
