@@ -17,10 +17,10 @@
                OpCapability Int8
           %1 = OpExtInstImport "OpenCL.std"
                OpMemoryModel Physical64 OpenCL
-               OpEntryPoint Kernel %2 "_Z4testPiS_S_" %__spirv_BuiltInLocalInvocationId
-               OpEntryPoint Kernel %4 "__chip_var_info___chipspv_device_heap"
-               OpEntryPoint Kernel %5 "__chip_var_bind___chipspv_device_heap"
-               OpEntryPoint Kernel %6 "__chip_reset_non_symbols"
+               OpEntryPoint Kernel %93 "_Z4testPiS_S_" %__spirv_BuiltInLocalInvocationId
+               OpEntryPoint Kernel %99 "__chip_var_info___chipspv_device_heap"
+               OpEntryPoint Kernel %103 "__chip_var_bind___chipspv_device_heap"
+               OpEntryPoint Kernel %107 "__chip_reset_non_symbols"
                OpSource OpenCL_C 200000
                OpName %_ZZ4testPiS_S_E1x "_ZZ4testPiS_S_E1x"
                OpName %__chip_var___chipspv_device_heap "__chip_var___chipspv_device_heap"
@@ -97,34 +97,34 @@
     %v3ulong = OpTypeVector %ulong 3
 %_ptr_Input_v3ulong = OpTypePointer Input %v3ulong
        %void = OpTypeVoid
-         %69 = OpTypeFunction %void %_ptr_CrossWorkgroup_uchar %_ptr_CrossWorkgroup_uchar %_ptr_CrossWorkgroup_uchar
+         %17 = OpTypeFunction %void %_ptr_CrossWorkgroup_uchar %_ptr_CrossWorkgroup_uchar %_ptr_CrossWorkgroup_uchar
 %_ptr_Function_uint = OpTypePointer Function %uint
 %_ptr_Generic_uint = OpTypePointer Generic %uint
        %bool = OpTypeBool
 %_ptr_Function_uchar = OpTypePointer Function %uchar
-         %74 = OpTypeFunction %void %_ptr_CrossWorkgroup_ulong
-         %75 = OpTypeFunction %void %_ptr_CrossWorkgroup_uchar
-         %76 = OpTypeFunction %void
+         %76 = OpTypeFunction %void %_ptr_CrossWorkgroup_ulong
+         %85 = OpTypeFunction %void %_ptr_CrossWorkgroup_uchar
+         %90 = OpTypeFunction %void
 %_ZZ4testPiS_S_E1x = OpVariable %_ptr_Workgroup_uint Workgroup
 %__chip_var___chipspv_device_heap = OpVariable %_ptr_CrossWorkgroup_ulong CrossWorkgroup %ulong_0
 %__chip_module_has_no_IGBAs = OpVariable %_ptr_CrossWorkgroup_uchar CrossWorkgroup %uchar_1
 %__spirv_BuiltInLocalInvocationId = OpVariable %_ptr_Input_v3ulong Input
        %true = OpConstantTrue %bool
-%_Z4testPiS_S_ = OpFunction %void None %69
+%_Z4testPiS_S_ = OpFunction %void None %17
    %y_coerce = OpFunctionParameter %_ptr_CrossWorkgroup_uchar
   %t__coerce = OpFunctionParameter %_ptr_CrossWorkgroup_uchar
  %r1__coerce = OpFunctionParameter %_ptr_CrossWorkgroup_uchar
       %entry = OpLabel
 %cmp_addr_i_i = OpVariable %_ptr_Function_uint Function
-         %78 = OpConvertPtrToU %ulong %y_coerce
-         %79 = OpConvertUToPtr %_ptr_Generic_uint %78
-         %80 = OpConvertPtrToU %ulong %t__coerce
-         %81 = OpConvertUToPtr %_ptr_Generic_uint %80
-         %82 = OpConvertPtrToU %ulong %r1__coerce
-         %83 = OpConvertUToPtr %_ptr_Generic_uint %82
-         %84 = OpLoad %v3ulong %__spirv_BuiltInLocalInvocationId Aligned 32
-         %85 = OpCompositeExtract %ulong %84 0
-   %call_i25 = OpSelect %ulong %true %85 %ulong_0
+         %34 = OpConvertPtrToU %ulong %y_coerce
+         %36 = OpConvertUToPtr %_ptr_Generic_uint %34
+         %37 = OpConvertPtrToU %ulong %t__coerce
+         %38 = OpConvertUToPtr %_ptr_Generic_uint %37
+         %39 = OpConvertPtrToU %ulong %r1__coerce
+         %40 = OpConvertUToPtr %_ptr_Generic_uint %39
+         %41 = OpLoad %v3ulong %__spirv_BuiltInLocalInvocationId Aligned 32
+         %42 = OpCompositeExtract %ulong %41 0
+   %call_i25 = OpSelect %ulong %true %42 %ulong_0
      %conv_i = OpUConvert %uint %call_i25
         %cmp = OpIEqual %bool %conv_i %uint_0
                OpBranchConditional %cmp %if_then %if_end
@@ -133,45 +133,45 @@
                OpBranch %if_end
      %if_end = OpLabel
                OpControlBarrier %uint_2 %uint_2 %uint_784
-         %86 = OpLoad %v3ulong %__spirv_BuiltInLocalInvocationId Aligned 32
-         %87 = OpCompositeExtract %ulong %86 0
-   %call_i28 = OpSelect %ulong %true %87 %ulong_0
+         %51 = OpLoad %v3ulong %__spirv_BuiltInLocalInvocationId Aligned 32
+         %52 = OpCompositeExtract %ulong %51 0
+   %call_i28 = OpSelect %ulong %true %52 %ulong_0
    %conv_i29 = OpUConvert %uint %call_i28
        %cmp5 = OpIEqual %bool %conv_i29 %uint_0
                OpBranchConditional %cmp5 %if_then6 %if_else
    %if_then6 = OpLabel
                OpStore %_ZZ4testPiS_S_E1x %uint_1 Aligned 4
                OpMemoryBarrier %uint_1 %uint_784
-   %call_i_i = OpAtomicExchange %uint %79 %uint_1 %uint_0 %uint_1
+   %call_i_i = OpAtomicExchange %uint %36 %uint_1 %uint_0 %uint_1
                OpBranch %if_end16
     %if_else = OpLabel
-         %88 = OpLoad %v3ulong %__spirv_BuiltInLocalInvocationId Aligned 32
-         %89 = OpCompositeExtract %ulong %88 0
-   %call_i32 = OpSelect %ulong %true %89 %ulong_0
+         %59 = OpLoad %v3ulong %__spirv_BuiltInLocalInvocationId Aligned 32
+         %60 = OpCompositeExtract %ulong %59 0
+   %call_i32 = OpSelect %ulong %true %60 %ulong_0
    %conv_i33 = OpUConvert %uint %call_i32
        %cmp9 = OpIEqual %bool %conv_i33 %uint_1
                OpBranchConditional %cmp9 %if_then10 %if_end15
   %if_then10 = OpLabel
-         %90 = OpBitcast %_ptr_Function_uchar %cmp_addr_i_i
-               OpLifetimeStart %90 4
+         %65 = OpBitcast %_ptr_Function_uchar %cmp_addr_i_i
+               OpLifetimeStart %65 4
                OpStore %cmp_addr_i_i %uint_1 Aligned 4
 %cmp_addr_ascast_i_i = OpPtrCastToGeneric %_ptr_Generic_uint %cmp_addr_i_i
         %exp = OpLoad %uint %cmp_addr_ascast_i_i Aligned 4
-         %91 = OpAtomicCompareExchange %uint %79 %uint_1 %uint_0 %uint_0 %uint_0 %exp
-               OpStore %cmp_addr_ascast_i_i %91 Aligned 4
-  %call_i_i9 = OpIEqual %bool %91 %exp
-         %92 = OpLoad %uint %cmp_addr_i_i Aligned 4
-         %93 = OpBitcast %_ptr_Function_uchar %cmp_addr_i_i
-               OpLifetimeStop %93 4
-      %cmp12 = OpIEqual %bool %92 %uint_1
+         %68 = OpAtomicCompareExchange %uint %36 %uint_1 %uint_0 %uint_0 %uint_0 %exp
+               OpStore %cmp_addr_ascast_i_i %68 Aligned 4
+  %call_i_i9 = OpIEqual %bool %68 %exp
+         %70 = OpLoad %uint %cmp_addr_i_i Aligned 4
+         %71 = OpBitcast %_ptr_Function_uchar %cmp_addr_i_i
+               OpLifetimeStop %71 4
+      %cmp12 = OpIEqual %bool %70 %uint_1
        %conv = OpSelect %uint %cmp12 %uint_1 %uint_0
-               OpStore %81 %conv Aligned 4
+               OpStore %38 %conv Aligned 4
      %tobool = OpINotEqual %bool %conv %uint_0
                OpBranchConditional %tobool %if_then13 %if_end14
   %if_then13 = OpLabel
                OpMemoryBarrier %uint_1 %uint_784
-         %94 = OpLoad %uint %_ZZ4testPiS_S_E1x Aligned 4
-               OpStore %83 %94 Aligned 4
+         %75 = OpLoad %uint %_ZZ4testPiS_S_E1x Aligned 4
+               OpStore %40 %75 Aligned 4
                OpBranch %if_end14
    %if_end14 = OpLabel
                OpBranch %if_end15
@@ -180,48 +180,48 @@
    %if_end16 = OpLabel
                OpReturn
                OpFunctionEnd
-%__chip_var_info___chipspv_device_heap = OpFunction %void None %74
-         %95 = OpFunctionParameter %_ptr_CrossWorkgroup_ulong
+%__chip_var_info___chipspv_device_heap = OpFunction %void None %76
+         %78 = OpFunctionParameter %_ptr_CrossWorkgroup_ulong
     %entry_0 = OpLabel
-               OpStore %95 %ulong_8 Aligned 8
-         %96 = OpInBoundsPtrAccessChain %_ptr_CrossWorkgroup_ulong %95 %ulong_1
-               OpStore %96 %ulong_8 Aligned 8
-         %97 = OpInBoundsPtrAccessChain %_ptr_CrossWorkgroup_ulong %95 %ulong_2
-               OpStore %97 %ulong_1 Aligned 8
+               OpStore %78 %ulong_8 Aligned 8
+         %82 = OpInBoundsPtrAccessChain %_ptr_CrossWorkgroup_ulong %78 %ulong_1
+               OpStore %82 %ulong_8 Aligned 8
+         %84 = OpInBoundsPtrAccessChain %_ptr_CrossWorkgroup_ulong %78 %ulong_2
+               OpStore %84 %ulong_1 Aligned 8
                OpReturn
                OpFunctionEnd
-%__chip_var_bind___chipspv_device_heap = OpFunction %void None %75
-         %98 = OpFunctionParameter %_ptr_CrossWorkgroup_uchar
+%__chip_var_bind___chipspv_device_heap = OpFunction %void None %85
+         %87 = OpFunctionParameter %_ptr_CrossWorkgroup_uchar
     %entry_1 = OpLabel
-         %99 = OpConvertPtrToU %ulong %98
-               OpStore %__chip_var___chipspv_device_heap %99 Aligned 8
+         %89 = OpConvertPtrToU %ulong %87
+               OpStore %__chip_var___chipspv_device_heap %89 Aligned 8
                OpReturn
                OpFunctionEnd
-%__chip_reset_non_symbols = OpFunction %void None %76
+%__chip_reset_non_symbols = OpFunction %void None %90
     %entry_2 = OpLabel
                OpReturn
                OpFunctionEnd
-          %2 = OpFunction %void None %69
+         %93 = OpFunction %void None %17
  %y_coerce_0 = OpFunctionParameter %_ptr_CrossWorkgroup_uchar
 %t__coerce_0 = OpFunctionParameter %_ptr_CrossWorkgroup_uchar
 %r1__coerce_0 = OpFunctionParameter %_ptr_CrossWorkgroup_uchar
-        %100 = OpLabel
-        %101 = OpFunctionCall %void %_Z4testPiS_S_ %y_coerce_0 %t__coerce_0 %r1__coerce_0
+         %97 = OpLabel
+         %98 = OpFunctionCall %void %_Z4testPiS_S_ %y_coerce_0 %t__coerce_0 %r1__coerce_0
                OpReturn
                OpFunctionEnd
-          %4 = OpFunction %void None %74
-        %102 = OpFunctionParameter %_ptr_CrossWorkgroup_ulong
-        %103 = OpLabel
-        %104 = OpFunctionCall %void %__chip_var_info___chipspv_device_heap %102
+         %99 = OpFunction %void None %76
+        %100 = OpFunctionParameter %_ptr_CrossWorkgroup_ulong
+        %101 = OpLabel
+        %102 = OpFunctionCall %void %__chip_var_info___chipspv_device_heap %100
                OpReturn
                OpFunctionEnd
-          %5 = OpFunction %void None %75
-        %105 = OpFunctionParameter %_ptr_CrossWorkgroup_uchar
-        %106 = OpLabel
-        %107 = OpFunctionCall %void %__chip_var_bind___chipspv_device_heap %105
+        %103 = OpFunction %void None %85
+        %104 = OpFunctionParameter %_ptr_CrossWorkgroup_uchar
+        %105 = OpLabel
+        %106 = OpFunctionCall %void %__chip_var_bind___chipspv_device_heap %104
                OpReturn
                OpFunctionEnd
-          %6 = OpFunction %void None %76
+        %107 = OpFunction %void None %90
         %108 = OpLabel
         %109 = OpFunctionCall %void %__chip_reset_non_symbols
                OpReturn

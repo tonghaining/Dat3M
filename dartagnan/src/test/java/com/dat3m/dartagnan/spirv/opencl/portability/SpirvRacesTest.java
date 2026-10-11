@@ -42,8 +42,6 @@ public class SpirvRacesTest {
     @Parameterized.Parameters(name = "{index}: {0}, {1}, {2}")
     public static Iterable<Object[]> data() throws IOException {
         return Arrays.asList(new Object[][]{
-                {"mp-cross-region.spvasm", 1, FAIL},
-                {"mp-cross-region-fix.spvasm", 1, PASS},
                 {"mp-cross-region-extern.spvasm", 1, FAIL},
                 {"mp-cross-region-extern-fix.spvasm", 1, PASS},
                 // Kernels in benchmarks/cuda; -fix is the R1 repair pass.

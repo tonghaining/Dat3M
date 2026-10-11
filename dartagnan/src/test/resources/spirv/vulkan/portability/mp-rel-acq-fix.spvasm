@@ -5,7 +5,7 @@
 ; @Config: 2, 1, 1
 ; SPIR-V
 ; Version: 1.6
-; Generator: Google Clspv; 0
+; Generator: Khronos SPIR-V Tools Assembler; 0
 ; Bound: 89
 ; Schema: 0
                OpCapability Shader
@@ -23,8 +23,8 @@
                OpDecorate %gl_LocalInvocationID BuiltIn LocalInvocationId
                OpDecorate %gl_WorkGroupSize BuiltIn WorkgroupSize
                OpDecorate %_runtimearr_uint ArrayStride 4
-               OpMemberDecorate %_struct_12 0 Offset 0
-               OpDecorate %_struct_12 Block
+               OpMemberDecorate %_struct_4 0 Offset 0
+               OpDecorate %_struct_4 Block
                OpDecorate %14 DescriptorSet 0
                OpDecorate %14 Binding 0
                OpDecorate %15 DescriptorSet 0
@@ -43,8 +43,8 @@
 %gl_WorkGroupSize = OpSpecConstantComposite %v3uint %5 %6 %7
 %_ptr_Private_v3uint = OpTypePointer Private %v3uint
 %_runtimearr_uint = OpTypeRuntimeArray %uint
- %_struct_12 = OpTypeStruct %_runtimearr_uint
-%_ptr_StorageBuffer__struct_12 = OpTypePointer StorageBuffer %_struct_12
+  %_struct_4 = OpTypeStruct %_runtimearr_uint
+%_ptr_StorageBuffer__struct_4 = OpTypePointer StorageBuffer %_struct_4
        %void = OpTypeVoid
          %18 = OpTypeFunction %void
 %_ptr_StorageBuffer_uint = OpTypePointer StorageBuffer %uint
@@ -62,9 +62,9 @@
      %uint_3 = OpConstant %uint 3
 %gl_LocalInvocationID = OpVariable %_ptr_Input_v3uint Input
          %10 = OpVariable %_ptr_Private_v3uint Private %gl_WorkGroupSize
-         %14 = OpVariable %_ptr_StorageBuffer__struct_12 StorageBuffer
-         %15 = OpVariable %_ptr_StorageBuffer__struct_12 StorageBuffer
-         %16 = OpVariable %_ptr_StorageBuffer__struct_12 StorageBuffer
+         %14 = OpVariable %_ptr_StorageBuffer__struct_4 StorageBuffer
+         %15 = OpVariable %_ptr_StorageBuffer__struct_4 StorageBuffer
+         %16 = OpVariable %_ptr_StorageBuffer__struct_4 StorageBuffer
  %uint_16450 = OpConstant %uint 16450
   %uint_8260 = OpConstant %uint 8260
          %19 = OpFunction %void None %18
