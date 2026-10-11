@@ -60,6 +60,12 @@ public class SpirvRacesTest {
                 // Sequential consistency (--st-sc)
                 {"rwc-fence-sc-threadfence.spvasm", 1, PASS},
                 {"rwc-fence-sc-threadfence-fix.spvasm", 1, PASS},
+                // Sequential consistency with region-less SC fences
+                // (--st-sc --ra-region-widen)
+                {"rwc-fence-sc.spvasm", 1, PASS},
+                {"rwc-fence-sc-fix.spvasm", 1, PASS},
+                {"iriw-fence-sc.spvasm", 1, PASS},
+                {"iriw-fence-sc-fix.spvasm", 1, PASS},
                 // Data race (--atomic-affected)
                 {"mp-fence-sc-weak.spvasm", 1, FAIL},
                 {"mp-fence-sc-weak-fix.spvasm", 1, PASS},

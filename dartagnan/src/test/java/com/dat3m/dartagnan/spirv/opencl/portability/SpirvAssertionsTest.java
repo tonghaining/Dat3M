@@ -42,7 +42,9 @@ public class SpirvAssertionsTest {
     @Parameterized.Parameters(name = "{index}: {0}, {1}, {2}")
     public static Iterable<Object[]> data() throws IOException {
         return Arrays.asList(new Object[][]{
+                {"mp-cross-region.spvasm", 1, FAIL},
                 {"mp-cross-region-fix.spvasm", 1, PASS},
+                {"mp-cross-region-extern.spvasm", 1, FAIL},
                 {"mp-cross-region-extern-fix.spvasm", 1, PASS},
                 // Kernels in benchmarks/cuda; -fix is the R1 repair pass.
                 // Memory region (--ra-region-widen)
@@ -58,6 +60,12 @@ public class SpirvAssertionsTest {
                 // Sequential consistency (--st-sc)
                 {"rwc-fence-sc-threadfence.spvasm", 1, FAIL},
                 {"rwc-fence-sc-threadfence-fix.spvasm", 1, PASS},
+                // Sequential consistency with region-less SC fences
+                // (--st-sc --ra-region-widen)
+                {"rwc-fence-sc.spvasm", 1, FAIL},
+                {"rwc-fence-sc-fix.spvasm", 1, PASS},
+                {"iriw-fence-sc.spvasm", 1, FAIL},
+                {"iriw-fence-sc-fix.spvasm", 1, PASS},
                 // Data race (--atomic-affected)
                 {"mp-fence-sc-weak.spvasm", 1, PASS},
                 {"mp-fence-sc-weak-fix.spvasm", 1, PASS},

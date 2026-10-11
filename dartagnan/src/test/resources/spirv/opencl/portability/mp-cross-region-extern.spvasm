@@ -1,7 +1,7 @@
 ; @Input: %y_coerce_0 = {0}
 ; @Input: %r0_coerce_0 = {0}
-; @Input: %x__hidden_dyn_local_mem = {0}
-; @Output: forall (%r0_coerce_0[0] == 1)
+; @Input: %x__hidden_dyn_local_mem_0 = {0}
+; @Output: not exists (%r0_coerce_0[0] == 0)
 ; @Config: 2, 1, 1
 ; SPIR-V
 ; Version: 1.0
