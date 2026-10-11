@@ -59,6 +59,29 @@ public class VisitorOpsMemory extends SpirvBaseVisitor<Event> {
         return null;
     }
 
+    // Lifetime markers only state that a variable's content is undefined
+    // outside its lifetime. They are accepted and generate no events, so a
+    // read outside the lifetime sees the last write instead of an undefined
+    // value.
+    @Override
+    public Event visitOpLifetimeStart(SpirvParser.OpLifetimeStartContext ctx) {
+        checkLifetimePointer(ctx.pointer().getText(), "OpLifetimeStart");
+        return null;
+    }
+
+    @Override
+    public Event visitOpLifetimeStop(SpirvParser.OpLifetimeStopContext ctx) {
+        checkLifetimePointer(ctx.pointer().getText(), "OpLifetimeStop");
+        return null;
+    }
+
+    private void checkLifetimePointer(String id, String op) {
+        Expression pointer = builder.getExpression(id);
+        if (!(pointer.getType() instanceof ScopedPointerType)) {
+            throw new ParsingException("Operand '%s' of %s is not a pointer", id, op);
+        }
+    }
+
     @Override
     public Event visitOpLoad(SpirvParser.OpLoadContext ctx) {
         String resultId = ctx.idResult().getText();
@@ -266,6 +289,8 @@ public class VisitorOpsMemory extends SpirvBaseVisitor<Event> {
     public Set<String> getSupportedOps() {
         return Set.of(
                 "OpVariable",
+                "OpLifetimeStart",
+                "OpLifetimeStop",
                 "OpLoad",
                 "OpStore",
                 "OpAccessChain",

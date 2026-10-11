@@ -188,6 +188,44 @@ public class VisitorOpsMemoryTest {
     }
 
     @Test
+    public void testLifetimeMarkers() {
+        // given
+        String input = """
+                OpLifetimeStart %ptr 4
+                OpLifetimeStop %ptr 4
+                """;
+        builder.mockIntType("%int", 32);
+        builder.mockPtrType("%int_ptr", "%int", "Function");
+        builder.mockVariable("%ptr", "%int_ptr");
+
+        // when
+        parse(input);
+
+        // then: only the start label of the mock function
+        List<Event> events = builder.getCurrentFunction().getEvents();
+        assertEquals(1, events.size());
+        assertFalse(events.get(0) instanceof Load || events.get(0) instanceof Store);
+    }
+
+    @Test
+    public void testLifetimeMarkerNotPointer() {
+        // given
+        String input = "OpLifetimeStart %value 4";
+        builder.mockIntType("%int", 32);
+        builder.mockConstant("%value", "%int", 1);
+
+        // when
+        try {
+            parse(input);
+            fail("Should throw exception");
+        } catch (ParsingException e) {
+            // then
+            assertEquals("Operand '%value' of OpLifetimeStart is not a pointer",
+                    e.getMessage());
+        }
+    }
+
+    @Test
     public void testVariable() {
         // given
         String input = """
