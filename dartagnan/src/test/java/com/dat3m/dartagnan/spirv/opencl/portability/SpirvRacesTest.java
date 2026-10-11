@@ -42,8 +42,12 @@ public class SpirvRacesTest {
     @Parameterized.Parameters(name = "{index}: {0}, {1}, {2}")
     public static Iterable<Object[]> data() throws IOException {
         return Arrays.asList(new Object[][]{
-                {"mp-cross-region-extern.spvasm", 1, FAIL},
-                {"mp-cross-region-extern-fix.spvasm", 1, PASS},
+                {"mp-cross-region-extern.spvasm", 2, FAIL},
+                {"mp-cross-region-extern-fix.spvasm", 2, PASS},
+                // Memory region, __syncthreads() on Workgroup memory only
+                // (--ra-region-widen)
+                {"sb-barrier-cross-space.spvasm", 1, FAIL},
+                {"sb-barrier-cross-space-fix.spvasm", 1, PASS},
                 // Kernels in benchmarks/cuda; -fix is the R1 repair pass.
                 // Memory region (--ra-region-widen)
                 {"mp-cas-cross-space.spvasm", 1, FAIL},

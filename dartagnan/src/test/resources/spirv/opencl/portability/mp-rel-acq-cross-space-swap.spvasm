@@ -75,7 +75,7 @@
     %uchar_1 = OpConstant %uchar 1
      %uint_0 = OpConstant %uint 0
      %uint_2 = OpConstant %uint 2
-   %uint_784 = OpConstant %uint 784
+   %uint_272 = OpConstant %uint 272
      %uint_1 = OpConstant %uint 1
      %uint_4 = OpConstant %uint 4
     %ulong_8 = OpConstant %ulong 8
@@ -116,7 +116,7 @@
                OpStore %_ZZ4testPiS_E1x %uint_0 Aligned 4
                OpBranch %if_end
      %if_end = OpLabel
-               OpControlBarrier %uint_2 %uint_2 %uint_784
+               OpControlBarrier %uint_2 %uint_2 %uint_272
          %47 = OpLoad %v3ulong %__spirv_BuiltInLocalInvocationId Aligned 32
          %48 = OpCompositeExtract %ulong %47 0
    %call_i23 = OpSelect %ulong %true %48 %ulong_0
