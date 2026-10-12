@@ -1,10 +1,11 @@
 OpenCL
-(* Repaired OpenCL Memory Model *)
+(* Revised OpenCL Memory Model *)
 
 (*
 * This model is based on:
 * https://multicore.doc.ic.ac.uk/overhauling/opencl_base.cat
 * https://multicore.doc.ic.ac.uk/overhauling/opencl_scopedsc.cat
+* https://github.com/NVlabs/ptxmemorymodel/blob/master/src11.als
 *)
 
 // Base relations:
@@ -76,6 +77,9 @@ let ini = IW * ~IW
 let ghb = ((dynamic_tag(GLOBAL); sb; dynamic_tag(GLOBAL)) | (dynamic_tag(GLOBAL); ini; dynamic_tag(GLOBAL)) | gsw)+ \ id
 let lhb = ((dynamic_tag(LOCAL); sb; dynamic_tag(LOCAL)) | (dynamic_tag(LOCAL); ini; dynamic_tag(LOCAL)) | lsw)+ \ id
 
+(* Combined happens-before: union of the two OpenCL regions *)
+let hb = ghb | lhb
+
 irreflexive ghb as O-HbG
 irreflexive lhb as O-HbL
 
@@ -83,7 +87,7 @@ irreflexive lhb as O-HbL
 (* Coherence *)
 (*************)
 
-let coh(hb) = (rf^-1)?; mo; rf?; hb
+let coh(r) = (rf^-1)?; mo; rf?; r
 irreflexive coh(ghb) as O-CohG
 irreflexive coh(lhb) as O-CohL
 
@@ -92,7 +96,7 @@ irreflexive coh(lhb) as O-CohL
 (************************)
 
 (* A load can only read from a store that already happened. *)
-irreflexive rf; (ghb | lhb) as O-Rf
+irreflexive rf; hb as O-Rf
 
 (* A non-atomic load can only read from a store that is visible. *)
 empty (rf; ([NA] & dynamic_tag(GLOBAL))) \ ghb as O-NaRfG
@@ -112,20 +116,18 @@ empty rmw & (fre; moe) as 0-Atomic
 (* Extended coherence order *)
 let eco = (rf | mo | rb)+
 
-(* Combined happens-before: union of the two OpenCL regions *)
-let hb   = ghb | lhb
-let hbl  = hb & loc
+let hbl = hb & loc
 let sbnl = sb \ loc
 
 (* SC-before — RC11's repair: hb is replaced by scb *)
-let scb  = sb | (sbnl; hb; sbnl) | hbl | mo | rb
+let scb = sb | (sbnl; hb; sbnl) | hbl | mo | rb
 
 (* Partial SC relations (RC11) *)
-let Esc      = [SC]
-let Fsc      = [F & SC]
-let pscbase  = (Esc | (Fsc; hb?)) ; scb ; (Esc | (hb?; Fsc))
-let pscF     = Fsc; (hb | (hb; eco; hb)); Fsc
-let psc      = pscbase | pscF
+let Esc = [SC]
+let Fsc = [F & SC]
+let pscbase = (Esc | (Fsc; hb?)) ; scb ; (Esc | (hb?; Fsc))
+let pscF = Fsc; (hb | (hb; eco; hb)); Fsc
+let psc = pscbase | pscF
 
 (* Scoped SC axiom: enforce psc only between scope-inclusive endpoints *)
 acyclic (psc & incl) as SC
@@ -141,7 +143,7 @@ acyclic (psc & incl) as SC
 (* data_races *)
 let cnf = ((W * W) | (W * R) | (R * W)) & loc
 // TODO: "there is exactly one initial event per location", in current implementation, memory object like global scope id is initialized by three write events
-let dr = cnf & ~(ghb | lhb) & ~(ghb | lhb)^-1 & ~wi & ~incl \ ((_ * IW) | (IW * _))
+let dr = cnf & ~hb & ~hb^-1 & ~wi & ~incl \ ((_ * IW) | (IW * _))
 flag ~empty dr as data_race
 
 (* unsequenced_races *)
