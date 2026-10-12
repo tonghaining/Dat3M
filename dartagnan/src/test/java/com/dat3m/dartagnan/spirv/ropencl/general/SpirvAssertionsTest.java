@@ -1,4 +1,4 @@
-package com.dat3m.dartagnan.spirv.opencl.paa;
+package com.dat3m.dartagnan.spirv.ropencl.general;
 
 import com.dat3m.dartagnan.configuration.Arch;
 import com.dat3m.dartagnan.configuration.Method;
@@ -28,7 +28,7 @@ import static org.junit.Assert.assertEquals;
 @RunWith(Parameterized.class)
 public class SpirvAssertionsTest {
 
-    private final Path modelPath = getRootPath("cat/opencl-paa.cat");
+    private final Path modelPath = getRootPath("cat/ropencl.cat");
     private final Path programPath;
     private final int bound;
     private final ResultStatus expected;
