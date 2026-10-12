@@ -1,4 +1,4 @@
-package com.dat3m.dartagnan.spirv.opencl.heterogeneousAtomicity;
+package com.dat3m.dartagnan.spirv.opencl.mixedAtomicity;
 
 import com.dat3m.dartagnan.configuration.Arch;
 import com.dat3m.dartagnan.configuration.Method;
@@ -34,7 +34,7 @@ public class SpirvRacesTest {
     private final ResultStatus expected;
 
     public SpirvRacesTest(String file, int bound, ResultStatus expected) {
-        this.programPath = getTestResourcePath("spirv/opencl/heterogeneousAtomicity/" + file);
+        this.programPath = getTestResourcePath("spirv/opencl/mixedAtomicity/" + file);
         this.bound = bound;
         this.expected = expected;
     }
