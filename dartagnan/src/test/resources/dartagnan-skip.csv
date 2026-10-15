@@ -3,7 +3,6 @@
 
 // sb (po) is different for C11 than hardware models. In particular it is not a total order (due to C11 not guaranteeing the evaluation order of function parameters). See https://github.com/herd/herdtools7/issues/394 for a discussion
 litmus/C11/auto/linearisation.litmus
-litmus/OPENCL/portedFromC11/auto/linearisation.litmus
 
 // The following contain dynamic addressing into a large array on which we may run out of space
 litmus/AARCH64/mixed/MP+dmbsy+misaligned2+511.litmus
