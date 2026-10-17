@@ -13,10 +13,10 @@
                OpCapability Int8
           %1 = OpExtInstImport "OpenCL.std"
                OpMemoryModel Physical64 OpenCL
-               OpEntryPoint Kernel %28 "_ZTS15MacroTestKernel"
+               OpEntryPoint Kernel %28 "_ZTS10TestKernel"
                OpSource OpenCL_CPP 100000
-               OpName %_ZTS15MacroTestKernel "_ZTS15MacroTestKernel"
-               OpDecorate %_ZTS15MacroTestKernel LinkageAttributes "_ZTS15MacroTestKernel" Export
+               OpName %_ZTS10TestKernel "_ZTS10TestKernel"
+               OpDecorate %_ZTS10TestKernel LinkageAttributes "_ZTS10TestKernel" Export
                OpDecorate %7 Alignment 4
                OpDecorate %29 Alignment 4
       %uchar = OpTypeInt 8 0
@@ -30,7 +30,7 @@
 %_ptr_Generic_uchar = OpTypePointer Generic %uchar
 %_ptr_CrossWorkgroup_uint = OpTypePointer CrossWorkgroup %uint
        %bool = OpTypeBool
-%_ZTS15MacroTestKernel = OpFunction %void None %5
+%_ZTS10TestKernel = OpFunction %void None %5
           %7 = OpFunctionParameter %_ptr_CrossWorkgroup_uchar
           %8 = OpLabel
          %11 = OpBitcast %_ptr_CrossWorkgroup_uchar %7
@@ -51,6 +51,6 @@
          %28 = OpFunction %void None %5
          %29 = OpFunctionParameter %_ptr_CrossWorkgroup_uchar
          %30 = OpLabel
-         %31 = OpFunctionCall %void %_ZTS15MacroTestKernel %29
+         %31 = OpFunctionCall %void %_ZTS10TestKernel %29
                OpReturn
                OpFunctionEnd

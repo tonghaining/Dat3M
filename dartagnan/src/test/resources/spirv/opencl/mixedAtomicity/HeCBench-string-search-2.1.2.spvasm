@@ -142,7 +142,7 @@
      %tobool = OpINotEqual %bool %51 %uint_0
                OpBranchConditional %tobool %if_then3 %if_end7
    %if_then3 = OpLabel
-      %call4 = OpAtomicIAdd %uint %45 %uint_1 %uint_0 %uint_1
+      %call4 = OpAtomicIAdd %uint %45 %uint_2 %uint_0 %uint_1
                OpStore %count %call4 Aligned 4
          %55 = OpLoad %uint %gid Aligned 4
          %56 = OpLoad %_ptr_CrossWorkgroup_uint %d_res_addr Aligned 4
