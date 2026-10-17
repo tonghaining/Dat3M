@@ -95,6 +95,11 @@ public class MemoryTransformer extends ExprTransformer {
 
     @Override
     public Expression visitMemoryObject(MemoryObject memObj) {
+        // Built-in variables (e.g. LocalInvocationId) have a value per thread, whatever their storage class.
+        // Some compilers (e.g. DPC++ for spir64) declare them in the CrossWorkgroup storage class.
+        if (builtIn.hasDecoration(memObj.getName())) {
+            return applyMapping(memObj, 0);
+        }
         String storageClass = pointerMapping.get(memObj).getScopeId();
         return switch (storageClass) {
             // Device-level memory (keep the same instance)

@@ -1,0 +1,141 @@
+; @Input: %73 = {0, 1, 1, 1}
+; @Input: %74 = {0, 0, 0, 0}
+; @Input: %75 = {0, 0}
+; @Output: forall (%75[0] == 1 and %75[1] == 2 and %74[0] == 1 and %74[1] == 0 and ((%74[2] == 2 and %74[3] == 3) or (%74[2] == 3 and %74[3] == 2)))
+; @Config: 2, 1, 2
+; SPIR-V
+; Version: 1.4
+; Generator: Khronos LLVM/SPIR-V Translator; 14
+; Bound: 78
+; Schema: 0
+               OpCapability Addresses
+               OpCapability Linkage
+               OpCapability Kernel
+               OpCapability Int64
+               OpCapability GenericPointer
+               OpCapability Int8
+          %1 = OpExtInstImport "OpenCL.std"
+               OpMemoryModel Physical64 OpenCL
+               OpEntryPoint Kernel %72 "_ZTS18StringSearchKernel" %__spirv_BuiltInWorkgroupSize %__spirv_BuiltInWorkgroupId %__spirv_BuiltInGlobalInvocationId %__spirv_BuiltInLocalInvocationId %WGLocalMem
+               OpSource OpenCL_CPP 100000
+               OpName %__spirv_BuiltInWorkgroupSize "__spirv_BuiltInWorkgroupSize"
+               OpName %__spirv_BuiltInWorkgroupId "__spirv_BuiltInWorkgroupId"
+               OpName %__spirv_BuiltInGlobalInvocationId "__spirv_BuiltInGlobalInvocationId"
+               OpName %__spirv_BuiltInLocalInvocationId "__spirv_BuiltInLocalInvocationId"
+               OpName %WGLocalMem "WGLocalMem"
+               OpName %_ZTS18StringSearchKernel "_ZTS18StringSearchKernel"
+               OpDecorate %__spirv_BuiltInWorkgroupSize LinkageAttributes "__spirv_BuiltInWorkgroupSize" Import
+               OpDecorate %__spirv_BuiltInWorkgroupSize Constant
+               OpDecorate %__spirv_BuiltInWorkgroupSize BuiltIn WorkgroupSize
+               OpDecorate %__spirv_BuiltInWorkgroupSize Alignment 32
+               OpDecorate %__spirv_BuiltInWorkgroupId LinkageAttributes "__spirv_BuiltInWorkgroupId" Import
+               OpDecorate %__spirv_BuiltInWorkgroupId Constant
+               OpDecorate %__spirv_BuiltInWorkgroupId BuiltIn WorkgroupId
+               OpDecorate %__spirv_BuiltInWorkgroupId Alignment 32
+               OpDecorate %__spirv_BuiltInGlobalInvocationId LinkageAttributes "__spirv_BuiltInGlobalInvocationId" Import
+               OpDecorate %__spirv_BuiltInGlobalInvocationId Constant
+               OpDecorate %__spirv_BuiltInGlobalInvocationId BuiltIn GlobalInvocationId
+               OpDecorate %__spirv_BuiltInGlobalInvocationId Alignment 32
+               OpDecorate %__spirv_BuiltInLocalInvocationId LinkageAttributes "__spirv_BuiltInLocalInvocationId" Import
+               OpDecorate %__spirv_BuiltInLocalInvocationId Constant
+               OpDecorate %__spirv_BuiltInLocalInvocationId BuiltIn LocalInvocationId
+               OpDecorate %__spirv_BuiltInLocalInvocationId Alignment 32
+               OpDecorate %WGLocalMem Alignment 4
+               OpDecorate %_ZTS18StringSearchKernel LinkageAttributes "_ZTS18StringSearchKernel" Export
+               OpDecorate %19 Alignment 4
+               OpDecorate %20 Alignment 4
+               OpDecorate %21 Alignment 4
+               OpDecorate %73 Alignment 4
+               OpDecorate %74 Alignment 4
+               OpDecorate %75 Alignment 4
+      %ulong = OpTypeInt 64 0
+      %uchar = OpTypeInt 8 0
+       %uint = OpTypeInt 32 0
+    %ulong_4 = OpConstant %ulong 4
+%ulong_2147483648 = OpConstant %ulong 2147483648
+    %ulong_0 = OpConstant %ulong 0
+     %uint_0 = OpConstant %uint 0
+     %uint_2 = OpConstant %uint 2
+   %uint_528 = OpConstant %uint 528
+   %uint_896 = OpConstant %uint 896
+     %uint_1 = OpConstant %uint 1
+    %v3ulong = OpTypeVector %ulong 3
+%_ptr_CrossWorkgroup_v3ulong = OpTypePointer CrossWorkgroup %v3ulong
+%_arr_uchar_ulong_4 = OpTypeArray %uchar %ulong_4
+%_ptr_Workgroup__arr_uchar_ulong_4 = OpTypePointer Workgroup %_arr_uchar_ulong_4
+       %void = OpTypeVoid
+%_ptr_CrossWorkgroup_uint = OpTypePointer CrossWorkgroup %uint
+         %17 = OpTypeFunction %void %_ptr_CrossWorkgroup_uint %_ptr_CrossWorkgroup_uint %_ptr_CrossWorkgroup_uint
+%_ptr_Workgroup_uint = OpTypePointer Workgroup %uint
+       %bool = OpTypeBool
+%_ptr_Generic__arr_uchar_ulong_4 = OpTypePointer Generic %_arr_uchar_ulong_4
+%_ptr_Generic_uchar = OpTypePointer Generic %uchar
+%_ptr_Workgroup_uchar = OpTypePointer Workgroup %uchar
+%__spirv_BuiltInWorkgroupSize = OpVariable %_ptr_CrossWorkgroup_v3ulong CrossWorkgroup
+%__spirv_BuiltInWorkgroupId = OpVariable %_ptr_CrossWorkgroup_v3ulong CrossWorkgroup
+%__spirv_BuiltInGlobalInvocationId = OpVariable %_ptr_CrossWorkgroup_v3ulong CrossWorkgroup
+%__spirv_BuiltInLocalInvocationId = OpVariable %_ptr_CrossWorkgroup_v3ulong CrossWorkgroup
+ %WGLocalMem = OpVariable %_ptr_Workgroup__arr_uchar_ulong_4 Workgroup
+%_ZTS18StringSearchKernel = OpFunction %void None %17
+         %19 = OpFunctionParameter %_ptr_CrossWorkgroup_uint
+         %20 = OpFunctionParameter %_ptr_CrossWorkgroup_uint
+         %21 = OpFunctionParameter %_ptr_CrossWorkgroup_uint
+         %22 = OpLabel
+         %29 = OpLoad %v3ulong %__spirv_BuiltInWorkgroupSize Aligned 32
+         %30 = OpCompositeExtract %ulong %29 0
+         %31 = OpLoad %v3ulong %__spirv_BuiltInWorkgroupId Aligned 32
+         %32 = OpCompositeExtract %ulong %31 0
+         %33 = OpLoad %v3ulong %__spirv_BuiltInGlobalInvocationId Aligned 32
+         %34 = OpCompositeExtract %ulong %33 0
+         %35 = OpLoad %v3ulong %__spirv_BuiltInLocalInvocationId Aligned 32
+         %36 = OpCompositeExtract %ulong %35 0
+         %38 = OpBitcast %_ptr_Workgroup_uint %WGLocalMem
+         %41 = OpULessThan %bool %36 %ulong_2147483648
+         %42 = OpULessThan %bool %34 %ulong_2147483648
+         %43 = OpUConvert %uint %34
+         %44 = OpULessThan %bool %32 %ulong_2147483648
+         %45 = OpUConvert %uint %32
+         %46 = OpULessThan %bool %30 %ulong_2147483648
+         %47 = OpUConvert %uint %30
+         %49 = OpIEqual %bool %36 %ulong_0
+               OpBranchConditional %49 %23 %24
+         %23 = OpLabel
+               OpStore %38 %uint_0 Aligned 4
+               OpBranch %24
+         %24 = OpLabel
+               OpControlBarrier %uint_2 %uint_2 %uint_528
+         %53 = OpInBoundsPtrAccessChain %_ptr_CrossWorkgroup_uint %19 %34
+         %54 = OpLoad %uint %53 Aligned 4
+         %55 = OpIEqual %bool %54 %uint_0
+               OpBranchConditional %55 %26 %25
+         %25 = OpLabel
+         %57 = OpPtrCastToGeneric %_ptr_Generic__arr_uchar_ulong_4 %WGLocalMem
+         %59 = OpBitcast %_ptr_Generic_uchar %57
+         %61 = OpGenericCastToPtrExplicit %_ptr_Workgroup_uchar %59 Workgroup
+         %62 = OpBitcast %_ptr_Workgroup_uint %61
+         %65 = OpAtomicIAdd %uint %62 %uint_2 %uint_896 %uint_1
+         %66 = OpIMul %uint %45 %47
+         %67 = OpIAdd %uint %66 %65
+         %68 = OpUConvert %ulong %67
+         %69 = OpInBoundsPtrAccessChain %_ptr_CrossWorkgroup_uint %20 %68
+               OpStore %69 %43 Aligned 4
+               OpBranch %26
+         %26 = OpLabel
+               OpControlBarrier %uint_2 %uint_2 %uint_528
+               OpBranchConditional %49 %27 %28
+         %27 = OpLabel
+         %70 = OpLoad %uint %38 Aligned 4
+         %71 = OpInBoundsPtrAccessChain %_ptr_CrossWorkgroup_uint %21 %32
+               OpStore %71 %70 Aligned 4
+               OpBranch %28
+         %28 = OpLabel
+               OpReturn
+               OpFunctionEnd
+         %72 = OpFunction %void None %17
+         %73 = OpFunctionParameter %_ptr_CrossWorkgroup_uint
+         %74 = OpFunctionParameter %_ptr_CrossWorkgroup_uint
+         %75 = OpFunctionParameter %_ptr_CrossWorkgroup_uint
+         %76 = OpLabel
+         %77 = OpFunctionCall %void %_ZTS18StringSearchKernel %73 %74 %75
+               OpReturn
+               OpFunctionEnd

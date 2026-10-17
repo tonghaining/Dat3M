@@ -55,6 +55,8 @@ public class SpirvRacesTest {
 
                 {"HeCBench-string-search-2.1.2.spvasm", 2, PASS},
                 {"HeCBench-string-search-lc2gb.spvasm", 2, FAIL},
+                {"HeCBench-ss-sycl-2.1.2.spvasm", 2, PASS},
+                {"HeCBench-ss-sycl-lc2gb.spvasm", 2, FAIL},
 
                 // SYCL Source
                 // CAS
