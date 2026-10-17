@@ -1,65 +1,76 @@
 // https://github.com/ORNL/HeCBench/blob/master/src/ss-sycl/main.cpp#L268-L286
 
+// icpx -fsycl -fsycl-device-only -fno-sycl-instrument-device-code HeCBench-string-search.cpp -o HeCBench-string-search.bc
+// llvm-spirv HeCBench-string-search.bc -o HeCBench-string-search.spv
+// spirv-dis HeCBench-string-search.spv -o HeCBench-string-search.spvasm
+
 #include <sycl/sycl.hpp>
 #include <iostream>
 
-class FindFiveKernel;
+#ifdef LC2GB
+#define BAR_FENCE sycl::access::fence_space::global_space
+#else
+#define BAR_FENCE sycl::access::fence_space::local_space
+#endif
+
+class StringSearchKernel;
 
 int main() {
     sycl::queue q;
 
-    unsigned int arr[] = {1, 5, 2, 5};
-    unsigned int N = 4, L = 2, G = 4;  // N = 8 items, L = 4 items per group, G = 8 total threads
+    unsigned int arr[] = {0, 1, 1, 1};
+    constexpr unsigned int G = 4, L = 2;  // G work-items in total, L work-items per work-group
 
-    // 1. Allocate strictly on the DEVICE
     unsigned int* d_data = sycl::malloc_device<unsigned int>(G, q);
     unsigned int* d_res = sycl::malloc_device<unsigned int>(G, q);
     unsigned int* d_counts = sycl::malloc_device<unsigned int>(G / L, q);
-
-    // 2. EXPLICITLY copy the array from Host to Device and WAIT
-    q.memcpy(d_data, arr, N * sizeof(unsigned int)).wait();
+    q.memcpy(d_data, arr, G * sizeof(unsigned int)).wait();
 
     q.submit([&](sycl::handler& cgh) {
-        sycl::local_accessor<unsigned int, 1> local_cnt(1, cgh);
+        cgh.parallel_for<StringSearchKernel>(sycl::nd_range<1>(G, L), [=](sycl::nd_item<1> it) {
+            // Work-group local counter, as "__local uint local_count" in OpenCL
+            unsigned int& local_count =
+                *sycl::ext::oneapi::group_local_memory_for_overwrite<unsigned int>(it.get_group());
 
-        cgh.parallel_for<FindFiveKernel>(sycl::nd_range<1>(G, L), [=](sycl::nd_item<1> it) {
-            unsigned int g_id = it.get_global_id(0);
-            unsigned int l_id = it.get_local_id(0);
-            unsigned int grp_id = it.get_group(0);
+            unsigned int tid = it.get_local_id(0);
+            unsigned int gid = it.get_global_id(0);
+            unsigned int group_id = it.get_group(0);
+            unsigned int local_size = it.get_local_range(0);
 
-            if (l_id == 0) local_cnt[0] = 0;
-            it.barrier(sycl::access::fence_space::local_space);
-            sycl::atomic_ref<unsigned int,
-                 sycl::memory_order::relaxed,
-                 sycl::memory_scope::work_group,
-                 sycl::access::address_space::local_space> atomic_cnt(local_cnt[0]);
-
-            if (g_id < N && d_data[g_id] == 5) {
-                unsigned int count = atomic_cnt.fetch_add(1);
-                d_res[grp_id * L + count] = g_id;
+            if (tid == 0) {
+                local_count = 0;
             }
-            it.barrier(sycl::access::fence_space::local_space);
-            if (l_id == 0) d_counts[grp_id] = local_cnt[0];
+
+            it.barrier(BAR_FENCE);
+
+            if (d_data[gid]) {
+                sycl::atomic_ref<unsigned int,
+                                 sycl::memory_order::relaxed,
+                                 sycl::memory_scope::work_group,
+                                 sycl::access::address_space::local_space> count_ref(local_count);
+                unsigned int count = count_ref.fetch_add(1);
+                d_res[group_id * local_size + count] = gid;
+            }
+
+            it.barrier(BAR_FENCE);
+
+            if (tid == 0) {
+                d_counts[group_id] = local_count;
+            }
         });
     }).wait();
 
-    // Allocate standard CPU memory to hold the results
-    unsigned int h_counts[2]; // G / L = 2
-    unsigned int h_res[8];    // G = 8
-
-    // 4. EXPLICITLY copy the results from Device back to Host and WAIT
+    unsigned int h_counts[G / L];
+    unsigned int h_res[G];
     q.memcpy(h_counts, d_counts, (G / L) * sizeof(unsigned int)).wait();
     q.memcpy(h_res, d_res, G * sizeof(unsigned int)).wait();
 
-    // 5. Print matches using the HOST arrays, not the device pointers
     for (unsigned int g = 0; g < G / L; ++g) {
-        if (h_counts[g] > 0) {
-            std::cout << "Group " << g << " found 5 at indices: ";
-            for (unsigned int i = 0; i < h_counts[g]; ++i) {
-                std::cout << h_res[g * L + i] << " ";
-            }
-            std::cout << "\n";
+        std::cout << "Group " << g << " found " << h_counts[g] << " matches at indices:";
+        for (unsigned int i = 0; i < h_counts[g]; ++i) {
+            std::cout << " " << h_res[g * L + i];
         }
+        std::cout << "\n";
     }
 
     sycl::free(d_data, q);
