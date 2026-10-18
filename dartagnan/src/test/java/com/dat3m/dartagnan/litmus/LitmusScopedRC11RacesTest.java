@@ -23,7 +23,7 @@ public class LitmusScopedRC11RacesTest extends AbstractLitmusTest {
 
     @Override
     protected Provider<Arch> getTargetProvider() {
-        return () -> Arch.ROPENCL;
+        return () -> Arch.OPENCL;
     }
 
     @Override

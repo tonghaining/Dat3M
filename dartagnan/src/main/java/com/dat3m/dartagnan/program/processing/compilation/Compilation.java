@@ -88,7 +88,7 @@ public class Compilation implements ProgramProcessor {
         if (program.getFormat() == Program.SourceLanguage.SPV) {
             if (target == Arch.VULKAN) {
                 compiler = new VisitorSpirvVulkan();
-            } else if (target == Arch.OPENCL || target == Arch.ROPENCL) {
+            } else if (target == Arch.OPENCL) {
                 compiler = new VisitorSpirvOpenCL();
             } else {
                 throw new UnsupportedOperationException("SPIR-V can only be compiled to Vulkan or OpenCL");
@@ -129,7 +129,7 @@ public class Compilation implements ProgramProcessor {
 
     private VisitorBase getCompiler() {
         return switch (target) {
-            case C11, OPENCL, ROPENCL -> new VisitorC11();
+            case C11, OPENCL -> new VisitorC11();
             case LKMM -> new VisitorLKMM();
             case TSO -> new VisitorTso();
             case POWER -> new VisitorPower(useRC11Scheme, cToPowerScheme);

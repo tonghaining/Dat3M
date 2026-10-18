@@ -97,7 +97,7 @@ public class SpirvRacesTest {
         Task.TaskBuilder builder = Task.builder()
                 .withConfig(TestHelper.getBasicConfig())
                 .withBound(bound)
-                .withTarget(Arch.ROPENCL);
+                .withTarget(Arch.OPENCL);
         Program program = new ProgramParser().parse(programPath);
         Wmm mcm = new ParserCat().parse(modelPath);
         return builder.build(program, mcm, EnumSet.of(CAT_SPEC));
