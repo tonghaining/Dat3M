@@ -30,9 +30,9 @@ public class OpenCLToVulkanTest extends AbstractCompilationWithDrCheckTest {
             {"CoWR-barrier.litmus", "CoWR-barrier-fix2.litmus", false, true},
             {"CoWR-barrier.litmus", "CoWR-barrier-fix3.litmus", false, true},
             {"CoWR-barrier.litmus", "CoWR-barrier-fix4.litmus", true}, // without .nonpriv for the non-adjacent stores and loads
-            {"MP-rel-acq.litmus", "MP-rel-acq-naive.litmus", true},
-            {"MP-rel-acq.litmus", "MP-rel-acq-fix1.litmus", false, true},
-            {"MP-rel-acq.litmus", "MP-rel-acq-fix2+3.litmus", false, true},
+            {"MP-rel-acq-naive.litmus", "MP-rel-acq-naive.litmus", true},
+            {"MP-rel-acq-naive.litmus", "MP-rel-acq-fix1.litmus", false, true},
+            {"MP-rel-acq-naive.litmus", "MP-rel-acq-fix2+3.litmus", false, true},
             {"MP-fence-rel-acq.litmus", "MP-fence-rel-acq-naive.litmus", true},
             {"MP-fence-rel-acq.litmus", "MP-fence-rel-acq-fix1.litmus", false, true},
             {"MP-fence-rel-acq.litmus", "MP-fence-rel-acq-fix2+3.litmus", false, true},
