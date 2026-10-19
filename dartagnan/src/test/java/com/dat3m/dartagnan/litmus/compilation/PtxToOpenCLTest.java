@@ -249,8 +249,8 @@ public class PtxToOpenCLTest extends AbstractCompilationWithDrCheckTest {
             // Fix1: Atomic-Affected
 
             // MP-rel-acq
-            {"MP-rel-acq-cross-space.litmus", "MP-rel-acq-naive.litmus", true},
-            {"MP-rel-acq-cross-space.litmus", "MP-rel-acq-fix1.litmus", false, true},
+            {"MP-rel-acq.litmus", "MP-rel-acq-naive.litmus", true},
+            {"MP-rel-acq.litmus", "MP-rel-acq-fix1.litmus", false, true},
 
             // MP-fence-sc-weak
             {"MP-fence-sc-weak.litmus", "MP-fence-sc-weak-naive.litmus", true},
