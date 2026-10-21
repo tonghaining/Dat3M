@@ -57,7 +57,6 @@ public class SpirvAssertionsTest {
                 {"mixedAtomicity/ops-lib-core-combine-max-switch.spvasm", 2, PASS},
                 {"mixedAtomicity/ops-lib-core-combine-max-dv2wg-4.1.1.spvasm", 4, PASS},
                 {"mixedAtomicity/torch-xpu-ops-AtomicIntegerImpl-fix-2.1.2.spvasm", 4, PASS},
-                {"alignment/alignment1-array-global.spvasm", 9, PASS},
                 {"alignment/alignment1-array-local.spvasm", 9, PASS},
                 {"alignment/alignment1-array-pointer.spvasm", 9, PASS},
                 {"alignment/alignment1-struct-global.spvasm", 9, PASS},

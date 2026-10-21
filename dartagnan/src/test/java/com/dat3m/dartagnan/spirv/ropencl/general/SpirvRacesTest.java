@@ -42,6 +42,7 @@ public class SpirvRacesTest {
     @Parameterized.Parameters(name = "{index}: {0}, {1}, {2}")
     public static Iterable<Object[]> data() throws IOException {
         return Arrays.asList(new Object[][]{
+                {"alignment/alignment1-array-global.spvasm", 9, PASS},
                 {"mixedAtomicity/histogram-1.1.4.spvasm", 2, PASS},
                 {"mixedAtomicity/histogram-2.1.2.spvasm", 2, PASS},
                 {"mixedAtomicity/histogram-4.1.1.spvasm", 2, PASS},
